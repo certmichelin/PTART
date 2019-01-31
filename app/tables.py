@@ -47,7 +47,7 @@ class Sh0tTable(tables.Table):
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     severity = tables.TemplateColumn('<span class="bc-badge bc-badge--p{{ record.severity }}">P{{ record.severity }}</span>')
     title = tables.TemplateColumn('<a href="/app/sh0t/{{ record.pk }}">{{ record.title }}</a>')
-    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}">{{ record.assessment.project }}</a>')
+    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
 
     class Meta:
