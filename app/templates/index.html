@@ -125,7 +125,7 @@
                                         <tbody>
                                             {% for sh0t in recent_sh0ts %}
                                                 <tr>
-                                                    <td><a href="/app/project/{{ sh0t.assessment.project.id}}/">{{ sh0t.assessment.project.name }}<a></a></td>
+                                                    <td><a href="/app/project/{{ sh0t.assessment.project.id}}/summary">{{ sh0t.assessment.project.name }}<a></a></td>
                                                     <td><a href="/app/assessment/{{ sh0t.assessment.id}}/">{{ sh0t.assessment.name }}<a></a></td>
                                                     <td><a href="/app/sh0t/{{ sh0t.id }}/">{{ sh0t.title }}</a></td>
                                                     <td><span class="bc-badge bc-badge--p{{ sh0t.severity }}">P{{ sh0t.severity }}</span></td>
@@ -162,7 +162,7 @@
                                         <tbody>
                                             {% for flag in open_flags %}
                                                 <tr>
-                                                    <td><a href="/app/project/{{ flag.assessment.project.id}}/">{{ flag.assessment.project.name }}<a></a></td>
+                                                    <td><a href="/app/project/{{ flag.assessment.project.id}}/summary">{{ flag.assessment.project.name }}<a></a></td>
                                                     <td><a href="/app/assessment/{{ flag.assessment.id}}/">{{ flag.assessment.name }}<a></a></td>
                                                     <td><a href="/app/flag/{{ flag.id }}/">{{ flag.title }}</a></td>
                                                 </tr>

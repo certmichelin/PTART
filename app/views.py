@@ -270,6 +270,18 @@ def project(request, project_id):
     except Project.DoesNotExist:
         return redirect('/')
 
+@login_required
+def project_summary(request, project_id):
+    submitted = ""
+    try:
+        the_project = Project.objects.get(pk=project_id)
+        context = {
+            'project': the_project
+        }
+        return render(request, 'project-summary.html', context)
+    except Project.DoesNotExist:
+        return redirect('/')
+
 
 @login_required
 def templates(request):

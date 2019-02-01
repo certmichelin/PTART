@@ -4,7 +4,7 @@ from .models import Project, Flag, Sh0t, Assessment, Project
 
 class ProjectTable(tables.Table):
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
-    name = tables.TemplateColumn('<a href="/app/project/{{ record.pk }}"> {{ record.name }}</a>')
+    name = tables.TemplateColumn('<a href="/app/project/{{ record.pk }}/summary"> {{ record.name }}</a>')
 
     class Meta:
         model = Project
@@ -17,7 +17,7 @@ class FlagTable(tables.Table):
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     name = tables.TemplateColumn('<a href="/app/flag/{{ record.pk }}"> {{ record.title }}</a>')
     done = tables.BooleanColumn(yesno='done,')
-    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}">{{ record.assessment.project }}</a>')
+    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>')
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}"> '
                                        '{{ record.assessment }}</a>')
 
@@ -32,7 +32,7 @@ class FlagTable(tables.Table):
 class OpenFlagTable(tables.Table):
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     name = tables.TemplateColumn('<a href="/app/flag/{{ record.pk }}"> {{ record.title }}</a>')
-    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}">{{ record.assessment.project }}</a>')
+    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>')
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}"> '
                                        '{{ record.assessment }}</a>')
 
@@ -47,7 +47,7 @@ class Sh0tTable(tables.Table):
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     severity = tables.TemplateColumn('<span class="bc-badge bc-badge--p{{ record.severity }}">P{{ record.severity }}</span>')
     title = tables.TemplateColumn('<a href="/app/sh0t/{{ record.pk }}">{{ record.title }}</a>')
-    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
+    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
 
     class Meta:
@@ -60,8 +60,7 @@ class Sh0tTable(tables.Table):
 class AssessmentTable(tables.Table):
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     name = tables.TemplateColumn('<a href="/app/assessment/{{ record.pk }}"> {{ record.name }}</a>')
-    project = tables.TemplateColumn('<a href="/app/project/{{ record.project.pk}}"> '
-                                       '{{ record.project }}</a>')
+    project = tables.TemplateColumn('<a href="/app/project/{{ record.project.pk}}/summary">{{ record.project }}</a>')
 
     class Meta:
         model = Assessment

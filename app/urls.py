@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^projects/new/$', views.projects_new),
     url(r'^projects/all/', views.projects_all),
     url(r'^project/([0-9]+)/$', views.project),
+    url(r'^project/([0-9]+)/summary$', views.project_summary),
     url(r'^templates/$', views.templates),
     url(r'^template/([0-9]+)/$', views.template),
     url(r'^case-masters/$', views.case_masters),

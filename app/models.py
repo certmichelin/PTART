@@ -25,6 +25,27 @@ class Assessment(models.Model):
     def __str__(self):  # __unicode__ on Python 2
         return self.name
 
+    def p1_sh0ts(self):
+        return self.sh0ts_by_severity(1)
+    
+    def p2_sh0ts(self):
+        return self.sh0ts_by_severity(2)
+
+    def p3_sh0ts(self):
+        return self.sh0ts_by_severity(3)
+
+    def p4_sh0ts(self):
+        return self.sh0ts_by_severity(4)
+
+    def p5_sh0ts(self):
+        return self.sh0ts_by_severity(5)
+
+    def sh0ts_by_severity(self, severity):
+        return self.sh0t_set.filter(severity = severity)
+
+    def open_flags(self):
+        return self.flag_set.filter(done = False)
+
     class Meta:
         ordering = ('name',)
 
