@@ -7,6 +7,7 @@ from django.utils.encoding import python_2_unicode_compatible
 @python_2_unicode_compatible
 class Project(models.Model):
     name = models.CharField(max_length=100)
+    scope = models.TextField(default="")
     added = models.DateTimeField(default=datetime.now)
 
     def __str__(self):  # __unicode__ on Python 2
