@@ -30,7 +30,7 @@ class Sh0tSerializer(serializers.ModelSerializer):
 class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
-        fields = ('name', 'body')
+        fields = ('name', 'severity', 'body')
 
 
 class CaseMasterSerializer(serializers.ModelSerializer):
