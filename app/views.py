@@ -233,7 +233,8 @@ def projects_new(request):
     submitted = ""
     if "POST" == request.method:
         name = request.POST.get('name', '') or "Project"
-        new_project = Project.objects.create(name=name)
+        scope = request.POST.get('scope', '') or "Scope"
+        new_project = Project.objects.create(name=name, scope=scope)
         new_project.save()
         submitted = "success"
     projects_list = Project.objects.all().order_by('-added')[:10]
@@ -261,6 +262,7 @@ def project(request, project_id):
                 return redirect('/app/projects/all/')
 
             the_project.name = request.POST.get('name', '') or "Project"
+            the_project.scope = request.POST.get('scope', '') or "Scope"
             the_project.save()
             submitted = "success"
         context = {

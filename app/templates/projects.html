@@ -31,6 +31,10 @@
                         <label>Name</label>
                         <input class="form-control" name="name" autocomplete="off" />
                     </div>
+                    <div class="form-group">
+                        <label>Scope</label>
+                        <textarea class="form-control" rows="15" id="scope" name="scope">{{ project.scope }}</textarea>
+                    </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                     {% csrf_token %}
                 </form>
@@ -52,7 +56,7 @@
                                     <tbody>
                                         {% for project in projects %}
                                             <tr>
-                                                <td><a href="/app/project/{{ project.id }}/">{{ project.name }}</a></td>                                    </tr>
+                                                <td><a href="/app/project/{{ project.id }}/summary">{{ project.name }}</a></td>                                    </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>

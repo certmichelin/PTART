@@ -31,6 +31,10 @@
                             <label>Name</label>
                             <input class="form-control" name="name" id="name" value="{{ project.name }}" autocomplete="off" />
                         </div>
+                        <div class="form-group">
+                            <label>Scope</label>
+                            <textarea class="form-control" rows="15" id="scope" name="scope">{{ project.scope }}</textarea>
+                        </div>
                         <input type="hidden" value="{{ project.id }}" id="id" />
                         <button type="submit" class="btn btn-primary">Update</button>
                         <button type="submit" name="delete" value="delete" class="btn btn-danger">Delete</button>
