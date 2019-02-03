@@ -5,7 +5,7 @@ from configuration.models import MethodologyMaster, ModuleMaster, CaseMaster
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
-from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable
+from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable
 
 
 @login_required
@@ -116,8 +116,7 @@ def sh0ts_new(request):
     assessments_list = Assessment.objects.all().order_by('-added')
     templates_list = Template.objects.all().order_by('-added')
     recent_sh0ts = Sh0t.objects.all().order_by('-added')[:10]
-    context = {'assessments_list': assessments_list, 'templates': templates_list, 'severities': [1,2,3,4,5],
-               'recent_sh0ts': recent_sh0ts, 'submitted': submitted}
+    context = {'assessments_list': assessments_list, 'templates': templates_list, 'severities': [1,2,3,4,5], 'recent_sh0ts': recent_sh0ts, 'submitted': submitted}
     return render(request, 'sh0ts.html', context)
 
 
@@ -139,11 +138,11 @@ def sh0t(request, sh0t_id):
             if "delete" == request.POST.get('delete', ''):
                 the_sh0t.delete()
                 return redirect('/app/sh0ts/all/')
-            assessment_id = request.POST.get('assessment', '') or -1
             try:
                 the_sh0t.title = request.POST.get('title', '') or "sh0t"
                 the_sh0t.body = request.POST.get('body', '') or ""
                 the_sh0t.severity = request.POST.get('severity', '') or 5
+                assessment_id = request.POST.get('assessment', '') or -1
                 the_sh0t.assessment = Assessment.objects.get(pk=assessment_id)
                 the_sh0t.save()
                 submitted = "success"
@@ -286,18 +285,27 @@ def project_summary(request, project_id):
 
 
 @login_required
-def templates(request):
+def templates_new(request):
     submitted = ""
     if "POST" == request.method:
         name = request.POST.get('name', '') or "Template"
+        severity = request.POST.get('severity', '') or 5
         body = request.POST.get('body', '') or ""
-        new_template = Template.objects.create(name=name, body=body)
+        new_template = Template.objects.create(name=name, severity=severity, body=body)
         new_template.save()
         submitted = "success"
     templates_list = Template.objects.all().order_by('-added')[:10]
-    context = {'templates': templates_list, 'submitted': submitted}
+    context = {'templates': templates_list, 'severities': [1,2,3,4,5], 'submitted': submitted}
     return render(request, 'templates.html', context)
 
+
+@login_required
+def templates_all(request):
+    templates = Template.objects.all()
+    table = TemplateTable(templates)
+    RequestConfig(request).configure(table)
+    context = {'table': table, 'count': templates.count()}
+    return render(request, 'templates-list.html', context)
 
 @login_required
 def template(request, template_id):
@@ -310,12 +318,11 @@ def template(request, template_id):
                 return redirect('/app/templates/')
 
             the_template.name = request.POST.get('name', '') or "Template"
+            the_template.severity = request.POST.get('severity', '') or 5
             the_template.body = request.POST.get('body', '') or ""
             the_template.save()
             submitted = "success"
-        context = {
-            'template': the_template, 'submitted': submitted
-        }
+        context = {'template': the_template, 'severities': [1,2,3,4,5], 'submitted': submitted}
         return render(request, 'template-single.html', context)
     except Template.DoesNotExist:
         return redirect('/')

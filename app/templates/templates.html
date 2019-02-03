@@ -32,6 +32,14 @@
                             <input class="form-control" name="name" autocomplete="off" />
                         </div>
                         <div class="form-group">
+                            <label>Severity</label>
+                            <select class="form-control" name="severity" id="severity">
+                                    {% for sev in severities %}
+                                        <option value={{sev}}> P{{sev}} </option>
+                                    {% endfor %}     
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <textarea class="form-control" rows="10" name="body"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -62,7 +70,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right">
-                                    <a href="/admin/app/template/" target="_blank">View All <i class="fa fa-arrow-circle-right"></i></a>
+                                    <a href="/app/templates/" target="_blank">View All <i class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             {% else %}
                                 <h4><i class="fa fa-arrow-left"></i> Add a template</h4>

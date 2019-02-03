@@ -32,6 +32,14 @@
                             <input class="form-control" name="name" id="name" value="{{ template.name }}" autocomplete="off" />
                         </div>
                         <div class="form-group">
+                            <label>Severity</label>
+                            <select class="form-control" name="severity" id="severity">
+                                    {% for sev in severities %}
+                                        <option value={{sev}}> P{{sev}} </option>
+                                    {% endfor %}     
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <textarea class="form-control" rows="10" name="body" id="body">{{ template.body }}</textarea>
                         </div>
                         <input type="hidden" value="{{ template.id }}" id="id" />
@@ -47,8 +55,15 @@
 {% block extra_foot %}
 <script src="/static/js/common-ajax.js"></script>
 <script type="text/javascript">
+
+    /* Select the current severity */$
+    $('#severity option[value={{template.severity}}]').attr('selected','selected');
+
     $('#name').on('input', function() {
         sync('template');
+    });
+    $('#severity').on('change', function() {
+        sync('sh0t');
     });
     $('#body').on('input', function() {
         sync('template');

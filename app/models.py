@@ -93,5 +93,5 @@ class Template(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('severity','name',)
 

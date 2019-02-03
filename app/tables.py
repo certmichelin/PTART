@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Project, Flag, Sh0t, Assessment, Project
+from .models import Project, Flag, Sh0t, Assessment, Project, Template
 
 
 class ProjectTable(tables.Table):
@@ -68,3 +68,13 @@ class AssessmentTable(tables.Table):
         sequence = ('selection', 'name', 'project', 'added')
         fields = ('name', 'project', 'added')
 
+class TemplateTable(tables.Table):
+    selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
+    severity = tables.TemplateColumn('<span class="bc-badge bc-badge--p{{ record.severity }}">P{{ record.severity }}</span>')
+    name = tables.TemplateColumn('<a href="/app/template/{{ record.pk }}">{{ record.name }}</a>')
+    
+    class Meta:
+        model = Template
+        template_name = "django_tables2/bootstrap-responsive.html"
+        sequence = ('selection','severity', 'name', 'added')
+        fields = ('severity', 'name', 'added')
