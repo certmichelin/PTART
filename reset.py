@@ -6,7 +6,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
 django.setup()
 
 from configuration.models import MethodologyMaster, ModuleMaster, CaseMaster
-from app.models import Project
+from app.models import Project, Template
 
 print("This will reset everything in the database and set up as fresh.")
 print("Are you wanna do this?")
@@ -19,6 +19,7 @@ if "yes" == answer.lower():
     CaseMaster.objects.all().delete()
     ModuleMaster.objects.all().delete()
     MethodologyMaster.objects.all().delete()
+    Template.objects.all().delete()
 
     # WAHH
     methodology_master = MethodologyMaster(name="WAHH")
@@ -54,3 +55,28 @@ if "yes" == answer.lower():
                 steps_consolidated = steps_consolidated + step + '\n\n'
             case = CaseMaster(name=case, description=steps_consolidated, module=module_master, order=order)
             case.save()
+
+    # Bugcrowd's Vulnerability Rating Taxonomy
+    bugcrowd_file = open('configuration/data/vulnerability-rating-taxonomy.json', 'r')
+    vrt = json.load(bugcrowd_file)
+    for content in vrt['content'] :
+        name = content['name']
+        print(name)
+        for child in content['children'] :
+            child_name = child["name"]
+            if 'children' in child :
+                for little_child in child['children'] :
+                    little_child_name = little_child ["name"]
+                    if severity is None :
+                        severity = 3
+                    print("{} ({}) ({})".format(name, child_name, little_child_name))
+                    template = Template(name="{} ({}) ({})".format(name, child_name, little_child_name), severity = severity)
+                    template.save()
+            else :
+                severity = child["priority"]
+                if severity is None :
+                    severity = 3
+                print("{} ({})".format(name, child_name))
+                template = Template(name="{} ({})".format(name, child_name), severity = severity)
+                template.save()
+

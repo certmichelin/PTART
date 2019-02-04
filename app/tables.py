@@ -76,5 +76,5 @@ class TemplateTable(tables.Table):
     class Meta:
         model = Template
         template_name = "django_tables2/bootstrap-responsive.html"
-        sequence = ('selection','severity', 'name', 'added')
-        fields = ('severity', 'name', 'added')
+        sequence = ('selection','severity', 'name')
+        fields = ('severity', 'name')

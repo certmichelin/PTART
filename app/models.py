@@ -87,7 +87,6 @@ class Template(models.Model):
     name = models.CharField(max_length=100)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
     body = models.TextField(default="")
-    added = models.DateTimeField(default=datetime.now)
 
     def __str__(self):  # __unicode__ on Python 2
         return self.name
