@@ -114,7 +114,7 @@ def sh0ts_new(request):
             return redirect('/')
 
     assessments_list = Assessment.objects.all().order_by('-added')
-    templates_list = Template.objects.all().order_by('-added')
+    templates_list = Template.objects.all()
     recent_sh0ts = Sh0t.objects.all().order_by('-added')[:10]
     context = {'assessments_list': assessments_list, 'templates': templates_list, 'severities': [1,2,3,4,5], 'recent_sh0ts': recent_sh0ts, 'submitted': submitted}
     return render(request, 'sh0ts.html', context)
