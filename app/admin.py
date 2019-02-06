@@ -11,7 +11,6 @@ class FlagAdmin(admin.ModelAdmin):
 
 admin.site.register(Project)
 admin.site.register(Assessment)
-
 admin.site.register(Sh0t)
 admin.site.register(Flag, FlagAdmin)
 admin.site.register(Template)

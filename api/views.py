@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from app.models import Template
 from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer
 from .serializers import CaseMasterSerializer, ModuleMasterSerializer, MethodologyMasterSerializer
-from app.models import Flag, Sh0t, Assessment, Project
+from app.models import Flag, Sh0t, Assessment, Project, Template
 from configuration.models import CaseMaster, ModuleMaster, MethodologyMaster
 from rest_framework import status
 from rest_framework.decorators import api_view
