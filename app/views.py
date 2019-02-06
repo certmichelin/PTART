@@ -294,7 +294,7 @@ def templates_new(request):
         new_template = Template.objects.create(name=name, severity=severity, body=body)
         new_template.save()
         submitted = "success"
-    templates_list = Template.objects.all().order_by('-added')[:10]
+    templates_list = Template.objects.all()[:10]
     context = {'templates': templates_list, 'severities': [1,2,3,4,5], 'submitted': submitted}
     return render(request, 'templates.html', context)
 

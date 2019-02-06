@@ -6,21 +6,11 @@
         <li {% if '/app/project' in request.path %}class="active" {% endif %}>
             <a href="/app/projects/all"><i class="fa fa-fw fa-cubes"></i> Projects</a>
         </li>
-        <li {% if '/app/assessment' in request.path %}class="active" {% endif %}>
-            <a href="/app/assessments/all"><i class="fa fa-fw fa-cube"></i> Assessments</a>
-        </li>
 
         <li {% if '/app/flag' in request.path %}class="active" {% endif %}>
-            <a href="#;" data-toggle="collapse" data-target="#flagMenu"><i class="fa fa-fw fa-flag-o"></i> Flags <span id="flagArrow"><i class="fa fa-fw fa-caret-down"></i></span></a>
-            <ul id="flagMenu" class="collapse">
-                <li>
-                    <a href="/app/flags/open?sort=-added">Open</a>
-                </li>
-                <li>
-                    <a href="/app/flags/all?sort=-added">All</a>
-                </li>
-            </ul>
+            <a href="/app/flags/open?sort=-added"><i class="fa fa-fw fa-list-ul"></i > My ToDo</a>
         </li>
+        
         <li {% if '/app/sh0t' in request.path %}class="active" {% endif %}>
             <a href="/app/sh0ts/all"><i class="fa fa-fw fa-bullseye"></i> Sh0ts</a>
         </li>
