@@ -59,11 +59,11 @@
                                     {% for assessment in project.assessment_set.all %}
                                         <tr>
                                             <td><a href="#{{assessment.name}}">{{assessment.name}}</a></td>
-                                            <td>{{assessment.p1_sh0ts.count}}</td>
-                                            <td>{{assessment.p2_sh0ts.count}}</td>
-                                            <td>{{assessment.p3_sh0ts.count}}</td>
-                                            <td>{{assessment.p4_sh0ts.count}}</td>
-                                            <td>{{assessment.p5_sh0ts.count}}</td>
+                                            <td>{{assessment.p1_sh0ts|length}}</td>
+                                            <td>{{assessment.p2_sh0ts|length}}</td>
+                                            <td>{{assessment.p3_sh0ts|length}}</td>
+                                            <td>{{assessment.p4_sh0ts|length}}</td>
+                                            <td>{{assessment.p5_sh0ts|length}}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
