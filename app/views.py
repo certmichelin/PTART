@@ -10,18 +10,22 @@ from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, Projec
 
 @login_required
 def index(request):
-    open_flags = Flag.objects.filter(done=False).order_by('-added')
-    recent_flags = Flag.objects.all().order_by('-added')
-    recent_sh0ts = Sh0t.objects.all().order_by('-added')
-    assessments_count = Assessment.objects.all().count()
+    recent_open_flags = Flag.objects.filter(done=False).order_by('-added')[:5]
+    recent_sh0ts = Sh0t.objects.all().order_by('-added')[:5]
+    recent_projects = Project.objects.all().order_by('-added')[:5]
     projects_count = Project.objects.all().count()
+    assessments_count = Assessment.objects.all().count()
+    shots_count = Sh0t.objects.all().count()
+    flags_count = Flag.objects.all().count()
 
     context = {
-        'open_flags': open_flags,
-        'recent_flags': recent_flags,
+        'recent_open_flags': recent_open_flags,
         'recent_sh0ts': recent_sh0ts,
-        'assessments_count': assessments_count,
+        'recent_projects': recent_projects,
         'projects_count': projects_count,
+        'assessments_count': assessments_count,
+        'shots_count': shots_count,
+        'flags_count': flags_count
     }
     return render(request, 'index.html', context)
 
