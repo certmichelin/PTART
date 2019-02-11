@@ -91,6 +91,11 @@ class Sh0t(models.Model):
 
 
 @python_2_unicode_compatible
+class Screenshot(models.Model):
+    sh0t = models.ForeignKey(Sh0t, null=True, on_delete=models.CASCADE)
+    screenshot = models.ImageField(upload_to='screenshots')
+
+@python_2_unicode_compatible
 class Flag(models.Model):
     title = models.CharField(max_length=100)
     note = models.TextField(default="")
