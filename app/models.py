@@ -1,3 +1,6 @@
+import base64
+import os.path
+
 from django.db import models
 from datetime import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -94,6 +97,16 @@ class Sh0t(models.Model):
 class Screenshot(models.Model):
     sh0t = models.ForeignKey(Sh0t, null=True, on_delete=models.CASCADE)
     screenshot = models.ImageField(upload_to='screenshots')
+
+    def get_data(self):
+        encoded_string = ''
+        extension = os.path.splitext(self.screenshot.url)[1]
+        with open(self.screenshot.url, 'rb') as img_f:
+            encoded_string = base64.b64encode(img_f.read())
+        return 'data:image/%s;base64,%s' % (extension,encoded_string.decode("utf-8"))
+
+    def __str__(self):  # __unicode__ on Python 2
+        return self.screenshot
 
 @python_2_unicode_compatible
 class Flag(models.Model):

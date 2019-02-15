@@ -1,5 +1,6 @@
-from app.models import Project, Assessment, Sh0t, Flag, Template
+from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot
 from configuration.models import CaseMaster, ModuleMaster, MethodologyMaster
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 
@@ -25,6 +26,19 @@ class Sh0tSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sh0t
         fields = ('title', 'severity', 'body', 'added', 'assessment')
+
+
+class ScreenshotSerializer(serializers.ModelSerializer):
+    screenshot = Base64ImageField()
+    
+    class Meta:
+        model = Screenshot
+        fields = ('screenshot', 'sh0t')
+
+    def create(self, validated_data):
+        screenshot=validated_data.pop('screenshot')
+        sh0t=validated_data.pop('sh0t')
+        return Screenshot.objects.create(screenshot=screenshot,sh0t=sh0t)
 
 
 class TemplateSerializer(serializers.ModelSerializer):

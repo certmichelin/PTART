@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^flags/', views.flag_list),
     url(r'^sh0t/(?P<pk>[0-9]+)', views.sh0t_detail),
     url(r'^sh0ts/', views.sh0t_list),
+    url(r'^screenshot/', views.screenshot_list),
     url(r'^assessment/(?P<pk>[0-9]+)', views.assessment_detail),
     url(r'^assessments/', views.assessment_list),
     url(r'^project/(?P<pk>[0-9]+)', views.project_detail),
