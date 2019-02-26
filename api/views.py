@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer
 from .serializers import CaseMasterSerializer, ModuleMasterSerializer, MethodologyMasterSerializer
-from app.models import Flag, Sh0t, Assessment, Project, Template
+from app.models import Flag, Sh0t, Assessment, Project, Template, Screenshot
 from configuration.models import CaseMaster, ModuleMaster, MethodologyMaster
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -92,11 +92,21 @@ def sh0t_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['DELETE'])
+def screenshot_detail(request, pk):
+    try:
+        screenshot = Screenshot.objects.get(pk=pk)
+        screenshot.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Screenshot.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+#TODO: Return the screenshot with the ID.
 @api_view(['POST'])
 def screenshot_list(request):
     serializer = ScreenshotSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        serializer = serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

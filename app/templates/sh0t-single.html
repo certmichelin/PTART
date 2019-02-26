@@ -67,12 +67,13 @@
 
                 <div id="screenshots">
                     {% for screenshot in sh0t.screenshot_set.all %}
-                        <a data-fancybox="gallery" href="{{screenshot.get_data}}"><img class="screenshot" src="{{screenshot.get_data}}"></a><br/><br/>
+                        <a data-fancybox="gallery" href="{{screenshot.get_data}}"><img id="{{screenshot.id}}" class="screenshot" src="{{screenshot.get_data}}" draggable="true" ondragstart="dragStart(event)" ondragend="dragStop(event)"></a><br/><br/>
                     {% endfor %}
                 </div>
                 
 
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
+                <button id="deleteZone" type="button" class="btn btn-danger" ondrop="drop(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
 
                 <!-- Push screenshot modal -->
                 <div class="modal fade" id="pushScreenshotModal" tabindex="-1" role="dialog">
@@ -158,13 +159,53 @@
             url: "/api/screenshots/",
             data: '{"screenshot": ' + screenshot + ', "sh0t": {{ sh0t.id }} }',
             type: 'POST',
-            success: function() {             
-                $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{src:dataURL, class:"screenshot"})));
+            success: function(data) {
+                alert(data.id);             
+                $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: data["id"], src:dataURL, class:"screenshot",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
                 $('#screenshots').append($('<br>'))
                 $('#screenshots').append($('<br>'))
                 resetScreenshotModal();
             }
         });
     }
+
+    //Delete screenshot using API.
+    function deleteScreenshot(id){
+    
+        
+    }
+
+    //Delete screenshot allow drop function.
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    //Delete screenshot drag start function.
+    function dragStart(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+        $('#deleteZone').text("Drop here to delete")
+        $("#deleteZone").attr('class', 'btn btn-success');
+    }
+
+    //Delete screenshot drag stop function.
+    function dragStop(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+        $('#deleteZone').text("Delete Screenshot Zone")
+        $("#deleteZone").attr('class', 'btn btn-danger');
+    }
+
+    //Delete screenshot drag stop function.
+    function drop(ev) {
+        ev.preventDefault();
+        id = ev.dataTransfer.getData("text");
+        $.ajax({
+            url: "/api/screenshot/" + id,
+            type: 'DELETE',
+            success: function() {             
+                $("#" + id).parent().remove();
+            }
+        });
+    }
+
 </script>
 {% endblock %}
