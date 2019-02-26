@@ -67,7 +67,7 @@
 
                 <div id="screenshots">
                     {% for screenshot in sh0t.screenshot_set.all %}
-                        <img class="screenshot" src="{{screenshot.get_data}}" alt=""><br/><br/>
+                        <a data-fancybox="gallery" href="{{screenshot.get_data}}"><img class="screenshot" src="{{screenshot.get_data}}"></a><br/><br/>
                     {% endfor %}
                 </div>
                 
@@ -114,6 +114,7 @@
 {% block extra_foot %}
 <script src="/static/js/common-ajax.js"></script>
 <script src="/static/js/screenshots.js"></script>
+<script src="/static/js/plugins/fancybox/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
 
     /* Select the current severity */$
