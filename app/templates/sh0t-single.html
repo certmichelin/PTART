@@ -155,11 +155,11 @@
         var dataURL = $("#screenshotData").val()
         var screenshot = JSON.stringify(dataURL);
         $.ajax({
-            url: "/api/screenshot/",
+            url: "/api/screenshots/",
             data: '{"screenshot": ' + screenshot + ', "sh0t": {{ sh0t.id }} }',
             type: 'POST',
-            success: function() {
-                $('#screenshots').append($('<img>',{src:dataURL, class:"screenshot"}));
+            success: function() {             
+                $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{src:dataURL, class:"screenshot"})));
                 $('#screenshots').append($('<br>'))
                 $('#screenshots').append($('<br>'))
                 resetScreenshotModal();
