@@ -35,6 +35,7 @@ $.ajaxSetup({
 function sync(target) {
     $("#response").html("(Saving..)");
     timeout = setTimeout( function() {
+
         send(target);
     }, 2000);
 }
@@ -59,13 +60,12 @@ function send(target) {
             break;
 
         case "sh0t":
-            var severity = JSON.stringify($("#severity").val());
             var title = JSON.stringify($("#title").val());
             var body = JSON.stringify($("#body").val());
             var assessment = JSON.stringify($("#assessment").val());
             $.ajax({
                 url: "/api/sh0t/" + $("#id").val() + "/",
-                data: '{"title": ' + title +  ', "severity": ' + severity + ', "body": '+ body +', "assessment": ' + assessment + '}',
+                data: '{"title": ' + title + ', "body": '+ body +', "assessment": ' + assessment + '}',
                 type: 'PUT',
                 success: function() {
                     $("#response").html("(Saved)");
