@@ -106,7 +106,7 @@ class Screenshot(models.Model):
             encoded_string = base64.b64encode(img_f.read())
         return 'data:image/%s;base64,%s' % (extension,encoded_string.decode("utf-8"))
 
-    def get_image(self):
+    def get_raw_data(self):
         result = ''
         extension = os.path.splitext(self.screenshot.url)[1]
         with open(self.screenshot.url, 'rb') as img_f:

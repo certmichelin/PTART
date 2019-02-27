@@ -88,7 +88,7 @@ def screenshot_raw(request, pk) :
     response = None
     try:
         item = Screenshot.objects.get(pk=pk)
-        response = Response(item.get_image())
+        response = Response(item.get_raw_data())
     except Screenshot.DoesNotExist:
         response = Response()
 
