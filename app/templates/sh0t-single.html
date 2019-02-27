@@ -159,20 +159,13 @@
             url: "/api/screenshots/",
             data: '{"screenshot": ' + screenshot + ', "sh0t": {{ sh0t.id }} }',
             type: 'POST',
-            success: function(data) {
-                alert(data.id);             
+            success: function(data) {         
                 $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: data["id"], src:dataURL, class:"screenshot",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
                 $('#screenshots').append($('<br>'))
                 $('#screenshots').append($('<br>'))
                 resetScreenshotModal();
             }
         });
-    }
-
-    //Delete screenshot using API.
-    function deleteScreenshot(id){
-    
-        
     }
 
     //Delete screenshot allow drop function.

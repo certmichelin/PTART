@@ -101,12 +101,14 @@ def screenshot_detail(request, pk):
     except Screenshot.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-#TODO: Return the screenshot with the ID.
+
 @api_view(['POST'])
 def screenshot_list(request):
     serializer = ScreenshotSerializer(data=request.data)
     if serializer.is_valid():
-        serializer = serializer.save()
+        tmp = serializer.save()
+        print(tmp.id)
+        serializer = ScreenshotSerializer(serializer.save())
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
