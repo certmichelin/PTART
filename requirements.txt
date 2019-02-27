@@ -1,5 +1,0 @@
-Django==2.0.8
-djangorestframework==3.8.2
-pytz==2018.5
-django-extra-fields
-django-tables2
