@@ -15,8 +15,12 @@ if "yes" == answer.lower():
     order = ""
     description_consolidated = ""
 
-    Project.objects.all().delete()  # Deleting Project will trigger to delete everything: Flags, Sh0ts, Assessments
+    Project.objects.all().delete()  # Deleting Project will trigger to delete everything: Flags, Sh0ts, Assessments, Screenshots
     CaseMaster.objects.all().delete()
     ModuleMaster.objects.all().delete()
     MethodologyMaster.objects.all().delete()
     Template.objects.all().delete()
+
+    for filename in os.listdir('screenshots'):
+        if filename.endswith('.png'):
+            os.remove(os.path.join('screenshots',filename))
