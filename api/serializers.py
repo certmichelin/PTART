@@ -1,19 +1,19 @@
-from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot
-from configuration.models import CaseMaster, ModuleMaster, MethodologyMaster
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
+from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot
+from configuration.models import CaseMaster, ModuleMaster, MethodologyMaster
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ('name', 'added')
+        fields = ('id', 'name', 'added')
 
 
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assessment
-        fields = ('name', 'added', 'project')
+        fields = ('id', 'name', 'added', 'project')
 
 
 class FlagSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class FlagSerializer(serializers.ModelSerializer):
 class Sh0tSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sh0t
-        fields = ('title', 'severity', 'body', 'added', 'assessment')
+        fields = ('id', 'title', 'severity', 'body', 'added', 'assessment')
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):
@@ -44,22 +44,22 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
-        fields = ('name', 'severity', 'body')
+        fields = ('id', 'name', 'severity', 'body')
 
 
 class CaseMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CaseMaster
-        fields = ('name', 'description', 'order', 'module')
+        fields = ('id', 'name', 'description', 'order', 'module')
 
 
 class ModuleMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModuleMaster
-        fields = ('name', 'description', 'order', 'methodology')
+        fields = ('id', 'name', 'description', 'order', 'methodology')
 
 
 class MethodologyMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = MethodologyMaster
-        fields = ('name', 'description', 'order')
+        fields = ('id', 'name', 'description', 'order')
