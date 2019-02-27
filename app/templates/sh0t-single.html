@@ -67,7 +67,7 @@
 
                 <div id="screenshots">
                     {% for screenshot in sh0t.screenshot_set.all %}
-                        <a data-fancybox="gallery" href="{{screenshot.get_data}}"><img id="{{screenshot.id}}" class="screenshot" src="{{screenshot.get_data}}" draggable="true" ondragstart="dragStart(event)" ondragend="dragStop(event)"></a><br/><br/>
+                        <a data-fancybox="gallery" href="{{screenshot.get_data}}"><img id="{{screenshot.id}}" class="screenshot" src="{{screenshot.get_data}}" draggable="true" ondragstart="dragStart(event)" ondragend="dragStop(event)"></a>
                     {% endfor %}
                 </div>
                 
@@ -106,7 +106,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

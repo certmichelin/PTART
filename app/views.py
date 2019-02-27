@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.shortcuts import render, redirect
-from .models import Assessment, Project, Sh0t, Flag, Template
+from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot
 from configuration.models import MethodologyMaster, ModuleMaster, CaseMaster
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -112,7 +112,14 @@ def sh0ts_new(request):
         try:
             the_assessment = Assessment.objects.get(pk=assessment_id)
             new_sh0t = Sh0t.objects.create(title=title, body=body, severity=severity, assessment=the_assessment)
-            new_sh0t.save()
+
+            #Create associated screenshots.
+            screenshotsMaxId = int(request.POST.get('screenshotMaxId', ''))
+            for id in range(0,screenshotsMaxId) :
+                data = request.POST.get('screenshot_' +  str(id), '')
+                if data :
+                    Screenshot.create_screenshot(screenshot=data,sh0t=new_sh0t)
+
             submitted = "success"
         except Assessment.DoesNotExist:
             return redirect('/')
