@@ -107,7 +107,6 @@ def screenshot_list(request):
     serializer = ScreenshotSerializer(data=request.data)
     if serializer.is_valid():
         tmp = serializer.save()
-        print(tmp.id)
         serializer = ScreenshotSerializer(serializer.save())
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
