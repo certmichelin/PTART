@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
-    'configuration',
     'rest_framework',
     'django_tables2',
 ]
@@ -124,7 +123,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 LOGIN_URL = '/admin/login/'
