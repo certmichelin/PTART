@@ -58,27 +58,27 @@ def templates(request):
     return items(request, Template, TemplateSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
-def case_master(request, pk):
+def case(request, pk):
     return item(request, pk, Case, CaseSerializer)
     
 @api_view(['GET', 'POST'])
-def case_masters(request):
+def cases(request):
     return items(request, Case, CaseSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
-def module_master(request, pk):
+def module(request, pk):
     return item(request, pk, Module, ModuleSerializer)
     
 @api_view(['GET', 'POST'])
-def module_masters(request):
+def modules(request):
     return items(request, Module, ModuleSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
-def methodology_master(request, pk):
+def methodology(request, pk):
     return item(request, pk, Methodology, MethodologySerializer)
 
 @api_view(['GET', 'POST'])
-def methodology_masters(request):
+def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
 
 @action(methods=['GET'], detail=True)
