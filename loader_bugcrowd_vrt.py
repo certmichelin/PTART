@@ -11,7 +11,7 @@ django.setup()
 
 from app.models import Template
 
-bugcrowd_file = open('configuration/data/vulnerability-rating-taxonomy.json', 'r')
+bugcrowd_file = open('data/vulnerability-rating-taxonomy.json', 'r')
 vrt = json.load(bugcrowd_file)
 for content in vrt['content'] :
     name = content['name']

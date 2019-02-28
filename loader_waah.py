@@ -15,7 +15,7 @@ current_methodology = MethodologyMaster.objects.filter(name="WAHH")
 if not current_methodology :
     methodology_master = MethodologyMaster(name="WAHH")
     methodology_master.save()
-    wahh_file = open('configuration/data/wahh.json',  'rt', encoding='latin1')
+    wahh_file = open('data/wahh.json',  'rt', encoding='latin1')
     methodology = json.load(wahh_file)
 
     for method in methodology['checklist']['Functionality']:

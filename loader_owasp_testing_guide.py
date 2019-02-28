@@ -15,7 +15,7 @@ current_methodology = MethodologyMaster.objects.filter(name="OWASP Testing Guide
 if not current_methodology :
     methodology_master = MethodologyMaster(name="OWASP Testing Guide V4")
     methodology_master.save()
-    owasp_file = open('configuration/data/owasp_testing_guide_v4.json', 'r')
+    owasp_file = open('data/owasp_testing_guide_v4.json', 'r')
     methodology = json.load(owasp_file)
     for method in methodology['modules']:
         module_master = ModuleMaster(name=method, methodology=methodology_master, order=methodology['modules'][method]['order'])
