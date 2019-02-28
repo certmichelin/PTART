@@ -179,7 +179,7 @@ def case(request, case_id):
 
 @login_required
 def projects_new(request):
-    return render(request, 'projects/projects.html', {'projects': Project.objects.all().order_by('-added')[:10]})
+    return render(request, 'projects/projects.html', {})
 
 
 @login_required

@@ -1,37 +1,34 @@
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-function getCSRFToken() {
-    return getCookie('csrftoken');
-}
-
-function csrfSafeMethod(method) {
-    /* these HTTP methods do not require CSRF protection */
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-
+/**
+ * Add the CSRF token for each ajax call.
+ * Require jQuery Cookie plugin.
+ */
 $.ajaxSetup({
     beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
-        }
+        xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
     },
     contentType: 'application/json'
 });
 
+/**
+ * Create a project.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Project name.
+ * @param {*} scope Project scope.
+ */
+function ajaxCreateProject(success_function, error_function, name, scope){
+    $.ajax({
+        url: "/api/projects/",
+        data: '{"name":"' + name + '","scope":"' + scope + '"}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+
+/*
 function sync(target) {
     $("#response").html("(Saving..)");
     timeout = setTimeout( function() {
@@ -39,6 +36,8 @@ function sync(target) {
         send(target);
     }, 2000);
 }
+
+
 
 function send(target) {
     switch(target) {
@@ -159,3 +158,4 @@ function send(target) {
             alert("Invalid target");
     }
 }
+*/
