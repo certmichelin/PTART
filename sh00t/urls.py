@@ -1,9 +1,9 @@
-from django.contrib import admin
-from django.conf.urls import include, url
 from django.conf import settings
-from app import views
-from django.conf.urls.static import static, serve
+from django.conf.urls import include
+from django.contrib import admin
 from django.urls import re_path
+
+from app import views
 
 
 urlpatterns = [
@@ -13,9 +13,6 @@ urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^$', views.index),
 ]
-
-if not settings.LIVE:
-    urlpatterns += [url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})]
 
 # Print banner on the console when the server starts
 print(settings.BANNER)

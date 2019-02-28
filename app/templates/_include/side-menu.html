@@ -4,15 +4,15 @@
             <a href="/"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
         </li>
         <li {% if '/app/project' in request.path %}class="active" {% endif %}>
-            <a href="/app/projects/all"><i class="fa fa-fw fa-cubes"></i> Projects</a>
+            <a href="/app/projects"><i class="fa fa-fw fa-cubes"></i> Projects</a>
         </li>
 
         <li {% if '/app/flag' in request.path %}class="active" {% endif %}>
-            <a href="/app/flags/open?sort=-added"><i class="fa fa-fw fa-list-ul"></i > My ToDo</a>
+            <a href="/app/flags?open&sort=-added"><i class="fa fa-fw fa-list-ul"></i > My ToDo</a>
         </li>
         
         <li {% if '/app/sh0t' in request.path %}class="active" {% endif %}>
-            <a href="/app/sh0ts/all"><i class="fa fa-fw fa-bullseye"></i> Sh0ts</a>
+            <a href="/app/sh0ts"><i class="fa fa-fw fa-bullseye"></i> Sh0ts</a>
         </li>
         
         <li {% if '/app/template' in request.path %}class="active" {% endif %}>
@@ -22,13 +22,13 @@
                     <a href="/app/templates/">Templates</a>
                 </li>
                 <li>
-                    <a href="/app/case-masters/">Case Master</a>
+                    <a href="/app/cases/">Case Master</a>
                 </li>
                 <li>
-                    <a href="/app/module-masters/">Module Master</a>
+                    <a href="/app/modules/">Module Master</a>
                 </li>
                 <li>
-                    <a href="/app/methodology-masters/">Methodology Master</a>
+                    <a href="/app/methodologies/">Methodology Master</a>
                 </li>
             </ul>
         </li>
