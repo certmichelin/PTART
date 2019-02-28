@@ -1,7 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot, CaseMaster, ModuleMaster, MethodologyMaster
+from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot, Case, Module, Methodology
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,19 +46,19 @@ class TemplateSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'severity', 'body')
 
 
-class CaseMasterSerializer(serializers.ModelSerializer):
+class CaseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CaseMaster
+        model = Case
         fields = ('id', 'name', 'description', 'order', 'module')
 
 
-class ModuleMasterSerializer(serializers.ModelSerializer):
+class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ModuleMaster
+        model = Module
         fields = ('id', 'name', 'description', 'order', 'methodology')
 
 
-class MethodologyMasterSerializer(serializers.ModelSerializer):
+class MethodologySerializer(serializers.ModelSerializer):
     class Meta:
-        model = MethodologyMaster
+        model = Methodology
         fields = ('id', 'name', 'description', 'order')

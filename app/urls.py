@@ -24,15 +24,15 @@ urlpatterns = [
     url(r'^templates/new/$', views.templates_new),
     url(r'^template/([0-9]+)/$', views.template),
     
-    url(r'^case-masters/$', views.case_masters_all),
-    url(r'^case-masters/new/$', views.case_masters_new),
-    url(r'^case-master/([0-9]+)/$', views.case_master),
+    url(r'^cases/$', views.case_masters_all),
+    url(r'^cases/new/$', views.case_masters_new),
+    url(r'^case/([0-9]+)/$', views.case_master),
     
-    url(r'^module-masters/$', views.module_masters_all),
-    url(r'^module-masters/new/$', views.module_masters_new),
-    url(r'^module-master/([0-9]+)/$', views.module_master),
+    url(r'^modules/$', views.module_masters_all),
+    url(r'^modules/new/$', views.module_masters_new),
+    url(r'^module/([0-9]+)/$', views.module_master),
     
-    url(r'^methodology-masters/$', views.methodology_masters_all),
-    url(r'^methodology-masters/new/$', views.methodology_masters_new),
-    url(r'^methodology-master/([0-9]+)/$', views.methodology_master),
+    url(r'^methodologies/$', views.methodology_masters_all),
+    url(r'^methodologies/new/$', views.methodology_masters_new),
+    url(r'^methodology/([0-9]+)/$', views.methodology_master),
 ]

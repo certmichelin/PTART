@@ -17,11 +17,11 @@ urlpatterns = [
     url(r'^projects/', views.projects),
     url(r'^template/(?P<pk>[0-9]+)', views.template),
     url(r'^templates/', views.templates),
-    url(r'^case-master/(?P<pk>[0-9]+)', views.case_master),
-    url(r'^case-masters/', views.case_masters),
-    url(r'^module-master/(?P<pk>[0-9]+)', views.module_master),
-    url(r'^module-masters/', views.module_masters),
-    url(r'^methodology-master/(?P<pk>[0-9]+)', views.methodology_master),
-    url(r'^methodology-masters/', views.methodology_masters),
+    url(r'^case/(?P<pk>[0-9]+)', views.case_master),
+    url(r'^cases/', views.case_masters),
+    url(r'^module/(?P<pk>[0-9]+)', views.module_master),
+    url(r'^modules/', views.module_masters),
+    url(r'^methodology/(?P<pk>[0-9]+)', views.methodology_master),
+    url(r'^methodologies/', views.methodology_masters),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

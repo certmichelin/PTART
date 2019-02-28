@@ -178,8 +178,8 @@ class Template(models.Model):
         ordering = ('severity','name',)
 
 
-"""MethodologyMaster model."""
-class MethodologyMaster(models.Model):
+"""Methodology model."""
+class Methodology(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     order = models.IntegerField(default=0)
@@ -191,12 +191,12 @@ class MethodologyMaster(models.Model):
         ordering = ('name',)
 
 
-"""ModuleMaster model."""
-class ModuleMaster(models.Model):
+"""Module model."""
+class Module(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
     order = models.IntegerField(default=0)
-    methodology = models.ForeignKey(MethodologyMaster, on_delete=models.CASCADE, null=True, default=None)
+    methodology = models.ForeignKey(Methodology, on_delete=models.CASCADE, null=True, default=None)
 
     def __str__(self):  
         return self.name
@@ -205,10 +205,10 @@ class ModuleMaster(models.Model):
         ordering = ('name',)
 
 
-"""CaseMaster model."""
-class CaseMaster(models.Model):
+"""Case model."""
+class Case(models.Model):
     name = models.CharField(max_length=100)
-    module = models.ForeignKey(ModuleMaster, on_delete=models.CASCADE)
+    module = models.ForeignKey(Module, on_delete=models.CASCADE)
     description = models.TextField(default="")
     order = models.IntegerField(default=0)
 

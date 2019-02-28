@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import Project, Flag, Sh0t, Assessment, Project, Template, MethodologyMaster, ModuleMaster, CaseMaster
+from .models import Project, Flag, Sh0t, Assessment, Project, Template, Methodology, Module, Case
 
 
 """ProjectTable class."""
@@ -92,42 +92,42 @@ class TemplateTable(tables.Table):
         fields = ('severity', 'name')
 
 
-"""MethodologyMasterTable class."""
-class MethodologyMasterTable(tables.Table):
+"""MethodologyTable class."""
+class MethodologyTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
-    name = tables.TemplateColumn('<a href="/app/methodology-master/{{ record.pk }}"> {{ record.name }}</a>')
+    name = tables.TemplateColumn('<a href="/app/methodology/{{ record.pk }}"> {{ record.name }}</a>')
 
     class Meta:
-        model = MethodologyMaster
+        model = Methodology
         template_name = "django_tables2/bootstrap-responsive.html"
         sequence = ('selection', 'name')
         fields = ('name', )
 
 
-"""ModuleMasterTable class."""
-class ModuleMasterTable(tables.Table):
+"""ModuleTable class."""
+class ModuleTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
-    name = tables.TemplateColumn('<a href="/app/module-master/{{ record.pk }}"> {{ record.name }}</a>')
-    methodology = tables.TemplateColumn('<a href="/app/methodology-master/{{ record.methodology.pk}}">{{ record.methodology }}</a>')
+    name = tables.TemplateColumn('<a href="/app/module/{{ record.pk }}"> {{ record.name }}</a>')
+    methodology = tables.TemplateColumn('<a href="/app/methodology/{{ record.methodology.pk}}">{{ record.methodology }}</a>')
 
     class Meta:
-        model = ModuleMaster
+        model = Module
         template_name = "django_tables2/bootstrap-responsive.html"
         sequence = ('selection', 'name', 'methodology')
         fields = ('name', 'methodology')
 
 
-"""CaseMasterTable class."""
-class CaseMasterTable(tables.Table):
+"""CaseTable class."""
+class CaseTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
-    name = tables.TemplateColumn('<a href="/app/case-master/{{ record.pk }}"> {{ record.name }}</a>')
-    module = tables.TemplateColumn('<a href="/app/module-master/{{ record.module.pk}}">{{ record.module }}</a>')
+    name = tables.TemplateColumn('<a href="/app/case/{{ record.pk }}"> {{ record.name }}</a>')
+    module = tables.TemplateColumn('<a href="/app/module/{{ record.module.pk}}">{{ record.module }}</a>')
 
     class Meta:
-        model = CaseMaster
+        model = Case
         template_name = "django_tables2/bootstrap-responsive.html"
         sequence = ('selection', 'name', 'module')
         fields = ('name', 'module')

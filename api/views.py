@@ -4,9 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from app.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, CaseMaster, ModuleMaster, MethodologyMaster
+from app.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Case, Module, Methodology
 
-from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CaseMasterSerializer, ModuleMasterSerializer, MethodologyMasterSerializer
+from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
@@ -59,27 +59,27 @@ def templates(request):
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def case_master(request, pk):
-    return item(request, pk, CaseMaster, CaseMasterSerializer)
+    return item(request, pk, Case, CaseSerializer)
     
 @api_view(['GET', 'POST'])
 def case_masters(request):
-    return items(request, CaseMaster, CaseMasterSerializer)
+    return items(request, Case, CaseSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def module_master(request, pk):
-    return item(request, pk, ModuleMaster, ModuleMasterSerializer)
+    return item(request, pk, Module, ModuleSerializer)
     
 @api_view(['GET', 'POST'])
 def module_masters(request):
-    return items(request, ModuleMaster, ModuleMasterSerializer)
+    return items(request, Module, ModuleSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def methodology_master(request, pk):
-    return item(request, pk, MethodologyMaster, MethodologyMasterSerializer)
+    return item(request, pk, Methodology, MethodologySerializer)
 
 @api_view(['GET', 'POST'])
 def methodology_masters(request):
-    return items(request, MethodologyMaster, MethodologyMasterSerializer)
+    return items(request, Methodology, MethodologySerializer)
 
 @action(methods=['GET'], detail=True)
 def screenshot_raw(request, pk) :

@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
 
-from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, MethodologyMaster, ModuleMaster, CaseMaster
-from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyMasterTable, ModuleMasterTable, CaseMasterTable
+from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, Methodology, Module, Case
+from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable
 
 
 @login_required
@@ -63,17 +63,17 @@ def templates_all(request):
 
 @login_required
 def methodology_masters_all(request):
-    return generic_all(request, MethodologyMaster, MethodologyMasterTable, 'methodology-masters/methodology-masters-list.html')
+    return generic_all(request, Methodology, MethodologyTable, 'methodologies/methodologies-list.html')
 
 
 @login_required
 def module_masters_all(request):
-    return generic_all(request, ModuleMaster, ModuleMasterTable, 'module-masters/module-masters-list.html')
+    return generic_all(request, Module, ModuleTable, 'modules/modules-list.html')
 
 
 @login_required
 def case_masters_all(request):
-    return generic_all(request, CaseMaster, CaseMasterTable, 'case-masters/case-masters-list.html')
+    return generic_all(request, Case, CaseTable, 'cases/cases-list.html')
 
 @login_required
 def flags_new(request):
@@ -200,8 +200,8 @@ def assessments_new(request):
             new_assessment.save()
             selected_modules = request.POST.getlist('modules')
             for selected_module_id in selected_modules:
-                selected_module = ModuleMaster.objects.get(id=selected_module_id)
-                selected_cases = CaseMaster.objects.filter(module=selected_module)
+                selected_module = Module.objects.get(id=selected_module_id)
+                selected_cases = Case.objects.filter(module=selected_module)
                 for selected_case in selected_cases:
                     note = "Module: " + selected_module.name + "\n\n" + selected_case.description
                     new_flag = Flag(title=selected_case.name, note=note, assessment=new_assessment,
@@ -210,11 +210,11 @@ def assessments_new(request):
             submitted = "success"
         except Project.DoesNotExist:
             return redirect('/')
-        except ModuleMaster.DoesNotExist:
+        except Module.DoesNotExist:
             return redirect('/')
     assessments_list = Assessment.objects.all().order_by('-added')[:10]
-    methodologies_list = MethodologyMaster.objects.all().order_by('order')
-    modules_list = ModuleMaster.objects.all().order_by('order')
+    methodologies_list = Methodology.objects.all().order_by('order')
+    modules_list = Module.objects.all().order_by('order')
     projects_list = Project.objects.all().order_by('-added')
     context = {'assessments': assessments_list, 'projects': projects_list,
                'methodologies_list': methodologies_list, 'modules': modules_list, 'submitted': submitted}
@@ -343,22 +343,22 @@ def template(request, template_id):
 def case_masters_new(request):
     submitted = ""
     if "POST" == request.method:
-        name = request.POST.get('name', '') or "Case Master"
+        name = request.POST.get('name', '') or "Case "
         description = request.POST.get('description', '') or ""
         order = request.POST.get('order') or 1
         module_master_id = request.POST.get('module_master_id', '') or -1
         try:
-            the_module = ModuleMaster.objects.get(pk=module_master_id)
+            the_module = Module.objects.get(pk=module_master_id)
 
-            new_case_master = CaseMaster.objects.create(name=name, description=description, order=order,
+            new_case_master = Case.objects.create(name=name, description=description, order=order,
                                                         module=the_module)
             new_case_master.save()
             submitted = "success"
-        except ModuleMaster.DoesNotExist:
+        except Module.DoesNotExist:
             return redirect('/')
 
-    case_masters_list = CaseMaster.objects.all().order_by('order')[:10]
-    modules_list = ModuleMaster.objects.all()
+    case_masters_list = Case.objects.all().order_by('order')[:10]
+    modules_list = Module.objects.all()
     context = {'case_masters': case_masters_list, 'modules': modules_list, 'submitted': submitted}
     return render(request, 'case_masters.html', context)
 
@@ -367,29 +367,29 @@ def case_masters_new(request):
 def case_master(request, case_master_id):
     submitted = ""
     try:
-        the_case_master = CaseMaster.objects.get(pk=case_master_id)
+        the_case_master = Case.objects.get(pk=case_master_id)
         if "POST" == request.method:
             if "delete" == request.POST.get('delete', ''):
                 the_case_master.delete()
-                return redirect('/app/case-masters/')
+                return redirect('/app/cases/')
 
-            the_case_master.name = request.POST.get('name', '') or "Case Master"
+            the_case_master.name = request.POST.get('name', '') or "Case "
             the_case_master.description = request.POST.get('description', '') or ""
             the_case_master.order = request.POST.get('order') or 1
             module_id = request.POST.get('module_id', '') or -1
-            the_module = ModuleMaster.objects.get(pk=module_id)
+            the_module = Module.objects.get(pk=module_id)
             the_case_master.module = the_module
             the_case_master.save()
             submitted = "success"
-        module_master_list = ModuleMaster.objects.all()
+        module_master_list = Module.objects.all()
         context = {
             'case_master': the_case_master, 'submitted': submitted, 'module_masters': module_master_list
         }
-        return render(request, 'case-master-single.html', context)
-    except ModuleMaster.DoesNotExist:
+        return render(request, 'case-single.html', context)
+    except Module.DoesNotExist:
         return redirect('/')
 
-    except CaseMaster.DoesNotExist:
+    except Case.DoesNotExist:
         return redirect("/")
 
 
@@ -397,50 +397,50 @@ def case_master(request, case_master_id):
 def module_masters_new(request):
     submitted = ""
     if "POST" == request.method:
-        name = request.POST.get('name', '') or "Module Master"
+        name = request.POST.get('name', '') or "Module "
         description = request.POST.get('description', '') or ""
         order = request.POST.get('order') or 1
         methodology_master_id = request.POST.get('methodology_master_id', '') or -1
         try:
-            the_methodology = MethodologyMaster.objects.get(pk=methodology_master_id)
+            the_methodology = Methodology.objects.get(pk=methodology_master_id)
 
-            new_module_master = ModuleMaster.objects.create(name=name, description=description, order=order,
+            new_module_master = Module.objects.create(name=name, description=description, order=order,
                                                             methodology=the_methodology)
             new_module_master.save()
             submitted = "success"
-        except MethodologyMaster.DoesNotExist:
+        except Methodology.DoesNotExist:
             return redirect('/')
 
-    module_masters_list = ModuleMaster.objects.all()
-    methodologies_list = MethodologyMaster.objects.all()
+    module_masters_list = Module.objects.all()
+    methodologies_list = Methodology.objects.all()
     context = {'module_masters': module_masters_list, 'methodologies': methodologies_list, 'submitted': submitted}
-    return render(request, 'module-masters.html', context)
+    return render(request, 'modules.html', context)
 
 
 @login_required
 def module_master(request, module_master_id):
     submitted = ""
     try:
-        the_module_master = ModuleMaster.objects.get(pk=module_master_id)
+        the_module_master = Module.objects.get(pk=module_master_id)
         if "POST" == request.method:
             if "delete" == request.POST.get('delete', ''):
                 the_module_master.delete()
-                return redirect('/app/module-masters/')
+                return redirect('/app/modules/')
 
-            the_module_master.name = request.POST.get('name', '') or "Module Master"
+            the_module_master.name = request.POST.get('name', '') or "Module "
             the_module_master.description = request.POST.get('description', '') or ""
             the_module_master.order = request.POST.get('order') or 1
             methodology = request.POST.get('methodology_id', '') or -1
-            the_methodology = MethodologyMaster.objects.get(pk=methodology)
+            the_methodology = Methodology.objects.get(pk=methodology)
             the_module_master.methodology = the_methodology
             the_module_master.save()
             submitted = "success"
-        methodology_master_list = MethodologyMaster.objects.all()
+        methodology_master_list = Methodology.objects.all()
         context = {
             'module_master': the_module_master, 'submitted': submitted, 'methodology_masters': methodology_master_list
         }
-        return render(request, 'module-master-single.html', context)
-    except MethodologyMaster.DoesNotExist:
+        return render(request, 'module-single.html', context)
+    except Methodology.DoesNotExist:
         return redirect('/')
 
 
@@ -448,29 +448,29 @@ def module_master(request, module_master_id):
 def methodology_masters_new(request):
     submitted = ""
     if "POST" == request.method:
-        name = request.POST.get('name', '') or "Methodology Master"
+        name = request.POST.get('name', '') or "Methodology "
         description = request.POST.get('description', '') or ""
         order = request.POST.get('order') or 1
-        new_methodology_master = MethodologyMaster.objects.create(name=name, description=description, order=order)
+        new_methodology_master = Methodology.objects.create(name=name, description=description, order=order)
         new_methodology_master.save()
         submitted = "success"
 
-    methodology_masters_list = MethodologyMaster.objects.all()
+    methodology_masters_list = Methodology.objects.all()
     context = {'methodology_masters': methodology_masters_list, 'submitted': submitted}
-    return render(request, 'methodology-masters.html', context)
+    return render(request, 'methodologies.html', context)
 
 
 @login_required
 def methodology_master(request, methodology_id):
     submitted = ""
     try:
-        the_methodology_master = MethodologyMaster.objects.get(pk=methodology_id)
+        the_methodology_master = Methodology.objects.get(pk=methodology_id)
         if "POST" == request.method:
             if "delete" == request.POST.get('delete', ''):
                 the_methodology_master.delete()
-                return redirect('/app/module-masters/')
+                return redirect('/app/modules/')
 
-            the_methodology_master.name = request.POST.get('name', '') or "Methodology Master"
+            the_methodology_master.name = request.POST.get('name', '') or "Methodology "
             the_methodology_master.description = request.POST.get('description', '') or ""
             the_methodology_master.order = request.POST.get('order') or 1
             the_methodology_master.save()
@@ -479,9 +479,9 @@ def methodology_master(request, methodology_id):
         context = {
             'methodology_master': the_methodology_master, 'submitted': submitted
         }
-        return render(request, 'methodology-master-single.html', context)
+        return render(request, 'methodology-single.html', context)
 
-    except MethodologyMaster.DoesNotExist:
+    except Methodology.DoesNotExist:
         return redirect('/')
 
 
