@@ -1,8 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot
-from configuration.models import CaseMaster, ModuleMaster, MethodologyMaster
+from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot, CaseMaster, ModuleMaster, MethodologyMaster
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:

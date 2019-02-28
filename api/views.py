@@ -4,11 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from app.models import Flag, Sh0t, Assessment, Project, Template, Screenshot
-from configuration.models import CaseMaster, ModuleMaster, MethodologyMaster
+from app.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, CaseMaster, ModuleMaster, MethodologyMaster
 
-from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer
-from .serializers import CaseMasterSerializer, ModuleMasterSerializer, MethodologyMasterSerializer
+from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CaseMasterSerializer, ModuleMasterSerializer, MethodologyMasterSerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])

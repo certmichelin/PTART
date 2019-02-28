@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from django.shortcuts import render, redirect
-from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot
-from configuration.models import MethodologyMaster, ModuleMaster, CaseMaster
+from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, MethodologyMaster, ModuleMaster, CaseMaster
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig

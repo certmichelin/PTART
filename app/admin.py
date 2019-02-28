@@ -1,16 +1,38 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
-from .models import Project, Assessment, Sh0t, Flag, Template
+
+from .models import Project, Assessment, Sh0t, Flag, Template, Screenshot, MethodologyMaster, ModuleMaster, CaseMaster
 
 
-class FlagAdmin(admin.ModelAdmin):
-    list_display = ('title', 'assessment', 'added', 'order')
+class MethodologyMasterAdmin(admin.ModelAdmin):
+    fields = ['name', 'description', 'order']
+    list_display = ['name', 'description', 'order']
+    search_fields = ['name', 'description']
+    ordering = ['order', 'name']
 
+
+class ModuleMasterAdmin(admin.ModelAdmin):
+    fields = ['name', 'description', 'methodology',  'order']
+    list_display = ['name', 'description', 'methodology', 'order']
+    search_fields = ['name', 'description']
+    ordering = ['order', 'name']
+
+
+class CaseMasterAdmin(admin.ModelAdmin):
+    fields = ['name', 'description', 'module', 'order']
+    list_display = ['name', 'description', 'module', 'methodology', 'order']
+    search_fields = ['name', 'description']
+    ordering = ['order', 'name']
+
+    @staticmethod
+    def methodology(case):
+        return case.module.methodology
 
 admin.site.register(Project)
 admin.site.register(Assessment)
 admin.site.register(Sh0t)
-admin.site.register(Flag, FlagAdmin)
+admin.site.register(Screenshot)
+admin.site.register(Flag)
 admin.site.register(Template)
+admin.site.register(MethodologyMaster, MethodologyMasterAdmin)
+admin.site.register(ModuleMaster, ModuleMasterAdmin)
+admin.site.register(CaseMaster, CaseMasterAdmin)
