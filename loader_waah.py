@@ -9,7 +9,7 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
 django.setup()
 
-from configuration.models import MethodologyMaster, ModuleMaster, CaseMaster
+from app.models import MethodologyMaster, ModuleMaster, CaseMaster
 
 current_methodology = MethodologyMaster.objects.filter(name="WAHH")
 if not current_methodology :
