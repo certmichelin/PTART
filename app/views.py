@@ -1,14 +1,18 @@
-from __future__ import unicode_literals
-from django.shortcuts import render, redirect
-from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, MethodologyMaster, ModuleMaster, CaseMaster
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
-from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable
+from django.shortcuts import render, redirect
+
+from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, MethodologyMaster, ModuleMaster, CaseMaster
+from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyMasterTable, ModuleMasterTable, CaseMasterTable
 
 
 @login_required
 def index(request):
+    """
+        Index page of sh00t!
+        Display a quick summary of the recent projects, sh0ts & flags.
+    """
     recent_open_flags = Flag.objects.filter(done=False).order_by('-added')[:5]
     recent_sh0ts = Sh0t.objects.all().order_by('-added')[:5]
     recent_projects = Project.objects.all().order_by('-added')[:5]
@@ -28,6 +32,48 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
+
+@login_required
+def projects_all(request):
+    return generic_all(request, Project, ProjectTable, 'projects/projects-list.html')
+
+
+@login_required
+def assessments_all(request):
+    return generic_all(request, Assessment, AssessmentTable, 'assessements/assessments-list.html')
+
+
+@login_required
+def sh0ts_all(request):
+    return generic_all(request, Sh0t, Sh0tTable, 'sh0ts/sh0ts-list.html')
+
+
+@login_required
+def flags_all(request):
+    if request.GET.get('open', 'all') == 'all' :
+        return generic_all(request, Flag, FlagTable, 'flags/flags-list.html')
+    else :
+        return  generic_all_items(request, Flag.objects.filter(done=False), OpenFlagTable, 'flags/open-flags.html')
+
+
+@login_required
+def templates_all(request):
+    return generic_all(request, Template, TemplateTable, 'templates/templates-list.html')
+
+
+@login_required
+def methodology_masters_all(request):
+    return generic_all(request, MethodologyMaster, MethodologyMasterTable, 'methodology-masters/methodology-masters-list.html')
+
+
+@login_required
+def module_masters_all(request):
+    return generic_all(request, ModuleMaster, ModuleMasterTable, 'module-masters/module-masters-list.html')
+
+
+@login_required
+def case_masters_all(request):
+    return generic_all(request, CaseMaster, CaseMasterTable, 'case-masters/case-masters-list.html')
 
 @login_required
 def flags_new(request):
@@ -50,24 +96,6 @@ def flags_new(request):
     context = {'assessments_list': assessments_list, 'recent_flags': recent_flags, 'submitted': submitted}
 
     return render(request, 'flags.html', context)
-
-
-@login_required
-def flags_all(request):
-    all_flags = Flag.objects.all()
-    table = FlagTable(all_flags)
-    RequestConfig(request).configure(table)
-    context = {'table': table, 'count': all_flags.count()}
-    return render(request, 'flags-list.html', context)
-
-
-@login_required
-def open_flags(request):
-    undone_flags = Flag.objects.filter(done=False)
-    table = OpenFlagTable(undone_flags)
-    RequestConfig(request).configure(table)
-    context = {'table': table, 'count': undone_flags.count()}
-    return render(request, 'open-flags.html', context)
 
 
 @login_required
@@ -130,13 +158,7 @@ def sh0ts_new(request):
     return render(request, 'sh0ts.html', context)
 
 
-@login_required
-def sh0ts_all(request):
-    all_sh0ts = Sh0t.objects.all()
-    table = Sh0tTable(all_sh0ts)
-    RequestConfig(request).configure(table)
-    context = {'table': table, 'count': all_sh0ts.count()}
-    return render(request, 'sh0ts-list.html', context)
+
 
 
 @login_required
@@ -199,13 +221,7 @@ def assessments_new(request):
     return render(request, 'assessments.html', context)
 
 
-@login_required
-def assessments_all(request):
-    all_assessments = Assessment.objects.all()
-    table = AssessmentTable(all_assessments)
-    RequestConfig(request).configure(table)
-    context = {'table': table, 'count': all_assessments.count()}
-    return render(request, 'assessments-list.html', context)
+
 
 
 @login_required
@@ -251,13 +267,7 @@ def projects_new(request):
     return render(request, 'projects.html', context)
 
 
-@login_required
-def projects_all(request):
-    all_projects = Project.objects.all()
-    table = ProjectTable(all_projects)
-    RequestConfig(request).configure(table)
-    context = {'count': all_projects.count(), 'table': table}
-    return render(request, 'projects-list.html', context)
+
 
 
 @login_required
@@ -308,15 +318,6 @@ def templates_new(request):
     context = {'templates': templates_list, 'severities': [1,2,3,4,5], 'submitted': submitted}
     return render(request, 'templates.html', context)
 
-
-@login_required
-def templates_all(request):
-    templates = Template.objects.all()
-    table = TemplateTable(templates)
-    RequestConfig(request).configure(table)
-    context = {'table': table, 'count': templates.count()}
-    return render(request, 'templates-list.html', context)
-
 @login_required
 def template(request, template_id):
     submitted = ""
@@ -339,7 +340,7 @@ def template(request, template_id):
 
 
 @login_required
-def case_masters(request):
+def case_masters_new(request):
     submitted = ""
     if "POST" == request.method:
         name = request.POST.get('name', '') or "Case Master"
@@ -357,7 +358,7 @@ def case_masters(request):
             return redirect('/')
 
     case_masters_list = CaseMaster.objects.all().order_by('order')[:10]
-    modules_list = ModuleMaster.objects.all().order_by('-created')
+    modules_list = ModuleMaster.objects.all()
     context = {'case_masters': case_masters_list, 'modules': modules_list, 'submitted': submitted}
     return render(request, 'case_masters.html', context)
 
@@ -380,7 +381,7 @@ def case_master(request, case_master_id):
             the_case_master.module = the_module
             the_case_master.save()
             submitted = "success"
-        module_master_list = ModuleMaster.objects.all().order_by('-created')
+        module_master_list = ModuleMaster.objects.all()
         context = {
             'case_master': the_case_master, 'submitted': submitted, 'module_masters': module_master_list
         }
@@ -393,7 +394,7 @@ def case_master(request, case_master_id):
 
 
 @login_required
-def module_masters(request):
+def module_masters_new(request):
     submitted = ""
     if "POST" == request.method:
         name = request.POST.get('name', '') or "Module Master"
@@ -410,8 +411,8 @@ def module_masters(request):
         except MethodologyMaster.DoesNotExist:
             return redirect('/')
 
-    module_masters_list = ModuleMaster.objects.all().order_by('-created')[:10]
-    methodologies_list = MethodologyMaster.objects.all().order_by('-created')
+    module_masters_list = ModuleMaster.objects.all()
+    methodologies_list = MethodologyMaster.objects.all()
     context = {'module_masters': module_masters_list, 'methodologies': methodologies_list, 'submitted': submitted}
     return render(request, 'module-masters.html', context)
 
@@ -434,7 +435,7 @@ def module_master(request, module_master_id):
             the_module_master.methodology = the_methodology
             the_module_master.save()
             submitted = "success"
-        methodology_master_list = MethodologyMaster.objects.all().order_by('-created')
+        methodology_master_list = MethodologyMaster.objects.all()
         context = {
             'module_master': the_module_master, 'submitted': submitted, 'methodology_masters': methodology_master_list
         }
@@ -444,7 +445,7 @@ def module_master(request, module_master_id):
 
 
 @login_required
-def methodology_masters(request):
+def methodology_masters_new(request):
     submitted = ""
     if "POST" == request.method:
         name = request.POST.get('name', '') or "Methodology Master"
@@ -454,7 +455,7 @@ def methodology_masters(request):
         new_methodology_master.save()
         submitted = "success"
 
-    methodology_masters_list = MethodologyMaster.objects.all().order_by('-created')[:10]
+    methodology_masters_list = MethodologyMaster.objects.all()
     context = {'methodology_masters': methodology_masters_list, 'submitted': submitted}
     return render(request, 'methodology-masters.html', context)
 
@@ -488,3 +489,12 @@ def methodology_master(request, methodology_id):
 def logout_user(request):
     logout(request)
     return redirect('/')
+
+def generic_all_items(request, items, table_class_name, template_name) :
+    table = table_class_name(items)
+    RequestConfig(request).configure(table)
+    context = {'table': table, 'count': items.count()}
+    return render(request, template_name, context)
+
+def generic_all(request, class_name, table_class_name, template_name) :
+    return generic_all_items(request, class_name.objects.all(), table_class_name, template_name)

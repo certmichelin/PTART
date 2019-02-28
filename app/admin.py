@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import Project, Assessment, Sh0t, Flag, Template, Screenshot, MethodologyMaster, ModuleMaster, CaseMaster
 
 
+"""MethodologyMasterAdmin class."""
 class MethodologyMasterAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'order']
     list_display = ['name', 'description', 'order']
@@ -10,6 +11,7 @@ class MethodologyMasterAdmin(admin.ModelAdmin):
     ordering = ['order', 'name']
 
 
+"""MethodologyMasterAdmin class."""
 class ModuleMasterAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'methodology',  'order']
     list_display = ['name', 'description', 'methodology', 'order']
@@ -17,6 +19,7 @@ class ModuleMasterAdmin(admin.ModelAdmin):
     ordering = ['order', 'name']
 
 
+"""MethodologyMasterAdmin class."""
 class CaseMasterAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'module', 'order']
     list_display = ['name', 'description', 'module', 'methodology', 'order']
@@ -27,6 +30,7 @@ class CaseMasterAdmin(admin.ModelAdmin):
     def methodology(case):
         return case.module.methodology
 
+"""Register all classes for admin."""
 admin.site.register(Project)
 admin.site.register(Assessment)
 admin.site.register(Sh0t)

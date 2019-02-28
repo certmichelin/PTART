@@ -187,13 +187,6 @@ class MethodologyMaster(models.Model):
     def __str__(self):  
         return self.name
 
-    def save(self, *args, **kwargs):
-        """Override save method."""
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super(MethodologyMaster, self).save(*args, **kwargs)
-
     class Meta:
         ordering = ('name',)
 
@@ -208,13 +201,6 @@ class ModuleMaster(models.Model):
     def __str__(self):  
         return self.name
 
-    def save(self, *args, **kwargs):
-        """Override save method."""
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super(ModuleMaster, self).save(*args, **kwargs)
-
     class Meta:
         ordering = ('name',)
 
@@ -228,13 +214,6 @@ class CaseMaster(models.Model):
 
     def __str__(self):  
         return self.name
-
-    def save(self, *args, **kwargs):
-        """Override save method."""
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super(CaseMaster, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ('name',)
