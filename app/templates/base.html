@@ -7,9 +7,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>{% block title %}sh00t{% endblock %}</title>
-    <link href="static/sb-admin/css/sb-admin.css" rel="stylesheet">
-    <link href="static/sb-admin/css/bootstrap.min.css" rel="stylesheet">
-    <link href="static/sb-admin/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/sb-admin/css/sb-admin.css" rel="stylesheet">
+    <link href="/static/sb-admin/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/sb-admin/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
@@ -28,7 +28,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="/">
-                    <img src="static/images/sh00t-logo.png" height="25" />
+                    <img src="/static/images/sh00t-logo.png" height="25" />
                 </a>
             </div>
             {% include "_include/top-menu.html" %}
@@ -36,8 +36,8 @@
         </nav>
         {% block page %}{% endblock %}
     </div>
-    <script src="static/sb-admin/js/jquery.js"></script>
-    <script src="static/sb-admin/js/bootstrap.min.js"></script>
+    <script src="/static/sb-admin/js/jquery.js"></script>
+    <script src="/static/sb-admin/js/bootstrap.min.js"></script>
     {% block extra_foot %}{% endblock %}
 </body>
 </html>

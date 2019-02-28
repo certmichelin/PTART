@@ -25,6 +25,7 @@ body {
     width: 100%;
     padding: 0;
     background-color: #fff;
+    margin-top: 100px;
 }
 
 .huge {
@@ -38,6 +39,7 @@ body {
     }
 
     #page-wrapper {
+        margin-top: 50px;
         padding: 10px;
     }
 }
@@ -225,3 +227,18 @@ ul.alert-dropdown {
 .panel-yellow > a:hover {
     color: #df8a13;
 }
+
+.panel-blue > .panel-heading {
+    border-color: #337ab7;
+    color: #fff;
+    background-color: #337ab7;
+}
+
+.panel-blue > a {
+    color: #337ab7;
+}
+
+.panel-blue > a:hover {
+    color: #337ab7;
+}
+

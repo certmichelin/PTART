@@ -1,22 +1,13 @@
 {% extends "base.html" %}
+
 {% block title %} Dashboard | sh00t{% endblock %}
 
 {% block page %}
     <div id="page-wrapper">
         <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <ol class="breadcrumb">
-                        <li class="active">
-                            <i class="fa fa-dashboard"></i> Dashboard
-                        </li>
-                    </ol>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-primary">
+                    <div class="panel panel-blue">
                         <div class="panel-heading">
                             <div class="row">
                                 <div class="col-xs-3">
@@ -28,7 +19,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="/app/projects/all/">
+                        <a href="/app/projects">
                             <div class="panel-footer">
                                 <span class="pull-left">View Projects</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -50,7 +41,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="/app/assessments/all/">
+                        <a href="/app/assessments">
                             <div class="panel-footer">
                                 <span class="pull-left">View Assessments</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -72,7 +63,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="/app/sh0ts/all/">
+                        <a href="/app/sh0ts">
                             <div class="panel-footer">
                                 <span class="pull-left">View Shots</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -94,7 +85,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="/app/flags/open/">
+                        <a href="/app/flags?open">
                             <div class="panel-footer">
                                 <span class="pull-left">View Open Flags</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -139,7 +130,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right">
-                                    <a href="/app/projects/all/">View All <i class="fa fa-cubes"></i></a>
+                                    <a href="/app/projects">View All <i class="fa fa-cubes"></i></a>
                                 </div>
                             {% else %}
                                 <h4><i class="fa fa-cubes"></i> <a href="/app/projects/new/">Add a new project</a></h4>
@@ -179,7 +170,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right">
-                                    <a href="/app/sh0ts/all/">View All <i class="fa fa-arrow-circle-right"></i></a>
+                                    <a href="/app/sh0ts">View All <i class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             {% else %}
                                 <h4><i class="fa fa-bullseye"></i> <a href="/app/sh0ts/new/">Sh00t one</a></h4>
@@ -215,7 +206,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right">
-                                    <a href="/app/flags/all">View All <i class="fa fa-arrow-circle-right"></i></a>
+                                    <a href="/app/flags">View All <i class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             {% else %}
                                 <h4><i class="fa fa-flag-o"></i> <a href="/app/flags/new/">New Flag</a></h4>
