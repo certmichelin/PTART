@@ -40,7 +40,7 @@ def projects_all(request):
 
 @login_required
 def assessments_all(request):
-    return generic_all(request, Assessment, AssessmentTable, 'assessements/assessments-list.html')
+    return generic_all(request, Assessment, AssessmentTable, 'assessments/assessments-list.html')
 
 
 @login_required
@@ -76,6 +76,104 @@ def cases_all(request):
     return generic_all(request, Case, CaseTable, 'cases/cases-list.html')
 
 @login_required
+def project(request, project_id):
+    response = None
+    try:
+        response = render(request, 'projects/project-single.html', {'project': Project.objects.get(pk=project_id)})
+    except Project.DoesNotExist:
+        response = redirect('/')
+    return response
+
+
+@login_required
+def assessment(request, assessment_id):
+    response = None
+    try: 
+        response = render(request, 'assessements/assessment-single.html', {'assessment': Assessment.objects.get(pk=assessment_id), 'recent_assessments': Assessment.objects.all().order_by('-added')[:10], 'projects': Project.objects.all().order_by('-added')})
+    except Assessment.DoesNotExist:
+        response = redirect('/')
+    return response
+
+
+@login_required
+def sh0t(request, sh0t_id):
+    response = None
+    try:
+        response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': Sh0t.objects.get(pk=sh0t_id), 'assessments': Assessment.objects.all().order_by('-added'), 'severities': [1,2,3,4,5]})
+    except sh0t.DoesNotExist:
+        response = redirect('/')
+    return response
+
+
+@login_required
+def flag(request, flag_id):
+    response = None
+    try:
+        response = render(request, 'flags/flag-single.html', {'flag': Flag.objects.get(pk=flag_id), 'assessments': Assessment.objects.all().order_by('added')})
+    except Flag.DoesNotExist:
+        response = redirect('/')
+    return response
+
+    
+@login_required
+def template(request, template_id):
+    response = None
+    try:
+        response = render(request, 'templates/template-single.html', {'template': Template.objects.get(pk=template_id), 'severities': [1,2,3,4,5]})
+    except Template.DoesNotExist:
+        response = redirect('/')
+    return response
+
+
+@login_required
+def methodology(request, methodology_id):
+    response = None
+    try:
+        response = render(request, 'methodologies/methodology-single.html', {'methodology': Methodology.objects.get(pk=methodology_id)})
+    except Methodology.DoesNotExist:
+        response = redirect('/')
+    return response
+
+
+@login_required
+def module(request, module_id):
+    response = None
+    try:
+        response = render(request, 'modules/module-single.html', {'module': Module.objects.get(pk=module_id), 'methodologies': Methodology.objects.all()})
+    except Module.DoesNotExist:
+        response = redirect('/')
+    return response
+
+
+@login_required
+def case(request, case_id):
+    response = None
+    try:
+        response = render(request, 'cases/case-single.html', {'case': Case.objects.get(pk=case_id), 'modules': Module.objects.all()})
+    except Case.DoesNotExist:
+        response = redirect("/")
+    return response
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required
 def flags_new(request):
     submitted = ""
     if "POST" == request.method:
@@ -98,34 +196,7 @@ def flags_new(request):
     return render(request, 'flags.html', context)
 
 
-@login_required
-def flag(request, flag_id):
-    submitted = ""
-    try:
-        the_flag = Flag.objects.get(pk=flag_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_flag.delete()
-                return redirect('/app/flags/all/')
 
-            assessment_id = request.POST.get('assessment', '') or -1
-            the_flag.title = request.POST.get('title', '') or "Flag"
-            the_flag.note = request.POST.get('note', '') or ""
-            if "done" == request.POST.get('done', ''):
-                the_flag.done = True
-            else:
-                the_flag.done = False
-            the_flag.assessment = Assessment.objects.get(pk=assessment_id)
-            the_flag.save()
-            submitted = "success"
-            return redirect('/app/flags/all/')
-        assessments_list = Assessment.objects.all().order_by('added')
-        context = {'flag': the_flag, 'assessments': assessments_list, 'submitted': submitted}
-        return render(request, 'flag-single.html', context)
-    except Flag.DoesNotExist:
-        return redirect('/')
-    except Assessment.DoesNotExist:
-        return redirect('/')
 
 
 @login_required
@@ -161,31 +232,6 @@ def sh0ts_new(request):
 
 
 
-@login_required
-def sh0t(request, sh0t_id):
-    submitted = ""
-    try:
-        the_sh0t = Sh0t.objects.get(pk=sh0t_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_sh0t.delete()
-                return redirect('/app/sh0ts/all/')
-            try:
-                the_sh0t.title = request.POST.get('title', '') or "sh0t"
-                the_sh0t.body = request.POST.get('body', '') or ""
-                the_sh0t.severity = request.POST.get('severity', '') or 5
-                assessment_id = request.POST.get('assessment', '') or -1
-                the_sh0t.assessment = Assessment.objects.get(pk=assessment_id)
-                the_sh0t.save()
-                submitted = "success"
-            except Assessment.DoesNotExist:
-                return redirect('/')
-
-        assessments_list = Assessment.objects.all().order_by('-added')
-        context = {'sh0t': the_sh0t, 'assessments': assessments_list, 'severities': [1,2,3,4,5], 'submitted': submitted}
-        return render(request, 'sh0t-single.html', context)
-    except sh0t.DoesNotExist:
-        return redirect('/')
 
 
 @login_required
@@ -220,39 +266,6 @@ def assessments_new(request):
                'methodologies_list': methodologies_list, 'modules': modules_list, 'submitted': submitted}
     return render(request, 'assessments.html', context)
 
-
-
-
-
-@login_required
-def assessment(request, assessment_id):
-    submitted = ""
-    try:
-        the_assessment = Assessment.objects.get(pk=assessment_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_assessment.delete()
-                return redirect('/app/assessments/all/')
-
-            project_id = request.POST.get('project', '') or -1
-            the_assessment.name = request.POST.get('name', '') or "Assessment"
-            the_assessment.project = Project.objects.get(pk=project_id)
-            the_assessment.save()
-            submitted = "success"
-        recent_assessments = Assessment.objects.all().order_by('-added')[:10]
-        projects_list = Project.objects.all().order_by('-added')
-        context = {
-            'assessment': the_assessment, 'recent_assessments': recent_assessments, 'projects': projects_list,
-            'submitted': submitted
-        }
-        return render(request, 'assessment-single.html', context)
-    except Assessment.DoesNotExist:
-        return redirect('/')
-
-    except Project.DoesNotExist:
-        return redirect('/')
-
-
 @login_required
 def projects_new(request):
     submitted = ""
@@ -265,31 +278,6 @@ def projects_new(request):
     projects_list = Project.objects.all().order_by('-added')[:10]
     context = {'projects': projects_list, 'submitted': submitted}
     return render(request, 'projects.html', context)
-
-
-
-
-
-@login_required
-def project(request, project_id):
-    submitted = ""
-    try:
-        the_project = Project.objects.get(pk=project_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_project.delete()
-                return redirect('/app/projects/all/')
-
-            the_project.name = request.POST.get('name', '') or "Project"
-            the_project.scope = request.POST.get('scope', '') or "Scope"
-            the_project.save()
-            submitted = "success"
-        context = {
-            'project': the_project, 'submitted': submitted
-        }
-        return render(request, 'project-single.html', context)
-    except Project.DoesNotExist:
-        return redirect('/')
 
 @login_required
 def project_summary(request, project_id):
@@ -318,25 +306,7 @@ def templates_new(request):
     context = {'templates': templates_list, 'severities': [1,2,3,4,5], 'submitted': submitted}
     return render(request, 'templates.html', context)
 
-@login_required
-def template(request, template_id):
-    submitted = ""
-    try:
-        the_template = Template.objects.get(pk=template_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_template.delete()
-                return redirect('/app/templates/')
 
-            the_template.name = request.POST.get('name', '') or "Template"
-            the_template.severity = request.POST.get('severity', '') or 5
-            the_template.body = request.POST.get('body', '') or ""
-            the_template.save()
-            submitted = "success"
-        context = {'template': the_template, 'severities': [1,2,3,4,5], 'submitted': submitted}
-        return render(request, 'template-single.html', context)
-    except Template.DoesNotExist:
-        return redirect('/')
 
 
 @login_required
@@ -363,34 +333,7 @@ def cases_new(request):
     return render(request, 'cases.html', context)
 
 
-@login_required
-def case(request, case_id):
-    submitted = ""
-    try:
-        the_case = Case.objects.get(pk=case_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_case.delete()
-                return redirect('/app/cases/')
 
-            the_case.name = request.POST.get('name', '') or "Case "
-            the_case.description = request.POST.get('description', '') or ""
-            the_case.order = request.POST.get('order') or 1
-            module_id = request.POST.get('module_id', '') or -1
-            the_module = Module.objects.get(pk=module_id)
-            the_case.module = the_module
-            the_case.save()
-            submitted = "success"
-        module_list = Module.objects.all()
-        context = {
-            'case': the_case, 'submitted': submitted, 'modules': module_list
-        }
-        return render(request, 'case-single.html', context)
-    except Module.DoesNotExist:
-        return redirect('/')
-
-    except Case.DoesNotExist:
-        return redirect("/")
 
 
 @login_required
@@ -417,31 +360,7 @@ def modules_new(request):
     return render(request, 'modules.html', context)
 
 
-@login_required
-def module(request, module_id):
-    submitted = ""
-    try:
-        the_module = Module.objects.get(pk=module_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_module.delete()
-                return redirect('/app/modules/')
 
-            the_module.name = request.POST.get('name', '') or "Module "
-            the_module.description = request.POST.get('description', '') or ""
-            the_module.order = request.POST.get('order') or 1
-            methodology = request.POST.get('methodology_id', '') or -1
-            the_methodology = Methodology.objects.get(pk=methodology)
-            the_module.methodology = the_methodology
-            the_module.save()
-            submitted = "success"
-        methodology_list = Methodology.objects.all()
-        context = {
-            'module': the_module, 'submitted': submitted, 'methodologies': methodology_list
-        }
-        return render(request, 'module-single.html', context)
-    except Methodology.DoesNotExist:
-        return redirect('/')
 
 
 @login_required
@@ -458,32 +377,6 @@ def methodologies_new(request):
     methodologies_list = Methodology.objects.all()
     context = {'methodologies': methodologies_list, 'submitted': submitted}
     return render(request, 'methodologies.html', context)
-
-
-@login_required
-def methodology(request, methodology_id):
-    submitted = ""
-    try:
-        the_methodology = Methodology.objects.get(pk=methodology_id)
-        if "POST" == request.method:
-            if "delete" == request.POST.get('delete', ''):
-                the_methodology.delete()
-                return redirect('/app/modules/')
-
-            the_methodology.name = request.POST.get('name', '') or "Methodology "
-            the_methodology.description = request.POST.get('description', '') or ""
-            the_methodology.order = request.POST.get('order') or 1
-            the_methodology.save()
-            submitted = "success"
-
-        context = {
-            'methodology': the_methodology, 'submitted': submitted
-        }
-        return render(request, 'methodology-single.html', context)
-
-    except Methodology.DoesNotExist:
-        return redirect('/')
-
 
 @login_required
 def logout_user(request):
