@@ -63,6 +63,24 @@ function ajaxDeleteProject(success_function, error_function, id){
 }
 
 /**
+ * Create an assessment.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Assessment name.
+ * @param {*} scope Project ID.
+ */
+function ajaxCreateAssessment(success_function, error_function, name, projectId){
+    $.ajax({
+        url: "/api/assessments/",
+        data: '{"name":' + JSON.stringify(name) + ',"project":' + JSON.stringify(projectId) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Update an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.
@@ -82,7 +100,7 @@ function ajaxUpdateAssessment(success_function, error_function, id, name, projec
 }
 
 /**
- * Delete a assessment.
+ * Delete an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
