@@ -81,6 +81,26 @@ def methodology(request, pk):
 def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
 
+@api_view(['POST'])
+def load_module(request, pk, assessmentId):
+    response = None
+    try:
+        module = Module.objects.get(pk=pk)
+        assessment = Assessment.objects.get(pk=assessmentId)
+        cases = Case.objects.filter(module=module)
+        flags = []
+        for case in cases:
+            note = "Module: " + module.name + "\n\n" + case.description
+            flag = Flag(title=case.name, note=note, assessment=assessment)
+            flag.save()
+            flags.append(flag)
+        response = Response(FlagSerializer(flags, many=True).data, status=status.HTTP_201_CREATED)
+    except Module.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    except Assessment.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
 @action(methods=['GET'], detail=True)
 def screenshot_raw(request, pk) :
     response = None

@@ -59,7 +59,7 @@
                                 {% for module in modules %}
                                     {% if module.methodology == methodology %}
                                         <div class="checkbox">
-                                            <label><input type="checkbox" value="{{ module.id }}" class="child-{{ methodology.name.split|join:'_'  }}" name="modules" />{{ module.name }}</label>
+                                            <label><input type="checkbox" value="{{ module.id }}" class="module child-{{ methodology.name.split|join:'_'  }}"/>{{ module.name }}</label>
                                         </div>
                                     {% endif %}
                                  {% endfor %}
@@ -89,6 +89,9 @@
      * Assessment creation success callback.
      */
      function assessmentCreationSuccess(data) {
+        $('.module:checked').each(function () {
+            ajaxLoadFlagsFromModule(function (data) { }, function (data) { }, $(this).val(), data.id);
+        });
         $("#name").val("");
         success($("#messages"), "Assessment was created!");
     }

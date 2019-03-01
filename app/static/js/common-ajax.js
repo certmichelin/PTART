@@ -114,3 +114,20 @@ function ajaxDeleteAssessment(success_function, error_function, id){
         error: error_function
     });
 }
+
+/**
+ * Load flags from module to an assessment.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} moduleId Module id.
+ * @param {*} assessmentId Assessment id.
+ */
+function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, assessmentId){
+    $.ajax({
+        url: "/api/module/" + moduleId + "/load/" + assessmentId + "/",
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
