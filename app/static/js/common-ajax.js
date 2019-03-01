@@ -20,7 +20,7 @@ $.ajaxSetup({
 function ajaxCreateProject(success_function, error_function, name, scope){
     $.ajax({
         url: "/api/projects/",
-        data: '{"name":"' + name + '","scope":"' + scope + '"}',
+        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -39,7 +39,7 @@ function ajaxCreateProject(success_function, error_function, name, scope){
 function ajaxUpdateProject(success_function, error_function, id, name, scope){
     $.ajax({
         url: "/api/project/" + id,
-        data: '{"name":"' + name + '","scope":"' + scope + '"}',
+        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(name) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
