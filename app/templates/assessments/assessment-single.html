@@ -1,66 +1,114 @@
 {% extends "base.html" %}
+
 {% block title %} Assessment | sh00t{% endblock %}
 
 {% block page %}
-    <div id="page-wrapper">
-        <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Assessment</h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                        <li><i class="fa fa-cube"></i> <a href="/app/assessments/all/">Assessments</a></li>
-                        <li class="active">{{ assessment.name }} <span id="response" class="small"></span></li>
-                    </ol>
-                </div>
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Assessment</h1>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
+                    <li><i class="fa fa-cube"></i> <a href="/app/assessments/all/">Assessments</a></li>
+                    <li class="active">{{ assessment.name }} <span id="response" class="small"></span></li>
+                </ol>
             </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <form role="form" method="post">
-                        {% if "success" == submitted %}
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="alert alert-info alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> <i class="fa fa-info-circle"></i> Updated
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input class="form-control" name="name" id="name" value="{{ assessment.name }}" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <label for="project">Project</label>
-                            <select class="form-control" name="project" id="project">
-                            {% for project in projects %}
-                                <option value="{{ project.id }}"
-                                {% if project.id == assessment.project.id %}
-                                    selected="selected"
-                                {% endif %}>
-                                {{ project.name }}</option>
-                            {% endfor %}
-                            </select>
-                        </div>
-                        <input type="hidden" value="{{ assessment.id }}" id="id" /><input type="hidden" value="{{ assessment.id }}" id="id" />
-                        <button type="submit" class="btn btn-primary">Update</button>
-                        <button type="submit" name="delete" value="delete" class="btn btn-danger">Delete</button>
-                        {% csrf_token %}
-                    </form>
+        </div>
+
+        {% include "_include/messages-container.html" %}
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input id="name" class="form-control" value="{{ assessment.name }}" />
                 </div>
+                <div class="form-group">
+                    <label for="project">Project</label>
+                    <select id="project" class="form-control">
+                        {% for project in projects %}
+                        <option value="{{ project.id }}" {% if project.id == assessment.project.id %} selected="selected" {% endif %}>
+                            {{ project.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <input id="id" type="hidden" value="{{assessment.id}}"  />
+                <button id="updateBtn" class="btn btn-primary">Update</button>
+                <button id="delBtn" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
+
 {% block extra_foot %}
-<script src="/static/js/common-ajax.js"></script>
 <script type="text/javascript">
-    $('#name').on('input', function() {
-        sync('assessment');
+
+    /**
+     * Assessment updation success callback.
+     */
+    function assessmentUpdationSuccess(data) {
+        success($("#messages"), "Assessment was Updated!");
+    }
+
+    /**
+     * Assessment updation failure callback.
+     */
+    function assessmentUpdationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+    }
+
+    /**
+     * Update assessment.
+     */
+    $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateAssessment(assessmentUpdationSuccess, assessmentUpdationFailure, $("#id").val(), $("#project").val(), $("#scope").val());
     });
-    $('#project').on('change', function() {
-        sync('assessment');
+
+    /**
+     * Assessment deletion success callback.
+     */
+    function assessmentDeletionSuccess(data) {
+        success($("#messages"), "Assessment was deleted! You will redirect in 2s!");
+        setTimeout(function () {
+            window.location.href = "/";
+        }, 2000);
+    }
+
+    /**
+     * Assessment deletion failure callback.
+     */
+    function assessmentDeletionFailure(data) {
+        error($("#messages"), "Assessment was not found");
+    }
+
+    /**
+     * Delete assessment.
+     */
+    $('#delBtn').on('click', function () {
+        bootbox.confirm({
+            message: "Are you sure to delete the assessment?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteAssessment(assessmentDeletionSuccess, assessmentDeletionFailure, $("#id").val());
+                }
+            }
+        });
     });
 </script>
 {% endblock %}

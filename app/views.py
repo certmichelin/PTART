@@ -111,7 +111,7 @@ def project_summary(request, project_id):
 def assessment(request, assessment_id):
     response = None
     try: 
-        response = render(request, 'assessements/assessment-single.html', {'assessment': Assessment.objects.get(pk=assessment_id), 'recent_assessments': Assessment.objects.all().order_by('-added')[:10], 'projects': Project.objects.all().order_by('-added')})
+        response = render(request, 'assessements/assessment-single.html', {'assessment': Assessment.objects.get(pk=assessment_id), 'projects': Project.objects.all().order_by('-added')})
     except Assessment.DoesNotExist:
         response = redirect('/')
     return response
