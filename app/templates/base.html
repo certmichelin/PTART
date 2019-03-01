@@ -44,6 +44,14 @@
     <script src="/static/sb-admin/js/plugins/bootstrap-waitingfor.min.js"></script>
     <script src="/static/js/common-ajax.js"></script>
     <script src="/static/js/messages.js"></script>
+    <script language="javascript">
+        //For toggle in items list.
+        function toggle(source) {
+            checkboxes = document.getElementsByName('selection');
+            for(var i in checkboxes)
+                checkboxes[i].checked = source.checked;
+        }
+    </script>
     {% block extra_foot %}{% endblock %}
 </body>
 </html>
