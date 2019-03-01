@@ -70,3 +70,59 @@
         });
     });
 })(jQuery);
+
+//Rendering for paste image operation.
+$("html").pasteImageReader(function (results) {
+    var dataURL = results.dataURL;
+    $("#uploadMessage").hide();
+    $("#screenshotData").val(dataURL);
+    $("#screenshot").attr("src",dataURL);
+});
+
+//Reset screenshot modal after image upload
+function resetScreenshotModal(){
+    $("#pushScreenshotModal").modal('toggle');
+    $("#screenshotData").val("");
+    $("#screenshot").attr("src","");
+    $("#uploadMessage").show();
+}
+
+//Add screenshot.
+function addScreenshot(){
+    var dataURL = $("#screenshotData").val()
+
+    //Manage ID.
+    var id = $('#screenshotMaxId').val();
+    $('#screenshotMaxId').val(parseInt(id) + 1);
+    
+    //add screenshot to gallery
+    $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: "screenshot_" + id, src:dataURL, class:"screenshot",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
+    resetScreenshotModal();
+}
+
+
+//Delete screenshot allow drop function.
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+//Delete screenshot drag start function.
+function dragStart(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+    $('#deleteZone').text("Drop here to delete")
+    $("#deleteZone").attr('class', 'btn btn-success');
+}
+
+//Delete screenshot drag stop function.
+function dragStop(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+    $('#deleteZone').text("Delete Screenshot Zone")
+    $("#deleteZone").attr('class', 'btn btn-danger');
+}
+
+//Delete screenshot drag stop function.
+function drop(ev) {
+    ev.preventDefault();
+    id = ev.dataTransfer.getData("text");
+    $("#" + id).parent().remove();
+}

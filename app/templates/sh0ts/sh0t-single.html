@@ -10,7 +10,7 @@
                     <h1 class="page-header">Sh0t</h1>
                     <ol class="breadcrumb">
                         <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                        <li><i class="fa fa-bullseye"></i> <a href="/app/sh0ts/all/">Sh0t</a></li>
+                        <li><i class="fa fa-bullseye"></i> <a href="/app/sh0ts">Sh0t</a></li>
                         <li class="active">{{ sh0t.title }} <span id="response" class="small"></span></li>
                     </ol>
                 </div>
@@ -41,7 +41,7 @@
                         </div>
                         <div class="form-group">
                             <label>Note</label>
-                            <textarea class="form-control" rows="15" id="body" name="body">{{ sh0t.body }}</textarea>
+                            <textarea class="form-control" rows="10" id="body" name="body">{{ sh0t.body }}</textarea>
                         </div>
                         <div class="form-group">
                             <label for="assessment">Assessment</label>
@@ -114,7 +114,7 @@
 {% block extra_foot %}
 <script src="/static/js/common-ajax.js"></script>
 <script src="/static/js/screenshots.js"></script>
-<script src="/static/js/plugins/fancybox/jquery.fancybox.min.js"></script>
+<script src="/static/sb-admin/js/plugins/fancybox/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
 
     /* Select the current severity */$

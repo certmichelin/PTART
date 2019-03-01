@@ -1,0 +1,44 @@
+<h5>Screenshots</h5>
+
+<input id="screenshotMaxId" name="screenshotMaxId" type="hidden" value="0"/> 
+
+<div id="screenshots">
+</div>
+
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#pushScreenshotModal">Add a
+    screenshot</button>
+<button id="deleteZone" type="button" class="btn btn-danger" ondrop="drop(event)" ondragover="allowDrop(event)">Delete
+    Screenshot Zone</button>
+
+<!-- Push screenshot modal -->
+<div class="modal fade" id="pushScreenshotModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add a screenshot</h5>
+                <button type="button" class="close" onclick="resetScreenshotModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="uploadMessage" class="row">
+                    <div class="col-lg-12">
+                        <h3>Paste your screenshot here!</h3>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <img id="screenshot" class="screenshot" src="" />
+                    </div>
+                </div>
+                <input type="hidden" id="screenshotData" />
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" onclick="addScreenshot()">Add</button>
+                <button type="button" class="btn btn-secondary" onclick="resetScreenshotModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -116,6 +116,26 @@ function ajaxDeleteAssessment(success_function, error_function, id){
 }
 
 /**
+ * Create a sh0t.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} severity Sh0t severity.
+ * @param {*} title Sh0t title.
+ * @param {*} body Sh0t body.
+ * @param {*} assessmentId  Assessment id.
+ */
+function ajaxCreateSh0t(success_function, error_function, severity, title, body, assessmentId){
+    $.ajax({
+        url: "/api/sh0ts/",
+        data: '{"severity":' + JSON.stringify(severity)+ ',"title":' + JSON.stringify(title)+ ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Load flags from module to an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.

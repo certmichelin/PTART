@@ -1,36 +1,13 @@
 {% extends "base.html" %}
+
 {% block title %} Sh0ts | sh00t{% endblock %}
 
+{% block extra_head %}
+<link href="/static/css/screenshots.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
 {% block page %}
-    <style>
-        .imageUpload {
-            border: solid 1px #aaa;
-            min-height: 200px;
-            width: 30%;
-            margin-top: 1em;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 300ms all;
-            position: relative;
-        }
-
-        .contain {
-            background-size: cover;
-            position: relative;
-            z-index: 10;
-            top: 0px;
-            left: 0px;
-        }
-        
-        textarea {
-            background-color: white;
-        }
-        
-        .imageUpload .active {
-            box-shadow: 0px 0px 10px 10px rgba(0,0,255,.4);
-        }
-
-    </style>
+    
     <div id="page-wrapper">
         <div class="container-fluid">
             <!-- Page Heading -->
@@ -43,25 +20,19 @@
                     </ol>
                 </div>
             </div>
+
+            {% include "_include/messages-container.html" %}
+
+            <!-- Sh0t creation form -->
             <div class="row">
                 <div class="col-lg-8">
                     <h3>New Sh0t</h3>
                     {% if not assessments_list %}
                         <b>No assessment found. <a href="/app/assessments/new/">Create one</a></b>
-                    {% else %}
-                        <form role="form" method="post">
-                            {% if "success" == submitted %}
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="alert alert-info alert-dismissable">
-                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> <i class="fa fa-info-circle"></i> Submitted
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif %}
+                    {% else %} 
                             <div class="form-group">
                                 <label for="template">Template</label>
-                                <select id="template" class="form-control" name="template">
+                                <select id="template" class="form-control">
                                     <option value="">---- Choose from a template ----</option>
                                     {% for template in templates %}
                                         <option value="{{ template.id }}">{{ template.name }}</option>
@@ -70,7 +41,7 @@
                             </div>
                             <div class="form-group">
                                     <label>Severity</label>
-                                    <select class="form-control" name="severity" id="severity">
+                                    <select class="form-control" id="severity">
                                             {% for sev in severities %}
                                                 <option value={{sev}}> P{{sev}} </option>
                                             {% endfor %}     
@@ -78,73 +49,26 @@
                             </div>
                             <div class="form-group">
                                 <label>Title</label>
-                                <input class="form-control" name="title" id="title" autocomplete="off" />
+                                <input class="form-control" id="title" autocomplete="off" />
                             </div>
                             <div class="form-group">
                                 <label>Body</label>
-                                <textarea class="form-control" rows="15" name="body" id="body"></textarea>
+                                <textarea class="form-control" rows="10" id="body"></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="assessment">Assessment</label>
-                                <select id="assessment" class="form-control" name="assessment">
+                                <select id="assessment" class="form-control">
                                     {% for assessment in assessments_list %}
                                         <option value="{{ assessment.id }}">{{ assessment.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            <input id="screenshotMaxId" name="screenshotMaxId" type="hidden" value="0"/> 
-                            <div id="screenshotsInputs" style="visibility: hidden">
-
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            {% csrf_token %}
-                        </form>
+                            <button id="createBtn" class="btn btn-primary">Submit</button>
                     {% endif %}
                 </div>
                 <div class="col-lg-4">
-
                     {% if assessments_list %}
-                        <h5>Screenshots</h5>
-
-                        <div id="screenshots">
-                            <!--<a data-fancybox="gallery" href="{{screenshot.get_data}}"><img id="{{screenshot.id}}" class="screenshot" src="{{screenshot.get_data}}" draggable="true" ondragstart="dragStart(event)" ondragend="dragStop(event)"></a><br/><br/>-->
-                        </div>
-                        
-
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
-                        <button id="deleteZone" type="button" class="btn btn-danger" ondrop="drop(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
-
-                        <!-- Push screenshot modal -->
-                        <div class="modal fade" id="pushScreenshotModal" tabindex="-1" role="dialog">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Add a screenshot</h5>
-                                        <button type="button" class="close" onclick="resetScreenshotModal()">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="uploadMessage" class="row">
-                                            <div class="col-lg-12">
-                                                <h3>Paste your screenshot here! </h3>
-                                            </div>
-                                        </div>
-                            
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <img id="screenshot" class="screenshot" src=""/>
-                                            </div>
-                                        </div>
-                                        <input type="hidden" id="screenshotData"/>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary" onclick="addScreenshot()">Add</button>
-                                        <button type="button" class="btn btn-secondary" onclick="resetScreenshotModal()">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% include "_include/screenshots-container.html" %}
                     {% endif %}
                 </div>
             </div>
@@ -155,8 +79,8 @@
     <!-- /#page-wrapper -->
 {% endblock %}
 {% block extra_foot %}
+<script src="/static/sb-admin/js/plugins/fancybox/jquery.fancybox.min.js"></script>
 <script src="/static/js/screenshots.js"></script>
-<script src="/static/js/plugins/fancybox/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
 
     $('#template').change(function() {
@@ -180,66 +104,31 @@
         }
     });
 
-    //Rendering for paste image operation.
-    $("html").pasteImageReader(function (results) {
-        var dataURL = results.dataURL;
-        $("#uploadMessage").hide();
-        $("#screenshotData").val(dataURL);
-        $("#screenshot").attr("src",dataURL);
+    /**
+     * Sh0t creation success callback.
+     */
+     function sh0tCreationSuccess(data) {
+        //$('.module:checked').each(function () {
+        //    ajaxLoadFlagsFromModule(function (data) { }, function (data) { }, $(this).val(), data.id);
+        //});
+        $("#title").val("");
+        $("#body").val("");
+        success($("#messages"), "Sh0t was created!");
+    }
+
+    /**
+     * Sh0t creation failure callback.
+     */
+    function sh0tCreationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+    }
+
+    /**
+     * Create sh0t.
+     */
+    $('#createBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });
-
-    //Reset screenshot modal after image upload
-    function resetScreenshotModal(){
-        $("#pushScreenshotModal").modal('toggle');
-        $("#screenshotData").val("");
-        $("#screenshot").attr("src","");
-        $("#uploadMessage").show();
-    }
-
-    //Add screenshot.
-    function addScreenshot(){
-        var dataURL = $("#screenshotData").val()
-        var screenshot = JSON.stringify(dataURL);
-
-        //Manage ID.
-        var id = $('#screenshotMaxId').val();
-        $('#screenshotMaxId').val(parseInt(id) + 1);
-
-        //add screenshot to form.
-        $('#screenshotsInputs').append($('<input>',{type:"hidden", id:"screenshot_" + id, name:"screenshot_" + id, value:screenshot}));
-
-        //add screenshot to gallery
-        $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: id, src:dataURL, class:"screenshot",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
-        $('#screenshots').append($('<br>'))
-        $('#screenshots').append($('<br>'))
-        resetScreenshotModal();
-    }
-
-    //Delete screenshot allow drop function.
-    function allowDrop(ev) {
-        ev.preventDefault();
-    }
-
-    //Delete screenshot drag start function.
-    function dragStart(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-        $('#deleteZone').text("Drop here to delete")
-        $("#deleteZone").attr('class', 'btn btn-success');
-    }
-
-    //Delete screenshot drag stop function.
-    function dragStop(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-        $('#deleteZone').text("Delete Screenshot Zone")
-        $("#deleteZone").attr('class', 'btn btn-danger');
-    }
-
-    //Delete screenshot drag stop function.
-    function drop(ev) {
-        ev.preventDefault();
-        id = ev.dataTransfer.getData("text");
-        $("#" + id).parent().remove();
-        $("#screenshot_" + id).remove();
-    }
 </script>
 {% endblock %}
