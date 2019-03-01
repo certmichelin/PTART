@@ -27,6 +27,40 @@ function ajaxCreateProject(success_function, error_function, name, scope){
     });
 }
 
+/**
+ * Update a project.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Project ID.
+ * @param {*} name Project name.
+ * @param {*} scope Project scope.
+ */
+function ajaxUpdateProject(success_function, error_function, id, name, scope){
+    $.ajax({
+        url: "/api/project/" + id,
+        data: '{"name":"' + name + '","scope":"' + scope + '"}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete a project.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Project id.
+ */
+function ajaxDeleteProject(success_function, error_function, id){
+    $.ajax({
+        url: "/api/project/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
 
 /*
 function sync(target) {

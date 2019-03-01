@@ -6,7 +6,7 @@ from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot, Ca
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ('id', 'name', 'added')
+        fields = ('id', 'name','scope', 'added')
 
 
 class AssessmentSerializer(serializers.ModelSerializer):

@@ -19,7 +19,7 @@ function error(parent, message) {
 /**
  * Add error alert messages to the container.
  * @param {*} parent Parent container.
- * @param {*} jsonResponse JSOn response from API.
+ * @param {*} jsonResponse JSON response from API.
  */
 function errorList(parent, jsonResponse) {
     genericMessageList(parent, jsonResponse, "alert alert-danger");
