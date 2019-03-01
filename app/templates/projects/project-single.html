@@ -63,7 +63,7 @@
     /**
      * Update project.
      */
-     $('#updateBtn').on('click', function () {
+    $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateProject(projectUpdationSuccess, projectUpdationFailure, $("#id").val(), $("#name").val(), $("#scope").val());
     });
@@ -89,10 +89,23 @@
      * Delete project.
      */
     $('#delBtn').on('click', function () {
-        bootbox.confirm("Are you sure to delete the project?", function (result) {
-            if (result) {
-                cleanMessagesContainer($("#messages"));
-                ajaxDeleteProject(projectDeletionSuccess, projectDeletionFailure, $("#id").val());
+        bootbox.confirm({
+            message: "Are you sure to delete the project?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteProject(projectDeletionSuccess, projectDeletionFailure, $("#id").val());
+                }
             }
         });
     });
