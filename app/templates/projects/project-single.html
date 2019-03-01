@@ -30,8 +30,8 @@
                     <textarea class="form-control" rows="15" id="scope" name="scope">{{ project.scope }}</textarea>
                 </div>
                 <input id="id" type="hidden" value="{{ project.id }}" />
-                <button class="btn btn-primary" onclick="updateProject()">Update</button>
-                <button class="btn btn-danger" onclick="deleteProject()">Delete</button>
+                <button id="updateBtn" class="btn btn-primary">Update</button>
+                <button id="delBtn" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
@@ -63,10 +63,10 @@
     /**
      * Update project.
      */
-    function updateProject() {
+     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateProject(projectUpdationSuccess, projectUpdationFailure, $("#id").val(), $("#name").val(), $("#scope").val());
-    }
+    });
 
     /**
      * Project deletion success callback.
@@ -88,13 +88,13 @@
     /**
      * Delete project.
      */
-    function deleteProject() {
+    $('#delBtn').on('click', function () {
         bootbox.confirm("Are you sure to delete the project?", function (result) {
             if (result) {
                 cleanMessagesContainer($("#messages"));
                 ajaxDeleteProject(projectDeletionSuccess, projectDeletionFailure, $("#id").val());
             }
         });
-    }
+    });
 </script>
 {% endblock %}

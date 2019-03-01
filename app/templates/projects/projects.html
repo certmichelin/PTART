@@ -32,7 +32,7 @@
                     <textarea id="scope" class="form-control" rows="15"></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" onclick="createProject()">Submit</button>
+                <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
             </div>
         </div>
     </div>
@@ -48,22 +48,22 @@
     function projectCreationSuccess(data) {
         $("#name").val("");
         $("#scope").val("");
-        success($("#messages"),"Project was created!");
+        success($("#messages"), "Project was created!");
     }
 
     /**
      * Project creation failure callback.
      */
     function projectCreationFailure(data) {
-        errorList($("#messages"),data.responseJSON);
+        errorList($("#messages"), data.responseJSON);
     }
 
     /**
      * Create project.
      */
-    function createProject(){
+    $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxCreateProject(projectCreationSuccess, projectCreationFailure, $("#name").val(), $("#scope").val());
-    }
+    });
 </script>
 {% endblock %}
