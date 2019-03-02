@@ -1,10 +1,17 @@
 {% extends "base.html" %}
+
 {% load render_table from django_tables2 %}
+
 {% block title %} List Sh0ts | sh00t{% endblock %}
+
+{% block extra_head %}
+<link href="/static/css/badges.css" rel="stylesheet" type="text/css">
+{% endblock %}
 
 {% block page %}
     <div id="page-wrapper">
         <div class="container-fluid">
+
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Sh0ts<a class="btn btn-danger pull-right" href="/app/sh0ts/new" role="button">Create Sh0t!</a></h1>
@@ -14,6 +21,9 @@
                     </ol>
                 </div>
             </div>
+
+            {% include "_include/messages-container.html" %}
+
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
@@ -24,7 +34,8 @@
                             {% if count > 0 %}
                                 {% render_table table %}
                                 <div class="left">
-                                    <input type="button" value="Delete" id="delBtn" class="btn btn-danger" data-loading-text="Deleting.." />
+                                    <input id="delBtn" type="button" value="Delete" class="btn btn-danger" />
+                                </div>
                             {% else %}
                                 <h4><a href="/app/sh0ts/new/">Add a sh0t</a></h4>
                             {% endif %}
@@ -35,26 +46,40 @@
         </div>
     </div>
 {% endblock %}
+
 {% block extra_foot %}
-<script src="/static/js/common-ajax.js"></script>
 <script language="javascript">
-$('#delBtn').on('click', function() {
-    if(isCheckedMin()) {
-        if(confirm("You are about to delete the selected sh0t/s. Are you sure to continue?")) {
-            var $this = $(this);
-            $this.button('loading');
-            $('input:checked').each(function() {
-                $.ajax({
-                    url: '/api/sh0t/' + $(this).val(),
-                    type: 'DELETE',
-                    headers: {"X-CSRFToken": getCSRFToken()},
-                });
+    $('#delBtn').on('click', function () {
+        if (0 < $('input:checked').length) {
+            bootbox.confirm({
+                message: "You are about to delete the selected sh0t/s. Are you sure to continue?",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        waitingDialog.show();
+                        $('input:checked').each(function () {
+                            ajaxDeleteSh0t(function (data) { }, function (data) { }, $(this).val());
+                        });
+                        setTimeout(function () {
+                            waitingDialog.hide();
+                            bootbox.alert("The selected sh0t/s have been deleted");
+                            document.location.reload();
+                        }, 2000);
+                    }
+                }
             });
-            alert("The selected sh0t/s have been deleted");
-            document.location.reload();
+        } else {
+            bootbox.alert("Select at least one sh0t!");
         }
-    } else
-        $("#checkMin1").modal();
-});
+    });
 </script>
 {% endblock %}

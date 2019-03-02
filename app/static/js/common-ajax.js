@@ -136,6 +136,22 @@ function ajaxCreateSh0t(success_function, error_function, severity, title, body,
 }
 
 /**
+ * Delete a sh0t.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Sh0t id.
+ */
+function ajaxDeleteSh0t(success_function, error_function, id){
+    $.ajax({
+        url: "/api/sh0t/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Upload a screenshot for a sh0t.
  * 
  * @param {*} success_function function to call in case of ajax success.
