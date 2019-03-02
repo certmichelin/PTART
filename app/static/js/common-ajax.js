@@ -38,7 +38,7 @@ function ajaxCreateProject(success_function, error_function, name, scope){
  */
 function ajaxUpdateProject(success_function, error_function, id, name, scope){
     $.ajax({
-        url: "/api/project/" + id,
+        url: "/api/project/" + id + "/",
         data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(name) + '}',
         type: 'PUT',
         success: success_function,
@@ -91,7 +91,7 @@ function ajaxCreateAssessment(success_function, error_function, name, projectId)
  */
 function ajaxUpdateAssessment(success_function, error_function, id, name, projectID){
     $.ajax({
-        url: "/api/assessment/" + id,
+        url: "/api/assessment/" + id + "/",
         data: '{"name":' + JSON.stringify(name) + ',"project":' + JSON.stringify(projectID) + '}',
         type: 'PUT',
         success: success_function,
