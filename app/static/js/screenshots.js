@@ -96,7 +96,7 @@ function addScreenshot(){
     $('#screenshotMaxId').val(parseInt(id) + 1);
     
     //add screenshot to gallery
-    $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: "screenshot_" + id, src:dataURL, class:"screenshot",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
+    $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: "screenshot_" + id, src:dataURL, class:"screenshot_data",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
     resetScreenshotModal();
 }
 

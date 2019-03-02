@@ -83,6 +83,9 @@
 <script src="/static/js/screenshots.js"></script>
 <script type="text/javascript">
 
+    var screenshotsToUpload = 0;
+    var screenshotsUploaded = 0;
+
     $('#template').change(function() {
         var template_id = $(this).val();
         if(template_id == "") {
@@ -108,25 +111,58 @@
      * Sh0t creation success callback.
      */
      function sh0tCreationSuccess(data) {
-        //$('.module:checked').each(function () {
-        //    ajaxLoadFlagsFromModule(function (data) { }, function (data) { }, $(this).val(), data.id);
-        //});
-        $("#title").val("");
-        $("#body").val("");
+        //Upload screenshots.
+        $('.screenshot_data').each(function () {
+            ++screenshotsToUpload;
+            ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), data.id);
+        });
         success($("#messages"), "Sh0t was created!");
     }
 
     /**
      * Sh0t creation failure callback.
      */
-    function sh0tCreationFailure(data) {
+     function sh0tCreationFailure(data) {
         errorList($("#messages"), data.responseJSON);
+    }
+
+    /**
+     * Screenshot creation success callback.
+     */
+    function screenshotCreationSuccess(data) {
+        success($("#messages"), "Screenshot uploaded!");
+        checkUploadBatchStatus();
+    }
+
+    /**
+     * Screenshot creation failure callback.
+     */
+     function screenshotCreationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+        checkUploadBatchStatus();
+    }
+
+    
+
+    /**
+     * Check if all images has been uploaded.
+     */ 
+    function checkUploadBatchStatus() {
+        if(++screenshotsUploaded == screenshotsToUpload){
+            $("#title").val("");
+            $("#body").val("");
+            $("#screenshots").empty();
+            screenshotsToUpload = 0;
+            screenshotsUploaded = 0;
+            waitingDialog.hide();
+        }
     }
 
     /**
      * Create sh0t.
      */
     $('#createBtn').on('click', function () {
+        waitingDialog.show();
         cleanMessagesContainer($("#messages"));
         ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });

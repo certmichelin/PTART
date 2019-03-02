@@ -136,6 +136,24 @@ function ajaxCreateSh0t(success_function, error_function, severity, title, body,
 }
 
 /**
+ * Upload a screenshot for a sh0t.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} data Base64 image to upload.
+ * @param {*} shotId Sh0t id.
+ */
+function ajaxUploadScreenshot(success_function, error_function, data, shotId){
+    $.ajax({
+        url: "/api/screenshots/",
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "sh0t": ' + JSON.stringify(shotId) + ' }',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Load flags from module to an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.

@@ -90,7 +90,7 @@
      */
      function assessmentCreationSuccess(data) {
         $('.module:checked').each(function () {
-            ajaxLoadFlagsFromModule(function (data) { }, function (data) { }, $(this).val(), data.id);
+            ajaxLoadFlagsFromModule(function (data) {}, function (data) {}, $(this).val(), data.id);
         });
         $("#name").val("");
         success($("#messages"), "Assessment was created!");
