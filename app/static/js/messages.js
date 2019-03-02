@@ -45,9 +45,13 @@ function genericMessage(parent, message, alertClass){
  */
 function genericMessageList(parent, jsonResponse, alertClass) {
     jQuery.each(jsonResponse, function(param, messages) {
-        jQuery.each(messages, function() {
-            genericMessage(parent,param + " : " + this, alertClass);
-        });
+        if (Array.isArray(messages)) {
+            jQuery.each(messages, function() {
+                genericMessage(parent,param + " : " + this, alertClass);
+            });
+        } else {
+            genericMessage(parent,param + " : " + messages, alertClass);
+        }
     });
 }
 
