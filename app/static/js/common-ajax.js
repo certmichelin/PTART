@@ -207,7 +207,7 @@ function ajaxDeleteScreenshot(success_function, error_function, id){
 }
 
 /**
- * Create an flag.
+ * Create a flag.
  * 
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
@@ -220,6 +220,27 @@ function ajaxCreateFlag(success_function, error_function, title, note, assessmen
         url: "/api/flags/",
         data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"assessment":'+ JSON.stringify(assessmentId) + '}',
         type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update a flag.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Flag id.
+ * @param {*} name Flag name.
+ * @param {*} note Flag note.
+ * @param {*} done Flag status.
+ * @param {*} assessmentId Assessment ID.
+ */
+function ajaxUpdateFlag(success_function, error_function, id, title, note, done, assessmentId){
+    $.ajax({
+        url: "/api/flag/" + id + "/",
+        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"done":'+ JSON.stringify(done) + ',"assessment":'+ JSON.stringify(assessmentId) + '}',
+        type: 'PUT',
         success: success_function,
         error: error_function
     });
