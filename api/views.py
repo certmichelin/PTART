@@ -135,8 +135,8 @@ def item(request, pk, class_name, serializer_name) :
                 response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == 'DELETE':
+            response = Response(serializer_name(item).data, status=status.HTTP_200_OK)
             item.delete()
-            response = Response(status=status.HTTP_204_NO_CONTENT)
 
     except class_name.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
