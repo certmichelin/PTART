@@ -94,19 +94,25 @@
             $('#body').val("");
         }
         else {
-            $.ajax({
-                url: "/api/template/" + template_id,
-                success: function (data) {
-                    $('#severity option[value="' + data.severity + '"').attr('selected','selected');
-                    $('#title').val(data.name);
-                    $('#body').val(data.body);
-                },
-                error: function (data) {
-                    alert("Unexpected error in getting template details. Data: " + data);
-                }
-            })
+            ajaxGetTemplate(templateGetSuccess,templateGetFailure,template_id);
         }
     });
+
+    /**
+     * Template get failure callback.
+     */
+     function templateGetFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+    }
+
+    /**
+     * Template get success callback.
+     */
+    function templateGetSuccess(data) {
+        $('#severity option[value="' + data.severity + '"').attr('selected','selected');
+        $('#title').val(data.name);
+        $('#body').val(data.body);
+    }
 
     /**
      * Sh0t creation success callback.
