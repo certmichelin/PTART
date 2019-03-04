@@ -68,7 +68,7 @@ function ajaxDeleteProject(success_function, error_function, id){
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} name Assessment name.
- * @param {*} scope Project ID.
+ * @param {*} projectId Project ID.
  */
 function ajaxCreateAssessment(success_function, error_function, name, projectId){
     $.ajax({
@@ -201,6 +201,25 @@ function ajaxDeleteScreenshot(success_function, error_function, id){
     $.ajax({
         url: "/api/screenshot/" + id,
         type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Create an flag.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Flag name.
+ * @param {*} note Flag note.
+ * @param {*} assessmentId Assessment ID.
+ */
+function ajaxCreateFlag(success_function, error_function, title, note, assessmentId){
+    $.ajax({
+        url: "/api/flags/",
+        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"assessment":'+ JSON.stringify(assessmentId) + '}',
+        type: 'POST',
         success: success_function,
         error: error_function
     });
