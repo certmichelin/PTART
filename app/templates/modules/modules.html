@@ -18,7 +18,7 @@
                 <div class="col-lg-6">
                     <h3>New Module Master</h3>
                     {% if not methodologies %}
-                        <b>No Methodologies found. A Module will belong to a Methodology. So, <a href="/app/methodology-masters/">Create a Methodology</a> before creating a Module Master</b>
+                        <b>No Methodologies found. A Module will belong to a Methodology. So, <a href="/app/methodologies/">Create a Methodology</a> before creating a Module Master</b>
                     {% else %}
                         <form role="form" method="post">
                             {% if "success" == submitted %}
@@ -74,7 +74,7 @@
                                             {% for module_master in module_masters %}
                                                 <tr>
                                                     <td><a
-                                                            href="/app/module-master/{{ module_master.id }}/">{{module_master.name }}</a></td>
+                                                            href="/app/module/{{ module_master.id }}/">{{module_master.name }}</a></td>
                                                     <td>{{ module_master.methodology }}</td>
                                                 </tr>
                                             {% endfor %}

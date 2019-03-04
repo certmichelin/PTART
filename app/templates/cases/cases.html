@@ -18,7 +18,7 @@
                 <div class="col-lg-6">
                     <h3>New Case Master</h3>
                     {% if not modules %}
-                        <b>No Modules found. A Case Master will belong to a Module. So, <a href="/app/module-masters/">Create a module</a> before creating a Case Master</b>
+                        <b>No Modules found. A Case Master will belong to a Module. So, <a href="/app/modules/">Create a module</a> before creating a Case Master</b>
                     {% else %}
                         <form role="form" method="post">
                             {% if "success" == submitted %}
@@ -73,7 +73,7 @@
                                         <tbody>
                                             {% for case_master in case_masters %}
                                                 <tr>
-                                                    <td><a href="/app/case-master/{{ case_master.id }}/">{{case_master.name }}</a></td>
+                                                    <td><a href="/app/case/{{ case_master.id }}/">{{case_master.name }}</a></td>
                                                     <td>{{ case_master.module }}</td>
                                                 </tr>
                                             {% endfor %}
