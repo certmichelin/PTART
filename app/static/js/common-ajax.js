@@ -279,6 +279,25 @@ function ajaxGetTemplate(success_function, error_function, id){
 }
 
 /**
+ * Create a template.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} severity Template severity.
+ * @param {*} name Template name.
+ * @param {*} body Template body.
+ */
+function ajaxCreateTemplate(success_function, error_function, severity, name, body){
+    $.ajax({
+        url: "/api/templates/",
+        data: '{"severity":' + JSON.stringify(severity)+ ',"name":' + JSON.stringify(name)+ ',"body":' + JSON.stringify(body) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Load flags from module to an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.
