@@ -112,8 +112,8 @@
      */
      function sh0tCreationSuccess(data) {
         //Upload screenshots.
+        screenshotsToUpload = $('.screenshot_data').size();
         $('.screenshot_data').each(function () {
-            ++screenshotsToUpload;
             ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), data.id);
         });
         success($("#messages"), "Sh0t was created!");

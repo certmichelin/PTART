@@ -49,6 +49,10 @@
 
 {% block extra_foot %}
 <script language="javascript">
+    
+    var toDelete = 0;
+    var deleted = 0;
+
     $('#delBtn').on('click', function () {
         if (0 < $('input:checked').length) {
             bootbox.confirm({
@@ -66,14 +70,10 @@
                 callback: function (result) {
                     if (result) {
                         waitingDialog.show();
+                        toDelete = $('input:checked').size();
                         $('input:checked').each(function () {
-                            ajaxDeleteSh0t(function (data) { }, function (data) { }, $(this).val());
+                            ajaxDeleteSh0t(checkDeletionBatchStatus, checkDeletionBatchStatus, $(this).val());
                         });
-                        setTimeout(function () {
-                            waitingDialog.hide();
-                            bootbox.alert("The selected sh0t/s have been deleted");
-                            document.location.reload();
-                        }, 2000);
                     }
                 }
             });
@@ -81,5 +81,16 @@
             bootbox.alert("Select at least one sh0t!");
         }
     });
+
+    /**
+     * Check if all sh0ts has been deleted.
+     */ 
+     function checkDeletionBatchStatus(data) {
+        if(++deleted == toDelete){
+            waitingDialog.hide();
+            bootbox.alert("The selected sh0t/s have been deleted");
+            document.location.reload();
+        }
+    } 
 </script>
 {% endblock %}
