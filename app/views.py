@@ -185,12 +185,12 @@ def assessments_new(request):
 
 @login_required
 def sh0ts_new(request):
-    return render(request, 'sh0ts/sh0ts.html', {'assessments_list':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(), 'severities': [1,2,3,4,5], 'recent_sh0ts': Sh0t.objects.all().order_by('-added')[:10]})
+    return render(request, 'sh0ts/sh0ts.html', {'assessments_list':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(), 'severities': [1,2,3,4,5]})
 
 
 @login_required
 def flags_new(request):
-    return render(request, 'flags/flags.html', {'assessments_list': Assessment.objects.all().order_by('-added'), 'recent_flags': Flag.objects.filter(done=False).order_by('-added')[:10]})
+    return render(request, 'flags/flags.html', {'assessments_list': Assessment.objects.all().order_by('-added')})
 
 
 @login_required
