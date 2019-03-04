@@ -180,7 +180,7 @@ def projects_new(request):
 
 @login_required
 def assessments_new(request): 
-    return render(request, 'assessments/assessments.html', {'assessments': Assessment.objects.all().order_by('-added')[:10], 'projects': Project.objects.all().order_by('-added'), 'methodologies_list': Methodology.objects.all().order_by('order'), 'modules': Module.objects.all().order_by('order')})
+    return render(request, 'assessments/assessments.html', {'projects': Project.objects.all().order_by('-added'), 'methodologies_list': Methodology.objects.all(), 'modules': Module.objects.all()})
 
 
 @login_required
@@ -195,22 +195,22 @@ def flags_new(request):
 
 @login_required
 def templates_new(request):
-    return render(request, 'templates/templates.html', {'templates': Template.objects.all()[:10], 'severities': [1,2,3,4,5]})
+    return render(request, 'templates/templates.html', {'severities': [1,2,3,4,5]})
 
 
 @login_required
 def methodologies_new(request):
-    return render(request, 'methodologies/methodologies.html', {'methodologies': Methodology.objects.all()})
+    return render(request, 'methodologies/methodologies.html')
 
 
 @login_required
 def modules_new(request):
-    return render(request, 'modules/modules.html', {'modules': Module.objects.all(), 'methodologies': Methodology.objects.all()})
+    return render(request, 'modules/modules.html', {'methodologies': Methodology.objects.all()})
 
 
 @login_required
 def cases_new(request):
-    return render(request, 'cases/cases.html', {'cases': Case.objects.all().order_by('order')[:10], 'modules': Module.objects.all()})
+    return render(request, 'cases/cases.html', {'modules': Module.objects.all()})
 
 
 @login_required
