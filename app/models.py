@@ -175,7 +175,6 @@ class Template(models.Model):
 class Methodology(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
-    order = models.IntegerField(default=0)
 
     def __str__(self):  
         return self.name
@@ -188,7 +187,6 @@ class Methodology(models.Model):
 class Module(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(default="")
-    order = models.IntegerField(default=0)
     methodology = models.ForeignKey(Methodology, on_delete=models.CASCADE, null=True, default=None)
 
     def __str__(self):  
@@ -203,7 +201,6 @@ class Case(models.Model):
     name = models.CharField(max_length=100)
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
     description = models.TextField(default="")
-    order = models.IntegerField(default=0)
 
     def __str__(self):  
         return self.name

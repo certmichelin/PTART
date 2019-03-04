@@ -19,15 +19,14 @@ if not current_methodology :
     methodology = json.load(wahh_file)
 
     for method in methodology['checklist']['Functionality']:
-        module_master = Module(name=method, methodology=methodology_master, order=methodology['checklist']['Functionality'][method]['order'])
+        module_master = Module(name=method, methodology=methodology_master)
         module_master.save()
         for case in methodology['checklist']['Functionality'][method]['tests']:
-            order = '1' + str(methodology['checklist']['Functionality'][method]['order']) + str(methodology['checklist']['Functionality'][method]['tests'][case]['order'])
             descriptions_json = methodology['checklist']['Functionality'][method]['tests'][case]['description']
             description_consolidated = ""
             for description in descriptions_json:
                 description_consolidated = description_consolidated + description + '\n\n'
-            case = Case(name=case, description=description_consolidated, module=module_master, order=order)
+            case = Case(name=case, description=description_consolidated, module=module_master)
             case.save()
     print("Waah methodology has been imported !")
 else :

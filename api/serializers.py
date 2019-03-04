@@ -49,16 +49,16 @@ class TemplateSerializer(serializers.ModelSerializer):
 class CaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Case
-        fields = ('id', 'name', 'description', 'order', 'module')
+        fields = ('id', 'name', 'description', 'module')
 
 
 class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
-        fields = ('id', 'name', 'description', 'order', 'methodology')
+        fields = ('id', 'name', 'description', 'methodology')
 
 
 class MethodologySerializer(serializers.ModelSerializer):
     class Meta:
         model = Methodology
-        fields = ('id', 'name', 'description', 'order')
+        fields = ('id', 'name', 'description')
