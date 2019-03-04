@@ -1,60 +1,97 @@
 {% extends "base.html" %}
+
 {% load render_table from django_tables2 %}
+
 {% block title %} List Templates | sh00t{% endblock %}
 
+{% block extra_head %}
+<link href="/static/css/badges.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
 {% block page %}
-    <div id="page-wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Templates<a class="btn btn-danger pull-right" href="/app/templates/new" role="button">Create Template!</a></h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i>  <a href="/">Dashboard</a></li>
-                        <li class="active"><i class="fa fa-file-text"></i> Templates</li>
-                    </ol>
-                </div>
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Templates<a class="btn btn-danger pull-right" href="/app/templates/new"
+                        role="button">Create Template!</a></h1>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
+                    <li class="active"><i class="fa fa-file-text"></i> Templates</li>
+                </ol>
             </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-bullseye"></i> All Templates</h3>
-                        </div>
-                        <div class="panel-body">
-                            {% if count > 0 %}
-                                {% render_table table %}
-                                <div class="left">
-                                    <input type="button" value="Delete" id="delBtn" class="btn btn-danger" data-loading-text="Deleting.." />
-                            {% else %}
-                                <h4><a href="/app/templates/new/">Add a template</a></h4>
-                            {% endif %}
-                        </div>
+        </div>
+
+        {% include "_include/messages-container.html" %}
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-bullseye"></i> All Templates</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if count > 0 %}
+                            {% render_table table %}
+                            <div class="left">
+                                <input id="delBtn" type="button" value="Delete" class="btn btn-danger" />
+                            </div>
+                        {% else %}
+                            <h4><a href="/app/templates/new/">Add a template</a></h4>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
+
 {% block extra_foot %}
-<script src="/static/js/common-ajax.js"></script>
 <script language="javascript">
-$('#delBtn').on('click', function() {
-    if(isCheckedMin()) {
-        if(confirm("You are about to delete the selected template/s. Are you sure to continue?")) {
-            var $this = $(this);
-            $this.button('loading');
-            $('input:checked').each(function() {
-                $.ajax({
-                    url: '/api/template/' + $(this).val(),
-                    type: 'DELETE',
-                    headers: {"X-CSRFToken": getCSRFToken()},
-                });
+    
+    var toDelete = 0;
+    var deleted = 0;
+
+    $('#delBtn').on('click', function () {
+        if (0 < $('input:checked').length) {
+            bootbox.confirm({
+                message: "You are about to delete the selected template/s. Are you sure to continue?",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        waitingDialog.show();
+                        toDelete = $('input:checked').size();
+                        $('input:checked').each(function () {
+                            ajaxDeleteTemplate(checkDeletionBatchStatus, checkDeletionBatchStatus, $(this).val());
+                        });
+                    }
+                }
             });
-            alert("The selected template/s have been deleted");
+        } else {
+            bootbox.alert("Select at least one template!");
+        }
+    });
+
+    /**
+     * Check if all templates has been deleted.
+     */ 
+     function checkDeletionBatchStatus(data) {
+        if(++deleted == toDelete){
+            waitingDialog.hide();
+            bootbox.alert("The selected template/s have been deleted");
             document.location.reload();
         }
-    } else
-        $("#checkMin1").modal();
-});
+    } 
 </script>
 {% endblock %}

@@ -298,6 +298,22 @@ function ajaxCreateTemplate(success_function, error_function, severity, name, bo
 }
 
 /**
+ * Delete a template.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Template id.
+ */
+function ajaxDeleteTemplate(success_function, error_function, id){
+    $.ajax({
+        url: "/api/template/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Load flags from module to an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.
