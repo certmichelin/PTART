@@ -50,11 +50,7 @@ def sh0ts_all(request):
 
 @login_required
 def flags_all(request):
-    if request.GET.get('open', 'all') == 'all' :
-        return generic_all(request, Flag, FlagTable, 'flags/flags-list.html')
-    else :
-        return  generic_all_items(request, Flag.objects.filter(done=False), OpenFlagTable, 'flags/open-flags.html')
-
+    return generic_all(request, Flag, FlagTable, 'flags/flags-list.html')
 
 @login_required
 def templates_all(request):
