@@ -96,8 +96,13 @@ function addScreenshot(){
     $('#screenshotMaxId').val(parseInt(id) + 1);
     
     //add screenshot to gallery
-    $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: "screenshot_" + id, src:dataURL, class:"screenshot_data",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
+    createScreenshot(id, dataURL);
     resetScreenshotModal();
+}
+
+//Create screenshot in the screenshot cointainer.
+function createScreenshot(id, dataURL){
+    $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: "screenshot_" + id, src:dataURL, class:"screenshot_data",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
 }
 
 
@@ -124,5 +129,10 @@ function dragStop(ev) {
 function drop(ev) {
     ev.preventDefault();
     id = ev.dataTransfer.getData("text");
+    removeScreenshot(id);
+}
+
+//remove screenshot from HTML container.
+function removeScreenshot(id){
     $("#" + id).parent().remove();
 }

@@ -170,6 +170,22 @@ function ajaxUploadScreenshot(success_function, error_function, data, shotId){
 }
 
 /**
+ * Delete a screenshot.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Screenshot id.
+ */
+function ajaxDeleteScreenshot(success_function, error_function, id){
+    $.ajax({
+        url: "/api/screenshot/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Load flags from module to an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.
