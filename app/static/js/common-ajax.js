@@ -136,6 +136,27 @@ function ajaxCreateSh0t(success_function, error_function, severity, title, body,
 }
 
 /**
+ * Update a sh0t.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Sh0t id.
+ * @param {*} severity Sh0t severity.
+ * @param {*} title Sh0t title.
+ * @param {*} body Sh0t body.
+ * @param {*} assessmentId  Assessment id.
+ */
+function ajaxUpdateSh0t(success_function, error_function, id, severity, title, body, assessmentId){
+    $.ajax({
+        url: "/api/sh0t/" + id + "/",
+        data: '{"severity":' + JSON.stringify(severity)+ ',"title":' + JSON.stringify(title)+ ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Delete a sh0t.
  * 
  * @param {*} success_function function to call in case of ajax success.

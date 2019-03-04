@@ -71,6 +71,70 @@
     $('#severity option[value={{sh0t.severity}}]').attr('selected', 'selected');
 
     /**
+     * Update sh0t.
+     */
+     $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateSh0t(sh0tUpdateSuccess, sh0tUpdateFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
+    });
+
+    /**
+     * Sh0t update success callback.
+     */
+     function sh0tUpdateSuccess(data) {
+        success($("#messages"), "Sh0t was updated!");
+    }
+
+    /**
+     * Sh0t update failure callback.
+     */
+     function sh0tUpdateFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+    }
+
+     /**
+     * Sh0t deletion success callback.
+     */
+     function sh0tDeletionSuccess(data) {
+        success($("#messages"), "Sh0t was deleted! You will redirect in 2s!");
+        setTimeout(function () {
+            window.location.href = "/";
+        }, 2000);
+    }
+
+    /**
+     * Sh0t deletion failure callback.
+     */
+    function sh0tDeletionFailure(data) {
+        error($("#messages"), "Sh0t was not found");
+    }
+
+    /**
+     * Delete sh0t.
+     */
+    $('#delBtn').on('click', function () {
+        bootbox.confirm({
+            message: "Are you sure to delete the sh0t?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteSh0t(sh0tDeletionSuccess, sh0tDeletionFailure, $("#id").val());
+                }
+            }
+        });
+    });
+
+    /**
      * Override addScreenshot from screenshot.js in order to upload the file on the fly.
      */
     function addScreenshot() { 
