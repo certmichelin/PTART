@@ -298,6 +298,26 @@ function ajaxCreateTemplate(success_function, error_function, severity, name, bo
 }
 
 /**
+ * Update a template.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Template id.
+ * @param {*} severity Template severity.
+ * @param {*} name Template name.
+ * @param {*} body Template body.
+ */
+function ajaxUpdateTemplate(success_function, error_function, id, severity, name, body){
+    $.ajax({
+        url: "/api/template/" + id + "/",
+        data: '{"severity":' + JSON.stringify(severity)+ ',"name":' + JSON.stringify(name)+ ',"body":' + JSON.stringify(body) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Delete a template.
  * 
  * @param {*} success_function function to call in case of ajax success.
