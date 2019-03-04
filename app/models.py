@@ -133,17 +133,10 @@ class Screenshot(models.Model):
             result = img_f.read()
         return result
 
-    def create_screenshot(screenshot, sh0t):
-        """Create screenshot"""
-        decoded_string = ''
-        extension= screenshot.split(';')[0].split('/')[1]
-        b64_data = screenshot.split(',')[1]
-        file = "{}/{}.{}".format(self.upload_folder, uuid.uuid4(), extension)
-        with open(file, 'wb') as img_f:
-            img_f.write(base64.b64decode(b64_data))
-        screenshot_created = Screenshot.objects.create(screenshot=file,sh0t=sh0t)
-        screenshot_created.save()
-        return screenshot_created.save()
+    def delete(self):
+        """Delete file related to the screenshot"""
+        os.remove(self.screenshot.url)
+        super(Screenshot, self).delete()
 
     def __str__(self):  
         return self.screenshot
