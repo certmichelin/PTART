@@ -207,6 +207,22 @@ function ajaxDeleteScreenshot(success_function, error_function, id){
 }
 
 /**
+ * Delete a flag.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Flag id.
+ */
+function ajaxDeleteFlag(success_function, error_function, id){
+    $.ajax({
+        url: "/api/flag/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Get a template
  * 
  * @param {*} success_function function to call in case of ajax success.
