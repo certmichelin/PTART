@@ -352,6 +352,22 @@ function ajaxCreateMethodology(success_function, error_function, name, descripti
 }
 
 /**
+ * Delete a methodology.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Methodology id.
+ */
+function ajaxDeleteMethodology(success_function, error_function, id){
+    $.ajax({
+        url: "/api/methodology/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Load flags from module to an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.
