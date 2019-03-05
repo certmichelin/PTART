@@ -338,14 +338,33 @@ function ajaxDeleteTemplate(success_function, error_function, id){
  * 
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
- * @param {*} name Template name.
- * @param {*} body Template body.
+ * @param {*} name Methodology name.
+ * @param {*} body Methodology body.
  */
 function ajaxCreateMethodology(success_function, error_function, name, description){
     $.ajax({
         url: "/api/methodologies/",
         data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + '}',
         type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update a methodology.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Methodology id.
+ * @param {*} name Methodology name.
+ * @param {*} body Methodology body.
+ */
+function ajaxUpdateMethodology(success_function, error_function, id, name, description){
+    $.ajax({
+        url: "/api/methodology/" + id + "/",
+        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + '}',
+        type: 'PUT',
         success: success_function,
         error: error_function
     });
