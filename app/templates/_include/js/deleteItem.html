@@ -1,0 +1,48 @@
+<script language="javascript">
+
+    var toDelete = 0;
+    var deleted = 0;
+
+    /**
+     * Click on delete button.
+     */
+    $('#delBtn').on('click', function () {
+        if (0 < $('input:checked').length) {
+            bootbox.confirm({
+                message: "You are about to delete the selected {{item}}. Are you sure to continue?",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        waitingDialog.show();
+                        toDelete = $('input:checked').size();
+                        $('input:checked').each(function () {
+                            {{ajax_function}}(checkDeletionBatchStatus, checkDeletionBatchStatus, $(this).val());
+                        });
+                    }
+                }
+            });
+        } else {
+            bootbox.alert("Select at least one {{item}}!");
+        }
+    });
+
+    /**
+     * Check if all items has been deleted.
+     */
+    function checkDeletionBatchStatus(data) {
+        if (++deleted == toDelete) {
+            waitingDialog.hide();
+            bootbox.alert("The selected {{items}} have been deleted");
+            document.location.reload();
+        }
+    } 
+</script>

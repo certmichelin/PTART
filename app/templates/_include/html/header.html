@@ -1,0 +1,23 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            {{ item }}
+            {% if create_item_url and create_item_button_text %}
+                <a class="btn btn-primary pull-right" href="{{ create_item_url }}" role="button">{{create_item_button_text}}</a>
+            {% endif %}
+        </h1>
+        <ol class="breadcrumb">
+            <li>
+                <i class="fa fa-dashboard"></i> <a href="/">Dashboard</a>
+            </li>
+            {% if sub_text and sub_url and sub_icon %}
+                <li>
+                    <i class="{{sub_icon}}"></i><a href="{{sub_url}}">{{sub_text}}</a></li>
+                </li>
+            {% endif %}
+            <li class="active">
+                <i class="{{active_icon}}"></i> {{active_text}}
+            </li>
+        </ol>
+    </div>
+</div>

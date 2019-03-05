@@ -1,93 +1,16 @@
 {% extends "base.html" %}
-
-{% load render_table from django_tables2 %}
-
 {% block title %} List Flags | sh00t{% endblock %}
 
 {% block page %}
-    <div id="page-wrapper">
-        <div class="container-fluid">
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Flags<a class="btn btn-primary pull-right" href="/app/flags/new"
-                            role="button">Create Flag</a></h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                        <li class="active"><i class="fa fa-flag"></i> Flags</li>
-                    </ol>
-                </div>
-            </div>
-
-            {% include "_include/messages-container.html" %}
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-flag"></i> All Flags</h3>
-                        </div>
-                        <div class="panel-body">
-                            {% if count > 0 %}
-                                {% render_table table %}
-                                <div class="left">
-                                        <input id="delBtn" type="button" value="Delete" class="btn btn-danger" />
-                                </div>
-                            {% else %}
-                                <h4><a href="/app/flags/new">Add a flag</a> </h4>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div id="page-wrapper">
+    <div class="container-fluid">
+        {% include '_include/html/header.html' with item='Flag' create_item_url='/app/flags/new' create_item_button_text='Create Flag' active_icon='fa fa-flag' active_text='Flag' %}
+        {% include "_include/html/messages.html" %}
+        {% include '_include/html/list.html' with table=table list_icon='fa fa-flag' list_text='All Flags' create_item_url='/app/flags/new' create_item_text='Add a flag' %}
     </div>
+</div>
 {% endblock %}
 
 {% block extra_foot %}
-<script language="javascript">
-
-    var toDelete = 0;
-    var deleted = 0;
-
-    $('#delBtn').on('click', function () {
-        if (0 < $('input:checked').length) {
-            bootbox.confirm({
-                message: "You are about to delete the selected flag/s. Are you sure to continue?",
-                buttons: {
-                    confirm: {
-                        label: 'Yes',
-                        className: 'btn-success'
-                    },
-                    cancel: {
-                        label: 'No',
-                        className: 'btn-danger'
-                    }
-                },
-                callback: function (result) {
-                    if (result) {
-                        waitingDialog.show();
-                        toDelete = $('input:checked').size();
-                        $('input:checked').each(function () {
-                            ajaxDeleteFlag(checkDeletionBatchStatus, checkDeletionBatchStatus, $(this).val());
-                        });
-                    }
-                }
-            });
-        } else {
-            bootbox.alert("Select at least one flag!");
-        }
-    });
-
-    /**
-     * Check if all flags has been deleted.
-     */ 
-     function checkDeletionBatchStatus(data) {
-        if(++deleted == toDelete){
-            waitingDialog.hide();
-            bootbox.alert("The selected flag/s have been deleted");
-            document.location.reload();
-        }
-    } 
-</script>
+    {% include '_include/js/deleteItem.html' with item='flag' items='flag/s' ajax_function='ajaxDeleteFlag' %}
 {% endblock %}
