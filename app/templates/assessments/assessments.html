@@ -4,19 +4,10 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Assessments</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li class="active"><i class="fa fa-cube"></i> Assessments</li>
-                </ol>
-            </div>
-        </div>
 
+        {% include '_include/html/header.html' with item='assessments' active_icon='fa fa-cube' active_text='Assessments' %}
         {% include "_include/html/messages.html" %}
-
+        
         <!-- Assessment creation form -->
         <div class="row">
             <div class="col-lg-12">

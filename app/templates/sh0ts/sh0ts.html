@@ -11,19 +11,10 @@
     
     <div id="page-wrapper">
         <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Sh0ts</h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i>  <a href="/">Dashboard</a></li>
-                        <li class="active"><i class="fa fa-bullseye"></i> Sh0ts</li>
-                    </ol>
-                </div>
-            </div>
 
+            {% include '_include/html/header.html' with item='sh0ts' active_icon='fa fa-bullseye' active_text='Sh0ts' %}
             {% include "_include/html/messages.html" %}
-
+            
             <!-- Sh0t creation form -->
             <div class="row">
                 <div class="col-lg-8">

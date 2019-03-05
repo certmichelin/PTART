@@ -4,17 +4,8 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Templates</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li class="active"><i class="fa fa-file-text"></i> Templates</li>
-                </ol>
-            </div>
-        </div>
 
+        {% include '_include/html/header.html' with item='templates' active_icon='fa fa-file-text' active_text='Templates' %}
         {% include "_include/html/messages.html" %}
 
         <!-- Templates creation form -->
@@ -48,23 +39,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Template creation success callback.
-     */
-     function templateCreationSuccess(data) {
-        $("#name").val("");
-        $("#body").val("");
-        success($("#messages"), "Template was created!");
-    }
-
-    /**
-     * Create template.
-     */
-    $('#createBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxCreateTemplate(templateCreationSuccess, commonFailure, $("#severity").val(), $("#name").val(), $("#body").val());
-    });
-</script>
+    {% include '_include/js/createItem.html' with item='Template' ajax_function='ajaxCreateTemplate' params='severity,name,body' %}
 {% endblock %}

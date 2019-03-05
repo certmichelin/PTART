@@ -4,19 +4,10 @@
 {% block page %}
     <div id="page-wrapper">
         <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Flags</h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i>  <a href="/">Dashboard</a></li>
-                        <li class="active"><i class="fa fa-flag"></i> Flags</li>
-                    </ol>
-                </div>
-            </div>
 
+            {% include '_include/html/header.html' with item='flags' active_icon='fa fa-flag' active_text='Flags' %}
             {% include "_include/html/messages.html" %}
-
+        
             <!-- Flag creation form -->
             <div class="row">
                 <div class="col-lg-12">
@@ -52,23 +43,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Flag creation success callback.
-     */
-     function flagCreationSuccess(data) {
-        $("#title").val("");
-        $("#note").val("");
-        success($("#messages"), "Flag was created!");
-    }
-
-    /**
-     * Create flag.
-     */
-    $('#createBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxCreateFlag(flagCreationSuccess, commonFailure, $("#title").val(), $("#note").val(), $("#assessment").val());
-    });
-</script>
+    {% include '_include/js/createItem.html' with item='Flag' ajax_function='ajaxCreateFlag' params='title,note,assessment' %}
 {% endblock %}

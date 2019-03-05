@@ -4,17 +4,8 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Methodologies</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li class="active"><i class="fa fa-file-text"></i> Methodology</li>
-                </ol>
-            </div>
-        </div>
-
+            
+        {% include '_include/html/header.html' with item='methodologies' active_icon='fa fa-file-text' active_text='Methodologies' %}
         {% include "_include/html/messages.html" %}
 
         <!-- Methodology creation form -->
@@ -40,23 +31,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Methodology creation success callback.
-     */
-     function methodologyCreationSuccess(data) {
-        $("#name").val("");
-        $("#description").val("");
-        success($("#messages"), "Methodology was created!");
-    }
-
-    /**
-     * Create methodology.
-     */
-    $('#createBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxCreateMethodology(methodologyCreationSuccess, commonFailure, $("#name").val(), $("#description").val());
-    });
-</script>
+    {% include '_include/js/createItem.html' with item='Methodology' ajax_function='ajaxCreateMethodology' params='name,description' %}
 {% endblock %}

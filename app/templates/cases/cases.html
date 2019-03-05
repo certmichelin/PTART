@@ -4,19 +4,10 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Case</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li class="active"><i class="fa fa-file-text"></i> Case</li>
-                </ol>
-            </div>
-        </div>
 
-        {% include "_include/html/messages.html" %}
-
+        {% include '_include/html/header.html' with item='cases' active_icon='fa fa-file-text' active_text='Cases' %}
+        {% include "_include/html/messages.html" %} 
+        
         <!-- Case creation form -->
         <div class="row">
             <div class="col-lg-12">
@@ -52,23 +43,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Case creation success callback.
-     */
-     function caseCreationSuccess(data) {
-        $("#name").val("");
-        $("#description").val("");
-        success($("#messages"), "Case was created!");
-    }
-
-    /**
-     * Create case.
-     */
-    $('#createBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxCreateCase(caseCreationSuccess, commonFailure, $("#name").val(), $("#description").val(), $("#module").val());
-    });
-</script>
+    {% include '_include/js/createItem.html' with item='Case' ajax_function='ajaxCreateCase' params='name,description,module' %}
 {% endblock %}

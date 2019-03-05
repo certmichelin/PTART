@@ -4,17 +4,8 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Module</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li class="active"><i class="fa fa-file-text"></i> Module</li>
-                </ol>
-            </div>
-        </div>
 
+        {% include '_include/html/header.html' with item='modules' active_icon='fa fa-file-text' active_text='Modules' %}
         {% include "_include/html/messages.html" %}
 
         <!-- Module creation form -->
@@ -52,23 +43,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Module creation success callback.
-     */
-     function moduleCreationSuccess(data) {
-        $("#name").val("");
-        $("#description").val("");
-        success($("#messages"), "Module was created!");
-    }
-
-    /**
-     * Create module.
-     */
-    $('#createBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxCreateModule(moduleCreationSuccess, commonFailure, $("#name").val(), $("#description").val(), $("#methodology").val());
-    });
-</script>
+    {% include '_include/js/createItem.html' with item='Module' ajax_function='ajaxCreateModule' params='name,description,methodology' %}
 {% endblock %}
