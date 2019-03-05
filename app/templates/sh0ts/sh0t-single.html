@@ -99,7 +99,7 @@
     function sh0tDeletionSuccess(data) {
         success($("#messages"), "Sh0t was deleted! You will redirect in 2s!");
         setTimeout(function () {
-            window.location.href = "/";
+            history.go(-1);
         }, 2000);
     }
 

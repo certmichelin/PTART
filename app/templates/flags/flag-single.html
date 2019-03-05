@@ -82,7 +82,7 @@
     function flagDeletionSuccess(data) {
         success($("#messages"), "Flag was deleted! You will redirect in 2s!");
         setTimeout(function () {
-            window.location.href = "/";
+            history.go(-1);
         }, 2000);
     }
 
