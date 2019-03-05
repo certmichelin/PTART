@@ -442,6 +442,61 @@ function ajaxDeleteModule(success_function, error_function, id){
 }
 
 /**
+ * Create a case.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Case name.
+ * @param {*} description Case description.
+ * @param {*} module Case module.
+ */
+function ajaxCreateCase(success_function, error_function, name, description, module){
+    $.ajax({
+        url: "/api/cases/",
+        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + ',"module":' + JSON.stringify(module) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update a case.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Case id.
+ * @param {*} name Case name.
+ * @param {*} description Case description.
+ * @param {*} module Case module.
+ */
+function ajaxUpdateCase(success_function, error_function, id, name, description, module){
+    $.ajax({
+        url: "/api/case/" + id + "/",
+        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description)+ ',"module":' + JSON.stringify(module) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete a case.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Case id.
+ */
+function ajaxDeleteCase(success_function, error_function, id){
+    $.ajax({
+        url: "/api/case/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Load flags from module to an assessment.
  * 
  * @param {*} success_function function to call in case of ajax success.

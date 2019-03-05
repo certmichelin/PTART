@@ -2,97 +2,80 @@
 {% block title %} Case | sh00t{% endblock %}
 
 {% block page %}
-    <div id="page-wrapper">
-        <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Case</h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i>  <a href="/">Dashboard</a></li>
-                        <li class="active"><i class="fa fa-file-text"></i> Case</li>
-                    </ol>
-                </div>
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Case</h1>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
+                    <li class="active"><i class="fa fa-file-text"></i> Case</li>
+                </ol>
             </div>
-            <div class="row">
-                <div class="col-lg-6">
-                    <h3>New Case</h3>
-                    {% if not modules %}
-                        <b>No Modules found. A Case will belong to a Module. So, <a href="/app/modules/">Create a module</a> before creating a Case</b>
-                    {% else %}
-                        <form role="form" method="post">
-                            {% if "success" == submitted %}
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="alert alert-info alert-dismissable">
-                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> <i class="fa fa-info-circle"></i> Submitted
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input class="form-control" name="name" autocomplete="off" />
-                            </div>
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea class="form-control" rows="10" name="description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Modules</label>
-                                <select name="module_id" class="form-control">
-                                    {% for module in modules %}
-                                        <option value="{{ module.id }}">{{ module.name}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Order</label>
-                                <input type="number" class="form-control" name="order" autocomplete="off" />
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            {% csrf_token %}
-                        </form>
-                    {% endif %}
-                </div>
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-file-text"></i> Recent Case</h3>
-                        </div>
-                        <div class="panel-body">
-                            {% if cases %}
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Module</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for case in cases %}
-                                                <tr>
-                                                    <td><a href="/app/case/{{ case.id }}/">{{case.name }}</a></td>
-                                                    <td>{{ case.module }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="text-right">
-                                    <a href="/admin/app/casemaster/" target="_blank">View All <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            {% else %}
-                                <h4><i class="fa fa-arrow-left"></i> Add a Case</h4>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
+
+        {% include "_include/messages-container.html" %}
+
+        <!-- Case creation form -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>New Case</h3>
+                {% if not modules %}
+                    <b>No Modules found. A Case will belong to a Module. So, <a href="/app/modules/">Create a Module</a> before creating a Case</b>
+                {% else %}
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input class="form-control" id="name" autocomplete="off" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" rows="10" id="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Module</label>
+                        <select id="module" class="form-control">
+                            {% for module in modules %}
+                            <option value="{{ module.id }}">{{ module.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
+                {% endif %}
+            </div>
+        </div>
+        <!-- /.row -->
     </div>
-    <!-- /#page-wrapper -->
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block extra_foot %}
+<script type="text/javascript">
+
+    /**
+     * Case creation success callback.
+     */
+     function caseCreationSuccess(data) {
+        $("#name").val("");
+        $("#description").val("");
+        success($("#messages"), "Case was created!");
+    }
+
+    /**
+     * Case creation failure callback.
+     */
+    function caseCreationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+    }
+
+    /**
+     * Create case.
+     */
+    $('#createBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateCase(caseCreationSuccess, caseCreationFailure, $("#name").val(), $("#description").val(), $("#module").val());
+    });
+</script>
 {% endblock %}
