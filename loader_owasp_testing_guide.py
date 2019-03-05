@@ -16,12 +16,12 @@ if not current_methodology :
     methodology = Methodology(name="OWASP Testing Guide V4")
     methodology.save()
     owasp_file = open('data/owasp_testing_guide_v4.json', 'r')
-    methodology = json.load(owasp_file)
-    for method in methodology['modules']:
+    methodology_json = json.load(owasp_file)
+    for method in methodology_json['modules']:
         module = Module(name=method, methodology=methodology)
         module.save()
-        for case in methodology['modules'][method]['tests']:
-            steps = methodology['modules'][method]['tests'][case]['steps']
+        for case in methodology_json['modules'][method]['tests']:
+            steps = methodology_json['modules'][method]['tests'][case]['steps']
             steps_consolidated = ""
             for step in steps:
                 steps_consolidated = steps_consolidated + step + '\n\n'

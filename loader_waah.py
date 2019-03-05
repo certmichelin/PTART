@@ -16,13 +16,13 @@ if not current_methodology :
     methodology = Methodology(name="WAHH")
     methodology.save()
     wahh_file = open('data/wahh.json',  'rt', encoding='latin1')
-    methodology = json.load(wahh_file)
+    methodology_json = json.load(wahh_file)
 
-    for method in methodology['checklist']['Functionality']:
+    for method in methodology_json['checklist']['Functionality']:
         module = Module(name=method, methodology=methodology)
         module.save()
-        for case in methodology['checklist']['Functionality'][method]['tests']:
-            descriptions_json = methodology['checklist']['Functionality'][method]['tests'][case]['description']
+        for case in methodology_json['checklist']['Functionality'][method]['tests']:
+            descriptions_json = methodology_json['checklist']['Functionality'][method]['tests'][case]['description']
             description_consolidated = ""
             for description in descriptions_json:
                 description_consolidated = description_consolidated + description + '\n\n'
