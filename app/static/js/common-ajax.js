@@ -339,7 +339,7 @@ function ajaxDeleteTemplate(success_function, error_function, id){
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} name Methodology name.
- * @param {*} body Methodology body.
+ * @param {*} description Methodology description.
  */
 function ajaxCreateMethodology(success_function, error_function, name, description){
     $.ajax({
@@ -358,7 +358,7 @@ function ajaxCreateMethodology(success_function, error_function, name, descripti
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Methodology id.
  * @param {*} name Methodology name.
- * @param {*} body Methodology body.
+ * @param {*} description Methodology description.
  */
 function ajaxUpdateMethodology(success_function, error_function, id, name, description){
     $.ajax({
@@ -380,6 +380,61 @@ function ajaxUpdateMethodology(success_function, error_function, id, name, descr
 function ajaxDeleteMethodology(success_function, error_function, id){
     $.ajax({
         url: "/api/methodology/" + id,
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Create a module.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Module name.
+ * @param {*} description Module description.
+ * @param {*} methodology Module methodology.
+ */
+function ajaxCreateModule(success_function, error_function, name, description, methodology){
+    $.ajax({
+        url: "/api/modules/",
+        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + ',"methodology":' + JSON.stringify(methodology) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update a module.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Module id.
+ * @param {*} name Module name.
+ * @param {*} description Module description.
+ * @param {*} methodology Module methodology.
+ */
+function ajaxUpdateModule(success_function, error_function, id, name, description, methodology){
+    $.ajax({
+        url: "/api/module/" + id + "/",
+        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description)+ ',"methodology":' + JSON.stringify(methodology) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete a module.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Module id.
+ */
+function ajaxDeleteModule(success_function, error_function, id){
+    $.ajax({
+        url: "/api/module/" + id,
         type: 'DELETE',
         success: success_function,
         error: error_function

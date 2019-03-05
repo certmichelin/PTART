@@ -2,98 +2,80 @@
 {% block title %} Module | sh00t{% endblock %}
 
 {% block page %}
-    <div id="page-wrapper">
-        <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Module</h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i>  <a href="/">Dashboard</a></li>
-                        <li class="active"><i class="fa fa-file-text"></i> Module</li>
-                    </ol>
-                </div>
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Module</h1>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
+                    <li class="active"><i class="fa fa-file-text"></i> Module</li>
+                </ol>
             </div>
-            <div class="row">
-                <div class="col-lg-6">
-                    <h3>New Module</h3>
-                    {% if not methodologies %}
-                        <b>No Methodologies found. A Module will belong to a Methodology. So, <a href="/app/methodologies/">Create a Methodology</a> before creating a Module</b>
-                    {% else %}
-                        <form role="form" method="post">
-                            {% if "success" == submitted %}
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="alert alert-info alert-dismissable">
-                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> <i class="fa fa-info-circle"></i> Submitted
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            <div class="form-group">
-                                <label>Name</label>
-                                <input class="form-control" name="name" autocomplete="off" />
-                            </div>
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea class="form-control" rows="10" name="description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Methodology</label>
-                                <select name="methodology_id" class="form-control">
-                                    {% for methodology in methodologies %}
-                                        <option value="{{ methodology.id }}">{{ methodology.name}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Order</label>
-                                <input type="number" class="form-control" name="order" autocomplete="off" />
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            {% csrf_token %}
-                        </form>
-                    {% endif %}
-                </div>
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-file-text"></i> Recent Module</h3>
-                        </div>
-                        <div class="panel-body">
-                            {% if modules %}
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Methodology</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for module in modules %}
-                                                <tr>
-                                                    <td><a
-                                                            href="/app/module/{{ module.id }}/">{{module.name }}</a></td>
-                                                    <td>{{ module.methodology }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="text-right">
-                                    <a href="/admin/app/modulemaster/" target="_blank">View All <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            {% else %}
-                                <h4><i class="fa fa-arrow-left"></i> Add a Module</h4>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
+
+        {% include "_include/messages-container.html" %}
+
+        <!-- Module creation form -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>New Module</h3>
+                {% if not methodologies %}
+                    <b>No Methodologies found. A Module will belong to a Methodology. So, <a href="/app/methodologies/">Create a Methodology</a> before creating a Module</b>
+                {% else %}
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input class="form-control" id="name" autocomplete="off" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" rows="10" id="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Methodology</label>
+                        <select id="methodology" class="form-control">
+                            {% for methodology in methodologies %}
+                            <option value="{{ methodology.id }}">{{ methodology.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
+                {% endif %}
+            </div>
+        </div>
+        <!-- /.row -->
     </div>
-    <!-- /#page-wrapper -->
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block extra_foot %}
+<script type="text/javascript">
+
+    /**
+     * Module creation success callback.
+     */
+     function moduleCreationSuccess(data) {
+        $("#name").val("");
+        $("#description").val("");
+        success($("#messages"), "Module was created!");
+    }
+
+    /**
+     * Module creation failure callback.
+     */
+    function moduleCreationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+    }
+
+    /**
+     * Create module.
+     */
+    $('#createBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateModule(moduleCreationSuccess, moduleCreationFailure, $("#name").val(), $("#description").val(), $("#methodology").val());
+    });
+</script>
 {% endblock %}
