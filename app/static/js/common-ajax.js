@@ -39,7 +39,7 @@ function ajaxCreateProject(success_function, error_function, name, scope){
 function ajaxUpdateProject(success_function, error_function, id, name, scope){
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(name) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
