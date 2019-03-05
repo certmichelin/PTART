@@ -55,18 +55,11 @@
     }
 
     /**
-     * Assessment updation failure callback.
-     */
-    function assessmentUpdationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Update assessment.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateAssessment(assessmentUpdationSuccess, assessmentUpdationFailure, $("#id").val(), $("#name").val(), $("#project").val());
+        ajaxUpdateAssessment(assessmentUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#project").val());
     });
 
     /**
@@ -77,13 +70,6 @@
         setTimeout(function () {
             history.go(-1);
         }, 2000);
-    }
-
-    /**
-     * Assessment deletion failure callback.
-     */
-    function assessmentDeletionFailure(data) {
-        error($("#messages"), "Assessment was not found");
     }
 
     /**
@@ -105,7 +91,7 @@
             callback: function (result) {
                 if (result) {
                     cleanMessagesContainer($("#messages"));
-                    ajaxDeleteAssessment(assessmentDeletionSuccess, assessmentDeletionFailure, $("#id").val());
+                    ajaxDeleteAssessment(assessmentDeletionSuccess, commonFailure, $("#id").val());
                 }
             }
         });

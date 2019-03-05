@@ -52,18 +52,11 @@
     }
 
     /**
-     * Methodology creation failure callback.
-     */
-    function methodologyCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Create methodology.
      */
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateMethodology(methodologyCreationSuccess, methodologyCreationFailure, $("#name").val(), $("#description").val());
+        ajaxCreateMethodology(methodologyCreationSuccess, commonFailure, $("#name").val(), $("#description").val());
     });
 </script>
 {% endblock %}

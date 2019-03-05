@@ -64,18 +64,11 @@
     }
 
     /**
-     * Module creation failure callback.
-     */
-    function moduleCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Create module.
      */
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateModule(moduleCreationSuccess, moduleCreationFailure, $("#name").val(), $("#description").val(), $("#methodology").val());
+        ajaxCreateModule(moduleCreationSuccess, commonFailure, $("#name").val(), $("#description").val(), $("#methodology").val());
     });
 </script>
 {% endblock %}

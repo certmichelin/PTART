@@ -64,18 +64,11 @@
     }
 
     /**
-     * Flag creation failure callback.
-     */
-    function flagCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Create flag.
      */
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateFlag(flagCreationSuccess, flagCreationFailure, $("#title").val(), $("#note").val(), $("#assessment").val());
+        ajaxCreateFlag(flagCreationSuccess, commonFailure, $("#title").val(), $("#note").val(), $("#assessment").val());
     });
 </script>
 {% endblock %}

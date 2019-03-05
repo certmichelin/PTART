@@ -52,18 +52,11 @@
     }
 
     /**
-     * Project creation failure callback.
-     */
-    function projectCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Create project.
      */
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, projectCreationFailure, $("#name").val(), $("#scope").val());
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val());
     });
 </script>
 {% endblock %}

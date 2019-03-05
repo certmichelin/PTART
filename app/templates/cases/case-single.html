@@ -57,18 +57,11 @@
     }
 
     /**
-     * Case updation failure callback.
-     */
-    function caseUpdationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Update case.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateCase(caseUpdationSuccess, caseUpdationFailure, $("#id").val(), $("#name").val(), $("#description").val(), $("#module").val());
+        ajaxUpdateCase(caseUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#description").val(), $("#module").val());
     });
 
     /**

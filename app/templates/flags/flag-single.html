@@ -62,18 +62,11 @@
     }
 
     /**
-     * Flag updation failure callback.
-     */
-    function flagUpdationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Update flag.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateFlag(flagUpdationSuccess, flagUpdationFailure, $("#id").val(), $("#title").val(), $("#note").val(), $("#done").val(), $("#assessment").val());
+        ajaxUpdateFlag(flagUpdationSuccess, commonFailure, $("#id").val(), $("#title").val(), $("#note").val(), $("#done").val(), $("#assessment").val());
     });
 
     /**

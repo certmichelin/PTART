@@ -76,7 +76,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateSh0t(sh0tUpdateSuccess, sh0tUpdateFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
+        ajaxUpdateSh0t(sh0tUpdateSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });
 
     /**
@@ -84,13 +84,6 @@
      */
     function sh0tUpdateSuccess(data) {
         success($("#messages"), "Sh0t was updated!");
-    }
-
-    /**
-     * Sh0t update failure callback.
-     */
-    function sh0tUpdateFailure(data) {
-        errorList($("#messages"), data.responseJSON);
     }
 
     /**
@@ -141,7 +134,7 @@
     function addScreenshot() {
         var dataURL = $("#screenshotData").val()
         if (dataURL !== "") {
-            ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, dataURL, $("#id").val());
+            ajaxUploadScreenshot(screenshotCreationSuccess, commonFailure, dataURL, $("#id").val());
         } else {
             bootbox.alert("No screenshot is pasted!")
         }
@@ -153,7 +146,7 @@
     function drop(ev) {
         ev.preventDefault();
         id = ev.dataTransfer.getData("text");
-        ajaxDeleteScreenshot(screenshotDeletionSuccess, screenshotDeletionFailure, id.replace("screenshot_", ""));
+        ajaxDeleteScreenshot(screenshotDeletionSuccess, commonFailure, id.replace("screenshot_", ""));
     }
 
     /**
@@ -165,24 +158,10 @@
     }
 
     /**
-     * Screenshot creation failure callback.
-     */
-    function screenshotCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Screenshot deletion success callback.
      */
     function screenshotDeletionSuccess(data) {
         removeScreenshot("screenshot_" + data.id);
-    }
-
-    /**
-     * Screenshot deletion failure callback.
-     */
-    function screenshotDeletionFailure(data) {
-        errorList($("#messages"), data.responseJSON);
     }
 </script>
 {% endblock %}

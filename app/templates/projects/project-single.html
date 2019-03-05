@@ -49,18 +49,11 @@
     }
 
     /**
-     * Project updation failure callback.
-     */
-    function projectUpdationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Update project.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, projectUpdationFailure, $("#id").val(), $("#name").val(), $("#scope").val());
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#scope").val());
     });
 
     /**

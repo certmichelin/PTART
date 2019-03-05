@@ -64,18 +64,11 @@
     }
 
     /**
-     * Case creation failure callback.
-     */
-    function caseCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Create case.
      */
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateCase(caseCreationSuccess, caseCreationFailure, $("#name").val(), $("#description").val(), $("#module").val());
+        ajaxCreateCase(caseCreationSuccess, commonFailure, $("#name").val(), $("#description").val(), $("#module").val());
     });
 </script>
 {% endblock %}

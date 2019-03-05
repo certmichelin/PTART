@@ -89,18 +89,11 @@
     }
 
     /**
-     * Assessment creation failure callback.
-     */
-    function assessmentCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Create assessment.
      */
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateAssessment(assessmentCreationSuccess, assessmentCreationFailure, $("#name").val(), $("#project").val());
+        ajaxCreateAssessment(assessmentCreationSuccess, commonFailure, $("#name").val(), $("#project").val());
     });
 </script>
 {% endblock %}

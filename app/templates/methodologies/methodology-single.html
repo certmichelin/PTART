@@ -53,18 +53,11 @@
     }
 
     /**
-     * Methodology updation failure callback.
-     */
-    function methodologyUpdationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Update methodology.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateMethodology(methodologyUpdationSuccess, methodologyUpdationFailure, $("#id").val(), $("#name").val(), $("#description").val());
+        ajaxUpdateMethodology(methodologyUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#description").val());
     });
 
     /**

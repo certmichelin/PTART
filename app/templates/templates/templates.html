@@ -60,18 +60,11 @@
     }
 
     /**
-     * Template creation failure callback.
-     */
-    function templateCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Create template.
      */
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateTemplate(templateCreationSuccess, templateCreationFailure, $("#severity").val(), $("#name").val(), $("#body").val());
+        ajaxCreateTemplate(templateCreationSuccess, commonFailure, $("#severity").val(), $("#name").val(), $("#body").val());
     });
 </script>
 {% endblock %}

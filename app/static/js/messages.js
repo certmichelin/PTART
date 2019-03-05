@@ -36,22 +36,28 @@ function cleanMessagesContainer(container) {
 /**
  * Generic message. 
  */
-function genericMessage(parent, message, alertClass){
-    parent.append($('<div>',{class:alertClass,"role":"alert"}).text(message).append($('<button>',{type:"button",class:"close","data-dismiss":"alert","aria-hidden":"true"}).text("×")));
+function genericMessage(parent, message, alertClass) {
+    parent.append($('<div>', { class: alertClass, "role": "alert" }).text(message).append($('<button>', { type: "button", class: "close", "data-dismiss": "alert", "aria-hidden": "true" }).text("×")));
 }
 
 /**
  * Generic bulk messages.
  */
 function genericMessageList(parent, jsonResponse, alertClass) {
-    jQuery.each(jsonResponse, function(param, messages) {
+    jQuery.each(jsonResponse, function (param, messages) {
         if (Array.isArray(messages)) {
-            jQuery.each(messages, function() {
-                genericMessage(parent,param + " : " + this, alertClass);
+            jQuery.each(messages, function () {
+                genericMessage(parent, param + " : " + this, alertClass);
             });
         } else {
-            genericMessage(parent,param + " : " + messages, alertClass);
+            genericMessage(parent, param + " : " + messages, alertClass);
         }
     });
 }
 
+/**
+ * Generic failure callback for ajax-common.
+ */
+function commonFailure(data) {
+    errorList($("#messages"), data.responseJSON);
+}

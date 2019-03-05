@@ -94,16 +94,9 @@
             $('#body').val("");
         }
         else {
-            ajaxGetTemplate(templateGetSuccess,templateGetFailure,template_id);
+            ajaxGetTemplate(templateGetSuccess,commonFailure,template_id);
         }
     });
-
-    /**
-     * Template get failure callback.
-     */
-     function templateGetFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
 
     /**
      * Template get success callback.
@@ -128,13 +121,6 @@
             });
         }
         success($("#messages"), "Sh0t was created!");
-    }
-
-    /**
-     * Sh0t creation failure callback.
-     */
-     function sh0tCreationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
     }
 
     /**
@@ -175,7 +161,7 @@
     $('#createBtn').on('click', function () {
         waitingDialog.show();
         cleanMessagesContainer($("#messages"));
-        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
+        ajaxCreateSh0t(sh0tCreationSuccess, commonFailure, $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });
 </script>
 {% endblock %}

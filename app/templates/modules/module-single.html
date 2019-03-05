@@ -57,18 +57,11 @@
     }
 
     /**
-     * Module updation failure callback.
-     */
-    function moduleUpdationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Update module.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateModule(moduleUpdationSuccess, moduleUpdationFailure, $("#id").val(), $("#name").val(), $("#description").val(), $("#methodology").val());
+        ajaxUpdateModule(moduleUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#description").val(), $("#methodology").val());
     });
 
     /**

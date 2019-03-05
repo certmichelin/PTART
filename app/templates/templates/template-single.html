@@ -57,18 +57,11 @@
     }
 
     /**
-     * Template updation failure callback.
-     */
-    function templateUpdationFailure(data) {
-        errorList($("#messages"), data.responseJSON);
-    }
-
-    /**
      * Update template.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateTemplate(templateUpdationSuccess, templateUpdationFailure, $("#id").val(), $("#severity").val(), $("#name").val(), $("#body").val());
+        ajaxUpdateTemplate(templateUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#name").val(), $("#body").val());
     });
 
     /**
