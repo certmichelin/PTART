@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} Module Master | sh00t{% endblock %}
+{% block title %} Module | sh00t{% endblock %}
 
 {% block page %}
     <div id="page-wrapper">
@@ -7,18 +7,18 @@
             <!-- Page Heading -->
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Module Masters</h1>
+                    <h1 class="page-header">Module</h1>
                     <ol class="breadcrumb">
                         <li><i class="fa fa-dashboard"></i>  <a href="/">Dashboard</a></li>
-                        <li class="active"><i class="fa fa-file-text"></i> Module Master</li>
+                        <li class="active"><i class="fa fa-file-text"></i> Module</li>
                     </ol>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-6">
-                    <h3>New Module Master</h3>
+                    <h3>New Module</h3>
                     {% if not methodologies %}
-                        <b>No Methodologies found. A Module will belong to a Methodology. So, <a href="/app/methodologies/">Create a Methodology</a> before creating a Module Master</b>
+                        <b>No Methodologies found. A Module will belong to a Methodology. So, <a href="/app/methodologies/">Create a Methodology</a> before creating a Module</b>
                     {% else %}
                         <form role="form" method="post">
                             {% if "success" == submitted %}
@@ -40,7 +40,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Methodology</label>
-                                <select name="methodology_master_id" class="form-control">
+                                <select name="methodology_id" class="form-control">
                                     {% for methodology in methodologies %}
                                         <option value="{{ methodology.id }}">{{ methodology.name}}</option>
                                     {% endfor %}
@@ -58,10 +58,10 @@
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title"><i class="fa fa-file-text"></i> Recent Module Masters</h3>
+                            <h3 class="panel-title"><i class="fa fa-file-text"></i> Recent Module</h3>
                         </div>
                         <div class="panel-body">
-                            {% if module_masters %}
+                            {% if modules %}
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-hover table-striped">
                                         <thead>
@@ -71,11 +71,11 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for module_master in module_masters %}
+                                            {% for module in modules %}
                                                 <tr>
                                                     <td><a
-                                                            href="/app/module/{{ module_master.id }}/">{{module_master.name }}</a></td>
-                                                    <td>{{ module_master.methodology }}</td>
+                                                            href="/app/module/{{ module.id }}/">{{module.name }}</a></td>
+                                                    <td>{{ module.methodology }}</td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
@@ -85,7 +85,7 @@
                                     <a href="/admin/app/modulemaster/" target="_blank">View All <i class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             {% else %}
-                                <h4><i class="fa fa-arrow-left"></i> Add a Module Master</h4>
+                                <h4><i class="fa fa-arrow-left"></i> Add a Module</h4>
                             {% endif %}
                         </div>
                     </div>

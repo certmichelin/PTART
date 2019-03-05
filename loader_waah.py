@@ -13,20 +13,20 @@ from app.models import Methodology, Module, Case
 
 current_methodology = Methodology.objects.filter(name="WAHH")
 if not current_methodology :
-    methodology_master = Methodology(name="WAHH")
-    methodology_master.save()
+    methodology = Methodology(name="WAHH")
+    methodology.save()
     wahh_file = open('data/wahh.json',  'rt', encoding='latin1')
     methodology = json.load(wahh_file)
 
     for method in methodology['checklist']['Functionality']:
-        module_master = Module(name=method, methodology=methodology_master)
-        module_master.save()
+        module = Module(name=method, methodology=methodology)
+        module.save()
         for case in methodology['checklist']['Functionality'][method]['tests']:
             descriptions_json = methodology['checklist']['Functionality'][method]['tests'][case]['description']
             description_consolidated = ""
             for description in descriptions_json:
                 description_consolidated = description_consolidated + description + '\n\n'
-            case = Case(name=case, description=description_consolidated, module=module_master)
+            case = Case(name=case, description=description_consolidated, module=module)
             case.save()
     print("Waah methodology has been imported !")
 else :

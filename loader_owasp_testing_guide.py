@@ -13,19 +13,19 @@ from app.models import Methodology, Module, Case
 
 current_methodology = Methodology.objects.filter(name="OWASP Testing Guide V4")
 if not current_methodology :
-    methodology_master = Methodology(name="OWASP Testing Guide V4")
-    methodology_master.save()
+    methodology = Methodology(name="OWASP Testing Guide V4")
+    methodology.save()
     owasp_file = open('data/owasp_testing_guide_v4.json', 'r')
     methodology = json.load(owasp_file)
     for method in methodology['modules']:
-        module_master = Module(name=method, methodology=methodology_master)
-        module_master.save()
+        module = Module(name=method, methodology=methodology)
+        module.save()
         for case in methodology['modules'][method]['tests']:
             steps = methodology['modules'][method]['tests'][case]['steps']
             steps_consolidated = ""
             for step in steps:
                 steps_consolidated = steps_consolidated + step + '\n\n'
-            case = Case(name=case, description=steps_consolidated, module=module_master)
+            case = Case(name=case, description=steps_consolidated, module=module)
             case.save()
     print("OWASP Testing Guide V4 methodology has been imported !")
 else :

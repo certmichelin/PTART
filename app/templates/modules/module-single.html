@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} Module Master | sh00t{% endblock %}
+{% block title %} Module | sh00t{% endblock %}
 
 {% block page %}
     <div id="page-wrapper">
@@ -7,11 +7,11 @@
             <!-- Page Heading -->
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Module Master</h1>
+                    <h1 class="page-header">Module</h1>
                     <ol class="breadcrumb">
                         <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                        <li><i class="fa fa-file-text"></i> <a href="/app/modules/">Module Master</a></li>
-                        <li class="active">{{ module_master.name }}  <span id="response" class="small"></span></li>
+                        <li><i class="fa fa-file-text"></i> <a href="/app/modules/">Module</a></li>
+                        <li class="active">{{ module.name }}  <span id="response" class="small"></span></li>
                     </ol>
                 </div>
             </div>
@@ -29,19 +29,19 @@
                         {% endif %}
                         <div class="form-group">
                             <label>Name</label>
-                            <input class="form-control" name="name" id="name" value="{{ module_master.name }}"
+                            <input class="form-control" name="name" id="name" value="{{ module.name }}"
                                    autocomplete="off" />
                         </div>
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea class="form-control" rows="10" name="description" id="description">{{ module_master.description}}</textarea>
+                            <textarea class="form-control" rows="10" name="description" id="description">{{ module.description}}</textarea>
                         </div>
                         <div class="form-group">
-                            <label for="module_master">Module</label>
-                            <select class="form-control" name="methodology_id" id="methodology_master">
-                            {% for methodology in methodology_masters %}
+                            <label for="module">Module</label>
+                            <select class="form-control" name="methodology_id" id="methodology">
+                            {% for methodology in methodologys %}
                                 <option value="{{ methodology.id }}"
-                                {% if methodology.id == module_master.methodology.id %}
+                                {% if methodology.id == module.methodology.id %}
                                     selected="selected"
                                 {% endif %}>
                                 {{ methodology.name }}</option>
@@ -51,10 +51,10 @@
                         <div class="form-group">
                             <label>Order</label>
                             <input type="number" class="form-control" name="order" id="order" autocomplete="off"
-                                   value="{{ module_master.order}}" />
+                                   value="{{ module.order}}" />
                         </div>
 
-                        <input type="hidden" value="{{ module_master.id }}" id="id" />
+                        <input type="hidden" value="{{ module.id }}" id="id" />
                         <button type="submit" class="btn btn-primary">Update</button>
                         <button type="submit" name="delete" value="delete" class="btn btn-danger">Delete</button>
                         {% csrf_token %}
@@ -68,16 +68,16 @@
 <script src="/static/js/common-ajax.js"></script>
 <script type="text/javascript">
     $('#name').on('input', function() {
-        sync('module_master');
+        sync('module');
     });
     $('#description').on('input', function() {
-        sync('module_master');
+        sync('module');
     });
     $('#order').on('input', function() {
-        sync('module_master');
+        sync('module');
     });
-    $('#methodology_master').on('change', function() {
-        sync('module_master');
+    $('#methodology').on('change', function() {
+        sync('module');
     });
 </script>
 {% endblock %}
