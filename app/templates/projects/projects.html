@@ -4,19 +4,10 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Projects</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li class="active"><i class="fa fa-cubes"></i> Projects</li>
-                </ol>
-            </div>
-        </div>
 
+        {% include '_include/html/header.html' with item='projects' active_icon='fa fa-cubes' active_text='Projects' %}
         {% include "_include/html/messages.html" %}
-
+        
         <!-- Project creation form -->
         <div class="row">
             <div class="col-lg-12">
@@ -40,23 +31,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Project creation success callback.
-     */
-    function projectCreationSuccess(data) {
-        $("#name").val("");
-        $("#scope").val("");
-        success($("#messages"), "Project was created!");
-    }
-
-    /**
-     * Create project.
-     */
-    $('#createBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val());
-    });
-</script>
+    {% include '_include/js/createItem.html' with item='Project' ajax_function='ajaxCreateProject' params='name,scope' %}
 {% endblock %}
