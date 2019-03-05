@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
 
-from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, Methodology, Module, Case
+from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, Methodology, Module, Case, Severity
 from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable
 
 
@@ -117,7 +117,7 @@ def assessment(request, assessment_id):
 def sh0t(request, sh0t_id):
     response = None
     try:
-        response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': Sh0t.objects.get(pk=sh0t_id), 'assessments': Assessment.objects.all().order_by('-added'), 'severities': [1,2,3,4,5]})
+        response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': Sh0t.objects.get(pk=sh0t_id), 'assessments': Assessment.objects.all().order_by('-added'), 'severities': Severity.values})
     except sh0t.DoesNotExist:
         response = redirect('/')
     return response
@@ -137,7 +137,7 @@ def flag(request, flag_id):
 def template(request, template_id):
     response = None
     try:
-        response = render(request, 'templates/template-single.html', {'template': Template.objects.get(pk=template_id), 'severities': [1,2,3,4,5]})
+        response = render(request, 'templates/template-single.html', {'template': Template.objects.get(pk=template_id), 'severities': Severity.values})
     except Template.DoesNotExist:
         response = redirect('/')
     return response
@@ -185,7 +185,7 @@ def assessments_new(request):
 
 @login_required
 def sh0ts_new(request):
-    return render(request, 'sh0ts/sh0ts.html', {'assessments_list':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(), 'severities': [1,2,3,4,5]})
+    return render(request, 'sh0ts/sh0ts.html', {'assessments_list':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(), 'severities': Severity.values})
 
 
 @login_required
@@ -195,7 +195,7 @@ def flags_new(request):
 
 @login_required
 def templates_new(request):
-    return render(request, 'templates/templates.html', {'severities': [1,2,3,4,5]})
+    return render(request, 'templates/templates.html', {'severities': Severity.values})
 
 
 @login_required

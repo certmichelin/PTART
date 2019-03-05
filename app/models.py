@@ -208,3 +208,7 @@ class Case(models.Model):
     class Meta:
         ordering = ('name',)
 
+"""Severity structure."""
+class Severity():
+    values = [1,2,3,4,5]
+
