@@ -4,7 +4,7 @@
 
 {% block extra_head %}
 <link href="/static/css/screenshots.css" rel="stylesheet" type="text/css">
-<link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css"" rel="stylesheet" type="text/css">
+<link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css"" rel=" stylesheet" type="text/css">
 
 {% endblock %}
 
@@ -31,7 +31,7 @@
                     <label>Severity</label>
                     <select id="severity" class="form-control">
                         {% for sev in severities %}
-                            <option value={{sev}}> P{{sev}} </option>
+                        <option value={{sev}}> P{{sev}} </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -47,11 +47,12 @@
                     <label for="assessment">Assessment</label>
                     <select id="assessment" class="form-control">
                         {% for assessment in assessments %}
-                            <option value="{{ assessment.id }}" {% if assessment.id == sh0t.assessment.id %} selected="selected" {% endif %}>{{ assessment.name }}</option>
+                        <option value="{{ assessment.id }}" {% if assessment.id == sh0t.assessment.id %}
+                            selected="selected" {% endif %}>{{ assessment.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <input  id="id" type="hidden" value="{{ sh0t.id }}"/>
+                <input id="id" type="hidden" value="{{ sh0t.id }}" />
                 <button id="updateBtn" class="btn btn-primary">Update</button>
                 <button id="delBtn" class="btn btn-danger">Delete</button>
             </div>
@@ -73,7 +74,7 @@
     /**
      * Update sh0t.
      */
-     $('#updateBtn').on('click', function () {
+    $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateSh0t(sh0tUpdateSuccess, sh0tUpdateFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });
@@ -81,21 +82,21 @@
     /**
      * Sh0t update success callback.
      */
-     function sh0tUpdateSuccess(data) {
+    function sh0tUpdateSuccess(data) {
         success($("#messages"), "Sh0t was updated!");
     }
 
     /**
      * Sh0t update failure callback.
      */
-     function sh0tUpdateFailure(data) {
+    function sh0tUpdateFailure(data) {
         errorList($("#messages"), data.responseJSON);
     }
 
-     /**
-     * Sh0t deletion success callback.
-     */
-     function sh0tDeletionSuccess(data) {
+    /**
+    * Sh0t deletion success callback.
+    */
+    function sh0tDeletionSuccess(data) {
         success($("#messages"), "Sh0t was deleted! You will redirect in 2s!");
         setTimeout(function () {
             window.location.href = "/";
@@ -137,9 +138,13 @@
     /**
      * Override addScreenshot from screenshot.js in order to upload the file on the fly.
      */
-    function addScreenshot() { 
+    function addScreenshot() {
         var dataURL = $("#screenshotData").val()
-        ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, dataURL, $("#id").val());
+        if (dataURL !== "") {
+            ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, dataURL, $("#id").val());
+        } else {
+            bootbox.alert("No screenshot is pasted!")
+        }
     }
 
     /**
@@ -148,14 +153,14 @@
     function drop(ev) {
         ev.preventDefault();
         id = ev.dataTransfer.getData("text");
-        ajaxDeleteScreenshot(screenshotDeletionSuccess, screenshotDeletionFailure, id.replace("screenshot_",""));
+        ajaxDeleteScreenshot(screenshotDeletionSuccess, screenshotDeletionFailure, id.replace("screenshot_", ""));
     }
 
     /**
      * Screenshot creation success callback.
      */
     function screenshotCreationSuccess(data) {
-        createScreenshot(data.id,"/api/screenshot/png/" + data.id + "/")
+        createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/")
         resetScreenshotModal();
     }
 

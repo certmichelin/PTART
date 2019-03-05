@@ -119,10 +119,14 @@
      */
      function sh0tCreationSuccess(data) {
         //Upload screenshots.
-        screenshotsToUpload = $('.screenshot_data').size();
-        $('.screenshot_data').each(function () {
-            ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), data.id);
-        });
+        screenshotsToUpload = $('.screenshot_gallery').size();
+        if(screenshotsToUpload == 0){
+            checkUploadBatchStatus()
+        } else {
+            $('.screenshot_gallery').each(function () {
+                ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), data.id);
+            });
+        }
         success($("#messages"), "Sh0t was created!");
     }
 
@@ -138,6 +142,7 @@
      */
     function screenshotCreationSuccess(data) {
         success($("#messages"), "Screenshot uploaded!");
+        ++screenshotsUploaded
         checkUploadBatchStatus();
     }
 
@@ -146,6 +151,7 @@
      */
      function screenshotCreationFailure(data) {
         errorList($("#messages"), data.responseJSON);
+        ++screenshotsUploaded
         checkUploadBatchStatus();
     }
 
@@ -153,7 +159,7 @@
      * Check if all images has been uploaded.
      */ 
     function checkUploadBatchStatus() {
-        if(++screenshotsUploaded == screenshotsToUpload){
+        if(screenshotsUploaded == screenshotsToUpload){
             $("#title").val("");
             $("#body").val("");
             $("#screenshots").empty();

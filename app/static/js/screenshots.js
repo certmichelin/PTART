@@ -76,33 +76,36 @@ $("html").pasteImageReader(function (results) {
     var dataURL = results.dataURL;
     $("#uploadMessage").hide();
     $("#screenshotData").val(dataURL);
-    $("#screenshot").attr("src",dataURL);
+    $("#screenshot").attr("src", dataURL);
 });
 
 //Reset screenshot modal after image upload
-function resetScreenshotModal(){
+function resetScreenshotModal() {
     $("#pushScreenshotModal").modal('toggle');
     $("#screenshotData").val("");
-    $("#screenshot").attr("src","");
+    $("#screenshot").attr("src", "");
     $("#uploadMessage").show();
 }
 
 //Add screenshot.
-function addScreenshot(){
+function addScreenshot() {
     var dataURL = $("#screenshotData").val()
+    if (dataURL !== "") {
+        //Manage ID.
+        var id = $('#screenshotMaxId').val();
+        $('#screenshotMaxId').val(parseInt(id) + 1);
 
-    //Manage ID.
-    var id = $('#screenshotMaxId').val();
-    $('#screenshotMaxId').val(parseInt(id) + 1);
-    
-    //add screenshot to gallery
-    createScreenshot(id, dataURL);
-    resetScreenshotModal();
+        //add screenshot to gallery
+        createScreenshot(id, dataURL);
+        resetScreenshotModal();
+    } else {
+        bootbox.alert("No screenshot is pasted!")
+    }
 }
 
 //Create screenshot in the screenshot cointainer.
-function createScreenshot(id, dataURL){
-    $('#screenshots').append($('<a>',{href:dataURL, class:"screenshot","data-fancybox":"gallery"}).append($('<img>',{id: "screenshot_" + id, src:dataURL, class:"screenshot_data",draggable:"true", ondragstart:"dragStart(event)", ondragend:"dragStop(event)"})));
+function createScreenshot(id, dataURL) {
+    $('#screenshots').append($('<a>', { href: dataURL, class: "screenshot", "data-fancybox": "gallery" }).append($('<img>', { id: "screenshot_" + id, src: dataURL, class: "screenshot_data screenshot_gallery", draggable: "true", ondragstart: "dragStart(event)", ondragend: "dragStop(event)" })));
 }
 
 
@@ -133,6 +136,6 @@ function drop(ev) {
 }
 
 //remove screenshot from HTML container.
-function removeScreenshot(id){
+function removeScreenshot(id) {
     $("#" + id).parent().remove();
 }

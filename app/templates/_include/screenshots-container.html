@@ -5,7 +5,7 @@
 <div id="screenshots">
     {% for screenshot in sh0t.screenshot_set.all %}
         <a data-fancybox="gallery" href="/api/screenshot/png/{{screenshot.pk}}/" class="screenshot">
-            <img id="screenshot_{{screenshot.id}}" class="screenshot_data" src="/api/screenshot/png/{{screenshot.pk}}/" draggable="true" ondragstart="dragStart(event)" ondragend="dragStop(event)"/>
+            <img id="screenshot_{{screenshot.id}}" class="screenshot_data screenshot_gallery" src="/api/screenshot/png/{{screenshot.pk}}/" draggable="true" ondragstart="dragStart(event)" ondragend="dragStop(event)"/>
         </a>
     {% endfor %}
 </div>
