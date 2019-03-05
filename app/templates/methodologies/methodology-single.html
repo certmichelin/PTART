@@ -1,25 +1,13 @@
 {% extends "base.html" %}
-
 {% block title %} Methodology | sh00t{% endblock %}
 
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Methodology</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li><i class="fa fa-file-text"></i>
-                        <a href="/app/methodologies/">Methodology</a></li>
-                    <li class="active">{{ methodology.name }} <span id="response" class="small"></span></li>
-                </ol>
-            </div>
-        </div>
-
+        {% include '_include/html/header.html' with item='Methodology' sub_icon='fa fa-cubes' sub_url='/app/methodologies/' sub_text='Methodologies' active_icon='' active_text=methodology.name %}
         {% include "_include/html/messages.html" %}
-
+        
         <div class="row">
             <div class="col-lg-12">
 
@@ -43,63 +31,6 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Methodology updation success callback.
-     */
-    function methodologyUpdationSuccess(data) {
-        success($("#messages"), "Methodology was Updated!");
-    }
-
-    /**
-     * Update methodology.
-     */
-    $('#updateBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxUpdateMethodology(methodologyUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#description").val());
-    });
-
-    /**
-     * Methodology deletion success callback.
-     */
-    function methodologyDeletionSuccess(data) {
-        success($("#messages"), "Methodology was deleted! You will redirect in 2s!");
-        setTimeout(function () {
-            history.go(-1);
-        }, 2000);
-    }
-
-    /**
-     * Methodology deletion failure callback.
-     */
-    function methodologyDeletionFailure(data) {
-        error($("#messages"), "Methodology was not found");
-    }
-
-    /**
-     * Delete methodology.
-     */
-    $('#delBtn').on('click', function () {
-        bootbox.confirm({
-            message: "Are you sure to delete the methodology?",
-            buttons: {
-                confirm: {
-                    label: 'Yes',
-                    className: 'btn-success'
-                },
-                cancel: {
-                    label: 'No',
-                    className: 'btn-danger'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    cleanMessagesContainer($("#messages"));
-                    ajaxDeleteMethodology(methodologyDeletionSuccess, methodologyDeletionFailure, $("#id").val());
-                }
-            }
-        });
-    });
-</script>
+    {% include '_include/js/updateItem.html' with item='Methodology' ajax_function='ajaxUpdateMethodology' params='id,name,description' %}
+    {% include '_include/js/deleteItem.html' with item='Methodology' ajax_function='ajaxDeleteMethodology' %}
 {% endblock %}

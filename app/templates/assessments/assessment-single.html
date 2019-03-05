@@ -1,24 +1,13 @@
 {% extends "base.html" %}
-
 {% block title %} Assessment | sh00t{% endblock %}
 
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Assessment</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li><i class="fa fa-cube"></i> <a href="/app/assessments">Assessments</a></li>
-                    <li class="active">{{ assessment.name }} <span id="response" class="small"></span></li>
-                </ol>
-            </div>
-        </div>
-
+        {% include '_include/html/header.html' with item='Assessment' sub_icon='fa fa-cube' sub_url='/app/assessments/' sub_text='Assessments' active_icon='' active_text=assessment.name %}
         {% include "_include/html/messages.html" %}
-
+        
         <div class="row">
             <div class="col-lg-12">
                 <div class="form-group">
@@ -45,56 +34,6 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Assessment updation success callback.
-     */
-    function assessmentUpdationSuccess(data) {
-        success($("#messages"), "Assessment was Updated!");
-    }
-
-    /**
-     * Update assessment.
-     */
-    $('#updateBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxUpdateAssessment(assessmentUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#project").val());
-    });
-
-    /**
-     * Assessment deletion success callback.
-     */
-    function assessmentDeletionSuccess(data) {
-        success($("#messages"), "Assessment was deleted! You will redirect in 2s!");
-        setTimeout(function () {
-            history.go(-1);
-        }, 2000);
-    }
-
-    /**
-     * Delete assessment.
-     */
-    $('#delBtn').on('click', function () {
-        bootbox.confirm({
-            message: "Are you sure to delete the assessment?",
-            buttons: {
-                confirm: {
-                    label: 'Yes',
-                    className: 'btn-success'
-                },
-                cancel: {
-                    label: 'No',
-                    className: 'btn-danger'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    cleanMessagesContainer($("#messages"));
-                    ajaxDeleteAssessment(assessmentDeletionSuccess, commonFailure, $("#id").val());
-                }
-            }
-        });
-    });
-</script>
+    {% include '_include/js/updateItem.html' with item='Assessment' ajax_function='ajaxUpdateAssessment' params='id,name,project' %}
+    {% include '_include/js/deleteItem.html' with item='Assessment' ajax_function='ajaxDeleteAssessment' %}
 {% endblock %}

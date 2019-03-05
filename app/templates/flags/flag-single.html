@@ -1,22 +1,11 @@
 {% extends "base.html" %}
-
 {% block title %} Flags | sh00t{% endblock %}
 
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Flags</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li><i class="fa fa-flag"></i> <a href="/app/flags">Flags</a></li>
-                    <li class="active">{{ flag.title }} <span id="response" class="small"></span></li>
-                </ol>
-            </div>
-        </div>
-
+        {% include '_include/html/header.html' with item='Flag' sub_icon='fa fa-flag' sub_url='/app/flags/' sub_text='Flags' active_icon='' active_text=flag.name %}
         {% include "_include/html/messages.html" %}
 
         <div class="row">
@@ -52,63 +41,6 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Flag updation success callback.
-     */
-    function flagUpdationSuccess(data) {
-        success($("#messages"), "Flag was Updated!");
-    }
-
-    /**
-     * Update flag.
-     */
-    $('#updateBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxUpdateFlag(flagUpdationSuccess, commonFailure, $("#id").val(), $("#title").val(), $("#note").val(), $("#done").val(), $("#assessment").val());
-    });
-
-    /**
-     * Flag deletion success callback.
-     */
-    function flagDeletionSuccess(data) {
-        success($("#messages"), "Flag was deleted! You will redirect in 2s!");
-        setTimeout(function () {
-            history.go(-1);
-        }, 2000);
-    }
-
-    /**
-     * Flag deletion failure callback.
-     */
-    function flagDeletionFailure(data) {
-        error($("#messages"), "Flag was not found");
-    }
-
-    /**
-     * Delete flag.
-     */
-    $('#delBtn').on('click', function () {
-        bootbox.confirm({
-            message: "Are you sure to delete the flag?",
-            buttons: {
-                confirm: {
-                    label: 'Yes',
-                    className: 'btn-success'
-                },
-                cancel: {
-                    label: 'No',
-                    className: 'btn-danger'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    cleanMessagesContainer($("#messages"));
-                    ajaxDeleteFlag(flagDeletionSuccess, flagDeletionFailure, $("#id").val());
-                }
-            }
-        });
-    });
-</script>
+    {% include '_include/js/updateItem.html' with item='Flag' ajax_function='ajaxUpdateFlag' params='id,title,note,done,assessment' %}
+    {% include '_include/js/deleteItem.html' with item='Flag' ajax_function='ajaxDeleteFlag' %}
 {% endblock %}

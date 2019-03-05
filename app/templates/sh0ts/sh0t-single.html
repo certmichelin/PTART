@@ -1,30 +1,18 @@
 {% extends "base.html" %}
-
 {% block title %} {{ sh0t.title }} | sh00t{% endblock %}
 
 {% block extra_head %}
 <link href="/static/css/screenshots.css" rel="stylesheet" type="text/css">
 <link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css"" rel=" stylesheet" type="text/css">
-
 {% endblock %}
 
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">Sh0t</h1>
-                <ol class="breadcrumb">
-                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                    <li><i class="fa fa-bullseye"></i> <a href="/app/sh0ts">Sh0t</a></li>
-                    <li class="active">{{ sh0t.title }} <span id="response" class="small"></span></li>
-                </ol>
-            </div>
-        </div>
-
+        {% include '_include/html/header.html' with item='Sh0t' sub_icon='fa fa-bullseye' sub_url='/app/sh0ts/' sub_text='Sh0t' active_icon='' active_text=sh0t.title %}
         {% include "_include/html/messages.html" %}
-
+    
         <div class="row">
             <div class="col-lg-8">
                 <div class="form-group">
@@ -66,67 +54,12 @@
 {% block extra_foot %}
 <script src="/static/sb-admin/js/plugins/fancybox/jquery.fancybox.min.js"></script>
 <script src="/static/js/screenshots.js"></script>
+{% include '_include/js/updateItem.html' with item='Sh0t' ajax_function='ajaxUpdateSh0t' params='id,severity,title,body,assessment' %}
+{% include '_include/js/deleteItem.html' with item='Sh0t' ajax_function='ajaxDeleteSh0t' %}
 <script type="text/javascript">
 
     /* Select the current severity */$
     $('#severity option[value={{sh0t.severity}}]').attr('selected', 'selected');
-
-    /**
-     * Update sh0t.
-     */
-    $('#updateBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxUpdateSh0t(sh0tUpdateSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
-    });
-
-    /**
-     * Sh0t update success callback.
-     */
-    function sh0tUpdateSuccess(data) {
-        success($("#messages"), "Sh0t was updated!");
-    }
-
-    /**
-    * Sh0t deletion success callback.
-    */
-    function sh0tDeletionSuccess(data) {
-        success($("#messages"), "Sh0t was deleted! You will redirect in 2s!");
-        setTimeout(function () {
-            history.go(-1);
-        }, 2000);
-    }
-
-    /**
-     * Sh0t deletion failure callback.
-     */
-    function sh0tDeletionFailure(data) {
-        error($("#messages"), "Sh0t was not found");
-    }
-
-    /**
-     * Delete sh0t.
-     */
-    $('#delBtn').on('click', function () {
-        bootbox.confirm({
-            message: "Are you sure to delete the sh0t?",
-            buttons: {
-                confirm: {
-                    label: 'Yes',
-                    className: 'btn-success'
-                },
-                cancel: {
-                    label: 'No',
-                    className: 'btn-danger'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    cleanMessagesContainer($("#messages"));
-                    ajaxDeleteSh0t(sh0tDeletionSuccess, sh0tDeletionFailure, $("#id").val());
-                }
-            }
-        });
-    });
 
     /**
      * Override addScreenshot from screenshot.js in order to upload the file on the fly.
