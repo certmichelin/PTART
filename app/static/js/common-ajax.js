@@ -55,7 +55,7 @@ function ajaxUpdateProject(success_function, error_function, id, name, scope){
  */
 function ajaxDeleteProject(success_function, error_function, id){
     $.ajax({
-        url: "/api/project/" + id,
+        url: "/api/project/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -108,7 +108,7 @@ function ajaxUpdateAssessment(success_function, error_function, id, name, projec
  */
 function ajaxDeleteAssessment(success_function, error_function, id){
     $.ajax({
-        url: "/api/assessment/" + id,
+        url: "/api/assessment/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -165,7 +165,7 @@ function ajaxUpdateSh0t(success_function, error_function, id, severity, title, b
  */
 function ajaxDeleteSh0t(success_function, error_function, id){
     $.ajax({
-        url: "/api/sh0t/" + id,
+        url: "/api/sh0t/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -199,7 +199,7 @@ function ajaxUploadScreenshot(success_function, error_function, data, shotId){
  */
 function ajaxDeleteScreenshot(success_function, error_function, id){
     $.ajax({
-        url: "/api/screenshot/" + id,
+        url: "/api/screenshot/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -255,7 +255,7 @@ function ajaxUpdateFlag(success_function, error_function, id, title, note, done,
  */
 function ajaxDeleteFlag(success_function, error_function, id){
     $.ajax({
-        url: "/api/flag/" + id,
+        url: "/api/flag/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -271,7 +271,7 @@ function ajaxDeleteFlag(success_function, error_function, id){
  */
 function ajaxGetTemplate(success_function, error_function, id){
     $.ajax({
-        url: "/api/template/" + id,
+        url: "/api/template/" + id + "/",
         type: 'GET',
         success: success_function,
         error: error_function
@@ -326,7 +326,7 @@ function ajaxUpdateTemplate(success_function, error_function, id, severity, name
  */
 function ajaxDeleteTemplate(success_function, error_function, id){
     $.ajax({
-        url: "/api/template/" + id,
+        url: "/api/template/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -379,7 +379,7 @@ function ajaxUpdateMethodology(success_function, error_function, id, name, descr
  */
 function ajaxDeleteMethodology(success_function, error_function, id){
     $.ajax({
-        url: "/api/methodology/" + id,
+        url: "/api/methodology/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -434,7 +434,7 @@ function ajaxUpdateModule(success_function, error_function, id, name, descriptio
  */
 function ajaxDeleteModule(success_function, error_function, id){
     $.ajax({
-        url: "/api/module/" + id,
+        url: "/api/module/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
@@ -489,7 +489,7 @@ function ajaxUpdateCase(success_function, error_function, id, name, description,
  */
 function ajaxDeleteCase(success_function, error_function, id){
     $.ajax({
-        url: "/api/case/" + id,
+        url: "/api/case/" + id + "/",
         type: 'DELETE',
         success: success_function,
         error: error_function
