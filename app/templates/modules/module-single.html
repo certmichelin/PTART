@@ -1,83 +1,116 @@
 {% extends "base.html" %}
+
 {% block title %} Module | sh00t{% endblock %}
 
 {% block page %}
-    <div id="page-wrapper">
-        <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Module</h1>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
-                        <li><i class="fa fa-file-text"></i> <a href="/app/modules/">Module</a></li>
-                        <li class="active">{{ module.name }}  <span id="response" class="small"></span></li>
-                    </ol>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <form role="form" method="post">
-                        {% if "success" == submitted %}
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="alert alert-info alert-dismissable">
-                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> <i class="fa fa-info-circle"></i> Updated
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input class="form-control" name="name" id="name" value="{{ module.name }}"
-                                   autocomplete="off" />
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea class="form-control" rows="10" name="description" id="description">{{ module.description}}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="module">Module</label>
-                            <select class="form-control" name="methodology_id" id="methodology">
-                            {% for methodology in methodologys %}
-                                <option value="{{ methodology.id }}"
-                                {% if methodology.id == module.methodology.id %}
-                                    selected="selected"
-                                {% endif %}>
-                                {{ methodology.name }}</option>
-                            {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Order</label>
-                            <input type="number" class="form-control" name="order" id="order" autocomplete="off"
-                                   value="{{ module.order}}" />
-                        </div>
+<div id="page-wrapper">
+    <div class="container-fluid">
 
-                        <input type="hidden" value="{{ module.id }}" id="id" />
-                        <button type="submit" class="btn btn-primary">Update</button>
-                        <button type="submit" name="delete" value="delete" class="btn btn-danger">Delete</button>
-                        {% csrf_token %}
-                    </form>
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Module</h1>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-dashboard"></i> <a href="/">Dashboard</a></li>
+                    <li><i class="fa fa-file-text"></i> <a href="/app/modules/">Module</a></li>
+                    <li class="active">{{ module.name }} <span id="response" class="small"></span></li>
+                </ol>
+            </div>
+        </div>
+
+        {% include "_include/messages-container.html" %}
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" id="name" value="{{ module.name }}" autocomplete="off" />
                 </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" rows="10" id="description">{{ module.description}}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="module">Module</label>
+                    <select class="form-control" id="methodology">
+                        {% for methodology in methodologies %}
+                            <option value="{{ methodology.id }}" {% if methodology.id == module.methodology.id %} selected="selected" {% endif %}>{{ methodology.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <input type="hidden" value="{{ module.id }}" id="id" />
+                <button id="updateBtn" class="btn btn-primary">Update</button>
+                <button id="delBtn" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
+
 {% block extra_foot %}
-<script src="/static/js/common-ajax.js"></script>
 <script type="text/javascript">
-    $('#name').on('input', function() {
-        sync('module');
+
+    /**
+     * Module updation success callback.
+     */
+    function moduleUpdationSuccess(data) {
+        success($("#messages"), "Module was Updated!");
+    }
+
+    /**
+     * Module updation failure callback.
+     */
+    function moduleUpdationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+    }
+
+    /**
+     * Update module.
+     */
+    $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateModule(moduleUpdationSuccess, moduleUpdationFailure, $("#id").val(), $("#name").val(), $("#description").val(), $("#methodology").val());
     });
-    $('#description').on('input', function() {
-        sync('module');
-    });
-    $('#order').on('input', function() {
-        sync('module');
-    });
-    $('#methodology').on('change', function() {
-        sync('module');
+
+    /**
+     * Module deletion success callback.
+     */
+    function moduleDeletionSuccess(data) {
+        success($("#messages"), "Module was deleted! You will redirect in 2s!");
+        setTimeout(function () {
+            window.location.href = "/";
+        }, 2000);
+    }
+
+    /**
+     * Module deletion failure callback.
+     */
+    function moduleDeletionFailure(data) {
+        error($("#messages"), "Module was not found");
+    }
+
+    /**
+     * Delete module.
+     */
+    $('#delBtn').on('click', function () {
+        bootbox.confirm({
+            message: "Are you sure to delete the module?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteModule(moduleDeletionSuccess, moduleDeletionFailure, $("#id").val());
+                }
+            }
+        });
     });
 </script>
 {% endblock %}
