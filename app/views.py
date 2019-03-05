@@ -180,7 +180,7 @@ def projects_new(request):
 
 @login_required
 def assessments_new(request): 
-    return render(request, 'assessments/assessments.html', {'projects': Project.objects.all().order_by('-added'), 'methodologies_list': Methodology.objects.all(), 'modules': Module.objects.all()})
+    return render(request, 'assessments/assessments.html', {'projects': Project.objects.all().order_by('-added'), 'methodologies': Methodology.objects.all()})
 
 
 @login_required

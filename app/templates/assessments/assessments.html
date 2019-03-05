@@ -37,30 +37,23 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        {% if not methodologies_list %}
+                        {% if not methodologies %}
                         No methodology found. A suggestion to <a href="/app/methodologies/" target="_blank">
                             create one</a>
                         {% endif %}
                     </div>
-                    <div class="form-group">
-                        {% if not modules %}
-                        No modules found. A suggestion to <a href="/app/modules/" target="_blank"> create one</a>
-                        {% endif %}
-                    </div>
 
                     <div class="form-group">
-                        {% if methodologies_list and modules %}
+                        {% if methodologies %}
                             <b>Set up Flags from</b>
-                            {% for methodology in methodologies_list %}
+                            {% for methodology in methodologies %}
                                 <div class="checkbox">
-                                    <h4><label><input type="checkbox" class="methodology" value="{{ methodology.name.split|join:'_' }}" />{{ methodology.name }}:</label></h4>
+                                    <h5><label><input type="checkbox" class="methodology" value="{{ methodology.name.split|join:'_' }}" /><b>{{ methodology.name }}:</b></label></h5>
                                 </div>
-                                {% for module in modules %}
-                                    {% if module.methodology == methodology %}
-                                        <div class="checkbox">
-                                            <label><input type="checkbox" value="{{ module.id }}" class="module child-{{ methodology.name.split|join:'_'  }}"/>{{ module.name }}</label>
-                                        </div>
-                                    {% endif %}
+                                {% for module in methodology.module_set.all %}
+                                    <div class="checkbox" style="right:-30px">
+                                        <label><input type="checkbox" value="{{ module.id }}" class="module child-{{ methodology.name.split|join:'_'  }}"/>{{ module.name }}</label>
+                                    </div>
                                  {% endfor %}
                                 <br />
                             {% endfor %}
