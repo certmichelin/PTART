@@ -1,0 +1,19 @@
+{% load split %}
+<script type="text/javascript">
+
+    /**
+     * Item updation success callback.
+     */
+    function itemUpdationSuccess(data) {
+        success($("#messages"), "{{item}} was Updated!");
+    }
+
+    /**
+     * Update item.
+     */
+    $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        {{ajax_function}}(itemUpdationSuccess, commonFailure {% for param in params|split %},$("#{{param}}").val(){% endfor %});
+    });
+
+</script>

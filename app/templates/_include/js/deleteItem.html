@@ -1,0 +1,35 @@
+<script type="text/javascript">
+
+    function itemDeletionSuccess(data) {
+        success($("#messages"), "{{item}} was deleted! You will redirect in 2s!");
+        setTimeout(function () {
+            history.go(-1);
+        }, 2000);
+    }
+
+    function itemDeletionFailure(data) {
+        error($("#messages"), "{{item}} was not found");
+    }
+
+    $('#delBtn').on('click', function () {
+        bootbox.confirm({
+            message: "Are you sure to delete the {{item}}?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    {{ajax_function}}(itemDeletionSuccess, itemDeletionFailure, $("#id").val());
+                }
+            }
+        });
+    });
+</script>

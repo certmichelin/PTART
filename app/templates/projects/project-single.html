@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %} Project | sh00t{% endblock %}
 
 {% block page %}
@@ -7,7 +6,6 @@
     <div class="container-fluid">
 
         {% include '_include/html/header.html' with item='Project' sub_icon='fa fa-cubes' sub_url='/app/projects/' sub_text='Projects' active_icon='' active_text=project.name %}
-
         {% include "_include/html/messages.html" %}
 
         <div class="row">
@@ -30,63 +28,6 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script type="text/javascript">
-
-    /**
-     * Project updation success callback.
-     */
-    function projectUpdationSuccess(data) {
-        success($("#messages"), "Project was Updated!");
-    }
-
-    /**
-     * Update project.
-     */
-    $('#updateBtn').on('click', function () {
-        cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#scope").val());
-    });
-
-    /**
-     * Project deletion success callback.
-     */
-    function projectDeletionSuccess(data) {
-        success($("#messages"), "Project was deleted! You will redirect in 2s!");
-        setTimeout(function () {
-            history.go(-1);
-        }, 2000);
-    }
-
-    /**
-     * Project deletion failure callback.
-     */
-    function projectDeletionFailure(data) {
-        error($("#messages"), "Project was not found");
-    }
-
-    /**
-     * Delete project.
-     */
-    $('#delBtn').on('click', function () {
-        bootbox.confirm({
-            message: "Are you sure to delete the project?",
-            buttons: {
-                confirm: {
-                    label: 'Yes',
-                    className: 'btn-success'
-                },
-                cancel: {
-                    label: 'No',
-                    className: 'btn-danger'
-                }
-            },
-            callback: function (result) {
-                if (result) {
-                    cleanMessagesContainer($("#messages"));
-                    ajaxDeleteProject(projectDeletionSuccess, projectDeletionFailure, $("#id").val());
-                }
-            }
-        });
-    });
-</script>
+    {% include '_include/js/updateItem.html' with item='Project' ajax_function='ajaxUpdateProject' params='id,name,scope' %}
+    {% include '_include/js/deleteItem.html' with item='Project' ajax_function='ajaxDeleteProject' %}
 {% endblock %}
