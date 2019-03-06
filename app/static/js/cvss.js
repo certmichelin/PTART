@@ -39,6 +39,7 @@ function computeCVSS() {
 
         if (cvss < 0) {
             $("#cvssValue").attr("class", "label label-default")
+            cvss = "0.0";
         } else if (cvss < 4.0) {
             $("#cvssValue").attr("class", "label label-info")
         } else if (cvss < 7.0) {
