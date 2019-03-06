@@ -12,13 +12,12 @@
     <div id="page-wrapper">
         <div class="container-fluid">
 
-            {% include '_include/html/header.html' with item='sh0ts' active_icon='fa fa-bullseye' active_text='Sh0ts' %}
             {% include "_include/html/messages.html" %}
             
             <!-- Sh0t creation form -->
+            <h3>New Sh0t</h3>
             <div class="row">
-                <div class="col-lg-8">
-                    <h3>New Sh0t</h3>
+                <div class="col-lg-7">
                     {% if not assessments_list %}
                         <b>No assessment found. <a href="/app/assessments/new/">Create one</a></b>
                     {% else %} 
@@ -58,8 +57,9 @@
                             <button id="createBtn" class="btn btn-primary">Submit</button>
                     {% endif %}
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-5">
                     {% if assessments_list %}
+                    {% include "_include/html/cvss.html" %}
                         {% include "_include/html/screenshots.html" %}
                     {% endif %}
                 </div>
@@ -72,6 +72,7 @@
 {% endblock %}
 {% block extra_foot %}
 <script src="/static/sb-admin/js/plugins/fancybox/jquery.fancybox.min.js"></script>
+<script src="/static/js/cvss.js"></script>
 <script src="/static/js/screenshots.js"></script>
 <script type="text/javascript">
 
