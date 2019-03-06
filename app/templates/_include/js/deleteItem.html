@@ -3,7 +3,7 @@
     function itemDeletionSuccess(data) {
         success($("#messages"), "{{item}} was deleted! You will redirect in 2s!");
         setTimeout(function () {
-            history.go(-1);
+            goBackWithRefresh();
         }, 2000);
     }
 
