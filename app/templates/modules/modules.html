@@ -43,5 +43,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/createItem.html' with item='Module' ajax_function='ajaxCreateModule' params='name,description,methodology' %}
+    {% include '_include/js/createItem.html' with item='Module' ajax_function='ajaxCreateModule' params='name,description,methodology' params_to_clean='name,description' %}
 {% endblock %}

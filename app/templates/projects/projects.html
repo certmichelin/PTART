@@ -31,5 +31,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/createItem.html' with item='Project' ajax_function='ajaxCreateProject' params='name,scope' %}
+    {% include '_include/js/createItem.html' with item='Project' ajax_function='ajaxCreateProject' params='name,scope' params_to_clean='name,scope' %}
 {% endblock %}

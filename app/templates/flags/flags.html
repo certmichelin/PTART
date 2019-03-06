@@ -43,5 +43,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/createItem.html' with item='Flag' ajax_function='ajaxCreateFlag' params='title,note,assessment' %}
+    {% include '_include/js/createItem.html' with item='Flag' ajax_function='ajaxCreateFlag' params='title,note,assessment' params_to_clean='title,note' %}
 {% endblock %}

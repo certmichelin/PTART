@@ -2,8 +2,7 @@
 <script type="text/javascript">
 
     function itemCreationSuccess(data) {
-        $("#name").val("");
-        $("#scope").val("");
+        {% for param in params_to_clean|split %}$("#{{param}}").val("");{% endfor %}
         success($("#messages"), "{{item}} was created!");
     }
 
