@@ -61,6 +61,9 @@
 {% block extra_foot %}
 <script type="text/javascript">
 
+    var toCreate = 0;
+    var created = 0;
+
     /**
      * Select all modules from methodology.
      */
@@ -71,18 +74,34 @@
     /**
      * Assessment creation success callback.
      */
-     function assessmentCreationSuccess(data) {
-        $('.module:checked').each(function () {
-            ajaxLoadFlagsFromModule(function (data) {}, function (data) {}, $(this).val(), data.id);
-        });
-        $("#name").val("");
-        success($("#messages"), "Assessment was created!");
+    function assessmentCreationSuccess(data) {
+        toCreate = $('.module:checked').size();
+        if (toCreate > 0) {
+            $('.module:checked').each(function () {
+                ajaxLoadFlagsFromModule(checkFlagCreationBatchStatus, checkFlagCreationBatchStatus, $(this).val(), data.id);
+            });
+        } else {
+            checkFlagCreationBatchStatus(null);
+        }
+
+    }
+
+    /**
+     * Check if all flags has been created.
+     */
+    function checkFlagCreationBatchStatus(data) {
+        if (++created >= toCreate) {
+            waitingDialog.hide();
+            $("#name").val("");
+            success($("#messages"), "Assessment was created!");
+        }
     }
 
     /**
      * Create assessment.
      */
     $('#createBtn').on('click', function () {
+        waitingDialog.show();
         cleanMessagesContainer($("#messages"));
         ajaxCreateAssessment(assessmentCreationSuccess, commonFailure, $("#name").val(), $("#project").val());
     });
