@@ -3,7 +3,8 @@
 
 {% block extra_head %}
 <link href="/static/css/screenshots.css" rel="stylesheet" type="text/css">
-<link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css"" rel=" stylesheet" type="text/css">
+<link href="/static/css/cvss.css" rel="stylesheet" type="text/css">
+<link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css" rel=" stylesheet" type="text/css">
 {% endblock %}
 
 {% block page %}
@@ -14,7 +15,7 @@
         {% include "_include/html/messages.html" %}
     
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <div class="form-group">
                     <label>Severity</label>
                     <select id="severity" class="form-control">
@@ -24,12 +25,17 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>CVSS v3</label>
+                    <h4><span id="cvssValue" class="label label-default">No Rating (---)</span></h4>
+                    <input id="cvss" type="hidden" value="---"/> 
+                </div>
+                <div class="form-group">
                     <label>Title</label>
                     <input id="title" class="form-control" value="{{ sh0t.title }}" autocomplete="off" />
                 </div>
                 <div class="form-group">
                     <label>Note</label>
-                    <textarea id="body" class="form-control" rows="10">{{ sh0t.body }}</textarea>
+                    <textarea id="body" class="form-control" style="resize:vertical" rows="10">{{ sh0t.body }}</textarea>
                 </div>
                 <div class="form-group">
                     <label for="assessment">Assessment</label>
@@ -44,7 +50,8 @@
                 <button id="updateBtn" class="btn btn-primary">Update</button>
                 <button id="delBtn" class="btn btn-danger">Delete</button>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-5">
+                {% include "_include/html/cvss.html" %}
                 {% include "_include/html/screenshots.html" %}
             </div>
         </div>
@@ -54,12 +61,15 @@
 {% block extra_foot %}
 <script src="/static/sb-admin/js/plugins/fancybox/jquery.fancybox.min.js"></script>
 <script src="/static/js/screenshots.js"></script>
-{% include '_include/js/updateItem.html' with item='Sh0t' ajax_function='ajaxUpdateSh0t' params='id,severity,title,body,assessment' %}
+<script src="/static/js/cvss.js"></script>
+{% include '_include/js/updateItem.html' with item='Sh0t' ajax_function='ajaxUpdateSh0t' params='id,severity,cvss,title,body,assessment' %}
 {% include '_include/js/deleteItem.html' with item='Sh0t' ajax_function='ajaxDeleteSh0t' %}
 <script type="text/javascript">
 
     /* Select the current severity */$
     $('#severity option[value={{sh0t.severity}}]').attr('selected', 'selected');
+
+    displayCVSS("{{sh0t.cvss}}")
 
     /**
      * Override addScreenshot from screenshot.js in order to upload the file on the fly.
