@@ -24,7 +24,7 @@ class FlagSerializer(serializers.ModelSerializer):
 class Sh0tSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sh0t
-        fields = ('id', 'title', 'severity', 'body', 'added', 'assessment')
+        fields = ('id', 'title', 'severity','cvss', 'body', 'added', 'assessment')
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):

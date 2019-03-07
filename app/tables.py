@@ -56,12 +56,15 @@ class Sh0tTable(tables.Table):
     title = tables.TemplateColumn('<a href="/app/sh0t/{{ record.pk }}">{{ record.title }}</a>')
     project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
+    cvss = tables.TemplateColumn('<span class="label label-default"{{ record.cvss }}</span>')
+    #Specific element for CVSS.
+
 
     class Meta:
         model = Sh0t
         template_name = "django_tables2/bootstrap-responsive.html"
-        sequence = ('selection','severity', 'title', 'project', 'assessment', 'added')
-        fields = ('severity', 'title', 'project', 'assessment', 'added')
+        sequence = ('selection','severity', 'cvss', 'title', 'project', 'assessment', 'added')
+        fields = ('severity','cvss', 'title', 'project', 'assessment', 'added')
 
 
 """ProjectTable class."""
