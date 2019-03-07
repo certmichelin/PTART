@@ -37,20 +37,7 @@ function computeCVSS() {
             }
         }
 
-        if (cvss < 0) {
-            $("#cvssValue").attr("class", "label label-default")
-            cvss = "0.0";
-        } else if (cvss < 4.0) {
-            $("#cvssValue").attr("class", "label label-info")
-        } else if (cvss < 7.0) {
-            $("#cvssValue").attr("class", "label label-success")
-        } else if (cvss < 9.0) {
-            $("#cvssValue").attr("class", "label label-warning")
-        } else {
-            $("#cvssValue").attr("class", "label label-danger")
-        }
-
-        $("#cvssValue").text(cvss);
+        displayCVSS(cvss);
 
         // console.log("ISC base : " + iscBase);
         // console.log("ISC : " + isc);
@@ -59,6 +46,28 @@ function computeCVSS() {
 
 
     }
+}
+
+function displayCVSS(cvss){
+    text = "";
+    if (cvss < 0) {
+        $("#cvssValue").attr("class", "label label-default")
+        text = "0.0 - None";
+    } else if (cvss < 4.0) {
+        $("#cvssValue").attr("class", "label label-info")
+        text = cvss + " - Low"
+    } else if (cvss < 7.0) {
+        $("#cvssValue").attr("class", "label label-success")
+        text = cvss + " - Medium"
+    } else if (cvss < 9.0) {
+        $("#cvssValue").attr("class", "label label-warning")
+        text = cvss + " - High"
+    } else {
+        $("#cvssValue").attr("class", "label label-danger")
+        text = cvss + " - Critical"
+    }
+
+    $("#cvssValue").text(text);
 }
 
 function roundup(value) {

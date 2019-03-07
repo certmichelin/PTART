@@ -31,12 +31,16 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                    <label>Severity</label>
-                                    <select class="form-control" id="severity">
-                                            {% for sev in severities %}
-                                                <option value={{sev}}> P{{sev}} </option>
-                                            {% endfor %}     
-                                    </select>
+                                <label>Severity</label>
+                                <select class="form-control" id="severity">
+                                    {% for sev in severities %}
+                                        <option value={{sev}}> P{{sev}} </option>
+                                    {% endfor %}     
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>CVSS</label>
+                                <h4><span id="cvssValue" class="label label-default">No Rating (---)</span></h4>
                             </div>
                             <div class="form-group">
                                 <label>Title</label>
