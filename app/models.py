@@ -3,8 +3,9 @@ import os
 import uuid
 
 from datetime import datetime
-from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 
 """ Project model."""
@@ -151,6 +152,7 @@ class Flag(models.Model):
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     done = models.BooleanField(default=False)
     added = models.DateTimeField(default=datetime.now)
+    assignee = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
 
     def __str__(self):  
         return self.title

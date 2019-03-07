@@ -31,6 +31,14 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label for="assignee">Assignee</label>
+                            <select id="assignee" class="form-control">
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {% if user.id == current_user.id %} selected="selected" {% endif %}>{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
                     {% endif %}
                 </div>
@@ -43,5 +51,5 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/createItem.html' with item='Flag' ajax_function='ajaxCreateFlag' params='title,note,assessment' params_to_clean='title,note' %}
+    {% include '_include/js/createItem.html' with item='Flag' ajax_function='ajaxCreateFlag' params='title,note,assessment,assignee' params_to_clean='title,note' %}
 {% endblock %}

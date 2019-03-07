@@ -216,11 +216,12 @@ function ajaxDeleteScreenshot(success_function, error_function, id) {
  * @param {*} name Flag name.
  * @param {*} note Flag note.
  * @param {*} assessmentId Assessment ID.
+ * @param {*} assigneeId Assignee ID.
  */
-function ajaxCreateFlag(success_function, error_function, title, note, assessmentId) {
+function ajaxCreateFlag(success_function, error_function, title, note, assessmentId, assigneeId) {
     $.ajax({
         url: "/api/flags/",
-        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"assessment":' + JSON.stringify(assessmentId) + ',"assignee":' + JSON.stringify(assigneeId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -237,11 +238,12 @@ function ajaxCreateFlag(success_function, error_function, title, note, assessmen
  * @param {*} note Flag note.
  * @param {*} done Flag status.
  * @param {*} assessmentId Assessment ID.
+ * @param {*} assigneeId Assignee ID.
  */
-function ajaxUpdateFlag(success_function, error_function, id, title, note, done, assessmentId) {
+function ajaxUpdateFlag(success_function, error_function, id, title, note, done, assessmentId, assigneeId) {
     $.ajax({
         url: "/api/flag/" + id + "/",
-        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"done":' + JSON.stringify(done) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"assessment":' + JSON.stringify(assessmentId) + ',"assignee":' + JSON.stringify(assigneeId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

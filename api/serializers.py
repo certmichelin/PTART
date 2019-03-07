@@ -18,7 +18,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
 class FlagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flag
-        fields = ('id', 'title', 'note', 'done', 'assessment')
+        fields = ('id', 'title', 'note', 'done', 'assessment', 'assignee')
 
 
 class Sh0tSerializer(serializers.ModelSerializer):

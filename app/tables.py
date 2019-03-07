@@ -3,7 +3,6 @@ import django_tables2 as tables
 from .models import Project, Flag, Sh0t, Assessment, Project, Template, Methodology, Module, Case
 
 
-"""ProjectTable class."""
 class ProjectTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -16,7 +15,6 @@ class ProjectTable(tables.Table):
         fields = ('name', 'added')
 
 
-"""ProjectTable class."""
 class FlagTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -24,31 +22,16 @@ class FlagTable(tables.Table):
     done = tables.BooleanColumn(yesno='Done,Todo')
     project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>')
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
+    assignee = tables.TemplateColumn('{{ record.assignee.username}}')
 
     class Meta:
         model = Flag
         template_name = "django_tables2/bootstrap-responsive.html"
-        sequence = ('selection', 'name', 'done', 'project', 'assessment', 'added')
-        fields = ('name', 'added', 'done', 'project', 'assessment')
+        sequence = ('selection', 'name', 'project', 'assessment', 'assignee', 'done')
+        fields = ('name', 'added', 'project', 'assessment', 'assignee', 'done')
         empty_text = "No Flags yet"
 
 
-"""ProjectTable class."""
-class OpenFlagTable(tables.Table):
-
-    selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
-    name = tables.TemplateColumn('<a href="/app/flag/{{ record.pk }}"> {{ record.title }}</a>')
-    project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>')
-    assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
-
-    class Meta:
-        model = Flag
-        template_name = "django_tables2/bootstrap-responsive.html"
-        sequence = ('selection', 'name', 'project', 'assessment', 'added')
-        fields = ('name', 'added', 'project', 'assessment')
-
-
-"""ProjectTable class."""
 class Sh0tTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -57,8 +40,6 @@ class Sh0tTable(tables.Table):
     project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
     cvss = tables.TemplateColumn('<span class="cvss label label-default">{{ record.cvss }}</span>', verbose_name= 'CVSS v3')
-    #Specific element for CVSS.
-
 
     class Meta:
         model = Sh0t
@@ -67,7 +48,6 @@ class Sh0tTable(tables.Table):
         fields = ('severity','cvss', 'title', 'project', 'assessment', 'added')
 
 
-"""ProjectTable class."""
 class AssessmentTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -81,7 +61,6 @@ class AssessmentTable(tables.Table):
         fields = ('name', 'project', 'added')
 
 
-"""ProjectTable class."""
 class TemplateTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -95,7 +74,6 @@ class TemplateTable(tables.Table):
         fields = ('severity', 'name')
 
 
-"""MethodologyTable class."""
 class MethodologyTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -108,7 +86,6 @@ class MethodologyTable(tables.Table):
         fields = ('name', )
 
 
-"""ModuleTable class."""
 class ModuleTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -122,7 +99,6 @@ class ModuleTable(tables.Table):
         fields = ('name', 'methodology')
 
 
-"""CaseTable class."""
 class CaseTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)

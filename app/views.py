@@ -1,10 +1,11 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
 
 from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, Methodology, Module, Case, Severity
-from .tables import FlagTable, OpenFlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable
+from .tables import FlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable
 
 
 @login_required
@@ -127,7 +128,7 @@ def sh0t(request, sh0t_id):
 def flag(request, flag_id):
     response = None
     try:
-        response = render(request, 'flags/flag-single.html', {'flag': Flag.objects.get(pk=flag_id), 'assessments': Assessment.objects.all().order_by('added')})
+        response = render(request, 'flags/flag-single.html', {'flag': Flag.objects.get(pk=flag_id), 'assessments': Assessment.objects.all().order_by('added'), 'users': User.objects.all()})
     except Flag.DoesNotExist:
         response = redirect('/')
     return response
@@ -190,7 +191,7 @@ def sh0ts_new(request):
 
 @login_required
 def flags_new(request):
-    return render(request, 'flags/flags.html', {'assessments_list': Assessment.objects.all().order_by('-added')})
+    return render(request, 'flags/flags.html', {'assessments_list': Assessment.objects.all().order_by('-added'), 'users': User.objects.all(), 'current_user': request.user})
 
 
 @login_required
