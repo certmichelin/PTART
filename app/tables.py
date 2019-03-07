@@ -56,7 +56,7 @@ class Sh0tTable(tables.Table):
     title = tables.TemplateColumn('<a href="/app/sh0t/{{ record.pk }}">{{ record.title }}</a>')
     project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
-    cvss = tables.TemplateColumn('<span class="cvss label label-default">{{ record.cvss }}</span>')
+    cvss = tables.TemplateColumn('<span class="cvss label label-default">{{ record.cvss }}</span>', verbose_name= 'CVSS v3')
     #Specific element for CVSS.
 
 
