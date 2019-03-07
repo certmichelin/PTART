@@ -35,4 +35,6 @@ urlpatterns = [
     url(r'^methodologies/$', views.methodologies_all),
     url(r'^methodologies/new/$', views.methodologies_new),
     url(r'^methodology/([0-9]+)/$', views.methodology),
+
+    url(r'^todo/$', views.my_todo)
 ]

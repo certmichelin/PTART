@@ -213,6 +213,32 @@ def modules_new(request):
 def cases_new(request):
     return render(request, 'cases/cases.html', {'modules': Module.objects.all()})
 
+@login_required
+def my_todo(request):
+    projects = []
+    for project in  Project.objects.all() :
+        assessments = []
+        for assessment in project.assessment_set.all() :
+            flags = []
+            for flag in Flag.objects.filter(assignee=request.user, assessment = assessment, done = False) :
+                flags.append({
+                    'title':flag.title,
+                    'id':flag.id
+                })
+            if len(flags) > 0 :
+                assessments.append({
+                    'name':assessment.name,
+                    'id':assessment.id,
+                    'flags' : flags
+                })
+        if len(assessments) > 0 :
+            projects.append({
+                'name':project.name,
+                'id':project.id,
+                'assessments' : assessments
+            })
+    return render(request, 'mytodo.html', {'projects':projects})
+
 
 @login_required
 def logout_user(request):
