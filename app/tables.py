@@ -19,7 +19,7 @@ class FlagTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     name = tables.TemplateColumn('<a href="/app/flag/{{ record.pk }}"> {{ record.title }}</a>')
-    done = tables.BooleanColumn(yesno='Done,Todo')
+    done = tables.TemplateColumn('{% if record.done == True %} <span class="label label-success">Done</span> {% else %} <span class="label label-danger">ToDo</span> {% endif %}', verbose_name= 'Status')
     project = tables.TemplateColumn('<a href="/app/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>')
     assessment = tables.TemplateColumn('<a href="/app/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
     assignee = tables.TemplateColumn('{{ record.assignee.username}}')
