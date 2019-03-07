@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
     url(r'^flag/(?P<pk>[0-9]+)/$', views.flag),
+    url(r'^flag/(?P<pk>[0-9]+)/complete/$', views.markFlagAsDone),
     url(r'^flags/$', views.flags),
     url(r'^sh0t/(?P<pk>[0-9]+)/$', views.sh0t),
     url(r'^sh0ts/$', views.sh0ts),

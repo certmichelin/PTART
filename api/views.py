@@ -115,6 +115,18 @@ def screenshot_raw(request, pk) :
     response.renderer_context = {}
     return response
 
+@api_view(['POST'])
+def markFlagAsDone(request, pk) :
+    response = None
+    try:
+        flag = Flag.objects.get(pk=pk)
+        flag.done = True
+        flag.save()
+        response = Response(FlagSerializer(flag).data, status=status.HTTP_200_OK)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
 #
 # CRUD operations for a specific item.
 #
