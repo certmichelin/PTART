@@ -41,6 +41,7 @@
                             <div class="form-group">
                                 <label>CVSS</label>
                                 <h4><span id="cvssValue" class="label label-default">No Rating (---)</span></h4>
+                                <input id="cvss" type="hidden" value="---"/> 
                             </div>
                             <div class="form-group">
                                 <label>Title</label>
@@ -144,6 +145,9 @@
         if(screenshotsUploaded == screenshotsToUpload){
             $("#title").val("");
             $("#body").val("");
+            $("#cvss").val("---");
+            $("#cvssValue").text("No Rating (---)");
+            $("#cvssValue").attr("class","label label-default");
             $("#screenshots").empty();
             screenshotsToUpload = 0;
             screenshotsUploaded = 0;
@@ -157,7 +161,7 @@
     $('#createBtn').on('click', function () {
         waitingDialog.show();
         cleanMessagesContainer($("#messages"));
-        ajaxCreateSh0t(sh0tCreationSuccess, commonFailure, $("#severity").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
+        ajaxCreateSh0t(sh0tCreationSuccess, commonFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });
 </script>
 {% endblock %}

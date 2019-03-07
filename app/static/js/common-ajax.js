@@ -3,7 +3,7 @@
  * Require jQuery Cookie plugin.
  */
 $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
+    beforeSend: function (xhr, settings) {
         xhr.setRequestHeader("X-CSRFToken", $.cookie("csrftoken"));
     },
     contentType: 'application/json'
@@ -17,7 +17,7 @@ $.ajaxSetup({
  * @param {*} name Project name.
  * @param {*} scope Project scope.
  */
-function ajaxCreateProject(success_function, error_function, name, scope){
+function ajaxCreateProject(success_function, error_function, name, scope) {
     $.ajax({
         url: "/api/projects/",
         data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + '}',
@@ -36,7 +36,7 @@ function ajaxCreateProject(success_function, error_function, name, scope){
  * @param {*} name Project name.
  * @param {*} scope Project scope.
  */
-function ajaxUpdateProject(success_function, error_function, id, name, scope){
+function ajaxUpdateProject(success_function, error_function, id, name, scope) {
     $.ajax({
         url: "/api/project/" + id + "/",
         data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + '}',
@@ -53,7 +53,7 @@ function ajaxUpdateProject(success_function, error_function, id, name, scope){
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Project id.
  */
-function ajaxDeleteProject(success_function, error_function, id){
+function ajaxDeleteProject(success_function, error_function, id) {
     $.ajax({
         url: "/api/project/" + id + "/",
         type: 'DELETE',
@@ -70,7 +70,7 @@ function ajaxDeleteProject(success_function, error_function, id){
  * @param {*} name Assessment name.
  * @param {*} projectId Project ID.
  */
-function ajaxCreateAssessment(success_function, error_function, name, projectId){
+function ajaxCreateAssessment(success_function, error_function, name, projectId) {
     $.ajax({
         url: "/api/assessments/",
         data: '{"name":' + JSON.stringify(name) + ',"project":' + JSON.stringify(projectId) + '}',
@@ -89,7 +89,7 @@ function ajaxCreateAssessment(success_function, error_function, name, projectId)
  * @param {*} name Assessment name.
  * @param {*} projectID Project ID.
  */
-function ajaxUpdateAssessment(success_function, error_function, id, name, projectID){
+function ajaxUpdateAssessment(success_function, error_function, id, name, projectID) {
     $.ajax({
         url: "/api/assessment/" + id + "/",
         data: '{"name":' + JSON.stringify(name) + ',"project":' + JSON.stringify(projectID) + '}',
@@ -106,7 +106,7 @@ function ajaxUpdateAssessment(success_function, error_function, id, name, projec
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Assessment id.
  */
-function ajaxDeleteAssessment(success_function, error_function, id){
+function ajaxDeleteAssessment(success_function, error_function, id) {
     $.ajax({
         url: "/api/assessment/" + id + "/",
         type: 'DELETE',
@@ -121,14 +121,15 @@ function ajaxDeleteAssessment(success_function, error_function, id){
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} severity Sh0t severity.
+ * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateSh0t(success_function, error_function, severity, title, body, assessmentId){
+function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, body, assessmentId) {
     $.ajax({
         url: "/api/sh0ts/",
-        data: '{"severity":' + JSON.stringify(severity)+ ',"title":' + JSON.stringify(title)+ ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -142,14 +143,15 @@ function ajaxCreateSh0t(success_function, error_function, severity, title, body,
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Sh0t id.
  * @param {*} severity Sh0t severity.
+ * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateSh0t(success_function, error_function, id, severity, title, body, assessmentId){
+function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title, body, assessmentId) {
     $.ajax({
         url: "/api/sh0t/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity)+ ',"title":' + JSON.stringify(title)+ ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -163,7 +165,7 @@ function ajaxUpdateSh0t(success_function, error_function, id, severity, title, b
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Sh0t id.
  */
-function ajaxDeleteSh0t(success_function, error_function, id){
+function ajaxDeleteSh0t(success_function, error_function, id) {
     $.ajax({
         url: "/api/sh0t/" + id + "/",
         type: 'DELETE',
@@ -180,7 +182,7 @@ function ajaxDeleteSh0t(success_function, error_function, id){
  * @param {*} data Base64 image to upload.
  * @param {*} shotId Sh0t id.
  */
-function ajaxUploadScreenshot(success_function, error_function, data, shotId){
+function ajaxUploadScreenshot(success_function, error_function, data, shotId) {
     $.ajax({
         url: "/api/screenshots/",
         data: '{"screenshot": ' + JSON.stringify(data) + ', "sh0t": ' + JSON.stringify(shotId) + ' }',
@@ -197,7 +199,7 @@ function ajaxUploadScreenshot(success_function, error_function, data, shotId){
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Screenshot id.
  */
-function ajaxDeleteScreenshot(success_function, error_function, id){
+function ajaxDeleteScreenshot(success_function, error_function, id) {
     $.ajax({
         url: "/api/screenshot/" + id + "/",
         type: 'DELETE',
@@ -215,10 +217,10 @@ function ajaxDeleteScreenshot(success_function, error_function, id){
  * @param {*} note Flag note.
  * @param {*} assessmentId Assessment ID.
  */
-function ajaxCreateFlag(success_function, error_function, title, note, assessmentId){
+function ajaxCreateFlag(success_function, error_function, title, note, assessmentId) {
     $.ajax({
         url: "/api/flags/",
-        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"assessment":'+ JSON.stringify(assessmentId) + '}',
+        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -236,10 +238,10 @@ function ajaxCreateFlag(success_function, error_function, title, note, assessmen
  * @param {*} done Flag status.
  * @param {*} assessmentId Assessment ID.
  */
-function ajaxUpdateFlag(success_function, error_function, id, title, note, done, assessmentId){
+function ajaxUpdateFlag(success_function, error_function, id, title, note, done, assessmentId) {
     $.ajax({
         url: "/api/flag/" + id + "/",
-        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"done":'+ JSON.stringify(done) + ',"assessment":'+ JSON.stringify(assessmentId) + '}',
+        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"done":' + JSON.stringify(done) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -253,7 +255,7 @@ function ajaxUpdateFlag(success_function, error_function, id, title, note, done,
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Flag id.
  */
-function ajaxDeleteFlag(success_function, error_function, id){
+function ajaxDeleteFlag(success_function, error_function, id) {
     $.ajax({
         url: "/api/flag/" + id + "/",
         type: 'DELETE',
@@ -269,7 +271,7 @@ function ajaxDeleteFlag(success_function, error_function, id){
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Template id.
  */
-function ajaxGetTemplate(success_function, error_function, id){
+function ajaxGetTemplate(success_function, error_function, id) {
     $.ajax({
         url: "/api/template/" + id + "/",
         type: 'GET',
@@ -287,10 +289,10 @@ function ajaxGetTemplate(success_function, error_function, id){
  * @param {*} name Template name.
  * @param {*} body Template body.
  */
-function ajaxCreateTemplate(success_function, error_function, severity, name, body){
+function ajaxCreateTemplate(success_function, error_function, severity, name, body) {
     $.ajax({
         url: "/api/templates/",
-        data: '{"severity":' + JSON.stringify(severity)+ ',"name":' + JSON.stringify(name)+ ',"body":' + JSON.stringify(body) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -307,10 +309,10 @@ function ajaxCreateTemplate(success_function, error_function, severity, name, bo
  * @param {*} name Template name.
  * @param {*} body Template body.
  */
-function ajaxUpdateTemplate(success_function, error_function, id, severity, name, body){
+function ajaxUpdateTemplate(success_function, error_function, id, severity, name, body) {
     $.ajax({
         url: "/api/template/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity)+ ',"name":' + JSON.stringify(name)+ ',"body":' + JSON.stringify(body) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -324,7 +326,7 @@ function ajaxUpdateTemplate(success_function, error_function, id, severity, name
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Template id.
  */
-function ajaxDeleteTemplate(success_function, error_function, id){
+function ajaxDeleteTemplate(success_function, error_function, id) {
     $.ajax({
         url: "/api/template/" + id + "/",
         type: 'DELETE',
@@ -341,10 +343,10 @@ function ajaxDeleteTemplate(success_function, error_function, id){
  * @param {*} name Methodology name.
  * @param {*} description Methodology description.
  */
-function ajaxCreateMethodology(success_function, error_function, name, description){
+function ajaxCreateMethodology(success_function, error_function, name, description) {
     $.ajax({
         url: "/api/methodologies/",
-        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -360,10 +362,10 @@ function ajaxCreateMethodology(success_function, error_function, name, descripti
  * @param {*} name Methodology name.
  * @param {*} description Methodology description.
  */
-function ajaxUpdateMethodology(success_function, error_function, id, name, description){
+function ajaxUpdateMethodology(success_function, error_function, id, name, description) {
     $.ajax({
         url: "/api/methodology/" + id + "/",
-        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -377,7 +379,7 @@ function ajaxUpdateMethodology(success_function, error_function, id, name, descr
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Methodology id.
  */
-function ajaxDeleteMethodology(success_function, error_function, id){
+function ajaxDeleteMethodology(success_function, error_function, id) {
     $.ajax({
         url: "/api/methodology/" + id + "/",
         type: 'DELETE',
@@ -395,10 +397,10 @@ function ajaxDeleteMethodology(success_function, error_function, id){
  * @param {*} description Module description.
  * @param {*} methodology Module methodology.
  */
-function ajaxCreateModule(success_function, error_function, name, description, methodology){
+function ajaxCreateModule(success_function, error_function, name, description, methodology) {
     $.ajax({
         url: "/api/modules/",
-        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + ',"methodology":' + JSON.stringify(methodology) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"methodology":' + JSON.stringify(methodology) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -415,10 +417,10 @@ function ajaxCreateModule(success_function, error_function, name, description, m
  * @param {*} description Module description.
  * @param {*} methodology Module methodology.
  */
-function ajaxUpdateModule(success_function, error_function, id, name, description, methodology){
+function ajaxUpdateModule(success_function, error_function, id, name, description, methodology) {
     $.ajax({
         url: "/api/module/" + id + "/",
-        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description)+ ',"methodology":' + JSON.stringify(methodology) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"methodology":' + JSON.stringify(methodology) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -432,7 +434,7 @@ function ajaxUpdateModule(success_function, error_function, id, name, descriptio
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Module id.
  */
-function ajaxDeleteModule(success_function, error_function, id){
+function ajaxDeleteModule(success_function, error_function, id) {
     $.ajax({
         url: "/api/module/" + id + "/",
         type: 'DELETE',
@@ -450,10 +452,10 @@ function ajaxDeleteModule(success_function, error_function, id){
  * @param {*} description Case description.
  * @param {*} module Case module.
  */
-function ajaxCreateCase(success_function, error_function, name, description, module){
+function ajaxCreateCase(success_function, error_function, name, description, module) {
     $.ajax({
         url: "/api/cases/",
-        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description) + ',"module":' + JSON.stringify(module) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"module":' + JSON.stringify(module) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -470,10 +472,10 @@ function ajaxCreateCase(success_function, error_function, name, description, mod
  * @param {*} description Case description.
  * @param {*} module Case module.
  */
-function ajaxUpdateCase(success_function, error_function, id, name, description, module){
+function ajaxUpdateCase(success_function, error_function, id, name, description, module) {
     $.ajax({
         url: "/api/case/" + id + "/",
-        data: '{"name":' + JSON.stringify(name)+ ',"description":' + JSON.stringify(description)+ ',"module":' + JSON.stringify(module) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"module":' + JSON.stringify(module) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -487,7 +489,7 @@ function ajaxUpdateCase(success_function, error_function, id, name, description,
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Case id.
  */
-function ajaxDeleteCase(success_function, error_function, id){
+function ajaxDeleteCase(success_function, error_function, id) {
     $.ajax({
         url: "/api/case/" + id + "/",
         type: 'DELETE',
@@ -504,7 +506,7 @@ function ajaxDeleteCase(success_function, error_function, id){
  * @param {*} moduleId Module id.
  * @param {*} assessmentId Assessment id.
  */
-function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, assessmentId){
+function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, assessmentId) {
     $.ajax({
         url: "/api/module/" + moduleId + "/load/" + assessmentId + "/",
         type: 'POST',

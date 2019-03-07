@@ -52,7 +52,8 @@ function displayCVSS(cvss){
     text = "";
     if (cvss < 0) {
         $("#cvssValue").attr("class", "label label-default")
-        text = "0.0 - None";
+        cvss = "0.0";
+        text = cvss + " - None";
     } else if (cvss < 4.0) {
         $("#cvssValue").attr("class", "label label-info")
         text = cvss + " - Low"
@@ -66,8 +67,8 @@ function displayCVSS(cvss){
         $("#cvssValue").attr("class", "label label-danger")
         text = cvss + " - Critical"
     }
-
     $("#cvssValue").text(text);
+    $("#cvss").val(cvss);
 }
 
 function roundup(value) {
