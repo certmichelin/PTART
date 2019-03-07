@@ -55,16 +55,16 @@ function displayCVSS(cvss){
         cvss = "0.0";
         text = cvss + " - None";
     } else if (cvss < 4.0) {
-        $("#cvssValue").attr("class", "label label-info")
+        $("#cvssValue").attr("class", "label label-success")
         text = cvss + " - Low"
     } else if (cvss < 7.0) {
-        $("#cvssValue").attr("class", "label label-success")
+        $("#cvssValue").attr("class", "label label-warning")
         text = cvss + " - Medium"
     } else if (cvss < 9.0) {
-        $("#cvssValue").attr("class", "label label-warning")
+        $("#cvssValue").attr("class", "label label-danger")
         text = cvss + " - High"
     } else {
-        $("#cvssValue").attr("class", "label label-danger")
+        $("#cvssValue").attr("class", "label label-critical")
         text = cvss + " - Critical"
     }
     $("#cvssValue").text(text);

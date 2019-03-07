@@ -101,7 +101,7 @@ class Sh0t(models.Model):
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    cvss = models.CharField(max_length=3, default="---")
+    cvss = models.CharField(max_length=4, default="---")
 
     def __str__(self):  
         return self.title

@@ -3,6 +3,7 @@
 
 {% block extra_head %}
 <link href="/static/css/badges.css" rel="stylesheet" type="text/css">
+<link href="/static/css/cvss.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block page %}
@@ -16,5 +17,21 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/deleteItems.html' with item='sh0t' items='project/s' ajax_function='ajaxDeleteSh0t' %}
+{% include '_include/js/deleteItems.html' with item='sh0t' items='project/s' ajax_function='ajaxDeleteSh0t' %}
+<script type="text/javascript">
+    $('.cvss').each(function () {
+        cvss = parseFloat($(this).text());
+        if (!isNaN(cvss) && $(this).text() != "0.0") {
+            if (cvss > 0 && cvss < 4.0) {
+                $(this).attr("class", "cvss label label-success")
+            } else if (cvss < 7.0) {
+                $(this).attr("class", "cvss label label-warning")
+            } else if (cvss < 9.0) {
+                $(this).attr("class", "cvss label label-danger")
+            } else {
+                $(this).attr("class", "cvss label label-critical")
+            }
+        }
+    });
+</script>
 {% endblock %}

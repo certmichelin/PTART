@@ -4,6 +4,7 @@
 
 {% block extra_head %}
 <link href="/static/css/screenshots.css" rel="stylesheet" type="text/css">
+<link href="/static/css/cvss.css" rel="stylesheet" type="text/css">
 <link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css"" rel="stylesheet" type="text/css">
 {% endblock %}
 
@@ -156,12 +157,20 @@
     }
 
     /**
+     * sh0t creation failure callback.
+     */
+     function sh0tCreationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+        checkUploadBatchStatus();
+    }
+
+    /**
      * Create sh0t.
      */
     $('#createBtn').on('click', function () {
         waitingDialog.show();
         cleanMessagesContainer($("#messages"));
-        ajaxCreateSh0t(sh0tCreationSuccess, commonFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
+        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });
 </script>
 {% endblock %}
