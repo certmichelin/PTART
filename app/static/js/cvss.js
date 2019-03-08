@@ -48,6 +48,21 @@ function computeCVSS() {
     }
 }
 
+$('.cvss').each(function () {
+    cvss = parseFloat($(this).text());
+    if (!isNaN(cvss) && $(this).text() != "0.0") {
+        if (cvss > 0 && cvss < 4.0) {
+            $(this).attr("class", "cvss label label-success")
+        } else if (cvss < 7.0) {
+            $(this).attr("class", "cvss label label-warning")
+        } else if (cvss < 9.0) {
+            $(this).attr("class", "cvss label label-danger")
+        } else {
+            $(this).attr("class", "cvss label label-critical")
+        }
+    }
+});
+
 function displayCVSS(cvss){
     text = "";
     if (cvss < 0) {

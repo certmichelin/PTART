@@ -85,13 +85,13 @@
                             </div>
                             <div class="col-xs-9 text-right">
                                 <div class="huge">{{ flags_count }}</div>
-                                <div>Open Flags!</div>
+                                <div>Flags!</div>
                             </div>
                         </div>
                     </div>
                     <a href="/app/flags">
                         <div class="panel-footer">
-                            <span class="pull-left">View Open Flags</span>
+                            <span class="pull-left">View Flags</span>
                             <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
                             <div class="clearfix"></div>
                         </div>
@@ -145,7 +145,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-lg-7">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Recent Shots</h3>
@@ -160,6 +160,7 @@
                                         <th>Assessment</th>
                                         <th>Title</th>
                                         <th>Sev</th>
+                                        <th>CVSS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -170,8 +171,11 @@
                                         <td><a href="/app/assessment/{{ sh0t.assessment.id}}/">{{ sh0t.assessment.name }}<a></a>
                                         </td>
                                         <td><a href="/app/sh0t/{{ sh0t.id }}/">{{ sh0t.title }}</a></td>
-                                        <td><span
-                                                class="bc-badge bc-badge--p{{ sh0t.severity }}">P{{ sh0t.severity }}</span>
+                                        <td>
+                                            <span class="bc-badge bc-badge--p{{ sh0t.severity }}">P{{ sh0t.severity }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="cvss label label-default">{{ sh0t.cvss }}</span>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -187,7 +191,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-5">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Open Flags</h3>
@@ -228,4 +232,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_foot %}
+<script src="/static/js/cvss.js"></script>
 {% endblock %}
