@@ -91,7 +91,7 @@ def load_module(request, pk, assessmentId):
         flags = []
         for case in cases:
             note = "Module: " + module.name + "\n\n" + case.description
-            flag = Flag(title=case.name, note=note, assessment=assessment)
+            flag = Flag(title=case.name, note=note, assessment=assessment, assignee = request.user)
             flag.save()
             flags.append(flag)
         response = Response(FlagSerializer(flags, many=True).data, status=status.HTTP_201_CREATED)

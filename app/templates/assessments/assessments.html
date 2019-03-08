@@ -91,9 +91,11 @@
      */
     function checkFlagCreationBatchStatus(data) {
         if (++created >= toCreate) {
-            waitingDialog.hide();
             $("#name").val("");
+            toCreate = 0;
+            created = 0;
             success($("#messages"), "Assessment was created!");
+            waitingDialog.hide();
         }
     }
 

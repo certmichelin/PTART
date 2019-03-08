@@ -40,6 +40,8 @@
      */
     function checkDeletionBatchStatus(data) {
         if (++deleted == toDelete) {
+            toDelete = 0;
+            deleted = 0;
             waitingDialog.hide();
             bootbox.alert("The selected {{items}} have been deleted", function () {
                 document.location.reload();
