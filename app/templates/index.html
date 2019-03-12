@@ -4,6 +4,7 @@
 
 {% block extra_head %}
 <link href="/static/css/badges.css" rel="stylesheet" type="text/css">
+<link href="/static/css/cvss.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block page %}
@@ -197,7 +198,7 @@
                         <h3 class="panel-title">Open Flags</h3>
                     </div>
                     <div class="panel-body">
-                        {% if open_flags %}
+                        {% if recent_open_flags %}
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover table-striped">
                                 <thead>
@@ -208,7 +209,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for flag in open_flags %}
+                                    {% for flag in recent_open_flags %}
                                     <tr>
                                         <td><a href="/app/project/{{ flag.assessment.project.id}}/summary">{{ flag.assessment.project.name }}<a></a>
                                         </td>

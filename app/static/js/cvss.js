@@ -50,7 +50,7 @@ function computeCVSS() {
 
 $('.cvss').each(function () {
     cvss = parseFloat($(this).text());
-    if (!isNaN(cvss) && $(this).text() != "0.0") {
+    if (!isNaN(cvss) && $(this).text().trim() != "0.0") {
         if (cvss > 0 && cvss < 4.0) {
             $(this).attr("class", "cvss label label-success")
         } else if (cvss < 7.0) {
@@ -63,28 +63,31 @@ $('.cvss').each(function () {
     }
 });
 
-function displayCVSS(cvss){
+function displayCVSS(cvss) {
     text = "";
-    if (cvss < 0) {
-        $("#cvssValue").attr("class", "label label-default")
-        cvss = "0.0";
-        text = cvss + " - None";
-    } else if (cvss < 4.0) {
-        $("#cvssValue").attr("class", "label label-success")
-        text = cvss + " - Low"
-    } else if (cvss < 7.0) {
-        $("#cvssValue").attr("class", "label label-warning")
-        text = cvss + " - Medium"
-    } else if (cvss < 9.0) {
-        $("#cvssValue").attr("class", "label label-danger")
-        text = cvss + " - High"
-    } else {
-        $("#cvssValue").attr("class", "label label-critical")
-        text = cvss + " - Critical"
+    if (!isNaN(parseFloat(cvss))) {
+        if (cvss <= 0) {
+            $("#cvssValue").attr("class", "label label-default")
+            cvss = "0.0";
+            text = cvss + " - None";
+        } else if (cvss < 4.0) {
+            $("#cvssValue").attr("class", "label label-success")
+            text = cvss + " - Low"
+        } else if (cvss < 7.0) {
+            $("#cvssValue").attr("class", "label label-warning")
+            text = cvss + " - Medium"
+        } else if (cvss < 9.0) {
+            $("#cvssValue").attr("class", "label label-danger")
+            text = cvss + " - High"
+        } else {
+            $("#cvssValue").attr("class", "label label-critical")
+            text = cvss + " - Critical"
+        }
+        $("#cvssValue").text(text);
+        $("#cvss").val(cvss);
     }
-    $("#cvssValue").text(text);
-    $("#cvss").val(cvss);
 }
+
 
 function roundup(value) {
     return (Math.ceil(value * 10.0) / 10.0).toFixed(1);

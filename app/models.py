@@ -108,7 +108,7 @@ class Sh0t(models.Model):
         return self.title
 
     class Meta:
-        ordering = ('severity','title',)
+        ordering = ('severity', '-cvss', 'title',)
 
 
 """Screenshot model."""
