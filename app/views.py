@@ -20,7 +20,7 @@ def index(request):
     projects_count = Project.objects.all().count()
     assessments_count = Assessment.objects.all().count()
     shots_count = Sh0t.objects.all().count()
-    flags_count = Flag.objects.all().count()
+    open_flags_count = Flag.objects.filter(done=False).count()
 
     context = {
         'recent_open_flags': recent_open_flags,
@@ -29,7 +29,7 @@ def index(request):
         'projects_count': projects_count,
         'assessments_count': assessments_count,
         'shots_count': shots_count,
-        'flags_count': flags_count
+        'open_flags_count': open_flags_count
     }
     return render(request, 'index.html', context)
 
