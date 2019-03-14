@@ -71,15 +71,10 @@
     <!-- /#page-wrapper -->
 {% endblock %}
 {% block extra_foot %}
-<script src="/static/js/cvss.js"></script>
-<script src="/static/js/screenshots.js"></script>
 <script type="text/javascript">
 
-    var simplemdeBody = new SimpleMDE({
-        hideIcons: ["side-by-side", "fullscreen"],
-        showIcons: ["code", "table"],
-        element: $("#body")[0] });
-
+    activeMarkdown("body");
+    
     var screenshotsToUpload = 0;
     var screenshotsUploaded = 0;
 
@@ -168,7 +163,7 @@
     $('#createBtn').on('click', function () {
         waitingDialog.show();
         cleanMessagesContainer($("#messages"));
-        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#assessment").val(), simplemdeBody.value());
+        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
     });
 </script>
 {% endblock %}
