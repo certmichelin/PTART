@@ -52,4 +52,7 @@
 
 {% block extra_foot %}
     {% include '_include/js/createItem.html' with item='Flag' ajax_function='ajaxCreateFlag' params='title,note,assessment,assignee' params_to_clean='title,note' %}
+    <script>
+        activeMarkdown("note");
+    </script>
 {% endblock %}

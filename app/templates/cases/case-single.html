@@ -38,4 +38,7 @@
 {% block extra_foot %}
     {% include '_include/js/updateItem.html' with item='Case' ajax_function='ajaxUpdateCase' params='id,name,description,module' %}
     {% include '_include/js/deleteItem.html' with item='Case' ajax_function='ajaxDeleteCase' %}
+    <script>
+        activeMarkdown("description");
+    </script>
 {% endblock %}

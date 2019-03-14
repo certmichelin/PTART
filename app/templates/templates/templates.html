@@ -40,4 +40,7 @@
 
 {% block extra_foot %}
     {% include '_include/js/createItem.html' with item='Template' ajax_function='ajaxCreateTemplate' params='severity,name,body' params_to_clean='name,body' %}
+    <script>
+        activeMarkdown("body");
+    </script>
 {% endblock %}

@@ -38,4 +38,7 @@
 {% block extra_foot %}
     {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,body' %}
     {% include '_include/js/deleteItem.html' with item='Template' ajax_function='ajaxDeleteTemplate' %}
+    <script>
+        activeMarkdown("body");
+    </script>
 {% endblock %}

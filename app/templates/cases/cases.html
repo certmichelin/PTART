@@ -44,4 +44,7 @@
 
 {% block extra_foot %}
     {% include '_include/js/createItem.html' with item='Case' ajax_function='ajaxCreateCase' params='name,description,module' params_to_clean='name,description' %}
+    <script>
+        activeMarkdown("description");
+    </script>
 {% endblock %}
