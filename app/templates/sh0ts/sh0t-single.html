@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load addstr %}
+
 {% block title %} {{ sh0t.title }} | sh00t{% endblock %}
 
 {% block extra_head %}
@@ -11,7 +13,7 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='Sh0t' sub_icon='fa fa-bullseye' sub_url='/app/sh0ts/' sub_text='Sh0t' active_icon='' active_text=sh0t.title %}
+        {% include '_include/html/header.html' with item='Sh0t' sub_icon='fa fa-cubes' sub_url="/app/project/"|addstr:sh0t.assessment.project.pk|addstr:"/summary" sub_text=sh0t.assessment.project third_icon='fa fa-cube' third_url="/app/assessment/"|addstr:sh0t.assessment.pk third_text=sh0t.assessment active_icon='' active_text=sh0t.title %}
         {% include "_include/html/messages.html" %}
     
         <div class="row">

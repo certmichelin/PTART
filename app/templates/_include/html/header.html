@@ -15,6 +15,11 @@
                     <i class="{{sub_icon}}"></i><a href="{{sub_url}}">{{sub_text}}</a></li>
                 </li>
             {% endif %}
+            {% if third_text and third_url and third_icon %}
+                <li>
+                    <i class="{{third_icon}}"></i><a href="{{third_url}}">{{third_text}}</a></li>
+                </li>
+            {% endif %}
             <li class="active">
                 <i class="{{active_icon}}"></i> {{active_text}}
             </li>
