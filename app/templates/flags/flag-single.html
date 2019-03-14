@@ -1,11 +1,13 @@
 {% extends "base.html" %}
+{% load addstr %}
+
 {% block title %} Flags | sh00t{% endblock %}
 
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='Flag' sub_icon='fa fa-flag' sub_url='/app/flags/' sub_text='Flags' active_icon='' active_text=flag.name %}
+        {% include '_include/html/header.html' with item='Flag' sub_icon='fa fa-cubes' sub_url="/app/project/"|addstr:flag.assessment.project.pk|addstr:"/summary" sub_text=flag.assessment.project third_icon='fa fa-cube' third_url="/app/assessment/"|addstr:flag.assessment.pk third_text=flag.assessment active_icon='' active_text=flag.title %}
         {% include "_include/html/messages.html" %}
 
         <div class="row">
