@@ -13,7 +13,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        {{ajax_function}}(itemUpdationSuccess, commonFailure {% for param in params|split %},$("#{{param}}").val(){% endfor %});
+        {{ajax_function}}(itemUpdationSuccess, commonFailure {% for param in params|split %},$("#{{param}}").val(){% endfor %}{% for param in simplemdeparams|split %},{{param}}.value(){% endfor %});
     });
 
 </script>

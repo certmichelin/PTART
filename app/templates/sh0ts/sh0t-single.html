@@ -3,12 +3,6 @@
 
 {% block title %} {{ sh0t.title }} | sh00t{% endblock %}
 
-{% block extra_head %}
-<link href="/static/css/screenshots.css" rel="stylesheet" type="text/css">
-<link href="/static/css/cvss.css" rel="stylesheet" type="text/css">
-<link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css" rel=" stylesheet" type="text/css">
-{% endblock %}
-
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
@@ -61,10 +55,9 @@
 </div>
 {% endblock %}
 {% block extra_foot %}
-<script src="/static/sb-admin/js/plugins/fancybox/jquery.fancybox.min.js"></script>
 <script src="/static/js/screenshots.js"></script>
 <script src="/static/js/cvss.js"></script>
-{% include '_include/js/updateItem.html' with item='Sh0t' ajax_function='ajaxUpdateSh0t' params='id,severity,cvss,title,body,assessment' %}
+{% include '_include/js/updateItem.html' with item='Sh0t' ajax_function='ajaxUpdateSh0t' params='id,severity,cvss,title,assessment' simplemdeparams='simplemdeBody' %}
 {% include '_include/js/deleteItem.html' with item='Sh0t' ajax_function='ajaxDeleteSh0t' %}
 <script type="text/javascript">
 
@@ -72,6 +65,11 @@
     $('#severity option[value={{sh0t.severity}}]').attr('selected', 'selected');
 
     displayCVSS("{{sh0t.cvss}}")
+
+    var simplemdeBody = new SimpleMDE({
+        hideIcons: ["side-by-side", "fullscreen"],
+        showIcons: ["code", "table"],
+        element: $("#body")[0] });
 
     /**
      * Override addScreenshot from screenshot.js in order to upload the file on the fly.

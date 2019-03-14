@@ -126,7 +126,7 @@ function ajaxDeleteAssessment(success_function, error_function, id) {
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, body, assessmentId) {
+function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, assessmentId, body) {
     $.ajax({
         url: "/api/sh0ts/",
         data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
@@ -148,7 +148,7 @@ function ajaxCreateSh0t(success_function, error_function, severity, cvss, title,
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title, body, assessmentId) {
+function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title, assessmentId, body) {
     $.ajax({
         url: "/api/sh0t/" + id + "/",
         data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
