@@ -1,5 +1,5 @@
 function activeMarkdown(id) {
-    new SimpleMDE({
+    return new SimpleMDE({
         hideIcons: ["side-by-side", "fullscreen"],
         showIcons: ["code", "table"],
         forceSync: true,

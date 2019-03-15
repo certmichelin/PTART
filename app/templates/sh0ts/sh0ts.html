@@ -73,7 +73,7 @@
 {% block extra_foot %}
 <script type="text/javascript">
 
-    activeMarkdown("body");
+    var mdBody = activeMarkdown("body");
     
     var screenshotsToUpload = 0;
     var screenshotsUploaded = 0;
@@ -82,7 +82,7 @@
         var template_id = $(this).val();
         if(template_id == "") {
             $('#title').val("");
-            $('#body').val("");
+            mdBody.value("");
         }
         else {
             ajaxGetTemplate(templateGetSuccess,commonFailure,template_id);
@@ -95,7 +95,7 @@
     function templateGetSuccess(data) {
         $('#severity option[value="' + data.severity + '"').attr('selected','selected');
         $('#title').val(data.name);
-        $('#body').val(data.body);
+        mdBody.value(data.body);
     }
 
     /**
@@ -138,7 +138,7 @@
     function checkUploadBatchStatus() {
         if(screenshotsUploaded == screenshotsToUpload){
             $("#title").val("");
-            $("#body").val("");
+            mdBody.value("");
             $("#cvss").val("---");
             $("#cvssValue").text("No Rating (---)");
             $("#cvssValue").attr("class","label label-default");
