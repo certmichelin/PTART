@@ -123,13 +123,14 @@ function ajaxDeleteAssessment(success_function, error_function, id) {
  * @param {*} severity Sh0t severity.
  * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
+ * @param {*} asset Sh0t asset.
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, body, assessmentId) {
+function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, asset, body, assessmentId) {
     $.ajax({
         url: "/api/sh0ts/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -145,13 +146,14 @@ function ajaxCreateSh0t(success_function, error_function, severity, cvss, title,
  * @param {*} severity Sh0t severity.
  * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
+ * @param {*} asset Sh0t asset.
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title,  body, assessmentId) {
+function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title, asset, body, assessmentId) {
     $.ajax({
         url: "/api/sh0t/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
