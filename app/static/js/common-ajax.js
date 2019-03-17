@@ -304,13 +304,13 @@ function ajaxGetTemplate(success_function, error_function, id) {
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} severity Template severity.
- * @param {*} name Template name.
+ * @param {*} asset Template asset.
  * @param {*} body Template body.
  */
-function ajaxCreateTemplate(success_function, error_function, severity, name, body) {
+function ajaxCreateTemplate(success_function, error_function, severity, name, asset, body) {
     $.ajax({
         url: "/api/templates/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -325,12 +325,13 @@ function ajaxCreateTemplate(success_function, error_function, severity, name, bo
  * @param {*} id Template id.
  * @param {*} severity Template severity.
  * @param {*} name Template name.
+ * @param {*} name Template asset.
  * @param {*} body Template body.
  */
-function ajaxUpdateTemplate(success_function, error_function, id, severity, name, body) {
+function ajaxUpdateTemplate(success_function, error_function, id, severity, name, asset, body) {
     $.ajax({
         url: "/api/template/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

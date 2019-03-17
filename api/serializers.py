@@ -18,13 +18,13 @@ class AssessmentSerializer(serializers.ModelSerializer):
 class FlagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flag
-        fields = ('id', 'title', 'note', 'done', 'assessment', 'assignee')
+        fields = ('id', 'title', 'asset', 'note', 'done', 'assessment', 'assignee')
 
 
 class Sh0tSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sh0t
-        fields = ('id', 'title', 'severity','cvss', 'body', 'added', 'assessment')
+        fields = ('id', 'title', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
-        fields = ('id', 'name', 'severity', 'body')
+        fields = ('id', 'name', 'severity', 'asset', 'body')
 
 
 class CaseSerializer(serializers.ModelSerializer):

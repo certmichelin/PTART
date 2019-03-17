@@ -23,6 +23,10 @@
                         <input id="name" class="form-control" value="{{ template.name }}" autocomplete="off" />
                     </div>
                     <div class="form-group">
+                        <label>Asset</label>
+                        <input class="form-control" id="asset" value="{{ template.asset }}" autocomplete="off" />
+                    </div>
+                    <div class="form-group">
                         <label>Body</label>
                         <textarea id="body" class="form-control" rows="10" style="resize:vertical">{{ template.body }}</textarea>
                     </div>
@@ -36,7 +40,7 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,body' %}
+    {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,asset,body' %}
     {% include '_include/js/deleteItem.html' with item='Template' ajax_function='ajaxDeleteTemplate' %}
     <script>
         activeMarkdown("body");
