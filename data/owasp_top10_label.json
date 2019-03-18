@@ -1,0 +1,44 @@
+{
+    "labels": [
+        {
+            "title" : "A1:2017-Injection",
+            "color" : "#e6194B"
+        },
+        {
+            "title" : "A2:2017-Broken Authentication",
+            "color" : "#3cb44b"
+        },
+        {
+            "title" : "A3:2017-Sensitive Data Exposure",
+            "color" : "#ffe119"
+        },
+        {
+            "title" : "A4:2017-XML External Entities (XXE)",
+            "color" : "#4363d8"
+        },
+        {
+            "title" : "A5:2017-Broken Access Control",
+            "color" : "#f58231"
+        },
+        {
+            "title" : "A6:2017-Security Misconfiguration",
+            "color" : "#42d4f4"
+        },
+        {
+            "title" : "A7:2017-Cross-Site Scripting (XSS)",
+            "color" : "#f032e6"
+        },
+        {
+            "title" : "A8:2017-Insecure Deserialization",
+            "color" : "#fabebe"
+        },
+        {
+            "title" : "A9:2017-Using Components with Known Vulnerabilities",
+            "color" : "#469990"
+        },
+        {
+            "title" : "A10:2017-Insufficient Logging&Monitoring",
+            "color" : "#e6beff"
+        }
+    ]
+}
