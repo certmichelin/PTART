@@ -17,6 +17,10 @@
                     <input id="title" class="form-control" value="{{ flag.title }}" autocomplete="off" />
                 </div>
                 <div class="form-group">
+                    <label>Asset</label>
+                    <input id="asset" class="form-control" value="{{ flag.asset }}" autocomplete="off" />
+                </div>
+                <div class="form-group">
                     <label>Note</label>
                     <textarea id="note" class="form-control" rows="10" style="resize:vertical">{{ flag.note }}</textarea>
                 </div>
@@ -52,7 +56,7 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/updateItem.html' with item='Flag' ajax_function='ajaxUpdateFlag' params='id,title,note,done,assessment,assignee' %}
+    {% include '_include/js/updateItem.html' with item='Flag' ajax_function='ajaxUpdateFlag' params='id,title,asset,note,done,assessment,assignee' %}
     {% include '_include/js/deleteItem.html' with item='Flag' ajax_function='ajaxDeleteFlag' %}
     <script>
         $("#doneCheckbox").click(function(){

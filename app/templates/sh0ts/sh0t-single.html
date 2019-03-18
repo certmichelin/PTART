@@ -30,7 +30,11 @@
                     <input id="title" class="form-control" value="{{ sh0t.title }}" autocomplete="off" />
                 </div>
                 <div class="form-group">
-                    <label>Note</label>
+                    <label>Asset</label>
+                    <input id="asset" class="form-control" value="{{ sh0t.asset }}" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label>Body</label>
                     <textarea id="body" class="form-control" style="resize:vertical" rows="10">{{ sh0t.body }}</textarea>
                 </div>
                 <div class="form-group">
@@ -55,7 +59,7 @@
 </div>
 {% endblock %}
 {% block extra_foot %}
-{% include '_include/js/updateItem.html' with item='Sh0t' ajax_function='ajaxUpdateSh0t' params='id,severity,cvss,title,body,assessment' %}
+{% include '_include/js/updateItem.html' with item='Sh0t' ajax_function='ajaxUpdateSh0t' params='id,severity,cvss,title,asset,body,assessment' %}
 {% include '_include/js/deleteItem.html' with item='Sh0t' ajax_function='ajaxDeleteSh0t' %}
 <script type="text/javascript">
 

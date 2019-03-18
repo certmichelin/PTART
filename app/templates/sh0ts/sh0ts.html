@@ -43,6 +43,10 @@
                                 <input class="form-control" id="title" autocomplete="off" />
                             </div>
                             <div class="form-group">
+                                <label>Asset</label>
+                                <input class="form-control" id="asset" autocomplete="off" />
+                            </div>
+                            <div class="form-group">
                                 <label>Body</label>
                                 <textarea class="form-control" rows="10" id="body" style="resize:vertical"></textarea>
                             </div>
@@ -82,6 +86,7 @@
         var template_id = $(this).val();
         if(template_id == "") {
             $('#title').val("");
+            $('#asset').val("");
             mdBody.value("");
         }
         else {
@@ -95,6 +100,7 @@
     function templateGetSuccess(data) {
         $('#severity option[value="' + data.severity + '"').attr('selected','selected');
         $('#title').val(data.name);
+        $('#asset').val(data.asset);
         mdBody.value(data.body);
     }
 
@@ -138,6 +144,7 @@
     function checkUploadBatchStatus() {
         if(screenshotsUploaded == screenshotsToUpload){
             $("#title").val("");
+            $("#asset").val("");
             mdBody.value("");
             $("#cvss").val("---");
             $("#cvssValue").text("No Rating (---)");
@@ -163,7 +170,7 @@
     $('#createBtn').on('click', function () {
         waitingDialog.show();
         cleanMessagesContainer($("#messages"));
-        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#body").val(), $("#assessment").val());
+        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#assessment").val());
     });
 </script>
 {% endblock %}

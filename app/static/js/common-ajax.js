@@ -123,13 +123,14 @@ function ajaxDeleteAssessment(success_function, error_function, id) {
  * @param {*} severity Sh0t severity.
  * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
+ * @param {*} asset Sh0t asset.
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, body, assessmentId) {
+function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, asset, body, assessmentId) {
     $.ajax({
         url: "/api/sh0ts/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -145,13 +146,14 @@ function ajaxCreateSh0t(success_function, error_function, severity, cvss, title,
  * @param {*} severity Sh0t severity.
  * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
+ * @param {*} asset Sh0t asset.
  * @param {*} body Sh0t body.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title,  body, assessmentId) {
+function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title, asset, body, assessmentId) {
     $.ajax({
         url: "/api/sh0t/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -214,14 +216,15 @@ function ajaxDeleteScreenshot(success_function, error_function, id) {
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} name Flag name.
+ * @param {*} name Flag asset.
  * @param {*} note Flag note.
  * @param {*} assessmentId Assessment ID.
  * @param {*} assigneeId Assignee ID.
  */
-function ajaxCreateFlag(success_function, error_function, title, note, assessmentId, assigneeId) {
+function ajaxCreateFlag(success_function, error_function, title, asset, note, assessmentId, assigneeId) {
     $.ajax({
         url: "/api/flags/",
-        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"done": "False", "assessment":' + JSON.stringify(assessmentId) + ',"assignee":' + JSON.stringify(assigneeId) + '}',
+        data: '{"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"note":' + JSON.stringify(note) + ',"done": "False", "assessment":' + JSON.stringify(assessmentId) + ',"assignee":' + JSON.stringify(assigneeId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -235,15 +238,16 @@ function ajaxCreateFlag(success_function, error_function, title, note, assessmen
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} name Flag id.
  * @param {*} name Flag name.
+ * @param {*} name Flag asset.
  * @param {*} note Flag note.
  * @param {*} done Flag status.
  * @param {*} assessmentId Assessment ID.
  * @param {*} assigneeId Assignee ID.
  */
-function ajaxUpdateFlag(success_function, error_function, id, title, note, done, assessmentId, assigneeId) {
+function ajaxUpdateFlag(success_function, error_function, id, title, asset, note, done, assessmentId, assigneeId) {
     $.ajax({
         url: "/api/flag/" + id + "/",
-        data: '{"title":' + JSON.stringify(title) + ',"note":' + JSON.stringify(note) + ',"done":' + JSON.stringify(done) + ',"assessment":' + JSON.stringify(assessmentId) + ',"assignee":' + JSON.stringify(assigneeId) + '}',
+        data: '{"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"note":' + JSON.stringify(note) + ',"done":' + JSON.stringify(done) + ',"assessment":' + JSON.stringify(assessmentId) + ',"assignee":' + JSON.stringify(assigneeId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -304,13 +308,13 @@ function ajaxGetTemplate(success_function, error_function, id) {
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} severity Template severity.
- * @param {*} name Template name.
+ * @param {*} asset Template asset.
  * @param {*} body Template body.
  */
-function ajaxCreateTemplate(success_function, error_function, severity, name, body) {
+function ajaxCreateTemplate(success_function, error_function, severity, name, asset, body) {
     $.ajax({
         url: "/api/templates/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -325,12 +329,13 @@ function ajaxCreateTemplate(success_function, error_function, severity, name, bo
  * @param {*} id Template id.
  * @param {*} severity Template severity.
  * @param {*} name Template name.
+ * @param {*} name Template asset.
  * @param {*} body Template body.
  */
-function ajaxUpdateTemplate(success_function, error_function, id, severity, name, body) {
+function ajaxUpdateTemplate(success_function, error_function, id, severity, name, asset, body) {
     $.ajax({
         url: "/api/template/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
