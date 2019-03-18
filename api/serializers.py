@@ -1,7 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot, Case, Module, Methodology
+from app.models import Project, Assessment, Sh0t, Label, Flag, Template, Screenshot, Case, Module, Methodology
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,6 +25,12 @@ class Sh0tSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sh0t
         fields = ('id', 'title', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
+
+
+class LabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Label
+        fields = ('id', 'title', 'color')
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):

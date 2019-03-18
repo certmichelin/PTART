@@ -177,6 +177,59 @@ function ajaxDeleteSh0t(success_function, error_function, id) {
 }
 
 /**
+ * Create a label.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Label title.
+ * @param {*} color Label color.
+ */
+function ajaxCreateLabel(success_function, error_function, title, color) {
+    $.ajax({
+        url: "/api/labels/",
+        data: '{"title":' + JSON.stringify(title) + ',"color":' + JSON.stringify(color) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update a label.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Label id.
+ * @param {*} title Label title.
+ * @param {*} color Label color.
+ */
+function ajaxUpdateLabel(success_function, error_function, id, title, color) {
+    $.ajax({
+        url: "/api/label/" + id + "/",
+        data: '{"title":' + JSON.stringify(title) + ',"color":' + JSON.stringify(color) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete a label.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Label id.
+ */
+function ajaxDeleteLabel(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/label/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Upload a screenshot for a sh0t.
  * 
  * @param {*} success_function function to call in case of ajax success.

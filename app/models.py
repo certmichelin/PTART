@@ -144,6 +144,18 @@ class Screenshot(models.Model):
     def __str__(self):  
         return self.screenshot
 
+"""Label model."""
+class Label(models.Model):
+
+    title = models.CharField(max_length=200)
+    color = models.CharField(max_length=7)
+
+    def __str__(self):  
+        return self.title
+
+    class Meta:
+        ordering = ('title',)
+
 
 """Flag model."""
 class Flag(models.Model):
