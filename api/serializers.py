@@ -46,6 +46,18 @@ class Sh0tSerializer(serializers.ModelSerializer):
         sh0t.save()
         return sh0t
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        instance.labels.clear()
+        labels = self.initial_data.get("labels")
+        for label in labels:
+            label_instance = Label.objects.get(pk=label)
+            instance.labels.add(label_instance)
+
+        instance.__dict__.update(**validated_data)
+        instance.save()
+        return instance
+
 
 class ScreenshotSerializer(serializers.ModelSerializer):
     screenshot = Base64ImageField()

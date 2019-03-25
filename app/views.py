@@ -121,7 +121,7 @@ def assessment(request, assessment_id):
 def sh0t(request, sh0t_id):
     response = None
     try:
-        response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': Sh0t.objects.get(pk=sh0t_id), 'assessments': Assessment.objects.all().order_by('-added'), 'severities': Severity.values})
+        response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': Sh0t.objects.get(pk=sh0t_id), 'assessments': Assessment.objects.all().order_by('-added'),'labels': Label.objects.all(), 'severities': Severity.values})
     except Sh0t.DoesNotExist:
         response = redirect('/')
     return response
