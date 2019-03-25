@@ -4,9 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from app.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Case, Module, Methodology
+from app.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Case, Module, Methodology, Label
 
-from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer
+from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
@@ -24,6 +24,14 @@ def sh0t(request, pk):
 @api_view(['GET', 'POST'])
 def sh0ts(request):
     return items(request, Sh0t, Sh0tSerializer)
+
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def label(request, pk):
+    return item(request, pk, Label, LabelSerializer)
+
+@api_view(['GET', 'POST'])
+def labels(request):
+    return items(request, Label, LabelSerializer)
     
 @api_view(['DELETE'])
 def screenshot(request, pk):

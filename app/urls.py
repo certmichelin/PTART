@@ -15,6 +15,10 @@ urlpatterns = [
     url(r'^sh0ts/$', views.sh0ts_all),
     url(r'^sh0ts/new/$', views.sh0ts_new),
     url(r'^sh0t/([0-9]+)/$', views.sh0t),
+
+    url(r'^labels/$', views.labels_all),
+    url(r'^labels/new/$', views.labels_new),
+    url(r'^label/([0-9]+)/$', views.label),
     
     url(r'^flags/$', views.flags_all),
     url(r'^flags/new/$', views.flags_new),

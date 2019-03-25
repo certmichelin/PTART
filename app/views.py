@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
 
-from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, Methodology, Module, Case, Severity
-from .tables import FlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable
+from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, Methodology, Module, Case, Severity, Label
+from .tables import FlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
 
 
 @login_required
@@ -48,6 +48,9 @@ def assessments_all(request):
 def sh0ts_all(request):
     return generic_all(request, Sh0t, Sh0tTable, 'sh0ts/sh0ts-list.html')
 
+@login_required
+def labels_all(request):
+    return generic_all(request, Label, LabelTable, 'labels/labels-list.html')
 
 @login_required
 def flags_all(request):
@@ -118,8 +121,18 @@ def assessment(request, assessment_id):
 def sh0t(request, sh0t_id):
     response = None
     try:
-        response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': Sh0t.objects.get(pk=sh0t_id), 'assessments': Assessment.objects.all().order_by('-added'), 'severities': Severity.values})
-    except sh0t.DoesNotExist:
+        response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': Sh0t.objects.get(pk=sh0t_id), 'assessments': Assessment.objects.all().order_by('-added'),'labels': Label.objects.all(), 'severities': Severity.values})
+    except Sh0t.DoesNotExist:
+        response = redirect('/')
+    return response
+
+
+@login_required
+def label(request, label_id):
+    response = None
+    try:
+        response = render(request, 'labels/label-single.html', {'label': Label.objects.get(pk=label_id)})
+    except Label.DoesNotExist:
         response = redirect('/')
     return response
 
@@ -186,7 +199,12 @@ def assessments_new(request):
 
 @login_required
 def sh0ts_new(request):
-    return render(request, 'sh0ts/sh0ts.html', {'assessments_list':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(), 'severities': Severity.values})
+    return render(request, 'sh0ts/sh0ts.html', {'assessments':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(),'labels': Label.objects.all(), 'severities': Severity.values})
+
+
+@login_required
+def labels_new(request):
+    return render(request, 'labels/labels.html', {})
 
 
 @login_required

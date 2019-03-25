@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import Project, Flag, Sh0t, Assessment, Project, Template, Methodology, Module, Case
+from .models import Project, Flag, Sh0t, Label, Assessment, Project, Template, Methodology, Module, Case
 
 
 class ProjectTable(tables.Table):
@@ -46,6 +46,19 @@ class Sh0tTable(tables.Table):
         template_name = "django_tables2/bootstrap-responsive.html"
         sequence = ('selection','severity', 'cvss', 'title', 'project', 'assessment', 'added')
         fields = ('severity','cvss', 'title', 'project', 'assessment', 'added')
+
+
+class LabelTable(tables.Table):
+
+    selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
+    title = tables.TemplateColumn('<a href="/app/label/{{ record.pk }}"><span class="label" style="background-color:{{ record.color }}">{{ record.title }}</span></a>')
+   
+
+    class Meta:
+        model = Label
+        template_name = "django_tables2/bootstrap-responsive.html"
+        sequence = ('selection', 'title')
+        fields = ('title',)
 
 
 class AssessmentTable(tables.Table):

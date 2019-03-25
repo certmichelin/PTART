@@ -1,7 +1,8 @@
+from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from app.models import Project, Assessment, Sh0t, Flag, Template, Screenshot, Case, Module, Methodology
+from app.models import Project, Assessment, Sh0t, Label, Flag, Template, Screenshot, Case, Module, Methodology
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,10 +22,41 @@ class FlagSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'asset', 'note', 'done', 'assessment', 'assignee')
 
 
+class LabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Label
+        fields = ('id', 'title', 'color')
+
+
 class Sh0tSerializer(serializers.ModelSerializer):
+    labels = LabelSerializer(read_only=True, many=True)
+    
     class Meta:
         model = Sh0t
-        fields = ('id', 'title', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
+        fields = ('id', 'title','labels', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
+    
+    @transaction.atomic
+    def create(self, validated_data):
+        sh0t = Sh0t.objects.create(**validated_data)
+        if "labels" in self.initial_data:
+            labels = self.initial_data.get("labels")
+            for label in labels:
+                label_instance = Label.objects.get(pk=label)
+                sh0t.labels.add(label_instance)
+        sh0t.save()
+        return sh0t
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        instance.labels.clear()
+        labels = self.initial_data.get("labels")
+        for label in labels:
+            label_instance = Label.objects.get(pk=label)
+            instance.labels.add(label_instance)
+
+        instance.__dict__.update(**validated_data)
+        instance.save()
+        return instance
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):

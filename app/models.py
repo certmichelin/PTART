@@ -12,7 +12,7 @@ from django.db import models
 class Project(models.Model):
 
     name = models.CharField(max_length=100)
-    scope = models.TextField(default="")
+    scope = models.TextField(blank=True, default="")
     added = models.DateTimeField(default=datetime.now)
 
     def __str__(self):  
@@ -94,16 +94,30 @@ class Assessment(models.Model):
         ordering = ('name',)
 
 
+"""Label model."""
+class Label(models.Model):
+
+    title = models.CharField(max_length=200)
+    color = models.CharField(max_length=7)
+
+    def __str__(self):  
+        return self.title
+
+    class Meta:
+        ordering = ('pk',)
+
+
 """Sh0t model."""
 class Sh0t(models.Model):
 
     title = models.CharField(max_length=200)
-    body = models.TextField(default="")
-    asset = models.CharField(max_length=256, default="")
+    body = models.TextField(blank=True, default="")
+    asset = models.CharField(blank=True, max_length=256, default="")
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
     cvss = models.CharField(max_length=4, default="---")
+    labels = models.ManyToManyField(Label)
 
     def __str__(self):  
         return self.title
@@ -149,8 +163,8 @@ class Screenshot(models.Model):
 class Flag(models.Model):
 
     title = models.CharField(max_length=100)
-    note = models.TextField(default="")
-    asset = models.CharField(max_length=256, default="")
+    note = models.TextField(blank=True, default="")
+    asset = models.CharField(blank=True, max_length=256, default="")
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     done = models.BooleanField(default=False)
     added = models.DateTimeField(default=datetime.now)
@@ -167,8 +181,8 @@ class Flag(models.Model):
 class Template(models.Model):
     name = models.CharField(max_length=100)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    body = models.TextField(default="")
-    asset = models.CharField(max_length=256, default="")
+    body = models.TextField(blank=True, default="")
+    asset = models.CharField(blank=True, max_length=256, default="")
 
     def __str__(self):  
         return self.name
@@ -180,7 +194,7 @@ class Template(models.Model):
 """Methodology model."""
 class Methodology(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(default="")
+    description = models.TextField(blank=True, default="")
 
     def __str__(self):  
         return self.name
@@ -192,7 +206,7 @@ class Methodology(models.Model):
 """Module model."""
 class Module(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(default="")
+    description = models.TextField(blank=True, default="")
     methodology = models.ForeignKey(Methodology, on_delete=models.CASCADE, null=True, default=None)
 
     def __str__(self):  
@@ -206,7 +220,7 @@ class Module(models.Model):
 class Case(models.Model):
     name = models.CharField(max_length=100)
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
-    description = models.TextField(default="")
+    description = models.TextField(blank=True, default="")
 
     def __str__(self):  
         return self.name
