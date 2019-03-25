@@ -43,15 +43,6 @@
                                 <input class="form-control" id="title" autocomplete="off" />
                             </div>
                             <div class="form-group">
-                                <label>Labels</label> 
-                                <select class="js-states form-control" id="labels" multiple="multiple">
-                                    {% for label in labels %}
-                                        <option value="{{ label.id }}">{{ label.title }}</option>
-                                    {% endfor %}
-                                </select>
-                                  
-                            </div>
-                            <div class="form-group">
                                 <label>Asset</label>
                                 <input class="form-control" id="asset" autocomplete="off" />
                             </div>
@@ -60,10 +51,18 @@
                                 <textarea class="form-control" rows="10" id="body" style="resize:vertical"></textarea>
                             </div>
                             <div class="form-group">
+                                <label>Labels</label> 
+                                <select class="js-states form-control" id="labels" multiple="multiple">
+                                    {% for label in labels %}
+                                        <option value="{{ label.id }}">{{ label.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="assessment">Assessment</label>
                                 <select id="assessment" class="form-control">
                                     {% for assessment in assessments %}
-                                        <option value="{{ assessment.id }}">{{ assessment.name }}</option>
+                                        <option value="{{ assessment.id }}" color="{{assessment.color}}">{{ assessment.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -71,7 +70,7 @@
                     {% endif %}
                 </div>
                 <div class="col-lg-5">
-                    {% if assessments_list %}
+                    {% if assessments %}
                         {% include "_include/html/cvss.html" %}
                         {% include "_include/html/screenshots.html" %}
                     {% endif %}
@@ -87,8 +86,21 @@
 <script type="text/javascript">
 
     var mdBody = activeMarkdown("body");
-    $('#labels').select2();
+
+    var colorMap = new Map();
+    {% for label in labels %}
+        colorMap.set("{{ label.id }}","{{ label.color }}");
+    {% endfor %}
     
+    $('#labels').select2({
+        templateSelection: function (data, container) {
+            var color = colorMap.get(data.id);
+            $(container).css("background-color", color);
+            $(container).css("color", "white");
+            return data.text;
+        }
+    });
+
     var screenshotsToUpload = 0;
     var screenshotsUploaded = 0;
 
