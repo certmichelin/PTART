@@ -199,7 +199,7 @@ def assessments_new(request):
 
 @login_required
 def sh0ts_new(request):
-    return render(request, 'sh0ts/sh0ts.html', {'assessments_list':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(), 'severities': Severity.values})
+    return render(request, 'sh0ts/sh0ts.html', {'assessments':  Assessment.objects.all().order_by('-added'), 'templates': Template.objects.all(),'labels': Label.objects.all(), 'severities': Severity.values})
 
 
 @login_required

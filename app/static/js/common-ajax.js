@@ -125,12 +125,23 @@ function ajaxDeleteAssessment(success_function, error_function, id) {
  * @param {*} title Sh0t title.
  * @param {*} asset Sh0t asset.
  * @param {*} body Sh0t body.
+ * @param {*} labels Sh0t labels.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, asset, body, assessmentId) {
+function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, asset, body, labels, assessmentId) {
+    
+    //Convert labels array to JSON String.
+    var labelsJson = "[";
+    var prefix = "";
+    labels.forEach(function(label) {
+        labelsJson += prefix + label;
+        prefix = ",";
+    });
+    labelsJson += "]";
+
     $.ajax({
         url: "/api/sh0ts/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) +',"labels":' + labelsJson + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function

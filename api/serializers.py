@@ -1,3 +1,4 @@
+from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
@@ -21,16 +22,29 @@ class FlagSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'asset', 'note', 'done', 'assessment', 'assignee')
 
 
-class Sh0tSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Sh0t
-        fields = ('id', 'title', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
-
-
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
         fields = ('id', 'title', 'color')
+
+
+class Sh0tSerializer(serializers.ModelSerializer):
+    labels = LabelSerializer(read_only=True, many=True)
+    
+    class Meta:
+        model = Sh0t
+        fields = ('id', 'title','labels', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
+    
+    @transaction.atomic
+    def create(self, validated_data):
+        sh0t = Sh0t.objects.create(**validated_data)
+        if "labels" in self.initial_data:
+            labels = self.initial_data.get("labels")
+            for label in labels:
+                label_instance = Label.objects.get(pk=label)
+                sh0t.labels.add(label_instance)
+        sh0t.save()
+        return sh0t
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):

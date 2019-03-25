@@ -94,6 +94,19 @@ class Assessment(models.Model):
         ordering = ('name',)
 
 
+"""Label model."""
+class Label(models.Model):
+
+    title = models.CharField(max_length=200)
+    color = models.CharField(max_length=7)
+
+    def __str__(self):  
+        return self.title
+
+    class Meta:
+        ordering = ('pk',)
+
+
 """Sh0t model."""
 class Sh0t(models.Model):
 
@@ -104,6 +117,7 @@ class Sh0t(models.Model):
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
     cvss = models.CharField(max_length=4, default="---")
+    labels = models.ManyToManyField(Label)
 
     def __str__(self):  
         return self.title
@@ -143,18 +157,6 @@ class Screenshot(models.Model):
 
     def __str__(self):  
         return self.screenshot
-
-"""Label model."""
-class Label(models.Model):
-
-    title = models.CharField(max_length=200)
-    color = models.CharField(max_length=7)
-
-    def __str__(self):  
-        return self.title
-
-    class Meta:
-        ordering = ('title',)
 
 
 """Flag model."""
