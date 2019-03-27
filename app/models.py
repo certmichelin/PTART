@@ -60,7 +60,7 @@ class Project(models.Model):
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this project"""
         result = False
-        if user in self.pentesters :
+        if user in self.pentesters.all() :
             result = True
         return result
 
@@ -154,6 +154,10 @@ class Label(models.Model):
         """Verify if the user have write access for this label"""
         return True
 
+    def is_user_can_create(self, user):
+        """Verify if the user can create this label"""
+        return True
+
     class Meta:
         ordering = ('pk',)
 
@@ -183,6 +187,10 @@ class Sh0t(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this sh0t"""
+        return self.assessment.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this sh0t"""
         return self.assessment.is_user_can_edit(user)
 
     class Meta:
@@ -230,6 +238,10 @@ class Screenshot(models.Model):
         """Verify if the user have write access for this screenshot"""
         return self.sh0t.is_user_can_edit(user)
 
+    def is_user_can_create(self, user):
+        """Verify if the user can create this screenshot"""
+        return self.sh0t.is_user_can_edit(user)
+
     def __str__(self):  
         return self.screenshot
 
@@ -260,6 +272,10 @@ class Flag(models.Model):
         """Verify if the user have write access for this flag"""
         return self.assessment.is_user_can_edit(user)
 
+    def is_user_can_create(self, user):
+        """Verify if the user can create this flag"""
+        return self.assessment.is_user_can_edit(user)
+
     class Meta:
         ordering = ('title',)
 
@@ -286,6 +302,10 @@ class Template(models.Model):
         """Verify if the user have write access for this template"""
         return True
 
+    def is_user_can_create(self, user):
+        """Verify if the user can create this template"""
+        return True
+
     class Meta:
         ordering = ('severity','name',)
 
@@ -310,6 +330,10 @@ class Methodology(models.Model):
         """Verify if the user have write access for this methodology"""
         return True
 
+    def is_user_can_create(self, user):
+        """Verify if the user can create this methodology"""
+        return True
+
     class Meta:
         ordering = ('name',)
 
@@ -330,6 +354,10 @@ class Module(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this module"""
+        return True
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this module"""
         return True
 
     def __str__(self):  
@@ -355,6 +383,10 @@ class Case(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this case"""
+        return True
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this case"""
         return True
 
     def __str__(self):  
