@@ -36,7 +36,6 @@
 {% endblock %}
 
 {% block extra_foot %}
-{% include '_include/js/updateItem.html' with item='Project' ajax_function='ajaxUpdateProject' params='id,name,scope' %}
 {% include '_include/js/deleteItem.html' with item='Project' ajax_function='ajaxDeleteProject' %}
 <script>
     var selectedPentesters = [];
@@ -45,5 +44,20 @@
     {% endfor %}
 
     $('#pentesters').select2().val(selectedPentesters).trigger("change");
+
+    /**
+     * Project updation success callback.
+     */
+     function projectUpdationSuccess(data) {
+        success($("#messages"), "Project was Updated!");
+    }
+
+    /**
+     * Update item.
+     */
+    $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"));
+    });
 </script>
 {% endblock %}

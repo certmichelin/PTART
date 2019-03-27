@@ -16,11 +16,12 @@ $.ajaxSetup({
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} name Project name.
  * @param {*} scope Project scope.
+ * @param {*} pentesters Project pentesters.
  */
-function ajaxCreateProject(success_function, error_function, name, scope) {
+function ajaxCreateProject(success_function, error_function, name, scope, pentesters) {
     $.ajax({
         url: "/api/projects/",
-        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + ',"pentesters":' + convertArrayToJSON(pentesters) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -35,11 +36,12 @@ function ajaxCreateProject(success_function, error_function, name, scope) {
  * @param {*} id Project ID.
  * @param {*} name Project name.
  * @param {*} scope Project scope.
+ * @param {*} pentesters Project pentesters.
  */
-function ajaxUpdateProject(success_function, error_function, id, name, scope) {
+function ajaxUpdateProject(success_function, error_function, id, name, scope, pentesters) {
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"scope":' + JSON.stringify(scope) + ',"pentesters":' + convertArrayToJSON(pentesters) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

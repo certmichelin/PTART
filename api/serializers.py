@@ -1,14 +1,51 @@
+from django.contrib.auth.models import User
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from app.models import Project, Assessment, Sh0t, Label, Flag, Template, Screenshot, Case, Module, Methodology
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
 class ProjectSerializer(serializers.ModelSerializer):
+    pentesters = UserSerializer(read_only=True, many=True)
+
     class Meta:
         model = Project
-        fields = ('id', 'name','scope', 'added')
+        fields = ('id', 'name','scope', 'pentesters', 'added')
+  
+    def validate(self, data):
+        """Validate the fact that at least one pentester is present on the project"""
+        if "pentesters" not in self.initial_data or len(self.initial_data["pentesters"]) == 0 :
+            raise serializers.ValidationError({
+                'pentesters': 'At least one pentester is required'
+                })
+        return data
+    
+    @transaction.atomic
+    def create(self, validated_data):
+        project = Project.objects.create(**validated_data)
+        if "pentesters" in self.initial_data:
+            pentesters = self.initial_data.get("pentesters")
+            for pentester in pentesters:
+                pentester_instance = User.objects.get(pk=pentester)
+                project.pentesters.add(pentester_instance)
+        project.save()
+        return project
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        instance.pentesters.clear()
+        pentesters = self.initial_data.get("pentesters")
+        for pentester in pentesters:
+            pentester_instance = User.objects.get(pk=pentester)
+            instance.pentesters.add(pentester_instance)
+        instance.__dict__.update(**validated_data)
+        instance.save()
+        return instance
 
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,7 +70,7 @@ class Sh0tSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Sh0t
-        fields = ('id', 'title','labels', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
+        fields = ('id', 'title', 'labels', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
     
     @transaction.atomic
     def create(self, validated_data):
