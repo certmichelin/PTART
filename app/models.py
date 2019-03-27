@@ -47,6 +47,7 @@ class Project(models.Model):
         return sh0ts
 
     def get_viewable(user):
+        """Returns all viewable projects"""
         return Project.objects.filter(pentesters__in=[user])
 
     def is_user_can_view(self, user):
@@ -62,6 +63,10 @@ class Project(models.Model):
         if user in self.pentesters :
             result = True
         return result
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this project"""
+        return True
 
     class Meta:
         ordering = ('name',)
@@ -109,12 +114,19 @@ class Assessment(models.Model):
         return self.flag_set.filter(done = False)
 
     def get_viewable(user):
+        """Returns all viewable assessments"""
         return Assessment.objects.filter(project__in=Project.get_viewable(user))
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this assessment"""
         return self.project.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this assessment"""
+        return self.project.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this assessment"""
         return self.project.is_user_can_edit(user)
 
     class Meta:
@@ -131,12 +143,15 @@ class Label(models.Model):
         return self.title
 
     def get_viewable(user):
+        """Returns all viewable labels"""
         return Label.objects.all()
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this label"""
         return True
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this label"""
         return True
 
     class Meta:
@@ -159,12 +174,15 @@ class Sh0t(models.Model):
         return self.title
 
     def get_viewable(user):
+        """Returns all viewable sh0ts"""
         return Sh0t.objects.filter(assessment__in=Assessment.get_viewable(user))
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this sh0t"""
         return self.assessment.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this sh0t"""
         return self.assessment.is_user_can_edit(user)
 
     class Meta:
@@ -201,12 +219,15 @@ class Screenshot(models.Model):
         super(Screenshot, self).delete()
     
     def get_viewable(user):
+        """Returns all viewable screenshots"""
         return Screenshot.objects.filter(sh0t__in=Sh0t.get_viewable(user))
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this screenshot"""
         return self.sh0t.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this screenshot"""
         return self.sh0t.is_user_can_edit(user)
 
     def __str__(self):  
@@ -228,12 +249,15 @@ class Flag(models.Model):
         return self.title
 
     def get_viewable(user):
+        """Returns all viewable flags"""
         return Flag.objects.filter(assessment__in=Assessment.get_viewable(user))
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this flag"""
         return self.assessment.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this flag"""
         return self.assessment.is_user_can_edit(user)
 
     class Meta:
@@ -251,12 +275,15 @@ class Template(models.Model):
         return self.name
 
     def get_viewable(user):
+        """Returns all viewable templates"""
         return Template.objects.all()
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this template"""
         return True
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this template"""
         return True
 
     class Meta:
@@ -272,12 +299,15 @@ class Methodology(models.Model):
         return self.name
 
     def get_viewable(user):
+        """Returns all viewable methodologies"""
         return Methodology.objects.all()
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this methodology"""
         return True
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this methodology"""
         return True
 
     class Meta:
@@ -291,12 +321,15 @@ class Module(models.Model):
     methodology = models.ForeignKey(Methodology, on_delete=models.CASCADE, null=True, default=None)
 
     def get_viewable(user):
+        """Returns all viewable modules"""
         return Module.objects.all()
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this module"""
         return True
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this module"""
         return True
 
     def __str__(self):  
@@ -313,12 +346,15 @@ class Case(models.Model):
     description = models.TextField(blank=True, default="")
 
     def get_viewable(user):
+        """Returns all viewable cases"""
         return Case.objects.all()
 
     def is_user_can_view(self, user):
+        """Verify if the user have read access for this case"""
         return True
 
     def is_user_can_edit(self, user):
+        """Verify if the user have write access for this case"""
         return True
 
     def __str__(self):  
