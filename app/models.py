@@ -50,14 +50,14 @@ class Project(models.Model):
         return Project.objects.filter(pentesters__in=[user])
 
     def is_user_can_view(self, user):
-        """Verify if the user have read access for this project/assessment/shots/flags"""
+        """Verify if the user have read access for this project"""
         result = False
         if user in self.pentesters.all() :
             result = True
         return result
 
     def is_user_can_edit(self, user):
-        """Verify if the user have write access for this project/assessment/shots/flags"""
+        """Verify if the user have write access for this project"""
         result = False
         if user in self.pentesters :
             result = True
@@ -111,6 +111,12 @@ class Assessment(models.Model):
     def get_viewable(user):
         return Assessment.objects.filter(project__in=Project.get_viewable(user))
 
+    def is_user_can_view(self, user):
+        return self.project.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        return self.project.is_user_can_edit(user)
+
     class Meta:
         ordering = ('name',)
 
@@ -123,6 +129,15 @@ class Label(models.Model):
 
     def __str__(self):  
         return self.title
+
+    def get_viewable(user):
+        return Label.objects.all()
+
+    def is_user_can_view(self, user):
+        return True
+
+    def is_user_can_edit(self, user):
+        return True
 
     class Meta:
         ordering = ('pk',)
@@ -145,6 +160,12 @@ class Sh0t(models.Model):
 
     def get_viewable(user):
         return Sh0t.objects.filter(assessment__in=Assessment.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        return self.assessment.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        return self.assessment.is_user_can_edit(user)
 
     class Meta:
         ordering = ('severity', '-cvss', 'title',)
@@ -182,6 +203,12 @@ class Screenshot(models.Model):
     def get_viewable(user):
         return Screenshot.objects.filter(sh0t__in=Sh0t.get_viewable(user))
 
+    def is_user_can_view(self, user):
+        return self.sh0t.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        return self.sh0t.is_user_can_edit(user)
+
     def __str__(self):  
         return self.screenshot
 
@@ -203,6 +230,12 @@ class Flag(models.Model):
     def get_viewable(user):
         return Flag.objects.filter(assessment__in=Assessment.get_viewable(user))
 
+    def is_user_can_view(self, user):
+        return self.assessment.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        return self.assessment.is_user_can_edit(user)
+
     class Meta:
         ordering = ('title',)
 
@@ -217,6 +250,15 @@ class Template(models.Model):
     def __str__(self):  
         return self.name
 
+    def get_viewable(user):
+        return Template.objects.all()
+
+    def is_user_can_view(self, user):
+        return True
+
+    def is_user_can_edit(self, user):
+        return True
+
     class Meta:
         ordering = ('severity','name',)
 
@@ -229,6 +271,15 @@ class Methodology(models.Model):
     def __str__(self):  
         return self.name
 
+    def get_viewable(user):
+        return Methodology.objects.all()
+
+    def is_user_can_view(self, user):
+        return True
+
+    def is_user_can_edit(self, user):
+        return True
+
     class Meta:
         ordering = ('name',)
 
@@ -238,6 +289,15 @@ class Module(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default="")
     methodology = models.ForeignKey(Methodology, on_delete=models.CASCADE, null=True, default=None)
+
+    def get_viewable(user):
+        return Module.objects.all()
+
+    def is_user_can_view(self, user):
+        return True
+
+    def is_user_can_edit(self, user):
+        return True
 
     def __str__(self):  
         return self.name
@@ -251,6 +311,15 @@ class Case(models.Model):
     name = models.CharField(max_length=100)
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
     description = models.TextField(blank=True, default="")
+
+    def get_viewable(user):
+        return Case.objects.all()
+
+    def is_user_can_view(self, user):
+        return True
+
+    def is_user_can_edit(self, user):
+        return True
 
     def __str__(self):  
         return self.name

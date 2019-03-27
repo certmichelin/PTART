@@ -51,7 +51,7 @@ def sh0ts_all(request):
 
 @login_required
 def labels_all(request):
-    return generic_all(request, Label.objects.all(), LabelTable, 'labels/labels-list.html')
+    return generic_all(request, Label.get_viewable(request.user), LabelTable, 'labels/labels-list.html')
 
 @login_required
 def flags_all(request):
@@ -59,22 +59,22 @@ def flags_all(request):
 
 @login_required
 def templates_all(request):
-    return generic_all(request, Template.objects.all(), TemplateTable, 'templates/templates-list.html')
+    return generic_all(request, Template.get_viewable(request.user), TemplateTable, 'templates/templates-list.html')
 
 
 @login_required
 def methodologies_all(request):
-    return generic_all(request, Methodology.objects.all(), MethodologyTable, 'methodologies/methodologies-list.html')
+    return generic_all(request, Methodology.get_viewable(request.user), MethodologyTable, 'methodologies/methodologies-list.html')
 
 
 @login_required
 def modules_all(request):
-    return generic_all(request, Module.objects.all(), ModuleTable, 'modules/modules-list.html')
+    return generic_all(request, Module.get_viewable(request.user), ModuleTable, 'modules/modules-list.html')
 
 
 @login_required
 def cases_all(request):
-    return generic_all(request, Case.objects.all(), CaseTable, 'cases/cases-list.html')
+    return generic_all(request, Case.get_viewable(request.user), CaseTable, 'cases/cases-list.html')
 
 
 def generic_all(request, items, table_class_name, template_name) :
@@ -132,7 +132,7 @@ def sh0t(request, sh0t_id):
     try:
         sh0t = Sh0t.objects.get(pk=sh0t_id)
         if sh0t.assessment.project.is_user_can_view(request.user):
-            response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': sh0t, 'assessments': Assessment.get_viewable(request.user).order_by('-added'),'labels': Label.objects.all(), 'severities': Severity.values})
+            response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': sh0t, 'assessments': Assessment.get_viewable(request.user).order_by('-added'),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
         else :
             response = redirect('/')
     except Sh0t.DoesNotExist:
@@ -188,7 +188,7 @@ def methodology(request, methodology_id):
 def module(request, module_id):
     response = None
     try:
-        response = render(request, 'modules/module-single.html', {'module': Module.objects.get(pk=module_id), 'methodologies': Methodology.objects.all()})
+        response = render(request, 'modules/module-single.html', {'module': Module.objects.get(pk=module_id), 'methodologies': Methodology.get_viewable(request.user)})
     except Module.DoesNotExist:
         response = redirect('/')
     return response
@@ -198,7 +198,7 @@ def module(request, module_id):
 def case(request, case_id):
     response = None
     try:
-        response = render(request, 'cases/case-single.html', {'case': Case.objects.get(pk=case_id), 'modules': Module.objects.all()})
+        response = render(request, 'cases/case-single.html', {'case': Case.objects.get(pk=case_id), 'modules': Module.get_viewable(request.user)})
     except Case.DoesNotExist:
         response = redirect("/")
     return response
@@ -211,12 +211,12 @@ def projects_new(request):
 
 @login_required
 def assessments_new(request): 
-    return render(request, 'assessments/assessments.html', {'projects': Project.get_viewable(request.user).order_by('-added'), 'methodologies': Methodology.objects.all()})
+    return render(request, 'assessments/assessments.html', {'projects': Project.get_viewable(request.user).order_by('-added'), 'methodologies': Methodology.get_viewable(request.user)})
 
 
 @login_required
 def sh0ts_new(request):
-    return render(request, 'sh0ts/sh0ts.html', {'assessments':  Assessment.get_viewable(request.user).order_by('-added'), 'templates': Template.objects.all(),'labels': Label.objects.all(), 'severities': Severity.values})
+    return render(request, 'sh0ts/sh0ts.html', {'assessments':  Assessment.get_viewable(request.user).order_by('-added'), 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
 
 
 @login_required
@@ -241,12 +241,12 @@ def methodologies_new(request):
 
 @login_required
 def modules_new(request):
-    return render(request, 'modules/modules.html', {'methodologies': Methodology.objects.all()})
+    return render(request, 'modules/modules.html', {'methodologies': Methodology.get_viewable(request.user)})
 
 
 @login_required
 def cases_new(request):
-    return render(request, 'cases/cases.html', {'modules': Module.objects.all()})
+    return render(request, 'cases/cases.html', {'modules': Module.get_viewable(request.user)})
 
 @login_required
 def my_todo(request):
