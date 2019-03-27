@@ -14,6 +14,7 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     scope = models.TextField(blank=True, default="")
     added = models.DateTimeField(default=datetime.now)
+    pentesters = models.ManyToManyField(User)
 
     def __str__(self):  
         return self.name
@@ -44,6 +45,23 @@ class Project(models.Model):
         for assessment in self.assessment_set.all() :
             sh0ts.extend(assessment.sh0ts_by_severity(severity))
         return sh0ts
+
+    def get_viewable(user):
+        return Project.objects.filter(pentesters__in=[user])
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this project/assessment/shots/flags"""
+        result = False
+        if user in self.pentesters.all() :
+            result = True
+        return result
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this project/assessment/shots/flags"""
+        result = False
+        if user in self.pentesters :
+            result = True
+        return result
 
     class Meta:
         ordering = ('name',)
@@ -90,6 +108,9 @@ class Assessment(models.Model):
         """Return all open flags for the assessment."""
         return self.flag_set.filter(done = False)
 
+    def get_viewable(user):
+        return Assessment.objects.filter(project__in=Project.get_viewable(user))
+
     class Meta:
         ordering = ('name',)
 
@@ -121,6 +142,9 @@ class Sh0t(models.Model):
 
     def __str__(self):  
         return self.title
+
+    def get_viewable(user):
+        return Sh0t.objects.filter(assessment__in=Assessment.get_viewable(user))
 
     class Meta:
         ordering = ('severity', '-cvss', 'title',)
@@ -154,6 +178,9 @@ class Screenshot(models.Model):
         """Delete file related to the screenshot"""
         os.remove(self.screenshot.url)
         super(Screenshot, self).delete()
+    
+    def get_viewable(user):
+        return Screenshot.objects.filter(sh0t__in=Sh0t.get_viewable(user))
 
     def __str__(self):  
         return self.screenshot
@@ -172,6 +199,9 @@ class Flag(models.Model):
 
     def __str__(self):  
         return self.title
+
+    def get_viewable(user):
+        return Flag.objects.filter(assessment__in=Assessment.get_viewable(user))
 
     class Meta:
         ordering = ('title',)
