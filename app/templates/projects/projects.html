@@ -22,6 +22,15 @@
                     <label>Scope</label>
                     <textarea id="scope" class="form-control" rows="10" style="resize:vertical"></textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>Pentesters</label> 
+                    <select class="js-states form-control" id="pentesters" multiple="multiple">
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 
                 <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
             </div>
@@ -32,4 +41,9 @@
 
 {% block extra_foot %}
     {% include '_include/js/createItem.html' with item='Project' ajax_function='ajaxCreateProject' params='name,scope' params_to_clean='name,scope' %}
+    <script type="text/javascript">
+        var selectedPentesters = [];
+        selectedPentesters.push({{ current_user.id }});
+        $('#pentesters').select2().val(selectedPentesters).trigger("change");
+    </script>
 {% endblock %}

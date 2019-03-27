@@ -90,7 +90,7 @@ def project(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = render(request, 'projects/project-single.html', {'project': project})
+            response = render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all()})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -206,7 +206,7 @@ def case(request, case_id):
 
 @login_required
 def projects_new(request):
-    return render(request, 'projects/projects.html', {})
+    return render(request, 'projects/projects.html', {'users': User.objects.all(), 'current_user': request.user})
 
 
 @login_required
