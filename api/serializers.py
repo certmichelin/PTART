@@ -91,6 +91,9 @@ class Sh0tSerializer(serializers.ModelSerializer):
             label_instance = Label.objects.get(pk=label)
             instance.labels.add(label_instance)
 
+        assessment = self.initial_data.get("assessment")
+        instance.assessment = Assessment.objects.get(pk=assessment)
+
         instance.__dict__.update(**validated_data)
         instance.save()
         return instance
