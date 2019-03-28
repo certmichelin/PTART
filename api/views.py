@@ -93,16 +93,19 @@ def methodologies(request):
 def load_module(request, pk, assessmentId):
     response = None
     try:
-        module = Module.objects.get(pk=pk)
         assessment = Assessment.objects.get(pk=assessmentId)
-        cases = Case.objects.filter(module=module)
-        flags = []
-        for case in cases:
-            note = "Module: " + module.name + "\n\n" + case.description
-            flag = Flag(title=case.name, note=note, assessment=assessment, assignee = request.user)
-            flag.save()
-            flags.append(flag)
-        response = Response(FlagSerializer(flags, many=True).data, status=status.HTTP_201_CREATED)
+        if assessment.is_user_can_edit(request.user) :
+            module = Module.objects.get(pk=pk)
+            cases = Case.objects.filter(module=module)
+            flags = []
+            for case in cases:
+                note = "Module: " + module.name + "\n\n" + case.description
+                flag = Flag(title=case.name, note=note, assessment=assessment, assignee = request.user)
+                flag.save()
+                flags.append(flag)
+            response = Response(FlagSerializer(flags, many=True).data, status=status.HTTP_201_CREATED)
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
     except Module.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     except Assessment.DoesNotExist:
@@ -114,10 +117,13 @@ def screenshot_raw(request, pk) :
     response = None
     try:
         item = Screenshot.objects.get(pk=pk)
-        response = Response(item.get_raw_data())
+        if item.is_user_can_view(request.user) :
+            response = Response(item.get_raw_data())        
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
     except Screenshot.DoesNotExist:
-        response = Response()
-
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+        
     response.accepted_renderer = ImageRenderer()
     response.accepted_media_type = 'image/png'
     response.renderer_context = {}
@@ -128,9 +134,12 @@ def markFlagAsDone(request, pk) :
     response = None
     try:
         flag = Flag.objects.get(pk=pk)
-        flag.done = True
-        flag.save()
-        response = Response(FlagSerializer(flag).data, status=status.HTTP_200_OK)
+        if flag.is_user_can_edit(request.user):
+            flag.done = True
+            flag.save()
+            response = Response(FlagSerializer(flag).data, status=status.HTTP_200_OK)
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
@@ -144,19 +153,27 @@ def item(request, pk, class_name, serializer_name) :
         item = class_name.objects.get(pk=pk)
 
         if request.method == 'GET':
-            response = Response(serializer_name(item).data)
-
+            if item.is_user_can_view(request.user) :
+                response = Response(serializer_name(item).data)
+            else :
+                response = Response(status=status.HTTP_403_FORBIDDEN)
         elif request.method == 'PUT' or request.method == 'PATCH':
             serializer = serializer_name(item, data=request.data)
             if serializer.is_valid():
-                serializer.save()
-                response = Response(serializer.data)
+                if item.is_user_can_edit(request.user) :
+                    serializer.save()
+                    response = Response(serializer.data)
+                else :
+                    response = Response(status=status.HTTP_403_FORBIDDEN)
             else :
                 response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == 'DELETE':
-            response = Response(serializer_name(item).data, status=status.HTTP_200_OK)
-            item.delete()
+            if item.is_user_can_edit(request.user) :
+                response = Response(serializer_name(item).data, status=status.HTTP_200_OK)
+                item.delete()
+            else :
+                response = Response(status=status.HTTP_403_FORBIDDEN)
 
     except class_name.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
@@ -169,13 +186,15 @@ def item(request, pk, class_name, serializer_name) :
 def items(request, class_name, serializer_name) :
     response = None
     if request.method == 'GET':
-        response = Response(serializer_name(class_name.objects.all(), many=True).data)
-
+        response = Response(serializer_name(class_name.get_viewable(request.user), many=True).data)
     elif request.method == 'POST':
         serializer = serializer_name(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            if class_name(**serializer.validated_data).is_user_can_create(request.user) :
+                serializer.save()
+                response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            else :
+                response = Response(status=status.HTTP_403_FORBIDDEN)
         else :
             response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

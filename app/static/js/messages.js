@@ -59,5 +59,9 @@ function genericMessageList(parent, jsonResponse, alertClass) {
  * Generic failure callback for ajax-common.
  */
 function commonFailure(data) {
-    errorList($("#messages"), data.responseJSON);
+    if(data.status === 403){
+        error($("#messages"), "Error 403 : Not Authorized");
+    } else {
+        errorList($("#messages"), data.responseJSON);
+    }
 }
