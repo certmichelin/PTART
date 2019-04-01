@@ -26,6 +26,14 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Viewers</label>
+                    <select class="js-states form-control" id="viewers" multiple="multiple">
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <input id="id" type="hidden" value="{{ project.id }}" />
                 <button id="updateBtn" class="btn btn-primary">Update</button>
                 <button id="delBtn" class="btn btn-danger">Delete</button>
@@ -42,8 +50,13 @@
     {% for pentester in project.pentesters.all %}
     selectedPentesters.push({{ pentester.id }});
     {% endfor %}
-
     $('#pentesters').select2().val(selectedPentesters).trigger("change");
+
+    var selectedViewers = [];
+    {% for viewer in project.viewers.all %}
+    selectedViewers.push({{ viewer.id }});
+    {% endfor %}
+    $('#viewers').select2().val(selectedViewers).trigger("change");
 
     /**
      * Project updation success callback.
@@ -57,7 +70,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}
