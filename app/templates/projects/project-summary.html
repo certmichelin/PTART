@@ -15,6 +15,7 @@
                         Scope
                     </button>
 
+                    {% if editable == True %}
                     <a class="btn btn-warning" href="/app/assessments/new" role="button">Create Assessment</a>
 
                     {% if project.assessment_set.all|length > 0 %}
@@ -28,6 +29,11 @@
                     <a class="btn btn-primary pull-right" href="/app/project/{{project.id}}" role="button">
                         Edit This Project
                     </a>
+                    {% else %}
+                    <a class="btn btn-primary pull-right" href="/app/project/{{project.id}}" role="button">
+                        View This Project
+                    </a>
+                    {% endif %}
                 </h1>
             </div>
         </div>

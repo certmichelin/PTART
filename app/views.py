@@ -90,7 +90,7 @@ def project(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all()})
+            response = render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -104,7 +104,7 @@ def project_summary(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = render(request, 'projects/project-summary.html', {'project': project})
+            response = render(request, 'projects/project-summary.html', {'project': project, 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -117,8 +117,8 @@ def assessment(request, assessment_id):
     response = None
     try:
         assessment =  Assessment.objects.get(pk=assessment_id)
-        if assessment.project.is_user_can_view(request.user):
-            response = render(request, 'assessments/assessment-single.html', {'assessment': assessment, 'projects': Project.get_viewable(request.user).order_by('-added')})
+        if assessment.is_user_can_view(request.user):
+            response = render(request, 'assessments/assessment-single.html', {'assessment': assessment, 'projects': Project.get_viewable(request.user).order_by('-added'), 'editable' : assessment.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Assessment.DoesNotExist:
@@ -131,8 +131,8 @@ def sh0t(request, sh0t_id):
     response = None
     try:
         sh0t = Sh0t.objects.get(pk=sh0t_id)
-        if sh0t.assessment.project.is_user_can_view(request.user):
-            response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': sh0t, 'assessments': Assessment.get_viewable(request.user).order_by('-added'),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
+        if sh0t.is_user_can_view(request.user):
+            response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': sh0t, 'assessments': Assessment.get_viewable(request.user).order_by('-added'),'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : sh0t.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Sh0t.DoesNotExist:
@@ -155,8 +155,8 @@ def flag(request, flag_id):
     response = None
     try:
         flag = Flag.objects.get(pk=flag_id)
-        if flag.assessment.project.is_user_can_view(request.user):
-            response = render(request, 'flags/flag-single.html', {'flag': flag, 'assessments': Assessment.get_viewable(request.user).order_by('added'), 'users': User.objects.all()})
+        if flag.is_user_can_view(request.user):
+            response = render(request, 'flags/flag-single.html', {'flag': flag, 'assessments': Assessment.get_viewable(request.user).order_by('added'), 'users': User.objects.all(), 'editable' : flag.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Flag.DoesNotExist:

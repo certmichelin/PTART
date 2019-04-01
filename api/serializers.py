@@ -12,10 +12,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)
+    viewers = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Project
-        fields = ('id', 'name','scope', 'pentesters', 'added')
+        fields = ('id', 'name','scope', 'pentesters', 'viewers', 'added')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -28,11 +29,19 @@ class ProjectSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         project = Project.objects.create(**validated_data)
+        
         if "pentesters" in self.initial_data:
             pentesters = self.initial_data.get("pentesters")
             for pentester in pentesters:
                 pentester_instance = User.objects.get(pk=pentester)
                 project.pentesters.add(pentester_instance)
+        
+        if "viewers" in self.initial_data:
+            viewers = self.initial_data.get("viewers")
+            for viewer in viewers:
+                viewer_instance = User.objects.get(pk=viewer)
+                project.viewers.add(viewer_instance)
+
         project.save()
         return project
 
@@ -43,6 +52,13 @@ class ProjectSerializer(serializers.ModelSerializer):
         for pentester in pentesters:
             pentester_instance = User.objects.get(pk=pentester)
             instance.pentesters.add(pentester_instance)
+
+        instance.viewers.clear()
+        viewers = self.initial_data.get("viewers")
+        for viewer in viewers:
+            viewer_instance = User.objects.get(pk=viewer)
+            instance.viewers.add(viewer_instance)
+
         instance.__dict__.update(**validated_data)
         instance.save()
         return instance

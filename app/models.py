@@ -6,6 +6,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Q
 
 
 """ Project model."""
@@ -14,7 +15,8 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     scope = models.TextField(blank=True, default="")
     added = models.DateTimeField(default=datetime.now)
-    pentesters = models.ManyToManyField(User)
+    pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
+    viewers = models.ManyToManyField(User, related_name='%(class)s_viewers')
 
     def __str__(self):  
         return self.name
@@ -48,12 +50,12 @@ class Project(models.Model):
 
     def get_viewable(user):
         """Returns all viewable projects"""
-        return Project.objects.filter(pentesters__in=[user])
+        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])) 
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this project"""
         result = False
-        if user in self.pentesters.all() :
+        if user in self.pentesters.all() or user in self.viewers.all() :
             result = True
         return result
 

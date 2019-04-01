@@ -33,6 +33,15 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label>Viewers</label>
+                    <select class="js-states form-control" id="viewers" multiple="multiple">
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
             </div>
         </div>
@@ -45,17 +54,19 @@
     var selectedPentesters = [];
     selectedPentesters.push({{ current_user.id }});
     $('#pentesters').select2().val(selectedPentesters).trigger("change");
+    $('#viewers').select2()
 
     function projectCreationSuccess(data) {
         $("#name").val("");
         $("#scope").val("");
         $('#pentesters').val(null).trigger('change');
+        $('#viewers').val(null).trigger('change');
         success($("#messages"), "Project was created!");
     }
 
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

@@ -25,8 +25,10 @@
                     </select>
                 </div>
                 <input id="id" type="hidden" value="{{assessment.id}}"  />
+                {% if editable == True %}
                 <button id="updateBtn" class="btn btn-primary">Update</button>
                 <button id="delBtn" class="btn btn-danger">Delete</button>
+                {% endif %}
             </div>
         </div>
     </div>

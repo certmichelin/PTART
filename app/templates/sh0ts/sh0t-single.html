@@ -55,11 +55,15 @@
                     </select>
                 </div>
                 <input id="id" type="hidden" value="{{ sh0t.id }}" />
+                {% if editable == True %}
                 <button id="updateBtn" class="btn btn-primary">Update</button>
                 <button id="delBtn" class="btn btn-danger">Delete</button>
+                {% endif %}
             </div>
             <div class="col-lg-5">
-                {% include "_include/html/cvss.html" %}
+                {% if editable == True %}
+                    {% include "_include/html/cvss.html" %}
+                {% endif %}
                 {% include "_include/html/screenshots.html" %}
             </div>
         </div>
