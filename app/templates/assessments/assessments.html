@@ -87,6 +87,18 @@
     }
 
     /**
+     * Assessment creation failure callback.
+     */
+     function assessmentCreationFailure(data) {
+        if(data.status === 403){
+            error($("#messages"), "Error 403 : Not Authorized");
+        } else {
+            errorList($("#messages"), data.responseJSON);
+        }
+        waitingDialog.hide();
+    }
+
+    /**
      * Check if all flags has been created.
      */
     function checkFlagCreationBatchStatus(data) {
@@ -94,7 +106,6 @@
             $("#name").val("");
             toCreate = 0;
             created = 0;
-            success($("#messages"), "Assessment was created!");
             waitingDialog.hide();
         }
     }
@@ -105,7 +116,7 @@
     $('#createBtn').on('click', function () {
         waitingDialog.show();
         cleanMessagesContainer($("#messages"));
-        ajaxCreateAssessment(assessmentCreationSuccess, commonFailure, $("#name").val(), $("#project").val());
+        ajaxCreateAssessment(assessmentCreationSuccess, assessmentCreationFailure, $("#name").val(), $("#project").val());
     });
 </script>
 {% endblock %}
