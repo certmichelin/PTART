@@ -17,8 +17,10 @@
             {% endfor %}
         </div>
 
+        {% if not editable or editable == True %}
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
         <button id="deleteZone" type="button" class="btn btn-danger" ondrop="drop(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
+        
 
         <!-- Push screenshot modal -->
         <div class="modal fade" id="pushScreenshotModal" tabindex="-1" role="dialog">
@@ -51,5 +53,6 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
