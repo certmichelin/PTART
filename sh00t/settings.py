@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app',
     'rest_framework',
+    'sh00t',
     'django_tables2',
 ]
 
@@ -135,7 +135,7 @@ LOGIN_URL = '/admin/login/'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'app/static'),
+    os.path.join(BASE_DIR, 'sh00t/static'),
 )
 
 REST_FRAMEWORK = {

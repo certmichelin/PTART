@@ -9,7 +9,7 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
 django.setup()
 
-from app.models import Methodology, Module, Case
+from sh00t.models import Methodology, Module, Case
 
 current_methodology = Methodology.objects.filter(name="OWASP Testing Guide V4")
 if not current_methodology :

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %} List Methodologies | sh00t{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        {% include '_include/html/header.html' with item='Methodology' create_item_url='/methodologies/new' create_item_button_text='Create Methodology' active_icon='fa fa-cubes' active_text='Methodology' %}
+        {% include "_include/html/messages.html" %}
+        {% include '_include/html/list.html' with table=table list_icon='fa fa-cubes' list_text='All Methodologies' create_item_url='/methodologies/new' create_item_text='Add a methodology' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+    {% include '_include/js/deleteItems.html' with item='methodology' items='methodology/ies' ajax_function='ajaxDeleteMethodology' %}
+{% endblock %}

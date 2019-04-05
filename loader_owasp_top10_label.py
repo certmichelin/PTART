@@ -9,7 +9,7 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
 django.setup()
 
-from app.models import Label
+from sh00t.models import Label
 
 owasp_file = open('data/owasp_top10_label.json', 'r')
 label_json = json.load(owasp_file)

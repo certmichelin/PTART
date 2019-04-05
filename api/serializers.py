@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from app.models import Project, Assessment, Sh0t, Label, Flag, Template, Screenshot, Case, Module, Methodology
+from sh00t.models import Project, Assessment, Sh0t, Label, Flag, Template, Screenshot, Case, Module, Methodology
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

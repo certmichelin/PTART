@@ -9,7 +9,7 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
 django.setup()
 
-from app.models import Template
+from sh00t.models import Template
 
 bugcrowd_file = open('data/vulnerability-rating-taxonomy.json', 'r')
 vrt = json.load(bugcrowd_file)
