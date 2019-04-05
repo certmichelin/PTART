@@ -27,8 +27,8 @@
                 <div class="form-group">
                     <label>Pentesters</label>
                     <select class="js-states form-control" id="pentesters" multiple="multiple">
-                        {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% for usr in users %}
+                        <option value="{{ usr.id }}">{{ usr.username }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -36,8 +36,8 @@
                 <div class="form-group">
                     <label>Viewers</label>
                     <select class="js-states form-control" id="viewers" multiple="multiple">
-                        {% for user in users %}
-                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% for usr in users %}
+                        <option value="{{ usr.id }}">{{ usr.username }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -52,7 +52,7 @@
 {% block extra_foot %}
 <script type="text/javascript">
     var selectedPentesters = [];
-    selectedPentesters.push({{ current_user.id }});
+    selectedPentesters.push({{ user.id }});
     $('#pentesters').select2().val(selectedPentesters).trigger("change");
     $('#viewers').select2()
 

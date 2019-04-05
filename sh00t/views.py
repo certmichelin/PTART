@@ -1,5 +1,5 @@
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
@@ -50,6 +50,7 @@ def sh0ts_all(request):
     return generic_all(request, Sh0t.get_viewable(request.user), Sh0tTable, 'sh0ts/sh0ts-list.html')
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def labels_all(request):
     return generic_all(request, Label.get_viewable(request.user), LabelTable, 'labels/labels-list.html')
 
@@ -58,21 +59,25 @@ def flags_all(request):
     return generic_all(request, Flag.get_viewable(request.user), FlagTable, 'flags/flags-list.html')
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def templates_all(request):
     return generic_all(request, Template.get_viewable(request.user), TemplateTable, 'templates/templates-list.html')
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def methodologies_all(request):
     return generic_all(request, Methodology.get_viewable(request.user), MethodologyTable, 'methodologies/methodologies-list.html')
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def modules_all(request):
     return generic_all(request, Module.get_viewable(request.user), ModuleTable, 'modules/modules-list.html')
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def cases_all(request):
     return generic_all(request, Case.get_viewable(request.user), CaseTable, 'cases/cases-list.html')
 
@@ -141,6 +146,7 @@ def sh0t(request, sh0t_id):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def label(request, label_id):
     response = None
     try:
@@ -165,6 +171,7 @@ def flag(request, flag_id):
 
     
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def template(request, template_id):
     response = None
     try:
@@ -175,6 +182,7 @@ def template(request, template_id):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def methodology(request, methodology_id):
     response = None
     try:
@@ -185,6 +193,7 @@ def methodology(request, methodology_id):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def module(request, module_id):
     response = None
     try:
@@ -195,6 +204,7 @@ def module(request, module_id):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def case(request, case_id):
     response = None
     try:
@@ -206,7 +216,7 @@ def case(request, case_id):
 
 @login_required
 def projects_new(request):
-    return render(request, 'projects/projects.html', {'users': User.objects.all(), 'current_user': request.user})
+    return render(request, 'projects/projects.html', {'users': User.objects.all()})
 
 
 @login_required
@@ -220,31 +230,36 @@ def sh0ts_new(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def labels_new(request):
     return render(request, 'labels/labels.html', {})
 
 
 @login_required
 def flags_new(request):
-    return render(request, 'flags/flags.html', {'assessments_list': Assessment.get_viewable(request.user).order_by('-added'), 'users': User.objects.all(), 'current_user': request.user})
+    return render(request, 'flags/flags.html', {'assessments_list': Assessment.get_viewable(request.user).order_by('-added'), 'users': User.objects.all()})
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def templates_new(request):
     return render(request, 'templates/templates.html', {'severities': Severity.values})
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def methodologies_new(request):
     return render(request, 'methodologies/methodologies.html')
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def modules_new(request):
     return render(request, 'modules/modules.html', {'methodologies': Methodology.get_viewable(request.user)})
 
 
 @login_required
+@user_passes_test(lambda u: u.is_staff)
 def cases_new(request):
     return render(request, 'cases/cases.html', {'modules': Module.get_viewable(request.user)})
 
@@ -273,9 +288,3 @@ def my_todo(request):
                 'assessments' : assessments
             })
     return render(request, 'mytodo.html', {'projects':projects})
-
-
-@login_required
-def logout_user(request):
-    logout(request)
-    return redirect('/')

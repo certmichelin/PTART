@@ -15,6 +15,7 @@
             <a href="/sh0ts"><i class="fa fa-fw fa-bullseye"></i> Sh0ts</a>
         </li>
         
+        {% if user.is_staff %}
         <li {% if '/template' in request.path %}class="active" {% endif %}>
             <a href="#" data-toggle="collapse" data-target="#configurationMenu"><i class="fa fa-fw fa-gear"></i> Configuration <span id="configurationArrow"><i class="fa fa-fw fa-caret-down"></i></span></a>
             <ul id="configurationMenu" class="collapse">
@@ -35,5 +36,6 @@
                 </li>
             </ul>
         </li>
+        {% endif %}
     </ul>
 </div>

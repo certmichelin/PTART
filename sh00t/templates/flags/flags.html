@@ -38,8 +38,8 @@
                         <div class="form-group">
                             <label for="assignee">Assignee</label>
                             <select id="assignee" class="form-control">
-                                {% for user in users %}
-                                    <option value="{{ user.id }}" {% if user.id == current_user.id %} selected="selected" {% endif %}>{{ user.username }}</option>
+                                {% for usr in users %}
+                                    <option value="{{ usr.id }}" {% if usr.id == user.id %} selected="selected" {% endif %}>{{ usr.username }}</option>
                                 {% endfor %}
                             </select>
                         </div>

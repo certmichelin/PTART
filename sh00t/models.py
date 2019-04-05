@@ -154,11 +154,11 @@ class Label(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this label"""
-        return True
+        return user.is_staff
 
     def is_user_can_create(self, user):
         """Verify if the user can create this label"""
-        return True
+        return user.is_staff
 
     class Meta:
         ordering = ('pk',)
@@ -302,11 +302,11 @@ class Template(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this template"""
-        return True
+        return user.is_staff
 
     def is_user_can_create(self, user):
         """Verify if the user can create this template"""
-        return True
+        return user.is_staff
 
     class Meta:
         ordering = ('severity','name',)
@@ -330,11 +330,11 @@ class Methodology(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this methodology"""
-        return True
+        return user.is_staff
 
     def is_user_can_create(self, user):
         """Verify if the user can create this methodology"""
-        return True
+        return user.is_staff
 
     class Meta:
         ordering = ('name',)
@@ -356,11 +356,11 @@ class Module(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this module"""
-        return True
+        return user.is_staff
 
     def is_user_can_create(self, user):
         """Verify if the user can create this module"""
-        return True
+        return user.is_staff
 
     def __str__(self):  
         return self.name
@@ -385,11 +385,11 @@ class Case(models.Model):
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this case"""
-        return True
+        return user.is_staff
 
     def is_user_can_create(self, user):
         """Verify if the user can create this case"""
-        return True
+        return user.is_staff
 
     def __str__(self):  
         return self.name
