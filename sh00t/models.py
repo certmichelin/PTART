@@ -163,6 +163,128 @@ class Label(models.Model):
     class Meta:
         ordering = ('pk',)
 
+"""CvssV3 model"""
+class Cvss(models.Model):
+    NALP_CHOICES = (
+        ('N', 'Network'),
+        ('A', 'Adjacent'),
+        ('L', 'Local'),
+        ('P', 'Physical')
+    )
+
+    LH_CHOICES = (
+        ('L', 'Low'),
+        ('H', 'High')
+    )
+
+    NLH_CHOICES = (
+        ('N', 'None'),
+        ('L', 'Low'),
+        ('H', 'High')
+    )
+
+    NR_CHOICES = (
+        ('N', 'None'),
+        ('R', 'Required')
+    )
+
+    UC_CHOICES = (
+        ('U', 'Unchanged'),
+        ('C', 'Changed')
+    )
+
+    attack_vector = models.CharField(max_length=1,choices=NALP_CHOICES)
+    attack_complexity = models.CharField(max_length=1,choices=LH_CHOICES)
+    privilege_required = models.CharField(max_length=1,choices=NLH_CHOICES)
+    user_interaction = models.CharField(max_length=1,choices=NR_CHOICES)
+    scope = models.CharField(max_length=1,choices=UC_CHOICES)
+    confidentiality = models.CharField(max_length=1,choices=NLH_CHOICES)
+    integrity = models.CharField(max_length=1,choices=NLH_CHOICES)
+    availability = models.CharField(max_length=1,choices=NLH_CHOICES)
+
+    def round_up(n, decimals=0):
+        multiplier = 10 ** decimals
+        return math.ceil(n * multiplier) / multiplier
+
+    def get_cia_value(value) : 
+        if value == "H":
+            return 0.56
+        elif value == "L":
+            return  0.22
+        else :
+            return  0.0
+
+    def get_cvss_value(self) :
+        isc_base = self.get_isc_base()
+        isc = self.get_isc(isc_base)
+        exploitability = self.get_exploitability()
+
+        if isc > 0.0 :
+            exploitability = self.get_exploitability()
+            if self.scope == "U" :
+                return round_up(min(isc + exploitability, 10.0), 1)
+            else :
+                return round_up(min(1.08 * (isc + exploitability), 10.0), 1)
+        else :
+            return 0.0
+
+    def get_exploitability(self) :
+        return 8.22 * self.get_attack_vector_value() * self.get_attack_complexity_value() * self.get_privilege_required_value() * self.get_user_interaction_value()
+
+    def get_isc_base(self) :
+        return 1.0 - ((1.0 - self.get_confidentiality_value()) * (1.0 - self.get_integrity_value()) * (1.0 - self.get_availability_value()))
+
+    def get_isc(self, isc_base) :
+        if self.scope == "U" :
+            return 6.42 * isc_base
+        else :
+            return 7.52 * (isc_base - 0.029) - 3.25 * (iscBase - 0.02)**15
+
+    def get_confidentiality_value(self) :
+        return get_cia_value(self.confidentiality)
+
+    def get_integrity_value(self) :
+        return get_cia_value(self.integrity)
+
+    def get_availability_value(self) :
+        return get_cia_value(self.availability)
+
+    def get_attack_vector_value(self) :
+        if self.attack_vector == "N":
+            return 0.85
+        elif self.attack_vector == "A":
+            return 0.62
+        elif self.attack_vector == "L":
+            return 0.55
+        else :
+            return 0.2
+
+    def get_attack_complexity_value(self) :
+        if self.attack_complexity == "L" :
+            return 0.77
+        else :
+            return 0.44
+
+    def get_privilege_required_value(self) :
+        if self.privilege_required == "N" :
+            return 0.85
+        elif  self.privilege_required == "L" :
+            if self.scope == "U" :
+                return 0.62
+            else :
+                return 0.68
+        else :
+            if self.scope == "U" :
+                return 0.27
+            else :
+                return 0.50
+    
+    def get_user_interaction_value(self) :
+        if self.user_interaction == "N" :
+            return 0.85
+        else :
+            return 0.62
+
 
 """Sh0t model."""
 class Sh0t(models.Model):
@@ -173,7 +295,7 @@ class Sh0t(models.Model):
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    cvss = models.CharField(max_length=4, default="---")
+    cvss = models.OneToOneField(Cvss, null=True, on_delete=models.CASCADE)
     labels = models.ManyToManyField(Label)
 
     def __str__(self):  
