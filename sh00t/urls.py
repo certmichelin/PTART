@@ -9,8 +9,8 @@ from sh00t import views
 
 urlpatterns = [
     re_path(r'^api/', include('api.urls')),
-    re_path(r'^logout/$', views.logout_user),
     re_path(r'^admin/', admin.site.urls),
+    re_path(r'^accounts/', include('django.contrib.auth.urls')),
     re_path(r'^$', views.index),
     url(r'^projects/$', views.projects_all),
     url(r'^projects/new/$', views.projects_new),
