@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^screenshot/(?P<pk>[0-9]+)/$', views.screenshot),
     url(r'^screenshot/png/(?P<pk>[0-9]+)/$', views.screenshot_raw),
     url(r'^screenshots/$', views.screenshots),
+    url(r'^cvss/$', views.cvss),
     url(r'^assessment/(?P<pk>[0-9]+)/$', views.assessment),
     url(r'^assessments/$', views.assessments),
     url(r'^project/(?P<pk>[0-9]+)/$', views.project),

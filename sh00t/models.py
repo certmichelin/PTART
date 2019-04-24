@@ -276,7 +276,7 @@ class Cvss(models.Model):
         else :
             return 7.52 * (isc_base - 0.029) - 3.25 * (iscBase - 0.02)**15
 
-    def get_cvss_value(self) :
+    def compute_cvss_value(self) :
         isc_base = self.get_isc_base()
         isc = self.get_isc(isc_base)
         exploitability = self.get_exploitability()
@@ -284,11 +284,11 @@ class Cvss(models.Model):
         if isc > 0.0 :
             exploitability = self.get_exploitability()
             if self.scope == "U" :
-                return round_up(min(isc + exploitability, 10.0), 1)
+                self.decimal_value = round_up(min(isc + exploitability, 10.0), 1)
             else :
-                return round_up(min(1.08 * (isc + exploitability), 10.0), 1)
+                self.decimal_value = round_up(min(1.08 * (isc + exploitability), 10.0), 1)
         else :
-            return 0.0
+            self.decimal_value = 0.0
 
     class Meta:
         ordering = ('decimal_value',)

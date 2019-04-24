@@ -269,6 +269,30 @@ function ajaxDeleteScreenshot(success_function, error_function, id) {
 }
 
 /**
+ * Compute the cvss value a screenshot for a sh0t.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} attackVector Attack vector.
+ * @param {*} attackComplexity Attack complexity.
+ * @param {*} privilegeRequired Privilege required for the attack.
+ * @param {*} userInteraction Attack need user interaction.
+ * @param {*} scope Scope is changed or not.
+ * @param {*} confidentiality Confidentiality.
+ * @param {*} integrity Integrity.
+ * @param {*} availability Availability.
+ */
+function ajaxComputeCVSSv3(success_function, error_function, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
+    $.ajax({
+        url: "/api/cvss/",
+        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity)+ ', "privilege_required": ' + JSON.stringify(privilegeRequired)+ ', "user_interaction": ' + JSON.stringify(userInteraction)+ ', "scope": ' + JSON.stringify(scope)+ ', "confidentiality": ' + JSON.stringify(confidentiality)+ ', "integrity": ' + JSON.stringify(integrity)+ ', "availability": ' + JSON.stringify(availability) + ' }',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Create a flag.
  * 
  * @param {*} success_function function to call in case of ajax success.

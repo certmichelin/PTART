@@ -4,9 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from sh00t.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Case, Module, Methodology, Label
+from sh00t.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Cvss, Case, Module, Methodology, Label
 
-from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
+from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
@@ -127,6 +127,16 @@ def screenshot_raw(request, pk) :
     response.accepted_renderer = ImageRenderer()
     response.accepted_media_type = 'image/png'
     response.renderer_context = {}
+    return response
+
+@api_view(['POST'])
+def cvss(request):
+    serializer = serializer_name(data=request.data)
+    if serializer.is_valid():
+        Cvss(**serializer.validated_data).compute_cvss_value()
+        response = Response(serializer.data, status=status.HTTP_201_CREATED)
+    else :
+        response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return response
 
 @api_view(['POST'])
