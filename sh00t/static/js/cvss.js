@@ -74,7 +74,7 @@ function loadCVSSButtonsState(attackVector, attackComplexity, privilegeRequired,
             break;
     }
     attackComplexityValue = attackComplexity;
-    
+
     switch (privilegeRequired) {
         case "N":
             $('#privilegesNone').addClass("active");
@@ -148,90 +148,125 @@ function loadCVSSButtonsState(attackVector, attackComplexity, privilegeRequired,
     availabilityValue = availability;
 }
 
+function catchErrorMethod(data) {
+}
+
+function cvssComputationCallback(data){
+    displayCVSS(data.decimal_value);
+}
+
+function computeCVSSv3(){
+    if(attackVectorValue!== null && attackComplexityValue!== null && privilegeRequiredValue!== null && userInteractionValue!== null && scopeValue!== null && confidentialityValue!== null && integrityValue!== null && availabilityValue != null){
+        ajaxComputeCVSSv3(cvssComputationCallback, catchErrorMethod, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
+    }
+}
+
 $('#vectorPhysical').click(function (e) {
     attackVectorValue = "P";
+    computeCVSSv3();
 });
 
 $('#vectorLocal').click(function (e) {
     attackVectorValue = "L";
+    computeCVSSv3();
 });
 
 $('#vectorAdjacent').click(function (e) {
     attackVectorValue = "A";
+    computeCVSSv3();
 });
 
 $('#vectorNetwork').click(function (e) {
     attackVectorValue = "N";
+    computeCVSSv3();
 });
 
 $('#complexityLow').click(function (e) {
     attackComplexityValue = "L";
+    computeCVSSv3();
 });
 
 $('#complexityHigh').click(function (e) {
     attackComplexityValue = "H";
+    computeCVSSv3();
 });
 
 $('#privilegesNone').click(function (e) {
     privilegeRequiredValue = "N";
+    computeCVSSv3();
 });
 
 $('#privilegesLow').click(function (e) {
     privilegeRequiredValue = "L";
+    computeCVSSv3();
 });
 
 $('#privilegesHigh').click(function (e) {
     privilegeRequiredValue = "H";
+    computeCVSSv3();
 });
 
 $('#userInteractionNone').click(function (e) {
     userInteractionValue = "N";
+    computeCVSSv3();
 });
 
 $('#userInteractionRequired').click(function (e) {
     userInteractionValue = "R";
+    computeCVSSv3();
 });
 
 $('#scopeUnchanged').click(function (e) {
     scopeValue = "U";
+    computeCVSSv3();
 });
 
 $('#scopeChanged').click(function (e) {
     scopeValue = "C";
+    computeCVSSv3();
 });
 
 $('#confidentialityNone').click(function (e) {
     confidentialityValue = "N";
+    computeCVSSv3();
 });
 
 $('#confidentialityLow').click(function (e) {
     confidentialityValue = "L";
+    computeCVSSv3();
 });
 
 $('#confidentialityHigh').click(function (e) {
     confidentialityValue = "H";
+    computeCVSSv3();
 });
 
 $('#integrityNone').click(function (e) {
     integrityValue = "N";
+    computeCVSSv3();
 });
 
 $('#integrityLow').click(function (e) {
     integrityValue = "L";
+    computeCVSSv3();
 });
 
 $('#integrityHigh').click(function (e) {
     integrityValue = "H";
+    computeCVSSv3();
 });
 
 $('#availabilityNone').click(function (e) {
     availabilityValue = "N";
+    computeCVSSv3();
 });
 
 $('#availabilityLow').click(function (e) {
     availabilityValue = "L";
+    computeCVSSv3();
 });
 
 $('#availabilityHigh').click(function (e) {
     availabilityValue = "H";
+    computeCVSSv3();
 });

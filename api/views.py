@@ -131,10 +131,11 @@ def screenshot_raw(request, pk) :
 
 @api_view(['POST'])
 def cvss(request):
-    serializer = serializer_name(data=request.data)
+    serializer = CvssSerializer(data=request.data)
     if serializer.is_valid():
-        Cvss(**serializer.validated_data).compute_cvss_value()
-        response = Response(serializer.data, status=status.HTTP_201_CREATED)
+        cvss = Cvss(**serializer.validated_data)
+        cvss.compute_cvss_value()
+        response = Response(CvssSerializer(cvss).data, status=status.HTTP_201_CREATED)
     else :
         response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return response
