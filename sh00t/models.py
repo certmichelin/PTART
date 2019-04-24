@@ -193,6 +193,7 @@ class Cvss(models.Model):
         ('C', 'Changed')
     )
 
+    """CVSS String values"""
     attack_vector = models.CharField(max_length=1,choices=NALP_CHOICES)
     attack_complexity = models.CharField(max_length=1,choices=LH_CHOICES)
     privilege_required = models.CharField(max_length=1,choices=NLH_CHOICES)
@@ -201,6 +202,10 @@ class Cvss(models.Model):
     confidentiality = models.CharField(max_length=1,choices=NLH_CHOICES)
     integrity = models.CharField(max_length=1,choices=NLH_CHOICES)
     availability = models.CharField(max_length=1,choices=NLH_CHOICES)
+
+    """Values for usage"""
+    decimal_value = models.DecimalField(max_digits=3, decimal_places=1)
+    string_value = models.CharField(max_length=4, default="---")
 
     def round_up(n, decimals=0):
         multiplier = 10 ** decimals
@@ -284,6 +289,9 @@ class Cvss(models.Model):
             return 0.85
         else :
             return 0.62
+
+    class Meta:
+        ordering = ('decimal_value',)
 
 
 """Sh0t model."""
