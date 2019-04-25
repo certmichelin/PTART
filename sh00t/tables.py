@@ -39,7 +39,7 @@ class Sh0tTable(tables.Table):
     title = tables.TemplateColumn('<a href="/sh0t/{{ record.pk }}">{{ record.title }}</a>')
     project = tables.TemplateColumn('<a href="/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
-    cvss = tables.TemplateColumn('<span class="cvss label label-default">{{ record.cvss.decimal_value }}</span>', verbose_name= 'CVSS v3')
+    cvss = tables.TemplateColumn('<span class="cvss label label-default">{{ record.get_cvss_value }}</span>', verbose_name= 'CVSS v3')
 
     class Meta:
         model = Sh0t

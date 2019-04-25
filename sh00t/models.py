@@ -325,6 +325,13 @@ class Sh0t(models.Model):
         """Verify if the user can create this sh0t"""
         return self.assessment.is_user_can_edit(user)
 
+    def get_cvss_value(self):
+        """Return the decimal value of the cvss"""
+        if self.cvss is None :
+            return "---"
+        else : 
+            return self.cvss.decimal_value
+
     class Meta:
         ordering = ('severity', '-cvss', 'title',)
 

@@ -77,7 +77,7 @@
     /* Select the current severity */$
     $('#severity option[value={{sh0t.severity}}]').attr('selected', 'selected');
 
-    displayCVSS("{{sh0t.cvss.decimal_value}}")
+    displayCVSS("{{sh0t.get_cvss_value}}")
     loadCVSSButtonsState("{{sh0t.cvss.attack_vector}}", "{{sh0t.cvss.attack_complexity}}", "{{sh0t.cvss.privilege_required}}", "{{sh0t.cvss.user_interaction}}", "{{sh0t.cvss.scope}}", "{{sh0t.cvss.confidentiality}}", "{{sh0t.cvss.integrity}}", "{{sh0t.cvss.availability}}");
     activeMarkdown("body");
 
