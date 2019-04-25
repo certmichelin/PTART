@@ -3,231 +3,182 @@
 {% block title %} Dashboard | sh00t{% endblock %}
 
 {% block page %}
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3 col-md-6">
-                <div class="panel panel-blue">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-cubes fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ projects_count }}</div>
-                                <div>Projects</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="/projects">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Projects</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="panel panel-yellow">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-cube fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ assessments_count }}</div>
-                                <div>Assessments</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="/assessments">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Assessments</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="panel panel-red">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-bullseye fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ shots_count }}</div>
-                                <div>Shots!</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="/sh0ts">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Shots</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="panel panel-green">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-3">
-                                <i class="fa fa-flag-o fa-5x"></i>
-                            </div>
-                            <div class="col-xs-9 text-right">
-                                <div class="huge">{{ open_flags_count }}</div>
-                                <div>Open Flags!</div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="/flags">
-                        <div class="panel-footer">
-                            <span class="pull-left">View Flags</span>
-                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                            <div class="clearfix"></div>
-                        </div>
-                    </a>
-                </div>
+<main role="main" class="container">
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Sh00t!</h1>
+        <p class="lead">A Testing Environment for Manual Security Testers</p>
+    </div>
+
+    <div class="card-deck mb-4 text-center">
+        <div class="card mb-3 box-shadow">
+            <img class="card-img-top" src="/static/img/project.jpg">
+            <div class="card-body">
+                <h4 class="card-title">{{ projects_count }} Projects</h4>
+                <a href="/projects" class="btn btn-lg btn-block btn-outline-success">View</a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Recent Projects</h3>
-                    </div>
-                    <div class="panel-body">
-                        {% if recent_projects %}
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p1">P1</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p2">P2</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p3">P3</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p4">P4</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p5">P5</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for project in recent_projects %}
-                                    <tr>
-                                        <td><a href="/project/{{ project.id }}/summary">{{ project.name }}<a></a>
-                                        </td>
-                                        <td>{{project.p1_sh0ts|length}}</td>
-                                        <td>{{project.p2_sh0ts|length}}</td>
-                                        <td>{{project.p3_sh0ts|length}}</td>
-                                        <td>{{project.p4_sh0ts|length}}</td>
-                                        <td>{{project.p5_sh0ts|length}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-right">
-                            <a href="/projects">View All <i class="fa fa-cubes"></i></a>
-                        </div>
-                        {% else %}
-                        <h4><i class="fa fa-cubes"></i> <a href="/projects/new/">Add a new project</a></h4>
-                        {% endif %}
-                    </div>
-                </div>
+
+        <div class="card mb-3 box-shadow">
+            <img class="card-img-top" src="/static/img/assessment.jpg">
+            <div class="card-body">
+                <h4 class="card-title">{{ assessments_count }} Assessments</h4>
+                <a href="/assessments" class="btn btn-lg btn-block btn-outline-success">View</a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-7">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Recent Shots</h3>
-                    </div>
-                    <div class="panel-body">
-                        {% if recent_sh0ts %}
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Project</th>
-                                        <th>Assessment</th>
-                                        <th>Title</th>
-                                        <th>Sev</th>
-                                        <th>CVSS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for sh0t in recent_sh0ts %}
-                                    <tr>
-                                        <td><a href="/project/{{ sh0t.assessment.project.id}}/summary">{{ sh0t.assessment.project.name }}<a></a>
-                                        </td>
-                                        <td><a href="/assessment/{{ sh0t.assessment.id}}/">{{ sh0t.assessment.name }}<a></a>
-                                        </td>
-                                        <td><a href="/sh0t/{{ sh0t.id }}/">{{ sh0t.title }}</a></td>
-                                        <td>
-                                            <span class="bc-badge bc-badge--p{{ sh0t.severity }}">P{{ sh0t.severity }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="cvss label label-default">
-                                                    {{ sh0t.get_cvss_value }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-right">
-                            <a href="/sh0ts">View All <i class="fa fa-arrow-circle-right"></i></a>
-                        </div>
-                        {% else %}
-                        <h4><i class="fa fa-bullseye"></i> <a href="/sh0ts/new/">Sh00t one</a></h4>
-                        {% endif %}
-                    </div>
-                </div>
+
+        <div class="card mb-3 box-shadow">
+            <img class="card-img-top" src="/static/img/sh0t.jpg">
+            <div class="card-body">
+                <h4 class="card-title">{{ shots_count }} Shots</h4>
+                <a href="/sh0ts" class="btn btn-lg btn-block btn-outline-success">View</a>
             </div>
-            <div class="col-lg-5">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Open Flags</h3>
+        </div>
+
+        <div class="card mb-3 box-shadow">
+            <img class="card-img-top" src="/static/img/flag.jpg">
+            <div class="card-body">
+                <h4 class="card-title">{{ open_flags_count }} Open Flags!</h4>
+                <a href="/flags" class="btn btn-lg btn-block btn-outline-success">View</a>
+            </div>
+        </div>
+
+    </div>
+    <!--        
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Recent Projects</h3>
+                </div>
+                <div class="panel-body">
+                    {% if recent_projects %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p1">P1</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p2">P2</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p3">P3</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p4">P4</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p5">P5</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in recent_projects %}
+                                <tr>
+                                    <td><a href="/project/{{ project.id }}/summary">{{ project.name }}<a></a>
+                                    </td>
+                                    <td>{{project.p1_sh0ts|length}}</td>
+                                    <td>{{project.p2_sh0ts|length}}</td>
+                                    <td>{{project.p3_sh0ts|length}}</td>
+                                    <td>{{project.p4_sh0ts|length}}</td>
+                                    <td>{{project.p5_sh0ts|length}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="panel-body">
-                        {% if recent_open_flags %}
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Project</th>
-                                        <th>Assessment</th>
-                                        <th>Title</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for flag in recent_open_flags %}
-                                    <tr>
-                                        <td><a href="/project/{{ flag.assessment.project.id}}/summary">{{ flag.assessment.project.name }}<a></a>
-                                        </td>
-                                        <td><a href="/assessment/{{ flag.assessment.id}}/">{{ flag.assessment.name }}<a></a>
-                                        </td>
-                                        <td><a href="/flag/{{ flag.id }}/">{{ flag.title }}</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-right">
-                            <a href="/flags">View All <i class="fa fa-arrow-circle-right"></i></a>
-                        </div>
-                        {% else %}
-                        <h4><i class="fa fa-flag-o"></i> <a href="/flags/new/">New Flag</a></h4>
-                        {% endif %}
+                    <div class="text-right">
+                        <a href="/projects">View All <i class="fa fa-cubes"></i></a>
                     </div>
+                    {% else %}
+                    <h4><i class="fa fa-cubes"></i> <a href="/projects/new/">Add a new project</a></h4>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Recent Shots</h3>
+                </div>
+                <div class="panel-body">
+                    {% if recent_sh0ts %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Assessment</th>
+                                    <th>Title</th>
+                                    <th>Sev</th>
+                                    <th>CVSS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sh0t in recent_sh0ts %}
+                                <tr>
+                                    <td><a href="/project/{{ sh0t.assessment.project.id}}/summary">{{ sh0t.assessment.project.name }}<a></a>
+                                    </td>
+                                    <td><a href="/assessment/{{ sh0t.assessment.id}}/">{{ sh0t.assessment.name }}<a></a>
+                                    </td>
+                                    <td><a href="/sh0t/{{ sh0t.id }}/">{{ sh0t.title }}</a></td>
+                                    <td>
+                                        <span
+                                            class="bc-badge bc-badge--p{{ sh0t.severity }}">P{{ sh0t.severity }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="cvss label label-default">
+                                            {{ sh0t.get_cvss_value }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-right">
+                        <a href="/sh0ts">View All <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                    {% else %}
+                    <h4><i class="fa fa-bullseye"></i> <a href="/sh0ts/new/">Sh00t one</a></h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Open Flags</h3>
+                </div>
+                <div class="panel-body">
+                    {% if recent_open_flags %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Assessment</th>
+                                    <th>Title</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for flag in recent_open_flags %}
+                                <tr>
+                                    <td><a href="/project/{{ flag.assessment.project.id}}/summary">{{ flag.assessment.project.name }}<a></a>
+                                    </td>
+                                    <td><a href="/assessment/{{ flag.assessment.id}}/">{{ flag.assessment.name }}<a></a>
+                                    </td>
+                                    <td><a href="/flag/{{ flag.id }}/">{{ flag.title }}</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-right">
+                        <a href="/flags">View All <i class="fa fa-arrow-circle-right"></i></a>
+                    </div>
+                    {% else %}
+                    <h4><i class="fa fa-flag-o"></i> <a href="/flags/new/">New Flag</a></h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+</main>
 {% endblock %}
