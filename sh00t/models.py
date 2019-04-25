@@ -332,6 +332,13 @@ class Sh0t(models.Model):
         else : 
             return self.cvss.decimal_value
 
+    def get_cvss_string(self):
+        """Return the string value of the cvss"""
+        if self.cvss is None :
+            return ""
+        else : 
+            return "CVSS:3.0/AV:" + self.cvss.attack_vector + "/AC:" + self.cvss.attack_complexity + "/PR:" + self.cvss.privilege_required + "/UI:" + self.cvss.user_interaction + "/S:" + self.cvss.scope + "/C:" + self.cvss.confidentiality + "/I:" + self.cvss.integrity + "/A:" + self.cvss.availability 
+
     def delete(self, *args, **kwargs):
         self.cvss.delete()
         return super(self.__class__, self).delete(*args, **kwargs)
