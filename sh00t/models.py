@@ -1,4 +1,5 @@
 import base64
+import markdown2
 import math
 import os
 import uuid
@@ -324,6 +325,9 @@ class Sh0t(models.Model):
     def is_user_can_create(self, user):
         """Verify if the user can create this sh0t"""
         return self.assessment.is_user_can_edit(user)
+
+    def get_html_body(self):
+        return markdown2.markdown(self.body, safe_mode=True)
 
     def get_cvss_value(self):
         """Return the decimal value of the cvss"""
