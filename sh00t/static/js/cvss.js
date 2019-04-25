@@ -49,116 +49,145 @@ function displayCVSS(cvss) {
 }
 
 function loadCVSSButtonsState(attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
-    switch (attackVector) {
-        case "N":
-            $('#vectorNetwork').addClass("active");
-            break;
-        case "A":
-            $('#vectorAdjacent').addClass("active");
-            break;
-        case "L":
-            $('#vectorLocal').addClass("active");
-            break;
-        case "P":
-            $('#vectorPhysical').addClass("active");
-            break;
-    }
-    attackVectorValue = attackVector;
 
-    switch (attackComplexity) {
-        case "L":
-            $('#complexityLow').addClass("active");
-            break;
-        case "H":
-            $('#complexityHigh').addClass("active");
-            break;
+    if (attackVector !== "") {
+        switch (attackVector) {
+            case "N":
+                $('#vectorNetwork').addClass("active");
+                break;
+            case "A":
+                $('#vectorAdjacent').addClass("active");
+                break;
+            case "L":
+                $('#vectorLocal').addClass("active");
+                break;
+            case "P":
+                $('#vectorPhysical').addClass("active");
+                break;
+        }
+        attackVectorValue = attackVector;
     }
-    attackComplexityValue = attackComplexity;
 
-    switch (privilegeRequired) {
-        case "N":
-            $('#privilegesNone').addClass("active");
-            break;
-        case "L":
-            $('#privilegesLow').addClass("active");
-            break;
-        case "H":
-            $('#privilegesHigh').addClass("active");
-            break;
+    if (attackComplexity !== "") {
+        switch (attackComplexity) {
+            case "L":
+                $('#complexityLow').addClass("active");
+                break;
+            case "H":
+                $('#complexityHigh').addClass("active");
+                break;
+        }
+        attackComplexityValue = attackComplexity;
     }
-    privilegeRequiredValue = privilegeRequired;
+    if (privilegeRequired !== "") {
+        switch (privilegeRequired) {
+            case "N":
+                $('#privilegesNone').addClass("active");
+                break;
+            case "L":
+                $('#privilegesLow').addClass("active");
+                break;
+            case "H":
+                $('#privilegesHigh').addClass("active");
+                break;
+        }
+        privilegeRequiredValue = privilegeRequired;
+    }
 
-    switch (userInteraction) {
-        case "N":
-            $('#userInteractionNone').addClass("active");
-            break;
-        case "R":
-            $('#userInteractionRequired').addClass("active");
-            break;
+    if (userInteraction !== "") {
+        switch (userInteraction) {
+            case "N":
+                $('#userInteractionNone').addClass("active");
+                break;
+            case "R":
+                $('#userInteractionRequired').addClass("active");
+                break;
+        }
+        userInteractionValue = userInteraction;
     }
-    userInteractionValue = userInteraction;
 
-    switch (scope) {
-        case "U":
-            $('#scopeUnchanged').addClass("active");
-            break;
-        case "C":
-            $('#scopeChanged').addClass("active");
-            break;
+    if (scope !== "") {
+        switch (scope) {
+            case "U":
+                $('#scopeUnchanged').addClass("active");
+                break;
+            case "C":
+                $('#scopeChanged').addClass("active");
+                break;
+        }
+        scopeValue = scope;
     }
-    scopeValue = scope;
 
-    switch (confidentiality) {
-        case "N":
-            $('#confidentialityNone').addClass("active");
-            break;
-        case "L":
-            $('#confidentialityLow').addClass("active");
-            break;
-        case "H":
-            $('#confidentialityHigh').addClass("active");
-            break;
+    if (confidentiality !== "") {
+        switch (confidentiality) {
+            case "N":
+                $('#confidentialityNone').addClass("active");
+                break;
+            case "L":
+                $('#confidentialityLow').addClass("active");
+                break;
+            case "H":
+                $('#confidentialityHigh').addClass("active");
+                break;
+        }
+        confidentialityValue = confidentiality;
     }
-    confidentialityValue = confidentiality;
 
-    switch (integrity) {
-        case "N":
-            $('#integrityNone').addClass("active");
-            break;
-        case "L":
-            $('#integrityLow').addClass("active");
-            break;
-        case "H":
-            $('#integrityHigh').addClass("active");
-            break;
+    if (integrity !== "") {
+        switch (integrity) {
+            case "N":
+                $('#integrityNone').addClass("active");
+                break;
+            case "L":
+                $('#integrityLow').addClass("active");
+                break;
+            case "H":
+                $('#integrityHigh').addClass("active");
+                break;
+        }
+        integrityValue = integrity;
     }
-    integrityValue = integrity;
 
-    switch (availability) {
-        case "N":
-            $('#availabilityNone').addClass("active");
-            break;
-        case "L":
-            $('#availabilityLow').addClass("active");
-            break;
-        case "H":
-            $('#availabilityHigh').addClass("active");
-            break;
+    if (availability !== "") {
+        switch (availability) {
+            case "N":
+                $('#availabilityNone').addClass("active");
+                break;
+            case "L":
+                $('#availabilityLow').addClass("active");
+                break;
+            case "H":
+                $('#availabilityHigh').addClass("active");
+                break;
+        }
+        availabilityValue = availability;
     }
-    availabilityValue = availability;
+}
+
+function catchSuccessMethod(data) {
 }
 
 function catchErrorMethod(data) {
 }
 
-function cvssComputationCallback(data){
+function cvssComputationCallback(data) {
     displayCVSS(data.decimal_value);
 }
 
-function computeCVSSv3(){
-    if(attackVectorValue!== null && attackComplexityValue!== null && privilegeRequiredValue!== null && userInteractionValue!== null && scopeValue!== null && confidentialityValue!== null && integrityValue!== null && availabilityValue != null){
+function computeCVSSv3() {
+    if (isCVSSComputable()) {
         ajaxComputeCVSSv3(cvssComputationCallback, catchErrorMethod, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
     }
+}
+
+function addCVSSv3ToSh0t(shotId) {
+    if (isCVSSComputable()) {
+        ajaxAddCVSSv3(catchSuccessMethod, catchErrorMethod, shotId, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
+    }
+}
+
+function isCVSSComputable() {
+    return attackVectorValue !== null && attackComplexityValue !== null && privilegeRequiredValue !== null && userInteractionValue !== null && scopeValue !== null && confidentialityValue !== null && integrityValue !== null && availabilityValue != null;
 }
 
 $('#vectorPhysical').click(function (e) {

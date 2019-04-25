@@ -86,7 +86,7 @@ class Sh0tSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Sh0t
-        fields = ('id', 'title', 'labels', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
+        fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'added', 'assessment')
     
     @transaction.atomic
     def create(self, validated_data):

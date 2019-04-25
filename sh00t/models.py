@@ -303,7 +303,7 @@ class Sh0t(models.Model):
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    cvss = models.OneToOneField(Cvss, null=True, on_delete=models.CASCADE)
+    cvss = models.OneToOneField(Cvss, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
 
     def __str__(self):  
@@ -331,6 +331,10 @@ class Sh0t(models.Model):
             return "---"
         else : 
             return self.cvss.decimal_value
+
+    def delete(self, *args, **kwargs):
+        self.cvss.delete()
+        return super(self.__class__, self).delete(*args, **kwargs)
 
     class Meta:
         ordering = ('severity', '-cvss', 'title',)

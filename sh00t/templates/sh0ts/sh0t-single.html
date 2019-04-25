@@ -108,11 +108,19 @@
     }
 
     /**
+     * Sh0t CVSS deletion callback
+     */
+    function cvssDeletionSuccess(data){
+        addCVSSv3ToSh0t($("#id").val());
+    }
+
+    /**
      * Update sh0t.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateSh0t(sh0tUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxUpdateSh0t(sh0tUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxRemoveCVSSv3(cvssDeletionSuccess,commonFailure,$("#id").val());
     });
 
     /**
