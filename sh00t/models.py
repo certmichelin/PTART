@@ -1,4 +1,5 @@
 import base64
+import markdown2
 import math
 import os
 import uuid
@@ -325,12 +326,22 @@ class Sh0t(models.Model):
         """Verify if the user can create this sh0t"""
         return self.assessment.is_user_can_edit(user)
 
+    def get_html_body(self):
+        return markdown2.markdown(self.body, safe_mode=True)
+
     def get_cvss_value(self):
         """Return the decimal value of the cvss"""
         if self.cvss is None :
             return "---"
         else : 
             return self.cvss.decimal_value
+
+    def get_cvss_string(self):
+        """Return the string value of the cvss"""
+        if self.cvss is None :
+            return ""
+        else : 
+            return "CVSS:3.0/AV:" + self.cvss.attack_vector + "/AC:" + self.cvss.attack_complexity + "/PR:" + self.cvss.privilege_required + "/UI:" + self.cvss.user_interaction + "/S:" + self.cvss.scope + "/C:" + self.cvss.confidentiality + "/I:" + self.cvss.integrity + "/A:" + self.cvss.availability 
 
     def delete(self, *args, **kwargs):
         self.cvss.delete()

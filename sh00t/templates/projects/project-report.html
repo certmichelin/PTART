@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Report for {{ project.name }} </title>
+    <link rel="shortcut icon" type="image/png" href="/static/favicon.ico" />
+</head>
+
+<body>
+        **********************************************************************************************************************<br />
+    Name:<br />
+    {{ project.name }} <br /><br />
+
+    Scope:<br />
+    {{ project.scope }}<br /><br />
+
+    Pentesters:<br />
+    <ul>
+        {% for pentester in project.pentesters.all %}
+        <li>{{ pentester.username }}</li>
+        {% endfor %}
+    </ul>
+
+    Created: <br />
+    {{ project.added }}<br /><br />    
+
+    {% for assessment in project.assessment_set.all %}
+        
+        {% if assessment.sh0t_set.all %}
+            ======================================================================================================================<br />
+            Assessment Name:<br />
+            {{ assessment.name }} <br /><br />
+
+            {% for sh0t in assessment.sh0t_set.all %}
+                ----------------------------------------------------------------------------------------------------------------------<br />
+                Severity:<br />
+                P{{ sh0t.severity }}<br /><br />
+
+                CVSS v3:<br />
+                {{ sh0t.get_cvss_value }}<br /><br />
+
+                CVSS String:<br />
+                {{ sh0t.get_cvss_string }}<br /><br />
+
+                Title:<br />
+                {{ sh0t.title }}<br /><br />
+                
+                Asset:<br />
+                {{ sh0t.asset }}<br /><br />
+                
+                Body:<br />
+                °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+                {{ sh0t.get_html_body |safe }}
+                °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°<br /><br />
+
+                Labels:<br />
+                <ul>
+                    {% for label in sh0t.labels.all %}
+                        <li>{{ label.title }}</li>
+                    {% endfor %}
+                </ul>
+
+                Screenshots:<br />
+                {% for screenshot in sh0t.screenshot_set.all %}
+                    <img src="/api/screenshot/png/{{screenshot.pk}}/" />
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    
+
+</body>
+
+</html>
