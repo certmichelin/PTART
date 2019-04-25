@@ -183,9 +183,7 @@
             $("#title").val("");
             $("#asset").val("");
             mdBody.value("");
-            $("#cvss").val("---");
-            $("#cvssValue").text("No Rating (---)");
-            $("#cvssValue").attr("class","label label-default");
+            clearCVSS();
             $("#screenshots").empty();
             $('#labels').val(null).trigger('change');
             screenshotsToUpload = 0;

@@ -7,6 +7,44 @@ var confidentialityValue = null;
 var integrityValue = null;
 var availabilityValue = null;
 
+function clearCVSS() {
+
+    attackVectorValue = null;
+    attackComplexityValue = null;
+    privilegeRequiredValue = null;
+    userInteractionValue = null;
+    scopeValue = null;
+    confidentialityValue = null;
+    integrityValue = null;
+    availabilityValue = null;
+
+    $("#cvssValue").attr("class", "label label-default")
+    $("#cvssValue").text("No Rating (---)");
+    $("#cvss").val("---"); 
+
+    $('#vectorNetwork').removeClass("active");
+    $('#vectorAdjacent').removeClass("active");
+    $('#vectorLocal').removeClass("active");
+    $('#vectorPhysical').removeClass("active");
+    $('#complexityLow').removeClass("active");
+    $('#complexityHigh').removeClass("active");
+    $('#privilegesNone').removeClass("active");
+    $('#privilegesLow').removeClass("active");
+    $('#privilegesHigh').removeClass("active");
+    $('#userInteractionNone').removeClass("active");
+    $('#userInteractionRequired').removeClass("active");
+    $('#scopeUnchanged').removeClass("active");
+    $('#scopeChanged').removeClass("active");
+    $('#confidentialityNone').removeClass("active");
+    $('#confidentialityLow').removeClass("active");
+    $('#confidentialityHigh').removeClass("active");
+    $('#integrityNone').removeClass("active");
+    $('#integrityLow').removeClass("active");
+    $('#integrityHigh').removeClass("active");
+    $('#availabilityNone').removeClass("active");
+    $('#availabilityLow').removeClass("active");
+    $('#availabilityHigh').removeClass("active");
+}
 
 $('.cvss').each(function () {
     cvss = parseFloat($(this).text());
