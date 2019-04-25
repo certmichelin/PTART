@@ -130,6 +130,9 @@
      * Sh0t creation success callback.
      */
      function sh0tCreationSuccess(data) {
+        //Assign CVSS.
+        addCVSSv3ToSh0t(data.id);
+
         //Upload screenshots.
         screenshotsToUpload = $('.screenshot_gallery').size();
         if(screenshotsToUpload == 0){
@@ -180,9 +183,7 @@
             $("#title").val("");
             $("#asset").val("");
             mdBody.value("");
-            $("#cvss").val("---");
-            $("#cvssValue").text("No Rating (---)");
-            $("#cvssValue").attr("class","label label-default");
+            clearCVSS();
             $("#screenshots").empty();
             $('#labels').val(null).trigger('change');
             screenshotsToUpload = 0;
@@ -197,7 +198,7 @@
     $('#createBtn').on('click', function () {
         waitingDialog.show();
         cleanMessagesContainer($("#messages"));
-        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
     });
 </script>
 {% endblock %}

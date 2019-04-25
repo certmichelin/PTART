@@ -131,12 +131,50 @@ def screenshot_raw(request, pk) :
 
 @api_view(['POST'])
 def cvss(request):
-    serializer = serializer_name(data=request.data)
+    serializer = CvssSerializer(data=request.data)
     if serializer.is_valid():
-        Cvss(**serializer.validated_data).compute_cvss_value()
-        response = Response(serializer.data, status=status.HTTP_201_CREATED)
+        cvss = Cvss(**serializer.validated_data)
+        cvss.compute_cvss_value()
+        response = Response(CvssSerializer(cvss).data, status=status.HTTP_201_CREATED)
     else :
         response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return response
+
+@api_view(['POST','DELETE'])
+def cvss_shot(request, pk):
+    response = None
+    try:
+        sh0t = Sh0t.objects.get(pk=pk)
+        if sh0t.is_user_can_edit(request.user):
+            
+            if request.method == 'DELETE':
+                #Delete the cvss attached to the sh0t.
+                if sh0t.cvss is not None :
+                    Cvss.objects.get(pk=sh0t.cvss.id).delete()
+                response = Response(status=status.HTTP_200_OK)
+
+            else :
+                serializer = CvssSerializer(data=request.data)
+                if serializer.is_valid():
+                    #Create the new CVSS.
+                    serializer.save()
+                    cvss = Cvss.objects.get(pk=serializer.data["id"])
+                    cvss.compute_cvss_value()
+                    cvss.save(update_fields=['decimal_value'])
+
+                    #This condition prevent memory leak in DB.
+                    if sh0t.cvss is not None : 
+                        Cvss.objects.get(pk=sh0t.cvss.id).delete()
+
+                    sh0t.cvss = cvss
+                    sh0t.save(update_fields=['cvss'])
+                    response = Response(status=status.HTTP_201_CREATED)
+                else :
+                    response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Sh0t.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
 @api_view(['POST'])

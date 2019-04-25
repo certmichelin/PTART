@@ -77,7 +77,7 @@
     /* Select the current severity */$
     $('#severity option[value={{sh0t.severity}}]').attr('selected', 'selected');
 
-    displayCVSS("{{sh0t.cvss.string_value}}")
+    displayCVSS("{{sh0t.get_cvss_value}}")
     loadCVSSButtonsState("{{sh0t.cvss.attack_vector}}", "{{sh0t.cvss.attack_complexity}}", "{{sh0t.cvss.privilege_required}}", "{{sh0t.cvss.user_interaction}}", "{{sh0t.cvss.scope}}", "{{sh0t.cvss.confidentiality}}", "{{sh0t.cvss.integrity}}", "{{sh0t.cvss.availability}}");
     activeMarkdown("body");
 
@@ -108,11 +108,19 @@
     }
 
     /**
+     * Sh0t CVSS deletion callback
+     */
+    function cvssDeletionSuccess(data){
+        addCVSSv3ToSh0t($("#id").val());
+    }
+
+    /**
      * Update sh0t.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateSh0t(sh0tUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#cvss").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxUpdateSh0t(sh0tUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxRemoveCVSSv3(cvssDeletionSuccess,commonFailure,$("#id").val());
     });
 
     /**

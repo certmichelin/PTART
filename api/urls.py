@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^flag/(?P<pk>[0-9]+)/complete/$', views.markFlagAsDone),
     url(r'^flags/$', views.flags),
     url(r'^sh0t/(?P<pk>[0-9]+)/$', views.sh0t),
+    url(r'^sh0t/(?P<pk>[0-9]+)/cvss/$', views.cvss_shot),
     url(r'^sh0ts/$', views.sh0ts),
     url(r'^label/(?P<pk>[0-9]+)/$', views.label),
     url(r'^labels/$', views.labels),

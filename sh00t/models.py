@@ -1,4 +1,5 @@
 import base64
+import math
 import os
 import uuid
 
@@ -204,14 +205,13 @@ class Cvss(models.Model):
     availability = models.CharField(max_length=1,choices=NLH_CHOICES)
 
     """Values for usage"""
-    decimal_value = models.DecimalField(max_digits=3, decimal_places=1)
-    string_value = models.CharField(max_length=4, default="---")
+    decimal_value = models.DecimalField(max_digits=3, decimal_places=1, default=-1.0)
 
-    def __round_up(n, decimals=0):
+    def __round_up(self, n, decimals=0):
         multiplier = 10 ** decimals
         return math.ceil(n * multiplier) / multiplier
 
-    def __get_cia_value(value) : 
+    def __get_cia_value(self,value) : 
         if value == "H":
             return 0.56
         elif value == "L":
@@ -220,13 +220,13 @@ class Cvss(models.Model):
             return  0.0
 
     def __get_confidentiality_value(self) :
-        return get_cia_value(self.confidentiality)
+        return self.__get_cia_value(self.confidentiality)
 
     def __get_integrity_value(self) :
-        return get_cia_value(self.integrity)
+        return self.__get_cia_value(self.integrity)
 
     def __get_availability_value(self) :
-        return get_cia_value(self.availability)
+        return self.__get_cia_value(self.availability)
 
     def __get_attack_vector_value(self) :
         if self.attack_vector == "N":
@@ -265,28 +265,28 @@ class Cvss(models.Model):
             return 0.62
 
     def __get_exploitability(self) :
-        return 8.22 * self.get_attack_vector_value() * self.get_attack_complexity_value() * self.get_privilege_required_value() * self.get_user_interaction_value()
+        return 8.22 * self.__get_attack_vector_value() * self.__get_attack_complexity_value() * self.__get_privilege_required_value() * self.__get_user_interaction_value()
 
     def __get_isc_base(self) :
-        return 1.0 - ((1.0 - self.get_confidentiality_value()) * (1.0 - self.get_integrity_value()) * (1.0 - self.get_availability_value()))
+        return 1.0 - ((1.0 - self.__get_confidentiality_value()) * (1.0 - self.__get_integrity_value()) * (1.0 - self.__get_availability_value()))
 
     def __get_isc(self, isc_base) :
         if self.scope == "U" :
             return 6.42 * isc_base
         else :
-            return 7.52 * (isc_base - 0.029) - 3.25 * (iscBase - 0.02)**15
+            return 7.52 * (isc_base - 0.029) - 3.25 * (isc_base - 0.02)**15
 
     def compute_cvss_value(self) :
-        isc_base = self.get_isc_base()
-        isc = self.get_isc(isc_base)
-        exploitability = self.get_exploitability()
+        isc_base = self.__get_isc_base()
+        isc = self.__get_isc(isc_base)
+        exploitability = self.__get_exploitability()
 
         if isc > 0.0 :
-            exploitability = self.get_exploitability()
+            exploitability = self.__get_exploitability()
             if self.scope == "U" :
-                self.decimal_value = round_up(min(isc + exploitability, 10.0), 1)
+                self.decimal_value = self.__round_up(min(isc + exploitability, 10.0), 1)
             else :
-                self.decimal_value = round_up(min(1.08 * (isc + exploitability), 10.0), 1)
+                self.decimal_value = self.__round_up(min(1.08 * (isc + exploitability), 10.0), 1)
         else :
             self.decimal_value = 0.0
 
@@ -303,7 +303,7 @@ class Sh0t(models.Model):
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    cvss = models.OneToOneField(Cvss, null=True, on_delete=models.CASCADE)
+    cvss = models.OneToOneField(Cvss, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
 
     def __str__(self):  
@@ -324,6 +324,17 @@ class Sh0t(models.Model):
     def is_user_can_create(self, user):
         """Verify if the user can create this sh0t"""
         return self.assessment.is_user_can_edit(user)
+
+    def get_cvss_value(self):
+        """Return the decimal value of the cvss"""
+        if self.cvss is None :
+            return "---"
+        else : 
+            return self.cvss.decimal_value
+
+    def delete(self, *args, **kwargs):
+        self.cvss.delete()
+        return super(self.__class__, self).delete(*args, **kwargs)
 
     class Meta:
         ordering = ('severity', '-cvss', 'title',)

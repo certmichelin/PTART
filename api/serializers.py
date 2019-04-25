@@ -86,7 +86,7 @@ class Sh0tSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Sh0t
-        fields = ('id', 'title', 'labels', 'severity','cvss', 'asset', 'body', 'added', 'assessment')
+        fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'added', 'assessment')
     
     @transaction.atomic
     def create(self, validated_data):
@@ -117,7 +117,7 @@ class Sh0tSerializer(serializers.ModelSerializer):
 class CvssSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cvss
-        fields = ('id', 'attack_vector', 'attack_complexity','privilege_required','user_interaction','scope','confidentiality','integrity','availability','decimal_value','string_value')
+        fields = ('id', 'attack_vector', 'attack_complexity','privilege_required','user_interaction','scope','confidentiality','integrity','availability','decimal_value')
 
 class ScreenshotSerializer(serializers.ModelSerializer):
     screenshot = Base64ImageField()

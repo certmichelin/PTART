@@ -124,17 +124,16 @@ function ajaxDeleteAssessment(success_function, error_function, id) {
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} severity Sh0t severity.
- * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
  * @param {*} asset Sh0t asset.
  * @param {*} body Sh0t body.
  * @param {*} labels Sh0t labels.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateSh0t(success_function, error_function, severity, cvss, title, asset, body, labels, assessmentId) {
+function ajaxCreateSh0t(success_function, error_function, severity, title, asset, body, labels, assessmentId) {
     $.ajax({
         url: "/api/sh0ts/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -148,17 +147,16 @@ function ajaxCreateSh0t(success_function, error_function, severity, cvss, title,
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Sh0t id.
  * @param {*} severity Sh0t severity.
- * @param {*} cvss Sh0t cvss.
  * @param {*} title Sh0t title.
  * @param {*} asset Sh0t asset.
  * @param {*} body Sh0t body.
  * @param {*} labels Sh0t labels.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateSh0t(success_function, error_function, id, severity, cvss, title, asset, body, labels, assessmentId) {
+function ajaxUpdateSh0t(success_function, error_function, id, severity, title, asset, body, labels, assessmentId) {
     $.ajax({
         url: "/api/sh0t/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"cvss":' + JSON.stringify(cvss) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -287,6 +285,47 @@ function ajaxComputeCVSSv3(success_function, error_function, attackVector, attac
         url: "/api/cvss/",
         data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity)+ ', "privilege_required": ' + JSON.stringify(privilegeRequired)+ ', "user_interaction": ' + JSON.stringify(userInteraction)+ ', "scope": ' + JSON.stringify(scope)+ ', "confidentiality": ' + JSON.stringify(confidentiality)+ ', "integrity": ' + JSON.stringify(integrity)+ ', "availability": ' + JSON.stringify(availability) + ' }',
         type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Compute the cvss and add it to the sh0t.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} sh0tId Sh0t ID.
+ * @param {*} attackVector Attack vector.
+ * @param {*} attackComplexity Attack complexity.
+ * @param {*} privilegeRequired Privilege required for the attack.
+ * @param {*} userInteraction Attack need user interaction.
+ * @param {*} scope Scope is changed or not.
+ * @param {*} confidentiality Confidentiality.
+ * @param {*} integrity Integrity.
+ * @param {*} availability Availability.
+ */
+function ajaxAddCVSSv3(success_function, error_function, sh0tId, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
+    $.ajax({
+        url: "/api/sh0t/" + sh0tId + "/cvss/",
+        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity)+ ', "privilege_required": ' + JSON.stringify(privilegeRequired)+ ', "user_interaction": ' + JSON.stringify(userInteraction)+ ', "scope": ' + JSON.stringify(scope)+ ', "confidentiality": ' + JSON.stringify(confidentiality)+ ', "integrity": ' + JSON.stringify(integrity)+ ', "availability": ' + JSON.stringify(availability) + ' }',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Remove the CVSS value from the shot.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} sh0tId Sh0t ID.
+ */
+function ajaxRemoveCVSSv3(success_function, error_function, sh0tId) {
+    $.ajax({
+        url: "/api/sh0t/" + sh0tId + "/cvss/",
+        type: 'DELETE',
         success: success_function,
         error: error_function
     });
