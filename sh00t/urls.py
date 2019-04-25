@@ -12,11 +12,13 @@ urlpatterns = [
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^accounts/', include('django.contrib.auth.urls')),
     re_path(r'^$', views.index),
+
     url(r'^projects/$', views.projects_all),
     url(r'^projects/new/$', views.projects_new),
     url(r'^project/([0-9]+)/$', views.project),
     url(r'^project/([0-9]+)/summary$', views.project_summary),
-    
+    url(r'^project/([0-9]+)/report$', views.project_report),
+
     url(r'^assessments/$', views.assessments_all),
     url(r'^assessments/new/$', views.assessments_new),
     url(r'^assessment/([0-9]+)/$', views.assessment),
