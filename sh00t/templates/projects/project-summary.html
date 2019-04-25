@@ -155,7 +155,7 @@
             {% endif %}
         {% endfor %}
         {% if project.assessment_set.all|length != 0 %}
-        <a class="btn btn-success pull-right" href="/project/{{project.id}}/report" role="button">
+        <a class="btn btn-success pull-right" href="/project/{{project.id}}/report" target="_blank" role="button">
             <i class="fa fa-file-text-o" aria-hidden="true"></i> Generate HTML report.
         </a>
         {% endif %}
