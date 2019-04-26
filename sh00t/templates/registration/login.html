@@ -1,6 +1,33 @@
-<h2>Login</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Login</title>
+
+  <link href="/static/img/favicon.ico" rel="shortcut icon" type="image/png" />
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/customs/signin.css" rel="stylesheet" type="text/css">
+</head>
+
+<body class="text-center">
+
+  <form class="form-signin" method="POST">
+    
+    <img class="mb-4" src="/static/img/login.jpg" alt="" width="72" height="72">
+    
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+    
+    <label for="username" class="sr-only">Username</label>
+    <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+    
+    <label for="password" class="sr-only">Password</label>
+    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+    {% csrf_token %}
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <p class="mt-5 mb-3 text-muted">Software developed under MIT License</p>
+  </form>
+</body>
+</html>
