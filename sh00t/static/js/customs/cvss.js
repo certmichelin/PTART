@@ -18,7 +18,7 @@ function clearCVSS() {
     integrityValue = null;
     availabilityValue = null;
 
-    $("#cvssValue").attr("class", "label label-default")
+    $("#cvssValue").attr("class", "badge badge-default")
     $("#cvssValue").text("No Rating (---)");
     $("#cvss").val("---"); 
 
@@ -50,13 +50,13 @@ $('.cvss').each(function () {
     cvss = parseFloat($(this).text());
     if (!isNaN(cvss) && $(this).text().trim() != "0.0") {
         if (cvss > 0 && cvss < 4.0) {
-            $(this).attr("class", "cvss label label-success")
+            $(this).attr("class", "cvss badge badge-success")
         } else if (cvss < 7.0) {
-            $(this).attr("class", "cvss label label-warning")
+            $(this).attr("class", "cvss badge badge-warning")
         } else if (cvss < 9.0) {
-            $(this).attr("class", "cvss label label-danger")
+            $(this).attr("class", "cvss badge badge-danger")
         } else {
-            $(this).attr("class", "cvss label label-critical")
+            $(this).attr("class", "cvss badge badge-dark")
         }
     }
 });
@@ -65,20 +65,20 @@ function displayCVSS(cvss) {
     text = "";
     if (!isNaN(parseFloat(cvss))) {
         if (cvss <= 0) {
-            $("#cvssValue").attr("class", "label label-default")
+            $("#cvssValue").attr("class", "badge badge-default")
             cvss = "0.0";
             text = cvss + " - None";
         } else if (cvss < 4.0) {
-            $("#cvssValue").attr("class", "label label-success")
+            $("#cvssValue").attr("class", "badge badge-success")
             text = cvss + " - Low"
         } else if (cvss < 7.0) {
-            $("#cvssValue").attr("class", "label label-warning")
+            $("#cvssValue").attr("class", "badge badge-warning")
             text = cvss + " - Medium"
         } else if (cvss < 9.0) {
-            $("#cvssValue").attr("class", "label label-danger")
+            $("#cvssValue").attr("class", "badge badge-danger")
             text = cvss + " - High"
         } else {
-            $("#cvssValue").attr("class", "label label-critical")
+            $("#cvssValue").attr("class", "badge badge-dark")
             text = cvss + " - Critical"
         }
         $("#cvssValue").text(text);
