@@ -4,9 +4,9 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        {% include '_include/html/header.html' with item='Project' create_item_url='/projects/new' create_item_button_text='Create Project' active_icon='fa fa-cubes' active_text='Project' %}
+        {% include '_include/html/header.html' with item='Projects' create_item_url='/projects/new' create_item_button_text='Create Project' create_item_button_class='primary' active_icon='fa fa-cubes' active_text='Projects' %}
         {% include "_include/html/messages.html" %}
-        {% include '_include/html/list.html' with table=table list_icon='fa fa-cubes' list_text='All Projects' create_item_url='/projects/new' create_item_text='Add a project' %}
+        {% include '_include/html/list.html' with table=table create_item_url='/projects/new' create_item_text='Add a project' %}
     </div>
 </div>
 {% endblock %}

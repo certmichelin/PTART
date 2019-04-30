@@ -4,9 +4,9 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        {% include '_include/html/header.html' with item='Methodology' create_item_url='/methodologies/new' create_item_button_text='Create Methodology' active_icon='fa fa-cubes' active_text='Methodology' %}
+        {% include '_include/html/header.html' with item='Methodologies' create_item_url='/methodologies/new' create_item_button_text='Create Methodology' create_item_button_class='primary' active_text='Methodologies' %}
         {% include "_include/html/messages.html" %}
-        {% include '_include/html/list.html' with table=table list_icon='fa fa-cubes' list_text='All Methodologies' create_item_url='/methodologies/new' create_item_text='Add a methodology' %}
+        {% include '_include/html/list.html' with table=table create_item_url='/methodologies/new' create_item_text='Add a methodology' %}
     </div>
 </div>
 {% endblock %}

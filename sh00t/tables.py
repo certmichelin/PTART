@@ -51,7 +51,7 @@ class Sh0tTable(tables.Table):
 class LabelTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
-    title = tables.TemplateColumn('<a href="/label/{{ record.pk }}"><span class="label" style="background-color:{{ record.color }}">{{ record.title }}</span></a>')
+    title = tables.TemplateColumn('<a class="badge badge-primary" style="background-color:{{ record.color }}" href="/label/{{ record.pk }}">{{ record.title }}</a>')
    
 
     class Meta:
