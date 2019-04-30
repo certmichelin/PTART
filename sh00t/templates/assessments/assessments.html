@@ -5,13 +5,12 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='assessments' active_icon='fa fa-cube' active_text='Assessments' %}
+        {% include '_include/html/header.html' with item='New Assessment' active_icon='fa fa-cube' active_text='Assessments' %}
         {% include "_include/html/messages.html" %}
         
         <!-- Assessment creation form -->
         <div class="row">
             <div class="col-lg-12">
-                <h3>New Assessment</h3>
                 {% if not projects %}
                     <b>No project found. <a href="/projects/new/">Create one</a></b>
                 {% else %}
@@ -50,7 +49,7 @@
                             {% endfor %}
                         {% endif %}
                     </div>
-                    <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
+                    <button id="createBtn" type="submit" class="btn btn-outline-primary mb-3">Submit</button>
                 {% endif %}
             </div>
         </div>
@@ -75,7 +74,7 @@
      * Assessment creation success callback.
      */
     function assessmentCreationSuccess(data) {
-        toCreate = $('.module:checked').size();
+        toCreate = $('.module:checked').length;
         if (toCreate > 0) {
             $('.module:checked').each(function () {
                 ajaxLoadFlagsFromModule(checkFlagCreationBatchStatus, checkFlagCreationBatchStatus, $(this).val(), data.id);
@@ -107,6 +106,7 @@
             toCreate = 0;
             created = 0;
             waitingDialog.hide();
+            success($("#messages"), "Assessment was created!");
         }
     }
 
@@ -115,8 +115,12 @@
      */
     $('#createBtn').on('click', function () {
         waitingDialog.show();
+        setTimeout(createAssessment,500);
+    });
+
+    function createAssessment(){
         cleanMessagesContainer($("#messages"));
         ajaxCreateAssessment(assessmentCreationSuccess, assessmentCreationFailure, $("#name").val(), $("#project").val());
-    });
+    }
 </script>
 {% endblock %}

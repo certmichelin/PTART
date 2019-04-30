@@ -134,7 +134,7 @@
         addCVSSv3ToSh0t(data.id);
 
         //Upload screenshots.
-        screenshotsToUpload = $('.screenshot_gallery').size();
+        screenshotsToUpload = $('.screenshot_gallery').length;
         if(screenshotsToUpload == 0){
             checkUploadBatchStatus()
         } else {
