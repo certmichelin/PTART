@@ -23,10 +23,7 @@
                 callback: function (result) {
                     if (result) {
                         waitingDialog.show();
-                        toDelete = $('input:checked').size();
-                        $('input:checked').each(function () {
-                            {{ajax_function }} (checkDeletionBatchStatus, checkDeletionBatchStatus, $(this).val());
-                        });
+                        setTimeout(deleteItem, 500);
                     }
                 }
             });
@@ -34,6 +31,13 @@
             bootbox.alert("Select at least one {{item}}!");
         }
     });
+
+    function deleteItem() {
+        toDelete = $('input:checked').length;
+        $('input:checked').each(function () {
+            {{ajax_function}}(checkDeletionBatchStatus, checkDeletionBatchStatus, $(this).val());
+        });
+    }
 
     /**
      * Check if all items has been deleted.
