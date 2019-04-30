@@ -5,13 +5,12 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='projects' active_icon='fa fa-cubes' active_text='Projects' %}
+        {% include '_include/html/header.html' with item='New Project' active_icon='fa fa-cubes' active_text='Projects' %}
         {% include "_include/html/messages.html" %}
 
         <!-- Project creation form -->
         <div class="row">
             <div class="col-lg-12">
-                <h3>New Project</h3>
 
                 <div class="form-group">
                     <label>Name</label>
@@ -42,7 +41,7 @@
                     </select>
                 </div>
 
-                <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
+                <button id="createBtn" type="submit" class="btn btn-primary mb-3">Submit</button>
             </div>
         </div>
     </div>
@@ -51,15 +50,20 @@
 
 {% block extra_foot %}
 <script type="text/javascript">
-    var selectedPentesters = [];
-    selectedPentesters.push({{ user.id }});
-    $('#pentesters').select2().val(selectedPentesters).trigger("change");
+
+    $('#pentesters').select2().val(defaultPentester()).trigger("change");
     $('#viewers').select2()
+
+    function defaultPentester(){
+        var selectedPentesters = [];
+        selectedPentesters.push({{ user.id }});
+        return selectedPentesters;
+    }
 
     function projectCreationSuccess(data) {
         $("#name").val("");
         $("#scope").val("");
-        $('#pentesters').val(null).trigger('change');
+        $('#pentesters').select2().val(defaultPentester()).trigger("change");
         $('#viewers').val(null).trigger('change');
         success($("#messages"), "Project was created!");
     }
