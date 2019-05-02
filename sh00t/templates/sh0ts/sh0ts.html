@@ -35,7 +35,7 @@
                             </div>
                             <div class="form-group">
                                 <label>CVSS v3</label>
-                                <h4><span id="cvssValue" class="label label-default">No Rating (---)</span></h4>
+                                <h5><span id="cvssValue" class="badge badge-secondary">No Rating (---)</span></h5>
                                 <input id="cvss" type="hidden" value="---"/> 
                             </div>
                             <div class="form-group">
@@ -62,11 +62,11 @@
                                 <label for="assessment">Assessment</label>
                                 <select id="assessment" class="form-control">
                                     {% for assessment in assessments %}
-                                        <option value="{{ assessment.id }}" color="{{assessment.color}}">{{ assessment.name }}</option>
+                                        <option value="{{ assessment.id }}">{{ assessment.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            <button id="createBtn" class="btn btn-primary">Submit</button>
+                            <button id="createBtn" class="btn btn-outline-primary mb-4">Submit</button>
                     {% endif %}
                 </div>
                 <div class="col-lg-5">
@@ -197,8 +197,12 @@
      */
     $('#createBtn').on('click', function () {
         waitingDialog.show();
+        setTimeout(createSh0t,500);
+    });
+
+    function createSh0t(){
         cleanMessagesContainer($("#messages"));
         ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
-    });
+    }
 </script>
 {% endblock %}
