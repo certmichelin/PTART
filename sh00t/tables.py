@@ -19,7 +19,7 @@ class FlagTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     name = tables.TemplateColumn('<a href="/flag/{{ record.pk }}"> {{ record.title }}</a>')
-    done = tables.TemplateColumn('{% if record.done == True %} <span class="label label-success">Done</span> {% else %} <span class="label label-danger">ToDo</span> {% endif %}', verbose_name= 'Status')
+    done = tables.TemplateColumn('{% if record.done == True %} <span class="badge badge-success">Done</span> {% else %} <span class="badge badge-danger">ToDo</span> {% endif %}', verbose_name= 'Status')
     project = tables.TemplateColumn('<a href="/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>')
     assessment = tables.TemplateColumn('<a href="/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
     assignee = tables.TemplateColumn('{{ record.assignee.username}}')
@@ -51,7 +51,7 @@ class Sh0tTable(tables.Table):
 class LabelTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
-    title = tables.TemplateColumn('<a href="/label/{{ record.pk }}"><span class="label" style="background-color:{{ record.color }}">{{ record.title }}</span></a>')
+    title = tables.TemplateColumn('<a class="badge badge-primary" style="background-color:{{ record.color }}" href="/label/{{ record.pk }}">{{ record.title }}</a>')
    
 
     class Meta:

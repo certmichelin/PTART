@@ -18,7 +18,7 @@ function clearCVSS() {
     integrityValue = null;
     availabilityValue = null;
 
-    $("#cvssValue").attr("class", "badge badge-default")
+    $("#cvssValue").attr("class", "badge badge-secondary")
     $("#cvssValue").text("No Rating (---)");
     $("#cvss").val("---"); 
 
@@ -65,7 +65,7 @@ function displayCVSS(cvss) {
     text = "";
     if (!isNaN(parseFloat(cvss))) {
         if (cvss <= 0) {
-            $("#cvssValue").attr("class", "badge badge-default")
+            $("#cvssValue").attr("class", "badge badge-secondary")
             cvss = "0.0";
             text = cvss + " - None";
         } else if (cvss < 4.0) {
@@ -83,6 +83,10 @@ function displayCVSS(cvss) {
         }
         $("#cvssValue").text(text);
         $("#cvss").val(cvss);
+    } else {
+        $("#cvssValue").attr("class", "badge badge-secondary")
+        $("#cvssValue").text("No Rating (---)");
+        $("#cvss").val("---");
     }
 }
 
@@ -215,6 +219,8 @@ function cvssComputationCallback(data) {
 function computeCVSSv3() {
     if (isCVSSComputable()) {
         ajaxComputeCVSSv3(cvssComputationCallback, catchErrorMethod, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
+    } else {
+        displayCVSS(null);
     }
 }
 
@@ -229,111 +235,241 @@ function isCVSSComputable() {
 }
 
 $('#vectorPhysical').click(function (e) {
-    attackVectorValue = "P";
+    if(attackVectorValue == "P"){
+        attackVectorValue = null;
+    } else {
+        $('#vectorNetwork').removeClass("active");
+        $('#vectorAdjacent').removeClass("active");
+        $('#vectorLocal').removeClass("active");
+        attackVectorValue = "P";
+    }
     computeCVSSv3();
 });
 
 $('#vectorLocal').click(function (e) {
-    attackVectorValue = "L";
+    if(attackVectorValue == "L"){
+        attackVectorValue = null;
+    } else {
+        $('#vectorNetwork').removeClass("active");
+        $('#vectorAdjacent').removeClass("active");
+        $('#vectorPhysical').removeClass("active");
+        attackVectorValue = "L";
+    }
     computeCVSSv3();
 });
 
 $('#vectorAdjacent').click(function (e) {
-    attackVectorValue = "A";
+    if(attackVectorValue == "A"){
+        attackVectorValue = null;
+    } else {
+        $('#vectorNetwork').removeClass("active");
+        $('#vectorLocal').removeClass("active");
+        $('#vectorPhysical').removeClass("active");
+        attackVectorValue = "A";
+    }
     computeCVSSv3();
 });
 
 $('#vectorNetwork').click(function (e) {
-    attackVectorValue = "N";
+    if(attackVectorValue == "N"){
+        attackVectorValue = null;
+    } else {
+        $('#vectorAdjacent').removeClass("active");
+        $('#vectorLocal').removeClass("active");
+        $('#vectorPhysical').removeClass("active");
+        attackVectorValue = "N";
+    }
     computeCVSSv3();
 });
 
 $('#complexityLow').click(function (e) {
-    attackComplexityValue = "L";
+    if(attackComplexityValue == "L"){
+        attackComplexityValue = null;
+    } else {
+        $('#complexityHigh').removeClass("active");
+        attackComplexityValue = "L";
+    }
     computeCVSSv3();
 });
 
 $('#complexityHigh').click(function (e) {
-    attackComplexityValue = "H";
+    if(attackComplexityValue == "H"){
+        attackComplexityValue = null;
+    } else {
+        $('#complexityLow').removeClass("active");
+        attackComplexityValue = "H";
+    }
     computeCVSSv3();
 });
 
 $('#privilegesNone').click(function (e) {
-    privilegeRequiredValue = "N";
+    if(privilegeRequiredValue == "N"){
+        privilegeRequiredValue = null;
+    } else {
+        $('#privilegesLow').removeClass("active");
+        $('#privilegesHigh').removeClass("active");
+        privilegeRequiredValue = "N";
+    }
     computeCVSSv3();
 });
 
 $('#privilegesLow').click(function (e) {
-    privilegeRequiredValue = "L";
+    if(privilegeRequiredValue == "L"){
+        privilegeRequiredValue = null;
+    } else {
+        $('#privilegesNone').removeClass("active");
+        $('#privilegesHigh').removeClass("active");
+        privilegeRequiredValue = "L";
+    }
     computeCVSSv3();
 });
 
 $('#privilegesHigh').click(function (e) {
-    privilegeRequiredValue = "H";
+    if(privilegeRequiredValue == "H"){
+        privilegeRequiredValue = null;
+    } else {
+        $('#privilegesNone').removeClass("active");
+        $('#privilegesLow').removeClass("active");
+        privilegeRequiredValue = "H";
+    }
     computeCVSSv3();
 });
 
 $('#userInteractionNone').click(function (e) {
-    userInteractionValue = "N";
+    if(userInteractionValue == "N"){
+        userInteractionValue = null;
+    } else {
+        $('#userInteractionRequired').removeClass("active");
+        userInteractionValue = "N";
+    }
     computeCVSSv3();
 });
 
 $('#userInteractionRequired').click(function (e) {
-    userInteractionValue = "R";
+    if(userInteractionValue == "R"){
+        userInteractionValue = null;
+    } else {
+        $('#userInteractionNone').removeClass("active");
+        userInteractionValue = "R";
+    }
     computeCVSSv3();
 });
 
 $('#scopeUnchanged').click(function (e) {
-    scopeValue = "U";
+    if(scopeValue == "U"){
+        scopeValue = null;
+    } else {
+        $('#scopeChanged').removeClass("active");
+        scopeValue = "U";
+    }
     computeCVSSv3();
 });
 
 $('#scopeChanged').click(function (e) {
-    scopeValue = "C";
+    if(scopeValue == "C"){
+        scopeValue = null;
+    } else {
+        $('#scopeUnchanged').removeClass("active");
+        scopeValue = "C";
+    }
     computeCVSSv3();
 });
 
 $('#confidentialityNone').click(function (e) {
-    confidentialityValue = "N";
+    if(confidentialityValue == "N"){
+        confidentialityValue = null;
+    } else {
+        $('#confidentialityLow').removeClass("active");
+        $('#confidentialityHigh').removeClass("active");
+        confidentialityValue = "N";
+    }
     computeCVSSv3();
 });
 
 $('#confidentialityLow').click(function (e) {
-    confidentialityValue = "L";
+    if(confidentialityValue == "L"){
+        confidentialityValue = null;
+    } else {
+        $('#confidentialityNone').removeClass("active");
+        $('#confidentialityHigh').removeClass("active");
+        confidentialityValue = "L";
+    }
     computeCVSSv3();
 });
 
 $('#confidentialityHigh').click(function (e) {
-    confidentialityValue = "H";
+    if(confidentialityValue == "H"){
+        confidentialityValue = null;
+    } else {
+        $('#confidentialityNone').removeClass("active");
+        $('#confidentialityLow').removeClass("active");
+        confidentialityValue = "H";
+    }
     computeCVSSv3();
 });
 
 $('#integrityNone').click(function (e) {
-    integrityValue = "N";
+    if(integrityValue == "N"){
+        integrityValue = null;
+    } else {
+        $('#integrityLow').removeClass("active");
+        $('#integrityHigh').removeClass("active");
+        integrityValue = "N";
+    }
     computeCVSSv3();
 });
 
 $('#integrityLow').click(function (e) {
-    integrityValue = "L";
+    if(integrityValue == "L"){
+        integrityValue = null;
+    } else {
+        $('#integrityNone').removeClass("active");
+        $('#integrityHigh').removeClass("active");
+        integrityValue = "L";
+    }
     computeCVSSv3();
 });
 
 $('#integrityHigh').click(function (e) {
-    integrityValue = "H";
+    if(integrityValue == "H"){
+        integrityValue = null;
+    } else {
+        $('#integrityNone').removeClass("active");
+        $('#integrityLow').removeClass("active");
+        integrityValue = "H";
+    }
     computeCVSSv3();
 });
 
 $('#availabilityNone').click(function (e) {
-    availabilityValue = "N";
+    if(availabilityValue == "N"){
+        availabilityValue = null;
+    } else {
+        $('#availabilityLow').removeClass("active");
+        $('#availabilityHigh').removeClass("active");
+        availabilityValue = "N";
+    }
     computeCVSSv3();
 });
 
 $('#availabilityLow').click(function (e) {
-    availabilityValue = "L";
+    if(availabilityValue == "L"){
+        availabilityValue = null;
+    } else {
+        $('#availabilityNone').removeClass("active");
+        $('#availabilityHigh').removeClass("active");
+        availabilityValue = "L";
+    }
     computeCVSSv3();
 });
 
 $('#availabilityHigh').click(function (e) {
-    availabilityValue = "H";
+    if(availabilityValue == "H"){
+        availabilityValue = null;
+    } else {
+        $('#availabilityNone').removeClass("active");
+        $('#availabilityLow').removeClass("active");
+        availabilityValue = "H";
+    }
     computeCVSSv3();
 });

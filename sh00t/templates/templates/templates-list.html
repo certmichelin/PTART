@@ -4,9 +4,9 @@
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
-        {% include '_include/html/header.html' with item='Template' create_item_url='/templates/new' create_item_button_text='Create Template' active_icon='fa fa-file-text' active_text='Template' %}
+        {% include '_include/html/header.html' with item='Templates' create_item_url='/templates/new' create_item_button_text='Create Template' create_item_button_class='primary' active_icon='fa fa-file-text' active_text='Templates' %}
         {% include "_include/html/messages.html" %}
-        {% include '_include/html/list.html' with table=table list_icon='fa fa-file-text' list_text='All Templates' create_item_url='/templates/new' create_item_text='Add a template' %}
+        {% include '_include/html/list.html' with table=table create_item_url='/templates/new' create_item_text='Add a template' %}
     </div>
 </div>
 {% endblock %}

@@ -118,14 +118,14 @@ function allowDrop(ev) {
 function dragStart(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
     $('#deleteZone').text("Drop here to delete")
-    $("#deleteZone").attr('class', 'btn btn-success');
+    $("#deleteZone").attr('class', 'btn btn-success mb-4');
 }
 
 //Delete screenshot drag stop function.
 function dragStop(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
     $('#deleteZone').text("Delete Screenshot Zone")
-    $("#deleteZone").attr('class', 'btn btn-danger');
+    $("#deleteZone").attr('class', 'btn btn-outline-danger mb-4');
 }
 
 //Delete screenshot drag stop function.

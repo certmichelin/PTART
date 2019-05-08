@@ -1,28 +1,30 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="fa fa-dashboard"></i> <a href="/">Dashboard</a>
+                </li>
+                {% if sub_text and sub_url and sub_icon %}
+                    <li class="breadcrumb-item">
+                        <i class="{{sub_icon}}"></i> <a href="{{sub_url}}">{{sub_text}}</a></li>
+                    </li>
+                {% endif %}
+                {% if third_text and third_url and third_icon %}
+                    <li class="breadcrumb-item">
+                        <i class="{{third_icon}}"></i> <a href="{{third_url}}">{{third_text}}</a></li>
+                    </li>
+                {% endif %}
+                <li class="breadcrumb-item active">
+                    <i class="{{active_icon}}"></i> {{active_text}}
+                </li>
+            </ol>
+        </nav>
+        <h1 class="page-header mb-4">
             {{ item }}
-            {% if create_item_url and create_item_button_text %}
-                <a class="btn btn-primary pull-right" href="{{ create_item_url }}" role="button">{{create_item_button_text}}</a>
+            {% if create_item_url and create_item_button_text and create_item_button_class %}
+                <a class="btn btn-outline-{{ create_item_button_class }} pull-right" href="{{ create_item_url }}" role="button">{{create_item_button_text}}</a>
             {% endif %}
         </h1>
-        <ol class="breadcrumb">
-            <li>
-                <i class="fa fa-dashboard"></i> <a href="/">Dashboard</a>
-            </li>
-            {% if sub_text and sub_url and sub_icon %}
-                <li>
-                    <i class="{{sub_icon}}"></i><a href="{{sub_url}}">{{sub_text}}</a></li>
-                </li>
-            {% endif %}
-            {% if third_text and third_url and third_icon %}
-                <li>
-                    <i class="{{third_icon}}"></i><a href="{{third_url}}">{{third_text}}</a></li>
-                </li>
-            {% endif %}
-            <li class="active">
-                <i class="{{active_icon}}"></i> {{active_text}}
-            </li>
-        </ol>
     </div>
 </div>
