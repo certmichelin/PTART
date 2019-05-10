@@ -10,6 +10,8 @@
 
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="/static/css/plugins/html-sheets-of-paper/a4.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/plugins/morris/morris.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/customs/badges.css" rel="stylesheet" type="text/css">
 
     <style>
         .mainTitle {
@@ -47,9 +49,96 @@
     </div>
     <!-- End of Header page -->
 
-    <div class="page" contenteditable="true">
-        
+    <!-- Statistics page -->
+    <!-- End of Statistics page -->
+
+    <!-- Table of chapter page -->
+    <div class="page">
+        <h3 class="mb-5">Table of chapter</h3>
+        {% for assessment in project.assessment_set.all %}
+            {% if assessment.sh0t_set.all %}
+                <h3><a href="#assessment_{{ assessment.id }}">{{ assessment.name }}</a></h3>
+                {% for sh0t in assessment.sh0t_set.all %}
+                    <a href="#sh0t_{{ sh0t.id }}">{{ sh0t.title }}</a><br/>
+                {% endfor %}
+                <div class="mb-3"></div>        
+            {% endif %}
+        {% endfor %}
     </div>
+    <!-- End of Table of chapter page -->
+
+    <!-- Sh0ts page -->
+    {% for assessment in project.assessment_set.all %}
+        {% if assessment.sh0t_set.all %}
+            <div id="assessment_{{ assessment.id }}" class="page">
+                <h1 class="mb-5">{{ assessment.name }}</h1>
+
+                {% for sh0t in assessment.sh0t_set.all %}
+                    <div id="sh0t_{{ sh0t.id }}" class="mb-5">
+                        <h3 class="mb-3">{{ sh0t.title }}</h3>
+                        
+                        <div class="container mb-3 p-2 border border-danger rounded">
+                            <div class="row">
+                                <div class="col col-lg-2">
+                                    <b>Severity:</b>        
+                                </div>
+                                <div class="col col-lg-10">
+                                    <span class="bc-badge bc-badge--p{{ sh0t.severity }}">P{{ sh0t.severity }}</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-lg-2">
+                                    <b>CVSSv3:</b>        
+                                </div>
+                                <div class="col col-lg-10">
+                                    <span class="cvss label label-default">{{ sh0t.get_cvss_value }}</span>
+                                    <i>({{ sh0t.get_cvss_string }})</i>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-lg-2">
+                                    <b>Asset:</b>        
+                                </div>
+                                <div class="col col-lg-10">
+                                    <a href="{{ sh0t.asset }}">{{ sh0t.asset }}</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-lg-2">
+                                    <b>Labels:</b>        
+                                </div>
+                                <div class="col col-lg-10">
+                                    {% for label in sh0t.labels.all %}
+                                        <span class="badge badge-primary" style="background-color:{{ label.color }}">{{ label.title }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+    
+                        <p>{{ sh0t.get_html_body |safe }}</p>
+                    
+                        {% for screenshot in sh0t.screenshot_set.all %}
+                            <img style="
+                            max-width: 17cm;
+                            margin-left: auto;
+                            margin-right: auto;
+                            display: block;" class="mb-3" src="/api/screenshot/png/{{screenshot.pk}}/" />
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <!-- JS includes -->
+    <script src="/static/js/jquery-3.4.0.min.js"></script>
+    <script src="/static/js/plugins/morris/morris.min.js"></script>
+    <script src="/static/js/plugins/raphael/raphael.min.js"></script>
+    <script src="/static/js/customs/cvss.js"></script>
+
+    <!-- Morris chart -->
+    <script>
+    </script>
 </body>
 
 </html>

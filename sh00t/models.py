@@ -327,7 +327,7 @@ class Sh0t(models.Model):
         return self.assessment.is_user_can_edit(user)
 
     def get_html_body(self):
-        return markdown2.markdown(self.body, safe_mode=True)
+        return markdown2.markdown(self.body, safe_mode="escape")
 
     def get_cvss_value(self):
         """Return the decimal value of the cvss"""
