@@ -1,64 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}sh00t{% endblock %}</title>
-    <link rel="shortcut icon" type="image/png" href="/static/favicon.ico"/>
-    <link href="/static/sb-admin/css/sb-admin.css" rel="stylesheet">
-    <link href="/static/sb-admin/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/sb-admin/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="/static/sb-admin/css/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel=" stylesheet">
-    <link href="/static/sb-admin/css/plugins/fancybox/jquery.fancybox.min.css" rel=" stylesheet">
-    <link href="/static/sb-admin/css/plugins/select2/select2.min.css" rel="stylesheet">
-    <link href="/static/sb-admin/css/plugins/simplemde/simplemde.min.css" rel="stylesheet">
-    <link href="/static/css/badges.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/cvss.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/screenshots.css" rel="stylesheet" type="text/css">
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+
+    <link href="/static/img/favicon.ico" rel="shortcut icon" type="image/png" />
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/plugins/font-awesome/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel=" stylesheet">
+    <link href="/static/css/plugins/fancybox/jquery.fancybox.min.css" rel=" stylesheet">
+    <link href="/static/css/plugins/select2/select2.min.css" rel="stylesheet">
+    <link href="/static/css/plugins/simplemde/simplemde.min.css" rel="stylesheet">
+    <link href="/static/css/customs/badges.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/customs/screenshots.css" rel="stylesheet" type="text/css">
     {% block extra_head %}{% endblock %}
 </head>
 
 <body>
-    <div id="wrapper">
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">
-                    <img src="/static/images/sh00t-logo.png" height="25" />
-                </a>
-            </div>
-            {% include "_include/top-menu.html" %}
-            {% include "_include/side-menu.html" %}
-        </nav>
-        {% block page %}{% endblock %}
-    </div>
-    <script src="/static/sb-admin/js/jquery.js"></script>
-    <script src="/static/sb-admin/js/bootstrap.min.js"></script>
-    <script src="/static/sb-admin/js/plugins/jquery.cookie.js"></script>
-    <script src="/static/sb-admin/js/plugins/bootbox.all.min.js"></script>
-    <script src="/static/sb-admin/js/plugins/bootstrap-waitingfor.min.js"></script>
-    <script src="/static/sb-admin/js/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.js"></script>
-    <script src="/static/sb-admin/js/plugins/fancybox/jquery.fancybox.min.js"></script>
-    <script src="/static/sb-admin/js/plugins/select2/select2.full.min.js"></script>
-    <script src="/static/sb-admin/js/plugins/simplemde/simplemde.min.js"></script>
-    <script src="/static/js/common.js"></script>
-    <script src="/static/js/common-ajax.js"></script>
-    <script src="/static/js/cvss.js"></script>
-    <script src="/static/js/markdown.js"></script>
-    <script src="/static/js/messages.js"></script>
-    <script src="/static/js/screenshots.js"></script>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+
+        <a class="navbar-brand" href="/">
+            <img src="/static/img/logo.png" height="25" />
+        </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item {% if '/project' in request.path %}active{% endif %}">
+                    <a class="nav-link" href="/projects"><i class="fa fa-cubes"></i> Projects</a>
+                </li>
+
+                <li class="nav-item {% if '/todo' in request.path %}active{% endif %}">
+                    <a class="nav-link" href="/todo"><i class="fa fa-list-ul"></i > My ToDo</a>
+                </li>
+                
+                <li class="nav-item {% if '/sh0t' in request.path %}active{% endif %}">
+                    <a class="nav-link" href="/sh0ts"><i class="fa fa-bullseye"></i> Sh0ts</a>
+                </li>
+                
+                {% if user.is_staff %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-cogs"></i> Configuration
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/labels/">Labels</a>
+                        <a class="dropdown-item" href="/templates/">Templates</a>
+                        <a class="dropdown-item" href="/methodologies/">Methodologies</a>
+                        <a class="dropdown-item" href="/modules/">Modules</a>
+                        <a class="dropdown-item" href="/cases/">Cases</a>
+                    </div>
+                </li>
+                {% endif %}
+            </ul>
+
+            <a href="/accounts/logout/" class="btn btn-outline-success"><i class="fa fa-power-off"></i> Log Out</a>
+        </div>
+    </nav>
+
+    {% block page %}{% endblock %}
+
+    <script src="/static/js/jquery-3.4.0.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/plugins/bootbox/bootbox.all.min.js"></script>
+    <script src="/static/js/plugins/bootstrap-waitingfor/bootstrap-waitingfor.min.js"></script>
+    <script src="/static/js/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.js"></script>
+    <script src="/static/js/plugins/cookie/jquery.cookie.js"></script>
+    <script src="/static/js/plugins/fancybox/jquery.fancybox.min.js"></script>
+    <script src="/static/js/plugins/select2/select2.full.min.js"></script>
+    <script src="/static/js/plugins/simplemde/simplemde.min.js"></script>
+    <script src="/static/js/customs/common.js"></script>
+    <script src="/static/js/customs/common-ajax.js"></script>
+    <script src="/static/js/customs/cvss.js"></script>
+    <script src="/static/js/customs/markdown.js"></script>
+    <script src="/static/js/customs/messages.js"></script>
+    <script src="/static/js/customs/screenshots.js"></script>
     {% block extra_foot %}{% endblock %}
 </body>
+
 </html>

@@ -7,7 +7,7 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='Sh0t' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:sh0t.assessment.project.pk|addstr:"/summary" sub_text=sh0t.assessment.project third_icon='fa fa-cube' third_url="/assessment/"|addstr:sh0t.assessment.pk third_text=sh0t.assessment active_icon='' active_text=sh0t.title %}
+        {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:sh0t.assessment.project.pk|addstr:"/summary" sub_text=sh0t.assessment.project third_icon='fa fa-cube' third_url="/assessment/"|addstr:sh0t.assessment.pk third_text=sh0t.assessment active_icon='' active_text=sh0t.title %}
         {% include "_include/html/messages.html" %}
     
         <div class="row">
@@ -22,7 +22,7 @@
                 </div>
                 <div class="form-group">
                     <label>CVSS v3</label>
-                    <h4><span id="cvssValue" class="label label-default">No Rating (---)</span></h4>
+                    <h5><span id="cvssValue" class="badge badge-secondary">No Rating (---)</span></h5>
                     <input id="cvss" type="hidden" value="---"/> 
                 </div>
                 <div class="form-group">
@@ -56,8 +56,8 @@
                 </div>
                 <input id="id" type="hidden" value="{{ sh0t.id }}" />
                 {% if editable == True %}
-                <button id="updateBtn" class="btn btn-primary">Update</button>
-                <button id="delBtn" class="btn btn-danger">Delete</button>
+                <button id="updateBtn" class="btn btn-outline-primary mb-4">Update</button>
+                <button id="delBtn" class="btn btn-outline-danger mb-4">Delete</button>
                 {% endif %}
             </div>
             <div class="col-lg-5">

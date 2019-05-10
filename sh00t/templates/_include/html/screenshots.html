@@ -18,8 +18,8 @@
         </div>
 
         {% if not editable or editable == True %}
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
-        <button id="deleteZone" type="button" class="btn btn-danger" ondrop="drop(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
+        <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
+        <button id="deleteZone" type="button" class="btn btn-outline-danger mb-4" ondrop="drop(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
         
 
         <!-- Push screenshot modal -->
@@ -47,8 +47,8 @@
                         <input type="hidden" id="screenshotData" />
                     </div>
                     <div class="modal-footer">
-                        <button id="addScreenshotBtn" type="submit" class="btn btn-primary" onclick="addScreenshot()">Add</button>
-                        <button type="button" class="btn btn-secondary" onclick="resetScreenshotModal()">Close</button>
+                        <button id="addScreenshotBtn" type="submit" class="btn btn-outline-primary" onclick="addScreenshot()">Add</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetScreenshotModal()">Close</button>
                     </div>
                 </div>
             </div>

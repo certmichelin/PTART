@@ -1,92 +1,90 @@
 <div class="panel panel-default">
     <div class="panel-body">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-12">
                 <h4 class="inline">CVSS v3.0
                 </h4>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-6">
                 <div class="form-group">
                     <div>Attack Vector:</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-danger btn-xs" id="vectorNetwork"><input type="radio" />Network</label>
-                        <label class="btn btn-warning btn-xs" id="vectorAdjacent"><input type="radio" />Adjacent</label>
-                        <label class="btn btn-primary btn-xs" id="vectorLocal"><input type="radio" />Local</label>
-                        <label class="btn btn-info btn-xs" id="vectorPhysical"><input type="radio" />Physical</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="vectorNetwork">Network</label>
+                        <label class="btn btn-warning" id="vectorAdjacent">Adjacent</label>
+                        <label class="btn btn-primary" id="vectorLocal">Local</label>
+                        <label class="btn btn-info" id="vectorPhysical">Physical</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div>Attack Complexity:</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-danger btn-xs" id="complexityLow"><input type="radio" />Low</label>
-                        <label class="btn btn-warning btn-xs" id="complexityHigh"><input type="radio" />High</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="complexityLow">Low</label>
+                        <label class="btn btn-warning" id="complexityHigh">High</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div>Privileges Required</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-danger btn-xs" id="privilegesNone"><input type="radio" />None</label>
-                        <label class="btn btn-warning btn-xs" id="privilegesLow"><input type="radio" />Low</label>
-                        <label class="btn btn-primary btn-xs" id="privilegesHigh"><input type="radio" />High</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="privilegesNone">None</label>
+                        <label class="btn btn-warning" id="privilegesLow">Low</label>
+                        <label class="btn btn-primary" id="privilegesHigh">High</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div>User Interaction</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-danger btn-xs" id="userInteractionNone"><input type="radio" />None</label>
-                        <label class="btn btn-warning btn-xs" id="userInteractionRequired"><input type="radio"><input
-                                type="radio" />Required</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="userInteractionNone">None</label>
+                        <label class="btn btn-warning" id="userInteractionRequired">Required</label>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-6">
+            <div class="col-6">
                 <div class="form-group">
                     <div>Scope</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-warning btn-xs" id="scopeUnchanged"><input
-                                type="radio" />Unchanged</label>
-                        <label class="btn btn-danger btn-xs" id="scopeChanged"><input type="radio" />Changed</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-warning" id="scopeUnchanged">Unchanged</label>
+                        <label class="btn btn-danger" id="scopeChanged">Changed</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div>Confidentiality</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-info btn-xs" id="confidentialityNone"><input type="radio" />None</label>
-                        <label class="btn btn-warning btn-xs" id="confidentialityLow"><input type="radio" />Low</label>
-                        <label class="btn btn-danger btn-xs" id="confidentialityHigh"><input type="radio" />High</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="confidentialityNone">None</label>
+                        <label class="btn btn-warning" id="confidentialityLow">Low</label>
+                        <label class="btn btn-danger" id="confidentialityHigh">High</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div>Integrity</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-info btn-xs" id="integrityNone"><input type="radio" />None</label>
-                        <label class="btn btn-warning btn-xs" id="integrityLow"><input type="radio" />Low</label>
-                        <label class="btn btn-danger btn-xs" id="integrityHigh"><input type="radio" />High</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="integrityNone">None</label>
+                        <label class="btn btn-warning" id="integrityLow">Low</label>
+                        <label class="btn btn-danger" id="integrityHigh">High</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div>Availability</div>
-                    <div class="btn-group cvss-input" data-toggle="buttons">
-                        <label class="btn btn-info btn-xs" id="availabilityNone"><input type="radio" />None</label>
-                        <label class="btn btn-warning btn-xs" id="availabilityLow"><input type="radio" />Low</label>
-                        <label class="btn btn-danger btn-xs" id="availabilityHigh"><input type="radio" />High</label>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="availabilityNone">None</label>
+                        <label class="btn btn-warning" id="availabilityLow">Low</label>
+                        <label class="btn btn-danger" id="availabilityHigh">High</label>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="clearCVSS()"><i class="fa fa-eraser" aria-hidden="true"></i> Clear !</button>
+                <button type="button" class="btn btn-sm btn-secondary mb-4" onclick="clearCVSS()"><i class="fa fa-eraser" aria-hidden="true"></i> Clear !</button>
             </div>
         </div>
     </div>
