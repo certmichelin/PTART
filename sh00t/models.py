@@ -344,7 +344,8 @@ class Sh0t(models.Model):
             return "CVSS:3.0/AV:" + self.cvss.attack_vector + "/AC:" + self.cvss.attack_complexity + "/PR:" + self.cvss.privilege_required + "/UI:" + self.cvss.user_interaction + "/S:" + self.cvss.scope + "/C:" + self.cvss.confidentiality + "/I:" + self.cvss.integrity + "/A:" + self.cvss.availability 
 
     def delete(self, *args, **kwargs):
-        self.cvss.delete()
+        if self.cvss:
+            self.cvss.delete()
         return super(self.__class__, self).delete(*args, **kwargs)
 
     class Meta:
