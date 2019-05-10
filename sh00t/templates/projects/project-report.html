@@ -67,6 +67,9 @@
     </div>
     <!-- End of Table of chapter page -->
 
+    <script src="/static/js/jquery-3.4.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <!-- Sh0ts page -->
     {% for assessment in project.assessment_set.all %}
         {% if assessment.sh0t_set.all %}
@@ -116,13 +119,11 @@
                         </div>
     
                         <p>{{ sh0t.get_html_body |safe }}</p>
+
+                        <div class="mb-3"></div>
                     
                         {% for screenshot in sh0t.screenshot_set.all %}
-                            <img style="
-                            max-width: 17cm;
-                            margin-left: auto;
-                            margin-right: auto;
-                            display: block;" class="mb-3" src="/api/screenshot/png/{{screenshot.pk}}/" />
+                            <img style="max-width: 17cm; margin-left: auto; margin-right: auto; display: block;" class="mb-3" src="/api/screenshot/png/{{screenshot.pk}}/" />
                         {% endfor %}
                     </div>
                 {% endfor %}
