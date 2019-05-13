@@ -9,6 +9,7 @@
     <link href="/static/img/favicon.ico" rel="shortcut icon" type="image/png" />
 
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/plugins/highlight/agate.css" rel="stylesheet" type="text/css">
     <link href="/static/css/plugins/html-sheets-of-paper/a4.css" rel="stylesheet" type="text/css">
     <link href="/static/css/plugins/morris/morris.css" rel="stylesheet" type="text/css">
     <link href="/static/css/customs/badges.css" rel="stylesheet" type="text/css">
@@ -17,6 +18,10 @@
         .mainTitle {
             padding: 3rem 1.5rem;
             text-align: center;
+        }
+
+        code {
+            white-space: pre-wrap; /* In order to manage the overflow in report */
         }
     </style>
 </head>
@@ -67,9 +72,6 @@
     </div>
     <!-- End of Table of chapter page -->
 
-    <script src="/static/js/jquery-3.4.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
     <!-- Sh0ts page -->
     {% for assessment in project.assessment_set.all %}
         {% if assessment.sh0t_set.all %}
@@ -117,10 +119,10 @@
                                 </div>
                             </div>
                         </div>
-    
-                        <p>{{ sh0t.get_html_body |safe }}</p>
-
-                        <div class="mb-3"></div>
+                        
+                        <div class="mb-1">&nbsp;</div>
+                        <div id="mardownBody_{{ sh0t.id }}">{{ sh0t.body }}</div>
+                        <div class="mb-2">&nbsp;</div>
                     
                         {% for screenshot in sh0t.screenshot_set.all %}
                             <img style="max-width: 17cm; margin-left: auto; margin-right: auto; display: block;" class="mb-3" src="/api/screenshot/png/{{screenshot.pk}}/" />
@@ -133,12 +135,32 @@
 
     <!-- JS includes -->
     <script src="/static/js/jquery-3.4.0.min.js"></script>
+    <script src="/static/js/plugins/highlight/highlight.min.js"></script>
+    <script src="/static/js/plugins/marked/marked.min.js"></script>
     <script src="/static/js/plugins/morris/morris.min.js"></script>
     <script src="/static/js/plugins/raphael/raphael.min.js"></script>
     <script src="/static/js/customs/cvss.js"></script>
+    
+    <!-- Markdown Bodied -->
+    <script>
+        {% for assessment in project.assessment_set.all %}
+            {% for sh0t in assessment.sh0t_set.all %}
+                $("#mardownBody_{{ sh0t.id }}").html(marked($("#mardownBody_{{ sh0t.id }}").html()));
+            {% endfor %}
+        {% endfor %}
+    </script>
+
+    <!-- Unescape HTML from code tag and highlight the code -->
+    <script>
+        hljs.initHighlightingOnLoad();
+        $('code').each(function () {
+            $(this).html($('<div>').html($(this).html()).text());
+        });
+    </script>
 
     <!-- Morris chart -->
     <script>
+    
     </script>
 </body>
 
