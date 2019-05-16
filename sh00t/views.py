@@ -149,7 +149,7 @@ def sh0t(request, sh0t_id):
     try:
         sh0t = Sh0t.objects.get(pk=sh0t_id)
         if sh0t.is_user_can_view(request.user):
-            response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': sh0t, 'assessments': Assessment.get_viewable(request.user).order_by('-added'),'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : sh0t.is_user_can_edit(request.user)})
+            response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': sh0t, 'assessments': sh0t.assessment.project.assessment_set.all,'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : sh0t.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Sh0t.DoesNotExist:
@@ -174,7 +174,7 @@ def flag(request, flag_id):
     try:
         flag = Flag.objects.get(pk=flag_id)
         if flag.is_user_can_view(request.user):
-            response = render(request, 'flags/flag-single.html', {'flag': flag, 'assessments': Assessment.get_viewable(request.user).order_by('added'), 'users': User.objects.all(), 'editable' : flag.is_user_can_edit(request.user)})
+            response = render(request, 'flags/flag-single.html', {'flag': flag, 'assessments': flag.assessment.project.assessment_set.all, 'users': User.objects.all(), 'editable' : flag.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Flag.DoesNotExist:
@@ -238,7 +238,14 @@ def assessments_new(request):
 
 @login_required
 def sh0ts_new(request):
-    return render(request, 'sh0ts/sh0ts.html', {'assessments':  Assessment.get_viewable(request.user).order_by('-added'), 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
+    assessments = Assessment.get_viewable(request.user)
+    try:
+        project = Project.objects.get(pk=request.GET.get("projectId", ""))
+        if project.is_user_can_edit(request.user) :
+            assessments = project.assessment_set.all
+    except :
+        pass
+    return render(request, 'sh0ts/sh0ts.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
 
 
 @login_required
@@ -249,7 +256,14 @@ def labels_new(request):
 
 @login_required
 def flags_new(request):
-    return render(request, 'flags/flags.html', {'assessments_list': Assessment.get_viewable(request.user).order_by('-added'), 'users': User.objects.all()})
+    assessments = Assessment.get_viewable(request.user)
+    try:
+        project = Project.objects.get(pk=request.GET.get("projectId", ""))
+        if project.is_user_can_edit(request.user) :
+            assessments = project.assessment_set.all
+    except :
+        pass
+    return render(request, 'flags/flags.html', {'assessments_list': assessments, 'users': User.objects.all()})
 
 
 @login_required

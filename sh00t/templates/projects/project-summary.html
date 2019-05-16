@@ -19,11 +19,11 @@
                     <a class="btn btn-outline-warning" href="/assessments/new" role="button">Create Assessment</a>
 
                     {% if project.assessment_set.all|length > 0 %}
-                        <a class="btn btn-outline-success" href="/flags/new" role="button">Create Flag!</a>
+                        <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create Flag!</a>
                     {% endif %}
 
                     {% if project.assessment_set.all|length > 0 %}
-                        <a class="btn btn-outline-danger" href="/sh0ts/new" role="button">Create Sh0t!</a>
+                        <a class="btn btn-outline-danger" href="/sh0ts/new?projectId={{project.id}}" role="button">Create Sh0t!</a>
                     {% endif %}
 
                     <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">
