@@ -11,7 +11,7 @@
             <!-- Flag creation form -->
             <div class="row">
                 <div class="col-lg-12">
-                    <h3>New Flag</h3>
+                    <h3>New Flag &nbsp;<button class="btn btn-sm btn-outline-danger" onclick="document.location = document.referrer"><i class="fa fa-undo"></i> Go Back</button></h3>
                     {% if not assessments_list %}
                         <b>No assessment found. <a href="/assessments/new/">Create one</a></b>
                     {% else %}

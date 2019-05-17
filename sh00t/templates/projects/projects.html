@@ -51,6 +51,8 @@
 {% block extra_foot %}
 <script type="text/javascript">
 
+    activeMarkdown("body");
+
     $('#pentesters').select2().val(defaultPentester()).trigger("change");
     $('#viewers').select2()
 

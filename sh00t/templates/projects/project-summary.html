@@ -19,11 +19,11 @@
                     <a class="btn btn-outline-warning" href="/assessments/new" role="button">Create Assessment</a>
 
                     {% if project.assessment_set.all|length > 0 %}
-                        <a class="btn btn-outline-success" href="/flags/new" role="button">Create Flag!</a>
+                        <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create Flag!</a>
                     {% endif %}
 
                     {% if project.assessment_set.all|length > 0 %}
-                        <a class="btn btn-outline-danger" href="/sh0ts/new" role="button">Create Sh0t!</a>
+                        <a class="btn btn-outline-danger" href="/sh0ts/new?projectId={{project.id}}" role="button">Create Sh0t!</a>
                     {% endif %}
 
                     <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">
@@ -49,7 +49,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <textarea class="form-control" rows="10" style="resize:vertical" style="resize:vertical">{{ project.scope }}</textarea>
+                        <div id="projectScope">{{ project.scope }}</div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
@@ -176,4 +176,10 @@
     <!-- /.container-fluid -->
 </div>
 <!-- /#page-wrapper -->
+{% endblock %}
+
+{% block extra_foot %}
+<script>    
+    $("#projectScope").html(marked($("#projectScope").html()));
+</script>
 {% endblock %}
