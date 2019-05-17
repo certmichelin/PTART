@@ -48,6 +48,8 @@
 {% block extra_foot %}
 {% include '_include/js/deleteItem.html' with item='Project' ajax_function='ajaxDeleteProject' %}
 <script>
+    activeMarkdown("body");
+
     var selectedPentesters = [];
     {% for pentester in project.pentesters.all %}
     selectedPentesters.push({{ pentester.id }});

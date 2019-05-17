@@ -59,7 +59,7 @@
         </div>
 
         <div>
-            <p style="text-align:justify"><i>{{ project.scope }}</i></p>
+            <div id="projectScope">{{ project.scope }}</div>
         </div>
     </div>
     <!-- End of Header page -->
@@ -151,8 +151,12 @@
     <script src="/static/js/plugins/raphael/raphael.min.js"></script>
     <script src="/static/js/customs/cvss.js"></script>
     
-    <!-- Markdown Bodied -->
+    <!-- Markdown display -->
     <script>
+        //Project scope
+        $("#projectScope").html(marked($("#projectScope").html()));
+
+        //Sh0ts bodies
         {% for assessment in project.assessment_set.all %}
             {% for sh0t in assessment.sh0t_set.all %}
                 $("#mardownBody_{{ sh0t.id }}").html(marked($("#mardownBody_{{ sh0t.id }}").html()));
