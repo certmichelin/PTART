@@ -224,9 +224,9 @@ function computeCVSSv3() {
     }
 }
 
-function addCVSSv3ToHit(shotId) {
+function addCVSSv3ToHit(hitId) {
     if (isCVSSComputable()) {
-        ajaxAddCVSSv3(catchSuccessMethod, catchErrorMethod, shotId, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
+        ajaxAddCVSSv3(catchSuccessMethod, catchErrorMethod, hitId, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
     }
 }
 

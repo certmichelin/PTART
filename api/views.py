@@ -141,7 +141,7 @@ def cvss(request):
     return response
 
 @api_view(['POST','DELETE'])
-def cvss_shot(request, pk):
+def cvss_hit(request, pk):
     response = None
     try:
         hit = Hit.objects.get(pk=pk)

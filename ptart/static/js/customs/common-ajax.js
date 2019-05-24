@@ -238,12 +238,12 @@ function ajaxDeleteLabel(success_function, error_function, id) {
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} data Base64 image to upload.
- * @param {*} shotId Hit id.
+ * @param {*} hitId Hit id.
  */
-function ajaxUploadScreenshot(success_function, error_function, data, shotId) {
+function ajaxUploadScreenshot(success_function, error_function, data, hitId) {
     $.ajax({
         url: "/api/screenshots/",
-        data: '{"screenshot": ' + JSON.stringify(data) + ', "hit": ' + JSON.stringify(shotId) + ' }',
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "hit": ' + JSON.stringify(hitId) + ' }',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -316,7 +316,7 @@ function ajaxAddCVSSv3(success_function, error_function, hitId, attackVector, at
 }
 
 /**
- * Remove the CVSS value from the shot.
+ * Remove the CVSS value from the hit.
  * 
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.

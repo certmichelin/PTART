@@ -20,7 +20,7 @@ def index(request):
     
     projects_count = Project.get_viewable(request.user).count()
     assessments_count = Assessment.get_viewable(request.user).count()
-    shots_count = Hit.get_viewable(request.user).count()
+    hits_count = Hit.get_viewable(request.user).count()
     open_flags_count = Flag.get_viewable(request.user).filter(done=False).count()
 
     context = {
@@ -29,7 +29,7 @@ def index(request):
         'recent_projects': recent_projects,
         'projects_count': projects_count,
         'assessments_count': assessments_count,
-        'shots_count': shots_count,
+        'hits_count': hits_count,
         'open_flags_count': open_flags_count
     }
     return render(request, 'index.html', context)
