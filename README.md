@@ -7,8 +7,6 @@
 
 PTART is a vulnerability organizer tool developed for Pentesters, Bug bounty hunters, Anybody who wants to hack.
 
-This project is maintained by the Michelin CERT team. Michelin
-
 A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
 
 ## Installation
