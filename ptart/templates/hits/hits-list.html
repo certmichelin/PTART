@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %} List Hits | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        {% include '_include/html/header.html' with item='Hits' create_item_url='/hits/new' create_item_button_text='Create Hit' create_item_button_class='danger' active_icon='fa fa-bullseye' active_text='Hits' %}
+        {% include "_include/html/messages.html" %}
+        {% include '_include/html/list.html' with table=table create_item_url='/hits/new' create_item_text='Add a hit' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+{% include '_include/js/deleteItems.html' with item='hit' items='project/s' ajax_function='ajaxDeleteHit' %}
+{% endblock %}

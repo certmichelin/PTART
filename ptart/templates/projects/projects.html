@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %} Projects | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='New Project' active_icon='fa fa-cubes' active_text='Projects' %}
+        {% include "_include/html/messages.html" %}
+
+        <!-- Project creation form -->
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input id="name" class="form-control" autocomplete="off"
+                        placeholder="Project name (ex: example.com, etc...)" />
+                </div>
+
+                <div class="form-group">
+                    <label>Scope</label>
+                    <textarea id="scope" class="form-control" rows="10" style="resize:vertical"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Pentesters</label>
+                    <select class="js-states form-control" id="pentesters" multiple="multiple">
+                        {% for usr in users %}
+                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Viewers</label>
+                    <select class="js-states form-control" id="viewers" multiple="multiple">
+                        {% for usr in users %}
+                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button id="createBtn" type="submit" class="btn btn-outline-primary mb-3">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+<script type="text/javascript">
+
+    activeMarkdown("body");
+
+    $('#pentesters').select2().val(defaultPentester()).trigger("change");
+    $('#viewers').select2()
+
+    function defaultPentester(){
+        var selectedPentesters = [];
+        selectedPentesters.push({{ user.id }});
+        return selectedPentesters;
+    }
+
+    function projectCreationSuccess(data) {
+        $("#name").val("");
+        $("#scope").val("");
+        $('#pentesters').select2().val(defaultPentester()).trigger("change");
+        $('#viewers').val(null).trigger('change');
+        success($("#messages"), "Project was created!");
+    }
+
+    $('#createBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+    });
+</script>
+{% endblock %}

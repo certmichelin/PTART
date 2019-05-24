@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %} List Assessments | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        {% include '_include/html/header.html' with item='Assessments' create_item_url='/assessments/new' create_item_button_text='Create Assessment' create_item_button_class='warning' active_icon='fa fa-cube' active_text='Assessments' %}
+        {% include "_include/html/messages.html" %}
+        {% include '_include/html/list.html' with table=table create_item_url='/assessments/new' create_item_text='Add an assessment' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+    {% include '_include/js/deleteItems.html' with item='assessment' items='assessment/s' ajax_function='ajaxDeleteAssessment' %}
+{% endblock %}

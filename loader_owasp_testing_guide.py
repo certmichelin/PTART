@@ -6,10 +6,10 @@ import django
 # OWASP testing guide v4 Methodology loader.
 #
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ptart.settings")
 django.setup()
 
-from sh00t.models import Methodology, Module, Case
+from ptart.models import Methodology, Module, Case
 
 current_methodology = Methodology.objects.filter(name="OWASP Testing Guide V4")
 if not current_methodology :
@@ -29,4 +29,4 @@ if not current_methodology :
             case.save()
     print("OWASP Testing Guide V4 methodology has been imported !")
 else :
-    print("OWASP Testing Guide V4 methodology was already present in Sh00t!. No changes has been made.")
+    print("OWASP Testing Guide V4 methodology was already present in PTART!. No changes has been made.")

@@ -6,10 +6,10 @@ import django
 # WAAH Methodology loader.
 #
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ptart.settings")
 django.setup()
 
-from sh00t.models import Methodology, Module, Case
+from ptart.models import Methodology, Module, Case
 
 current_methodology = Methodology.objects.filter(name="WAHH")
 if not current_methodology :
@@ -30,4 +30,4 @@ if not current_methodology :
             case.save()
     print("Waah methodology has been imported !")
 else :
-    print("Waah methodology was already present in Sh00t!. No changes has been made.")
+    print("Waah methodology was already present in PTART!. No changes has been made.")
