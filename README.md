@@ -9,6 +9,8 @@ PTART is a vulnerability organizer tool developed for Pentesters, Bug bounty hun
 
 ## Installation
 
+**Preparing PTART environment :**
+
 Python requires Python 3.7 and a few more packages. The simplest way to set up PTART is using  [pipenv](https://github.com/pypa/pipenv). 
 
 1. Clone the project and go to the new directory.
@@ -28,4 +30,3 @@ That's all for the first time. Follow the next steps whenever you want to start 
 4. Login with the user credentials.
 5. Welcome to PTART.
 6. Once you are done, stop the server: `Ctrl + C`
-
