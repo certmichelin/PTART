@@ -43,6 +43,9 @@
     {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,asset,body' %}
     {% include '_include/js/deleteItem.html' with item='Template' ajax_function='ajaxDeleteTemplate' %}
     <script>
+        /* Select the current severity */$
+        $('#severity option[value={{template.severity}}]').attr('selected', 'selected');
+        
         activeMarkdown("body");
     </script>
 {% endblock %}
