@@ -30,3 +30,13 @@ That's all for the first time. Follow the next steps whenever you want to start 
 4. Login with the user credentials.
 5. Welcome to PTART.
 6. Once you are done, stop the server: `Ctrl + C`
+
+## Upgrade:
+
+1. Navigate to the folder where PTART was cloned: `cd PTART`
+2. Stop the server if it's running: `Ctrl + C`
+3. Pull the latest code base via git: `git pull` or download the source from Github and replace the files.
+4. Setup any additional dependencies: `pipenv install`
+5. Run the virtual environment: `pipenv shell`
+6. Make the latest database changes: `python manage.py migrate`
+7.  Start the server: `python manage.py runserver`
