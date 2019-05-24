@@ -4,9 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from ptart.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Cvss, Case, Module, Methodology, Label
+from ptart.models import Flag, Hit, Assessment, Project, Template, Screenshot, Cvss, Case, Module, Methodology, Label
 
-from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
@@ -18,12 +18,12 @@ def flags(request):
     return items(request, Flag, FlagSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
-def sh0t(request, pk):
-    return item(request, pk, Sh0t, Sh0tSerializer)
+def hit(request, pk):
+    return item(request, pk, Hit, HitSerializer)
 
 @api_view(['GET', 'POST'])
-def sh0ts(request):
-    return items(request, Sh0t, Sh0tSerializer)
+def hits(request):
+    return items(request, Hit, HitSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def label(request, pk):
@@ -144,13 +144,13 @@ def cvss(request):
 def cvss_shot(request, pk):
     response = None
     try:
-        sh0t = Sh0t.objects.get(pk=pk)
-        if sh0t.is_user_can_edit(request.user):
+        hit = Hit.objects.get(pk=pk)
+        if hit.is_user_can_edit(request.user):
             
             if request.method == 'DELETE':
-                #Delete the cvss attached to the sh0t.
-                if sh0t.cvss is not None :
-                    Cvss.objects.get(pk=sh0t.cvss.id).delete()
+                #Delete the cvss attached to the hit.
+                if hit.cvss is not None :
+                    Cvss.objects.get(pk=hit.cvss.id).delete()
                 response = Response(status=status.HTTP_200_OK)
 
             else :
@@ -163,17 +163,17 @@ def cvss_shot(request, pk):
                     cvss.save(update_fields=['decimal_value'])
 
                     #This condition prevent memory leak in DB.
-                    if sh0t.cvss is not None : 
-                        Cvss.objects.get(pk=sh0t.cvss.id).delete()
+                    if hit.cvss is not None : 
+                        Cvss.objects.get(pk=hit.cvss.id).delete()
 
-                    sh0t.cvss = cvss
-                    sh0t.save(update_fields=['cvss'])
+                    hit.cvss = cvss
+                    hit.save(update_fields=['cvss'])
                     response = Response(status=status.HTTP_201_CREATED)
                 else :
                     response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
-    except Sh0t.DoesNotExist:
+    except Hit.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 

@@ -4,28 +4,28 @@ from django.contrib.auth.models import User
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
 
-from .models import Assessment, Project, Sh0t, Flag, Template, Screenshot, Methodology, Module, Case, Severity, Label
-from .tables import FlagTable, Sh0tTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
+from .models import Assessment, Project, Hit, Flag, Template, Screenshot, Methodology, Module, Case, Severity, Label
+from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
 
 
 @login_required
 def index(request):
     """
         Index page of PTART!
-        Display a quick summary of the recent projects, sh0ts & flags.
+        Display a quick summary of the recent projects, hits & flags.
     """
     recent_open_flags = Flag.get_viewable(request.user).filter(done=False).order_by('-added')[:5]
-    recent_sh0ts = Sh0t.get_viewable(request.user).order_by('-added')[:5]
+    recent_hits = Hit.get_viewable(request.user).order_by('-added')[:5]
     recent_projects = Project.get_viewable(request.user).order_by('-added')[:5]
     
     projects_count = Project.get_viewable(request.user).count()
     assessments_count = Assessment.get_viewable(request.user).count()
-    shots_count = Sh0t.get_viewable(request.user).count()
+    shots_count = Hit.get_viewable(request.user).count()
     open_flags_count = Flag.get_viewable(request.user).filter(done=False).count()
 
     context = {
         'recent_open_flags': recent_open_flags,
-        'recent_sh0ts': recent_sh0ts,
+        'recent_hits': recent_hits,
         'recent_projects': recent_projects,
         'projects_count': projects_count,
         'assessments_count': assessments_count,
@@ -46,8 +46,8 @@ def assessments_all(request):
 
 
 @login_required
-def sh0ts_all(request):
-    return generic_all(request, Sh0t.get_viewable(request.user), Sh0tTable, 'sh0ts/sh0ts-list.html')
+def hits_all(request):
+    return generic_all(request, Hit.get_viewable(request.user), HitTable, 'hits/hits-list.html')
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -144,15 +144,15 @@ def assessment(request, assessment_id):
 
 
 @login_required
-def sh0t(request, sh0t_id):
+def hit(request, hit_id):
     response = None
     try:
-        sh0t = Sh0t.objects.get(pk=sh0t_id)
-        if sh0t.is_user_can_view(request.user):
-            response = render(request, 'sh0ts/sh0t-single.html', {'sh0t': sh0t, 'assessments': sh0t.assessment.project.assessment_set.all,'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : sh0t.is_user_can_edit(request.user)})
+        hit = Hit.objects.get(pk=hit_id)
+        if hit.is_user_can_view(request.user):
+            response = render(request, 'hits/hit-single.html', {'hit': hit, 'assessments': hit.assessment.project.assessment_set.all,'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : hit.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
-    except Sh0t.DoesNotExist:
+    except Hit.DoesNotExist:
         response = redirect('/')
     return response
 
@@ -237,7 +237,7 @@ def assessments_new(request):
 
 
 @login_required
-def sh0ts_new(request):
+def hits_new(request):
     assessments = Assessment.get_viewable(request.user)
     try:
         project = Project.objects.get(pk=request.GET.get("projectId", ""))
@@ -245,7 +245,7 @@ def sh0ts_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return render(request, 'sh0ts/sh0ts.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
+    return render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
 
 
 @login_required

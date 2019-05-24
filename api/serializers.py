@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Sh0t, Label, Flag, Template, Screenshot,Cvss, Case, Module, Methodology
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Screenshot,Cvss, Case, Module, Methodology
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,23 +81,23 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'color')
 
 
-class Sh0tSerializer(serializers.ModelSerializer):
+class HitSerializer(serializers.ModelSerializer):
     labels = LabelSerializer(read_only=True, many=True)
     
     class Meta:
-        model = Sh0t
+        model = Hit
         fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'added', 'assessment')
     
     @transaction.atomic
     def create(self, validated_data):
-        sh0t = Sh0t.objects.create(**validated_data)
+        hit = Hit.objects.create(**validated_data)
         if "labels" in self.initial_data:
             labels = self.initial_data.get("labels")
             for label in labels:
                 label_instance = Label.objects.get(pk=label)
-                sh0t.labels.add(label_instance)
-        sh0t.save()
-        return sh0t
+                hit.labels.add(label_instance)
+        hit.save()
+        return hit
 
     @transaction.atomic
     def update(self, instance, validated_data):
@@ -124,12 +124,12 @@ class ScreenshotSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Screenshot
-        fields = ('id', 'screenshot', 'sh0t')
+        fields = ('id', 'screenshot', 'hit')
 
     def create(self, validated_data):
         screenshot=validated_data.pop('screenshot')
-        sh0t=validated_data.pop('sh0t')
-        return Screenshot.objects.create(screenshot=screenshot,sh0t=sh0t)
+        hit=validated_data.pop('hit')
+        return Screenshot.objects.create(screenshot=screenshot,hit=hit)
 
 
 class TemplateSerializer(serializers.ModelSerializer):

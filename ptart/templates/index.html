@@ -36,12 +36,12 @@
                         </div>
                     </div>
 
-                    <!-- Sh0ts -->
+                    <!-- Hits -->
                     <div class="card mb-3 box-shadow">
-                        <img class="card-img-top" src="/static/img/sh0t.jpg"/>
+                        <img class="card-img-top" src="/static/img/hit.jpg"/>
                         <div class="card-body">
                             <h4 class="card-title">{{ shots_count }} Shots</h4>
-                            <a href="/sh0ts" class="btn btn-lg btn-block btn-outline-danger">View</a>
+                            <a href="/hits" class="btn btn-lg btn-block btn-outline-danger">View</a>
                         </div>
                     </div>
 
@@ -81,11 +81,11 @@
                                     {% for project in recent_projects %}
                                         <tr>
                                             <td><a href="/project/{{ project.id }}/summary">{{ project.name }}</a></td>
-                                            <td>{{project.p1_sh0ts|length}}</td>
-                                            <td>{{project.p2_sh0ts|length}}</td>
-                                            <td>{{project.p3_sh0ts|length}}</td>
-                                            <td>{{project.p4_sh0ts|length}}</td>
-                                            <td>{{project.p5_sh0ts|length}}</td>
+                                            <td>{{project.p1_hits|length}}</td>
+                                            <td>{{project.p2_hits|length}}</td>
+                                            <td>{{project.p3_hits|length}}</td>
+                                            <td>{{project.p4_hits|length}}</td>
+                                            <td>{{project.p5_hits|length}}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -105,39 +105,39 @@
 
     <div class="container">
         <div class="row">
-            <!-- Recent sh0ts -->
+            <!-- Recent hits -->
             <div class="col-lg-6 col-sm-12 mb-4">
-                {% if recent_sh0ts %}
+                {% if recent_hits %}
                     <div class="card">
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover table-striped">
                                 <thead>
                                     <tr>
-                                        <th><h5>Recent Sh0ts</h5></th>
+                                        <th><h5>Recent Hits</h5></th>
                                         <th>Sev</th>
                                         <th>CVSSv3</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for sh0t in recent_sh0ts %}
+                                    {% for hit in recent_hits %}
                                         <tr>
-                                            <td><a href="/sh0t/{{ sh0t.id }}/">{{ sh0t.title }}</a></td>
-                                            <td><span class="bc-badge bc-badge--p{{ sh0t.severity }}">P{{ sh0t.severity }}</span></td>
-                                            <td><span class="cvss label label-default">{{ sh0t.get_cvss_value }}</span></td>
+                                            <td><a href="/hit/{{ hit.id }}/">{{ hit.title }}</a></td>
+                                            <td><span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span></td>
+                                            <td><span class="cvss label label-default">{{ hit.get_cvss_value }}</span></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                         <div class="text-right mr-3 mb-2">
-                            <a href="/sh0ts" class="btn btn-outline-danger"><i class="fa fa-bullseye"></i> View All</a>
+                            <a href="/hits" class="btn btn-outline-danger"><i class="fa fa-bullseye"></i> View All</a>
                         </div>
                     </div>
                 {% else %}
-                    <a href="/sh0ts/new/" class="btn btn-lg btn-block btn-outline-danger"><h4><i class="fa fa-bullseye"></i> Sh0t one!</h4></a>
+                    <a href="/hits/new/" class="btn btn-lg btn-block btn-outline-danger"><h4><i class="fa fa-bullseye"></i> Hit one!</h4></a>
                 {% endif %}
             </div>
-            <!-- End of Recent sh0ts -->
+            <!-- End of Recent hits -->
 
             <!-- Recent flags -->
             <div class="col-lg-6 col-sm-12 mb-4">
@@ -163,7 +163,7 @@
                             </table>
                         </div>
                         <div class="text-right mr-3 mb-2">
-                            <a href="/sh0ts" class="btn btn-outline-success"><i class="fa fa-list-ul"></i> View All</a>
+                            <a href="/hits" class="btn btn-outline-success"><i class="fa fa-list-ul"></i> View All</a>
                         </div>
                     </div>
                 {% else %}

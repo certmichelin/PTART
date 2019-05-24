@@ -224,7 +224,7 @@ function computeCVSSv3() {
     }
 }
 
-function addCVSSv3ToSh0t(shotId) {
+function addCVSSv3ToHit(shotId) {
     if (isCVSSComputable()) {
         ajaxAddCVSSv3(catchSuccessMethod, catchErrorMethod, shotId, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
     }

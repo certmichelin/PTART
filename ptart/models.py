@@ -22,32 +22,32 @@ class Project(models.Model):
     def __str__(self):  
         return self.name
 
-    def p1_sh0ts(self):
-        """Return all P1 sh0ts for the project."""
-        return self.sh0ts_by_severity(1)
+    def p1_hits(self):
+        """Return all P1 hits for the project."""
+        return self.hits_by_severity(1)
     
-    def p2_sh0ts(self):
-        """Return all P2 sh0ts for the project."""
-        return self.sh0ts_by_severity(2)
+    def p2_hits(self):
+        """Return all P2 hits for the project."""
+        return self.hits_by_severity(2)
 
-    def p3_sh0ts(self):
-        """Return all P3 sh0ts for the project."""
-        return self.sh0ts_by_severity(3)
+    def p3_hits(self):
+        """Return all P3 hits for the project."""
+        return self.hits_by_severity(3)
 
-    def p4_sh0ts(self):
-        """Return all P4 sh0ts for the project."""
-        return self.sh0ts_by_severity(4)
+    def p4_hits(self):
+        """Return all P4 hits for the project."""
+        return self.hits_by_severity(4)
 
-    def p5_sh0ts(self):
-        """Return all P5 sh0ts for the project."""
-        return self.sh0ts_by_severity(5)
+    def p5_hits(self):
+        """Return all P5 hits for the project."""
+        return self.hits_by_severity(5)
 
-    def sh0ts_by_severity(self, severity):
-        """Filter sh0ts by severity for the project."""
-        sh0ts = []
+    def hits_by_severity(self, severity):
+        """Filter hits by severity for the project."""
+        hits = []
         for assessment in self.assessment_set.all() :
-            sh0ts.extend(assessment.sh0ts_by_severity(severity))
-        return sh0ts
+            hits.extend(assessment.hits_by_severity(severity))
+        return hits
 
     def get_viewable(user):
         """Returns all viewable projects"""
@@ -85,32 +85,32 @@ class Assessment(models.Model):
     def __str__(self):  
         return self.name
 
-    def p1_sh0ts(self):
-        """Return all P1 sh0ts for the assessment."""
-        return self.sh0ts_by_severity(1)
+    def p1_hits(self):
+        """Return all P1 hits for the assessment."""
+        return self.hits_by_severity(1)
 
-    def p2_sh0ts(self):
-        """Return all P2 sh0ts for the assessment."""
-        return self.sh0ts_by_severity(2)
+    def p2_hits(self):
+        """Return all P2 hits for the assessment."""
+        return self.hits_by_severity(2)
 
-    def p3_sh0ts(self):
-        """Return all P3 sh0ts for the assessment."""
-        return self.sh0ts_by_severity(3)
+    def p3_hits(self):
+        """Return all P3 hits for the assessment."""
+        return self.hits_by_severity(3)
 
-    def p4_sh0ts(self):
-        """Return all P4 sh0ts for the assessment."""
-        return self.sh0ts_by_severity(4)
+    def p4_hits(self):
+        """Return all P4 hits for the assessment."""
+        return self.hits_by_severity(4)
 
-    def p5_sh0ts(self):
-        """Return all P5 sh0ts for the assessment."""
-        return self.sh0ts_by_severity(5)
+    def p5_hits(self):
+        """Return all P5 hits for the assessment."""
+        return self.hits_by_severity(5)
 
-    def sh0ts_by_severity(self, severity):
-        """Filter sh0ts by severity for the assessment."""
-        sh0ts = []
-        for sh0t in self.sh0t_set.filter(severity = severity).all() :
-            sh0ts.append(sh0t)
-        return sh0ts
+    def hits_by_severity(self, severity):
+        """Filter hits by severity for the assessment."""
+        hits = []
+        for hit in self.hit_set.filter(severity = severity).all() :
+            hits.append(hit)
+        return hits
 
     def open_flags(self):
         """Return all open flags for the assessment."""
@@ -294,8 +294,8 @@ class Cvss(models.Model):
         ordering = ('decimal_value',)
 
 
-"""Sh0t model."""
-class Sh0t(models.Model):
+"""Hit model."""
+class Hit(models.Model):
 
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True, default="")
@@ -310,19 +310,19 @@ class Sh0t(models.Model):
         return self.title
 
     def get_viewable(user):
-        """Returns all viewable sh0ts"""
-        return Sh0t.objects.filter(assessment__in=Assessment.get_viewable(user))
+        """Returns all viewable hits"""
+        return Hit.objects.filter(assessment__in=Assessment.get_viewable(user))
 
     def is_user_can_view(self, user):
-        """Verify if the user have read access for this sh0t"""
+        """Verify if the user have read access for this hit"""
         return self.assessment.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
-        """Verify if the user have write access for this sh0t"""
+        """Verify if the user have write access for this hit"""
         return self.assessment.is_user_can_edit(user)
 
     def is_user_can_create(self, user):
-        """Verify if the user can create this sh0t"""
+        """Verify if the user can create this hit"""
         return self.assessment.is_user_can_edit(user)
 
     def get_cvss_value(self):
@@ -353,7 +353,7 @@ class Screenshot(models.Model):
 
     upload_folder = 'screenshots'
 
-    sh0t = models.ForeignKey(Sh0t, null=True, on_delete=models.CASCADE)
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
     screenshot = models.ImageField(upload_to=upload_folder)
     
     def get_data(self):
@@ -379,19 +379,19 @@ class Screenshot(models.Model):
     
     def get_viewable(user):
         """Returns all viewable screenshots"""
-        return Screenshot.objects.filter(sh0t__in=Sh0t.get_viewable(user))
+        return Screenshot.objects.filter(hit__in=Hit.get_viewable(user))
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this screenshot"""
-        return self.sh0t.is_user_can_view(user)
+        return self.hit.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this screenshot"""
-        return self.sh0t.is_user_can_edit(user)
+        return self.hit.is_user_can_edit(user)
 
     def is_user_can_create(self, user):
         """Verify if the user can create this screenshot"""
-        return self.sh0t.is_user_can_edit(user)
+        return self.hit.is_user_can_edit(user)
 
     def __str__(self):  
         return self.screenshot

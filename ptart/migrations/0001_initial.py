@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Sh0t',
+            name='Hit',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=200)),
@@ -159,8 +159,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='screenshot',
-            name='sh0t',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.Sh0t'),
+            name='hit',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.Hit'),
         ),
         migrations.AddField(
             model_name='case',

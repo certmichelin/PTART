@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import Project, Flag, Sh0t, Label, Assessment, Project, Template, Methodology, Module, Case
+from .models import Project, Flag, Hit, Label, Assessment, Project, Template, Methodology, Module, Case
 
 
 class ProjectTable(tables.Table):
@@ -32,17 +32,17 @@ class FlagTable(tables.Table):
         empty_text = "No Flags yet"
 
 
-class Sh0tTable(tables.Table):
+class HitTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     severity = tables.TemplateColumn('<span class="bc-badge bc-badge--p{{ record.severity }}">P{{ record.severity }}</span>')
-    title = tables.TemplateColumn('<a href="/sh0t/{{ record.pk }}">{{ record.title }}</a>')
+    title = tables.TemplateColumn('<a href="/hit/{{ record.pk }}">{{ record.title }}</a>')
     project = tables.TemplateColumn('<a href="/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
     cvss = tables.TemplateColumn('<span class="cvss label label-default">{{ record.get_cvss_value }}</span>', verbose_name= 'CVSS v3')
 
     class Meta:
-        model = Sh0t
+        model = Hit
         template_name = "django_tables2/bootstrap-responsive.html"
         sequence = ('selection','severity', 'cvss', 'title', 'project', 'assessment', 'added')
         fields = ('severity','cvss', 'title', 'project', 'assessment', 'added')

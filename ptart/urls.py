@@ -23,9 +23,9 @@ urlpatterns = [
     url(r'^assessments/new/$', views.assessments_new),
     url(r'^assessment/([0-9]+)/$', views.assessment),
     
-    url(r'^sh0ts/$', views.sh0ts_all),
-    url(r'^sh0ts/new/$', views.sh0ts_new),
-    url(r'^sh0t/([0-9]+)/$', views.sh0t),
+    url(r'^hits/$', views.hits_all),
+    url(r'^hits/new/$', views.hits_new),
+    url(r'^hit/([0-9]+)/$', views.hit),
 
     url(r'^labels/$', views.labels_all),
     url(r'^labels/new/$', views.labels_new),

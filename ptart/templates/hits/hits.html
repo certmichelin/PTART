@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Sh0ts | PTART{% endblock %}
+{% block title %} Hits | PTART{% endblock %}
 
 {% block page %}
     
@@ -9,8 +9,8 @@
 
             {% include "_include/html/messages.html" %}
             
-            <!-- Sh0t creation form -->
-            <h3>New Sh0t &nbsp;<button class="btn btn-sm btn-outline-danger" onclick="document.location = document.referrer"><i class="fa fa-undo"></i> Go Back</button></h3>
+            <!-- Hit creation form -->
+            <h3>New Hit &nbsp;<button class="btn btn-sm btn-outline-danger" onclick="document.location = document.referrer"><i class="fa fa-undo"></i> Go Back</button></h3>
             <div class="row">
                 <div class="col-lg-7">
                     {% if not assessments %}
@@ -40,7 +40,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Title</label>
-                                <input class="form-control" id="title" autocomplete="off" placeholder="Sh0t title (ex: SSRF on login page, etc...)"/>
+                                <input class="form-control" id="title" autocomplete="off" placeholder="Hit title (ex: SSRF on login page, etc...)"/>
                             </div>
                             <div class="form-group">
                                 <label>Asset</label>
@@ -127,11 +127,11 @@
     }
 
     /**
-     * Sh0t creation success callback.
+     * Hit creation success callback.
      */
-     function sh0tCreationSuccess(data) {
+     function hitCreationSuccess(data) {
         //Assign CVSS.
-        addCVSSv3ToSh0t(data.id);
+        addCVSSv3ToHit(data.id);
 
         //Upload screenshots.
         screenshotsToUpload = $('.screenshot_gallery').length;
@@ -142,13 +142,13 @@
                 ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), data.id);
             });
         }
-        success($("#messages"), "Sh0t was created!");
+        success($("#messages"), "Hit was created!");
     }
 
     /**
-     * Sh0t creation failure callback.
+     * Hit creation failure callback.
      */
-     function sh0tCreationFailure(data) {
+     function hitCreationFailure(data) {
         if(data.status === 403){
             error($("#messages"), "Error 403 : Not Authorized");
         } else {
@@ -193,16 +193,16 @@
     }
 
     /**
-     * Create sh0t.
+     * Create hit.
      */
     $('#createBtn').on('click', function () {
         waitingDialog.show();
-        setTimeout(createSh0t,500);
+        setTimeout(createHit,500);
     });
 
-    function createSh0t(){
+    function createHit(){
         cleanMessagesContainer($("#messages"));
-        ajaxCreateSh0t(sh0tCreationSuccess, sh0tCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
     }
 </script>
 {% endblock %}
