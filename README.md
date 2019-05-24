@@ -1,14 +1,11 @@
-<img src="https://user-images.githubusercontent.com/11267537/43043618-29ab7286-8db5-11e8-9603-71b30596d047.png" width="250" />
-
 ```
-A Testing Environment for Manual Security Testers
+Let's organize yours pentests and facilitate reporting.
 ```
 
-![](https://img.shields.io/github/issues/pavanw3b/sh00t.svg)
-![](https://img.shields.io/github/forks/pavanw3b/sh00t.svg)
-![](https://img.shields.io/github/stars/pavanw3b/sh00t.svg)
-![](https://img.shields.io/github/license/pavanw3b/sh00t.svg)
-[![Rawsec's CyberSecurity Inventory](https://inventory.rawsec.ml/img/badges/Rawsec-inventoried-FF5050_flat.svg)](https://inventory.rawsec.ml/tools.html#Sh00t)
+![](https://img.shields.io/github/issues/Fisjkars/PTART.svg)
+![](https://img.shields.io/github/forks/Fisjkars/PTART.svg)
+![](https://img.shields.io/github/stars/Fisjkars/PTART.svg)
+![](https://img.shields.io/github/license/Fisjkars/PTART.svg)
 
 Sh00t
 - is a task manager to let you focus on performing security testing
