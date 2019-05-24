@@ -1,0 +1,144 @@
+{
+    "templates": [
+        {
+            "name": "CCE: Client Code Execution",
+            "severity": 1,
+            "body": "Vulnerabilities can exist in software due to unsecure coding practices that can lead to unanticipated behavior. Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution. Oftentimes the most valuable exploits to an offensive toolkit are those that can be used to obtain code execution on a remote system because they can be used to gain access to that system. Users will expect to see files related to the applications they commonly used to do work, so they are a useful target for exploit research and development because of their high utility."
+        },
+        {
+            "name": "RCE: Remote Code Execution",
+            "severity": 1,
+            "body": "Remote Code Execution (`RCE`) occurs when an application allows executing system command based on user-supplied input. As a result, the analysts were able to access the underlying Operating System and able to access anything on the remote server."
+        },
+        {
+            "name": "SSTI: Server Side Template Injection",
+            "severity": 1,
+            "body": "Web applications frequently use template systems such as Twig and FreeMarker to embed dynamic content in web pages and emails. Template Injection occurs when user input is embedded in a template in an unsafe manner."
+        },
+        {
+            "name": "Sensitive Data Exposure",
+            "severity": 1,
+            "body": ""
+        },
+        {
+            "name": "Unsecured File Upload",
+            "severity": 1,
+            "body": "Uploaded files represent a significant risk to applications. The first step in many attacks is to get some code to the system to be attacked. Then the attack only needs to find a way to get the code executed. Using a file upload helps the attacker accomplish the first step."
+        },
+        {
+            "name": "Broken Access Control",
+            "severity": 2,
+            "body": "Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure, modification or destruction of all data, or performing a business function outside of the limits of the user."
+        },
+        {
+            "name": "CSRF: Cross-Site Request Forgery",
+            "severity": 2,
+            "body": "Cross-Site Request Forgery (`CSRF`) is an attack that forces an end user to execute unwanted actions on a web application in which they're currently authenticated. If the victim is an administrative account, CSRF can compromise the entire web application."
+        },
+        {
+            "name": "CSRF: Cross-Site Request Forgery using FLASH",
+            "severity": 2,
+            "body": "Cross-Site Request Forgery (`CSRF`) is an attack that forces an end user to execute unwanted actions on a web application in which they're currently authenticated.\nThe API POST requests accept only `application/json` content type that means that the vulnerability is more complicated to exploit.\nHowever, the analyst used the method described here (using flash and `307` redirection) to exploit the vulnerability.\nToolbox used by the analyst can be found [here](https://github.com/sp1d3r/swf_json_csrf)"
+        },
+        {
+            "name": "CSTI : Client Side Template Injection",
+            "severity": 2,
+            "body": "Client-side template injection vulnerabilities arise when applications using a client-side template framework dynamically embed user input in web pages. When a web page is rendered, the framework will scan the page for template expressions, and execute any that it encounters. An attacker can exploit this by supplying a malicious template expression that launches a cross-site scripting (`XSS`) attack. As with normal cross-site scripting, the attacker-supplied code can perform a wide variety of actions, such as stealing the victim's session token or login credentials, performing arbitrary actions on the victim's behalf, and logging their keystrokes."
+        },
+        {
+            "name": "IDOR: Insecure Direct Object References",
+            "severity": 2,
+            "body": "Insecure Direct Object References occur when an application provides direct access to objects based on user-supplied input. As a result of this vulnerability attackers can bypass authorization and access resources in the system directly, for example database records or files."
+        },
+        {
+            "name": "LDAP Injection",
+            "severity": 2,
+            "body": "The Lightweight Directory Access Protocol (`LDAP`) is used to store information about users, hosts, and many other objects. LDAP injection is a server side attack, which could allow sensitive information about users and hosts represented in an LDAP structure to be disclosed, modified, or inserted. This is done by manipulating input parameters afterwards passed to internal search, add, and modify functions.\n\n\nA web application could use LDAP in order to let users authenticate or search other users' information inside a corporate structure. The goal of LDAP injection attacks is to inject LDAP search filters metacharacters in a query which will be executed by the application."
+        },
+        {
+            "name": "LFI: Local File Inclusion",
+            "severity": 2,
+            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a \"dynamic file inclusion\" mechanisms implemented in the target application. The vulnerability occurs due to the use of user-supplied input without proper validation.\n\nThis can lead to something as outputting the contents of the file, but depending on the severity, it can also lead to:\n\n* Code execution on the web server\n* Code execution on the client-side such as JavaScript which can lead to other attacks such as cross site scripting (XSS)\n* Denial of Service (DoS)\n* Sensitive Information Disclosure\n\nLocal File Inclusion (also known as LFI) is the process of including files, that are already locally present on the server, through the exploiting of vulnerable inclusion procedures implemented in the application. This vulnerability occurs, for example, when a page receives, as input, the path to the file that has to be included and this input is not properly sanitized, allowing directory traversal characters (such as dot-dot-slash) to be injected. Although most examples point to vulnerable PHP scripts, we should keep in mind that it is also common in other technologies such as JSP, ASP and others."
+        },
+        {
+            "name": "Path Transversal",
+            "severity": 2,
+            "body": "A path traversal attack (also known as directory traversal) aims to access files and directories that are stored outside the web root folder. By manipulating variables that reference files with `dot-dot-slash (../)` sequences and its variations or by using absolute file paths, it may be possible to access arbitrary files and directories stored on file system including application source code or configuration and critical system files."
+        },
+        {
+            "name": "RFI: Remote File Inclusion",
+            "severity": 2,
+            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a \"dynamic file inclusion\" mechanisms implemented in the target application. The vulnerability occurs due to the use of user-supplied input without proper validation.\n\n\nThis can lead to something as outputting the contents of the file, but depending on the severity, it can also lead to:\n\n* Code execution on the web server\n* Code execution on the client-side such as JavaScript which can lead to other attacks such as cross site scripting (XSS)\n* Denial of Service (DoS)\n* Sensitive Information Disclosure\n\nRemote File Inclusion (also known as RFI) is the process of including remote files through the exploiting of vulnerable inclusion procedures implemented in the application. This vulnerability occurs, for example, when a page receives, as input, the path to the file that has to be included and this input is not properly sanitized, allowing external URL to be injected. Although most examples point to vulnerable PHP scripts, we should keep in mind that it is also common in other technologies such as JSP, ASP and others."
+        },
+        {
+            "name": "Reflected XSS: Cross-Site scripting",
+            "severity": 2,
+            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites. `XSS` attacks occur when an attacker uses a web application to send malicious code, generally in the form of a browser side script, to a different end user. Flaws that allow these attacks to succeed are quite widespread and occur anywhere a web application uses input from a user within the output it generates without validating or encoding it.\n\n\nAn attacker can use `XSS` to send a malicious script to an unsuspecting user. The end user’s browser has no way to know that the script should not be trusted, and will execute the script. Because it thinks the script came from a trusted source, the malicious script can access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page."
+        },
+        {
+            "name": "SQLi: SQL Injection",
+            "severity": 2,
+            "body": "A SQL injection attack consists of insertion or \"injection\" of a SQL query via the input data from the client to the application. A successful SQL injection exploit can read/edit sensitive data from the database."
+        },
+        {
+            "name": "SSRF: Server Side Request Forgery",
+            "severity": 2,
+            "body": "For a Server-Side Request Forgery (`SSRF`) attack, the attacker can abuse functionality on the server to read or update internal resources. The attacker can supply or a modify a URL which the code running on the server will read or submit data to, and by carefully selecting the URLs, the attacker may be able to connect to internal services like http enabled databases or perform post requests towards internal services which are not intended to be exposed."
+        },
+        {
+            "name": "Stored XSS: Cross-Site scripting",
+            "severity": 2,
+            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites. `XSS` attacks occur when an attacker uses a web application to send malicious code, generally in the form of a browser side script, to a different end user. Flaws that allow these attacks to succeed are quite widespread and occur anywhere a web application uses input from a user within the output it generates without validating or encoding it.\n\n\nAn attacker can use `XSS` to send a malicious script to an unsuspecting user. The end user’s browser has no way to know that the script should not be trusted, and will execute the script. Because it thinks the script came from a trusted source, the malicious script can access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page."
+        },
+        {
+            "name": ".git folder exposed",
+            "severity": 3,
+            "body": "The analyst found a `GIT` folder publicly accessible in the webroot (under the `/.git/` folder).\nIn order to retrieve the files pushed on this `GIT` folder, the analyst used a publicly-known tool called [Pillage-SVN](https://github.com/evilpacket/DVCS-Pillage) allowing him to retrieve all the files locally."
+        },
+        {
+            "name": ".svn folder exposed",
+            "severity": 3,
+            "body": "The analyst found a `SVN` folder publicly accessible in the webroot (under the `/.svn/` folder).\nIn order to retrieve the files pushed on this `SVN` folder, the analyst used a publicly-known tool called [Pillage-SVN](https://github.com/lanjelot/pillage-svn) allowing him to retrieve all the files locally."
+        },
+        {
+            "name": "User Enumeration",
+            "severity": 3,
+            "body": "Username enumeration is the process of developing a list of all valid usernames on a server or web application. It becomes possible if the server or application provides a clue as to whether or not the username exists. Usually it occurs when a user-related form or URL returns different results when a user exists than when no user exists. However, username enumeration also includes cases when the server can be made to reveal a list of usernames, such as through `SQL Injection`."
+        },
+        {
+            "name": "CSV Command Injection",
+            "severity": 4,
+            "body": "`CSV` Injection, also known as Formula Injection, occurs when websites embed untrusted input inside CSV files. When a spreadsheet program such as Microsoft is used to open a CSV, any cells starting with '=' will be interpreted by the software as a formula. Maliciously crafted formulas can be used for make the user executing code on their machine."
+        },
+        {
+            "name": "HTML Injection",
+            "severity": 4,
+            "body": "HTML injection is a type of injection issue that occurs when a user is able to control an input point and is able to inject arbitrary HTML code into a vulnerable web page. This vulnerability can have many consequences, like disclosure of a user's session cookies that could be used to impersonate the victim, or, more generally, it can allow the attacker to modify the page content seen by the victims."
+        },
+        {
+            "name": "Usage of obsolete component",
+            "severity": 4,
+            "body": ""
+        },
+        {
+            "name": "Weak TLS Configuration",
+            "severity": 4,
+            "body": ""
+        },
+        {
+            "name": "Cookie Misconfiguration: HttpOnly",
+            "severity": 5,
+            "body": "If the `HttpOnly` flag (optional) is included in the HTTP response header, the cookie cannot be accessed through client side script (again if the browser supports this flag). As a result, even if a cross-site scripting (`XSS`) flaw exists, and a user accidentally accesses a link that exploits this flaw, the browser (primarily Internet Explorer) will not reveal the cookie to a third party."
+        },
+        {
+            "name": "Cookie Misconfiguration: Secure Flag",
+            "severity": 5,
+            "body": "The secure flag is an option that can be set by the application server when sending a new cookie to the user within an HTTP Response. The purpose of the secure flag is to prevent cookies from being observed by unauthorized parties due to the transmission of a the cookie in clear text.\n\nTo accomplish this goal, browsers which support the secure flag will only send cookies with the secure flag when the request is going to a HTTPS page. Said in another way, the browser will not send a cookie with the secure flag set over an unencrypted HTTP request.\n\nBy setting the secure flag, the browser will prevent the transmission of a cookie over an unencrypted channel."
+        },
+        {
+            "name": "Security Headers Misconfiguration",
+            "severity": 5,
+            "body": "HTTP headers which should be included by default. Methods for modifying or removing the headers for specific instances should be provided, but by default there are secure settings which should be enabled unless there are other overriding concerns.\n```\nX-Frame-Options: SAMEORIGIN \nX-XSS-Protection: 1; mode=block \nX-Content-Type-Options: nosniff\nContent-Type: text/html; charset=utf-8\n```\nAdditionally, no headers should be included that needlessly divulge information about the server or it's configuration that an end user wouldn't need."
+        }
+    ]
+}
