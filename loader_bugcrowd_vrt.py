@@ -6,10 +6,10 @@ import django
 # Bugcrowd VRT templates loader.
 #
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ptart.settings")
 django.setup()
 
-from sh00t.models import Template
+from ptart.models import Template
 
 bugcrowd_file = open('data/vulnerability-rating-taxonomy.json', 'r')
 vrt = json.load(bugcrowd_file)

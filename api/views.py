@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from sh00t.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Cvss, Case, Module, Methodology, Label
+from ptart.models import Flag, Sh0t, Assessment, Project, Template, Screenshot, Cvss, Case, Module, Methodology, Label
 
 from .serializers import FlagSerializer, Sh0tSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 

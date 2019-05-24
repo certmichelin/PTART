@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load addstr %}
+
+{% block title %} Flags | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='Flag' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:flag.assessment.project.pk|addstr:"/summary" sub_text=flag.assessment.project third_icon='fa fa-cube' third_url="/assessment/"|addstr:flag.assessment.pk third_text=flag.assessment active_icon='' active_text=flag.title %}
+        {% include "_include/html/messages.html" %}
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input id="title" class="form-control" value="{{ flag.title }}" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label>Asset</label>
+                    <input id="asset" class="form-control" value="{{ flag.asset }}" autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <label>Note</label>
+                    <textarea id="note" class="form-control" rows="10" style="resize:vertical">{{ flag.note }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="assessment">Assessment</label>
+                    <select class="form-control" id="assessment">
+                        {% for assessment in assessments %}
+                            <option value="{{assessment.id}}" {% if assessment.id == flag.assessment.id %} selected="selected" {% endif %}>{{ assessment.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assignee">Assignee</label>
+                    <select id="assignee" class="form-control">
+                        {% for usr in users %}
+                            <option value="{{ usr.id }}" {% if usr.id == flag.assignee.id %} selected="selected" {% endif %}>{{ usr.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="checkbox">
+                    <label><input id="doneCheckbox" type="checkbox" {% if True == flag.done %} checked{% endif %}>Done</label>
+                    <input id="done" type="hidden" value="{{flag.done}}"/>
+                </div>
+                <input id="id" type="hidden" value="{{flag.id}}"/>
+                {% if editable == True %}
+                <button id="updateBtn" class="btn btn-outline-primary mb-4">Update</button>
+                <button id="delBtn" class="btn btn-outline-danger mb-4">Delete</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block extra_foot %}
+    {% include '_include/js/updateItem.html' with item='Flag' ajax_function='ajaxUpdateFlag' params='id,title,asset,note,done,assessment,assignee' %}
+    {% include '_include/js/deleteItem.html' with item='Flag' ajax_function='ajaxDeleteFlag' %}
+    <script>
+        $("#doneCheckbox").click(function(){
+            $("#done").val(($('#doneCheckbox:checked').length > 0));
+        });
+
+        activeMarkdown("note");
+    </script>
+{% endblock %}

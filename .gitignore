@@ -9,7 +9,7 @@ __pycache__/
 # IDE
 .idea
 
-#sh00t files
+#PTART files
 db.sqlite3
 screenshots/*.png
 

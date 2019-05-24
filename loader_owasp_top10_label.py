@@ -6,10 +6,10 @@ import django
 # OWASP Top 10 labels loader.
 #
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ptart.settings")
 django.setup()
 
-from sh00t.models import Label
+from ptart.models import Label
 
 owasp_file = open('data/owasp_top10_label.json', 'r')
 label_json = json.load(owasp_file)

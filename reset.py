@@ -2,10 +2,10 @@ import json
 import os
 import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sh00t.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ptart.settings")
 django.setup()
 
-from sh00t.models import Project, Template, Methodology, Module, Case
+from ptart.models import Project, Template, Methodology, Module, Case
 
 print("This will reset everything in the database and set up as fresh.")
 print("Are you wanna do this?")
