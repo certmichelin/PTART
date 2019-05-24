@@ -7,6 +7,10 @@
 
 PTART is a vulnerability organizer tool developed for Pentesters, Bug bounty hunters, Anybody who wants to hack.
 
+This project is maintained by the Michelin CERT team. Michelin
+
+A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
+
 ## Installation
 
 **Preparing PTART environment :**
@@ -40,3 +44,5 @@ That's all for the first time. Follow the next steps whenever you want to start 
 5. Run the virtual environment: `pipenv shell`
 6. Make the latest database changes: `python manage.py migrate`
 7.  Start the server: `python manage.py runserver`
+8. Enjoy
+
