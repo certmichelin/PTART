@@ -9,6 +9,10 @@ PTART is a vulnerability organizer tool developed for Pentesters, Bug bounty hun
 
 A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
 
+![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot3.PNG)
+![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot1.PNG)
+![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot2.PNG)
+
 ## Installation
 
 **Preparing PTART environment :**
