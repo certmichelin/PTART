@@ -28,7 +28,6 @@
 
     <div class="reveal">
         <div class="slides">
-
             <section>
                 <h1>{{ project.name }}</h1>
                 <p>Date: {{ project.added }}</p>
@@ -40,7 +39,7 @@
                 <h3>Pentested by:</h3>
                 <ul>
                     {% for pentester in project.pentesters.all %}
-                    <li>{{ pentester.username }} - {{ pentester.first_name }} {{ pentester.last_name }}</li>
+                        <li>{{ pentester.username }} - {{ pentester.first_name }} {{ pentester.last_name }}</li>
                     {% endfor %}
                 </ul>
             </section>
@@ -51,39 +50,68 @@
 
             <!-- Hits page -->
             {% for assessment in project.assessment_set.all %}
-            {% if assessment.hit_set.all %}
-            <section>
-                <h1>{{ assessment.name }}</h1>
-            </section>
-            {% for hit in assessment.hit_set.all %}
-            <section>
-                <section>
-                    <h2>
-                        <span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span>
-                        {{ hit.title }}
-                    </h2>
-                    <h4><a href="{{ hit.asset }}">{{ hit.asset }}</a></h4>
-                    <h4>CVSS v3: <span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span> </h4>
-                    <h5>{{ hit.get_cvss_string }}</h5>
-                    {% for label in hit.labels.all %}
-                        <span class="cvss-badge cvss-badge-primary" style="background-color:{{ label.color }}">{{ label.title }}</span>
-                    {% endfor %}
-                </section>
-                <section>
-                    <div data-markdown>
-                        {{ hit.body }}
-                    </div>
-                </section>
+                {% if assessment.hit_set.all %}
+                    <section>
+                        <h1>{{ assessment.name }}</h1>
+                    </section>
+                    {% for hit in assessment.hit_set.all %}
+                        <section>
+                            <section>
+                                <h2>
+                                    <span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span>
+                                    {{ hit.title }}
+                                </h2>
+                                <h4><a href="{{ hit.asset }}">{{ hit.asset }}</a></h4>
+                                <h4>CVSS v3: <span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span> </h4>
+                                <h5>{{ hit.get_cvss_string }}</h5>
+                                {% for label in hit.labels.all %}
+                                    <span class="cvss-badge cvss-badge-primary" style="background-color:{{ label.color }}">{{ label.title }}</span>
+                                {% endfor %}
+                            </section>
+                            <section>
+                                <div data-markdown>
+                                    {{ hit.body }}
+                                </div>
+                            </section>
 
-                {% for screenshot in hit.screenshot_set.all %}
-                <section>
-                    <img src="/api/screenshot/png/{{screenshot.pk}}/" />
-                </section>
+                            {% for screenshot in hit.screenshot_set.all %}
+                                <section>
+                                    <img src="/api/screenshot/png/{{screenshot.pk}}/" />
+                                </section>
+                            {% endfor %}
+                        </section>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+
+            <!-- Synthesis -->
+            <section>
+                {% for assessment in project.assessment_set.all %}
+                    {% if assessment.hit_set.all %}
+                        <section>
+                            <h3>{{ assessment.name }} Synthesis</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Sev</th>
+                                        <th>Vulnerability</th>
+                                        <th>CVSS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for hit in assessment.hit_set.all %}
+                                        <tr>
+                                            <td><span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span></td>
+                                            <td>{{ hit.title }}</td>
+                                            <td><span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </section>
+                    {% endif %}
                 {% endfor %}
             </section>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
         </div>
     </div>
 
