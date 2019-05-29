@@ -139,6 +139,11 @@
             "name": "Security Headers Misconfiguration",
             "severity": 5,
             "body": "HTTP headers which should be included by default. Methods for modifying or removing the headers for specific instances should be provided, but by default there are secure settings which should be enabled unless there are other overriding concerns.\n```\nX-Frame-Options: SAMEORIGIN \nX-XSS-Protection: 1; mode=block \nX-Content-Type-Options: nosniff\nContent-Type: text/html; charset=utf-8\n```\nAdditionally, no headers should be included that needlessly divulge information about the server or it's configuration that an end user wouldn't need."
+        },
+        {
+            "name": "Open Redirect",
+            "severity": 5,
+            "body": "Open redirection vulnerabilities arise when an application incorporates user-controllable data into the target of a redirection in an unsafe way. An attacker can construct a URL within the application that causes a redirection to an arbitrary external domain. This behavior can be leveraged to facilitate phishing attacks against users of the application. The ability to use an authentic application URL, targeting the correct domain and with a valid SSL certificate (if SSL is used), lends credibility to the phishing attack because many users, even if they verify these features, will not notice the subsequent redirection to a different domain."
         }
     ]
 }
