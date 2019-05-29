@@ -18,7 +18,7 @@ function clearCVSS() {
     integrityValue = null;
     availabilityValue = null;
 
-    $("#cvssValue").attr("class", "badge badge-secondary")
+    $("#cvssValue").attr("class", "cvss-badge cvss-badge-secondary")
     $("#cvssValue").text("No Rating (---)");
     $("#cvss").val("---"); 
 
@@ -50,13 +50,13 @@ $('.cvss').each(function () {
     cvss = parseFloat($(this).text());
     if (!isNaN(cvss) && $(this).text().trim() != "0.0") {
         if (cvss > 0 && cvss < 4.0) {
-            $(this).attr("class", "cvss badge badge-success")
+            $(this).attr("class", "cvss cvss-badge cvss-badge-success")
         } else if (cvss < 7.0) {
-            $(this).attr("class", "cvss badge badge-warning")
+            $(this).attr("class", "cvss cvss-badge cvss-badge-warning")
         } else if (cvss < 9.0) {
-            $(this).attr("class", "cvss badge badge-danger")
+            $(this).attr("class", "cvss cvss-badge cvss-badge-danger")
         } else {
-            $(this).attr("class", "cvss badge badge-dark")
+            $(this).attr("class", "cvss cvss-badge cvss-badge-dark")
         }
     }
 });
@@ -65,26 +65,26 @@ function displayCVSS(cvss) {
     text = "";
     if (!isNaN(parseFloat(cvss))) {
         if (cvss <= 0) {
-            $("#cvssValue").attr("class", "badge badge-secondary")
+            $("#cvssValue").attr("class", "cvss-badge cvss-badge-secondary")
             cvss = "0.0";
             text = cvss + " - None";
         } else if (cvss < 4.0) {
-            $("#cvssValue").attr("class", "badge badge-success")
+            $("#cvssValue").attr("class", "cvss-badge cvss-badge-success")
             text = cvss + " - Low"
         } else if (cvss < 7.0) {
-            $("#cvssValue").attr("class", "badge badge-warning")
+            $("#cvssValue").attr("class", "cvss-badge cvss-badge-warning")
             text = cvss + " - Medium"
         } else if (cvss < 9.0) {
-            $("#cvssValue").attr("class", "badge badge-danger")
+            $("#cvssValue").attr("class", "cvss-badge cvss-badge-danger")
             text = cvss + " - High"
         } else {
-            $("#cvssValue").attr("class", "badge badge-dark")
+            $("#cvssValue").attr("class", "cvss-badge cvss-badge-dark")
             text = cvss + " - Critical"
         }
         $("#cvssValue").text(text);
         $("#cvss").val(cvss);
     } else {
-        $("#cvssValue").attr("class", "badge badge-secondary")
+        $("#cvssValue").attr("class", "cvss-badge cvss-badge-secondary")
         $("#cvssValue").text("No Rating (---)");
         $("#cvss").val("---");
     }
