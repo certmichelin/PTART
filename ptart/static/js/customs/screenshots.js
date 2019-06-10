@@ -105,7 +105,7 @@ function addScreenshot() {
 
 //Create screenshot in the screenshot cointainer.
 function createScreenshot(id, dataURL) {
-    $('#screenshots').append($('<a>', { href: dataURL, class: "screenshot", "data-fancybox": "gallery" }).append($('<img>', { id: "screenshot_" + id, src: dataURL, class: "screenshot_data screenshot_gallery", draggable: "true", ondragstart: "dragStart(event)", ondragend: "dragStop(event)" })));
+    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, class: "screenshot", "data-fancybox": "gallery", draggable: "true", ondragstart: "dragStart(event)", ondragend: "dragStop(event)"}).append($('<img>', { id: "screenshot_" + id, src: dataURL, class: "screenshot_data screenshot_gallery"})));
 }
 
 
@@ -116,14 +116,13 @@ function allowDrop(ev) {
 
 //Delete screenshot drag start function.
 function dragStart(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
+    ev.dataTransfer.setData("text/plain", ev.target.id.replace("screenshot_link_", "").replace("screenshot_", ""));
     $('#deleteZone').text("Drop here to delete")
     $("#deleteZone").attr('class', 'btn btn-success mb-4');
 }
 
 //Delete screenshot drag stop function.
 function dragStop(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
     $('#deleteZone').text("Delete Screenshot Zone")
     $("#deleteZone").attr('class', 'btn btn-outline-danger mb-4');
 }
@@ -131,11 +130,13 @@ function dragStop(ev) {
 //Delete screenshot drag stop function.
 function drop(ev) {
     ev.preventDefault();
-    id = ev.dataTransfer.getData("text");
+    id = ev.dataTransfer.getData("text/plain");
     removeScreenshot(id);
+    $('#deleteZone').text("Delete Screenshot Zone")
+    $("#deleteZone").attr('class', 'btn btn-outline-danger mb-4');
 }
 
 //remove screenshot from HTML container.
 function removeScreenshot(id) {
-    $("#" + id).parent().remove();
+    $("#screenshot_link_" + id).remove();
 }

@@ -139,7 +139,7 @@
     function drop(ev) {
         ev.preventDefault();
         id = ev.dataTransfer.getData("text");
-        ajaxDeleteScreenshot(screenshotDeletionSuccess, commonFailure, id.replace("screenshot_", ""));
+        ajaxDeleteScreenshot(screenshotDeletionSuccess, commonFailure, id);
     }
 
     /**
@@ -154,7 +154,7 @@
      * Screenshot deletion success callback.
      */
     function screenshotDeletionSuccess(data) {
-        removeScreenshot("screenshot_" + data.id);
+        removeScreenshot(data.id);
     }
 </script>
 {% endblock %}
