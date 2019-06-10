@@ -51,7 +51,7 @@ class Project(models.Model):
 
     def get_viewable(user):
         """Returns all viewable projects"""
-        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])) 
+        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])).distinct() 
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this project"""
