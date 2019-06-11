@@ -397,6 +397,39 @@ class Screenshot(models.Model):
         return self.screenshot
 
 
+"""Attachment model."""
+class Attachment(models.Model):
+
+    upload_folder = 'attachment'
+
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    attachment = models.FileField(upload_to=upload_folder)
+    
+    def delete(self):
+        """Delete file related to the attachment"""
+        os.remove(self.attachment.url)
+        super(Attachment, self).delete()
+    
+    def get_viewable(user):
+        """Returns all viewable attachments"""
+        return Attachment.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this attachment"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this attachment"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this attachment"""
+        return self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.attachment
+
+
 """Flag model."""
 class Flag(models.Model):
 
