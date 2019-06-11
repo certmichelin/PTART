@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from ptart.models import Flag, Hit, Assessment, Project, Template, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, AttachmentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
@@ -143,15 +143,17 @@ def attachment_raw(request, pk) :
     try:
         item = Attachment.objects.get(pk=pk)
         if item.is_user_can_view(request.user) :
-            response = Response(item.get_raw_data())        
+            response = Response(item.get_raw_data())
+            response.content_type = "application/octet-stream"
+            response['Content-Disposition'] = 'inline; filename=' + item.attachment_name
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Attachment.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
         
-    #response.accepted_renderer = ImageRenderer()
-    #response.accepted_media_type = 'image/png'
-    #response.renderer_context = {}
+    response.accepted_renderer = BinaryRenderer()
+    response.accepted_media_type = 'application/octet-stream'
+    response.renderer_context = {}
     return response
 
 @api_view(['POST'])
@@ -278,4 +280,11 @@ def items(request, class_name, serializer_name) :
 #
 class ImageRenderer(BaseRenderer):
     def render(self, data, media_type='image/png', renderer_context=None):
+        return data
+
+#
+# Binary renderer for Attachments.
+#
+class BinaryRenderer(BaseRenderer):
+    def render(self, data, media_type='application/octet-stream', renderer_context=None):
         return data

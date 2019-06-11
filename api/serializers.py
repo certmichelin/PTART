@@ -1,14 +1,17 @@
 from django.contrib.auth.models import User
 from django.db import transaction
-from drf_extra_fields.fields import Base64FileField, Base64ImageField
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Screenshot, Attachment, Cvss, Case, Module, Methodology
+from .tools import FileField
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username')
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)
@@ -62,6 +65,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         instance.__dict__.update(**validated_data)
         instance.save()
         return instance
+
 
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -135,16 +139,17 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
-    attachment = Base64FileField()
+    attachment = FileField()
 
     class Meta:
         model = Attachment
-        fields = ('id', 'attachment', 'hit')
+        fields = ('id', 'attachment', 'attachment_name', 'hit')
 
     def create(self, validated_data):
         attachment=validated_data.pop('attachment')
+        attachment_name = validated_data.pop('attachment_name')
         hit=validated_data.pop('hit')
-        return Attachment.objects.create(attachment=attachment,hit=hit)
+        return Attachment.objects.create(attachment=attachment, attachment_name=attachment_name, hit=hit)
 
 
 class TemplateSerializer(serializers.ModelSerializer):
