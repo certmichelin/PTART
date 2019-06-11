@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Screenshot, Cvss, Case, Module, Methodology, Label
+from ptart.models import Flag, Hit, Assessment, Project, Template, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
 
 from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
@@ -40,6 +40,14 @@ def screenshot(request, pk):
 @api_view(['GET', 'POST'])
 def screenshots(request):
     return items(request, Screenshot, ScreenshotSerializer)
+
+@api_view(['DELETE'])
+def attachment(request, pk):
+    return item(request, pk, Attachment, AttachmentSerializer)
+
+@api_view(['GET', 'POST'])
+def attachments(request):
+    return items(request, Attachment, AttachmentSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def assessment(request, pk):
@@ -127,6 +135,23 @@ def screenshot_raw(request, pk) :
     response.accepted_renderer = ImageRenderer()
     response.accepted_media_type = 'image/png'
     response.renderer_context = {}
+    return response
+
+@action(methods=['GET'], detail=True)
+def attachment_raw(request, pk) :
+    response = None
+    try:
+        item = Attachment.objects.get(pk=pk)
+        if item.is_user_can_view(request.user) :
+            response = Response(item.get_raw_data())        
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Attachment.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+        
+    #response.accepted_renderer = ImageRenderer()
+    #response.accepted_media_type = 'image/png'
+    #response.renderer_context = {}
     return response
 
 @api_view(['POST'])

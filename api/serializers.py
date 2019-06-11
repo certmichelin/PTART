@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import transaction
-from drf_extra_fields.fields import Base64ImageField
+from drf_extra_fields.fields import Base64FileField, Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Screenshot,Cvss, Case, Module, Methodology
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Screenshot, Attachment, Cvss, Case, Module, Methodology
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -114,10 +114,12 @@ class HitSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class CvssSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cvss
         fields = ('id', 'attack_vector', 'attack_complexity','privilege_required','user_interaction','scope','confidentiality','integrity','availability','decimal_value')
+
 
 class ScreenshotSerializer(serializers.ModelSerializer):
     screenshot = Base64ImageField()
@@ -130,6 +132,19 @@ class ScreenshotSerializer(serializers.ModelSerializer):
         screenshot=validated_data.pop('screenshot')
         hit=validated_data.pop('hit')
         return Screenshot.objects.create(screenshot=screenshot,hit=hit)
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    attachment = Base64FileField()
+
+    class Meta:
+        model = Attachment
+        fields = ('id', 'attachment', 'hit')
+
+    def create(self, validated_data):
+        attachment=validated_data.pop('attachment')
+        hit=validated_data.pop('hit')
+        return Attachment.objects.create(attachment=attachment,hit=hit)
 
 
 class TemplateSerializer(serializers.ModelSerializer):
