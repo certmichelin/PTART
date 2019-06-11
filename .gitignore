@@ -12,6 +12,7 @@ __pycache__/
 #PTART files
 db.sqlite3
 screenshots/*.png
+attachments/*.ptart
 
 # C extensions
 *.so
