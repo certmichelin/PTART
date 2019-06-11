@@ -400,7 +400,7 @@ class Screenshot(models.Model):
 """Attachment model."""
 class Attachment(models.Model):
 
-    upload_folder = 'attachment'
+    upload_folder = 'attachments'
 
     hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
     attachment = models.FileField(upload_to=upload_folder)
