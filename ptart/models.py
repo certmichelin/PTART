@@ -402,6 +402,7 @@ class Attachment(models.Model):
     upload_folder = 'attachments'
 
     hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    attachment_name = models.CharField(max_length=100, default="")
     attachment = models.FileField(upload_to=upload_folder)
 
     def get_data(self):
