@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
 
-from .models import Assessment, Project, Hit, Flag, Template, Screenshot, Methodology, Module, Case, Severity, Label
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
 
 

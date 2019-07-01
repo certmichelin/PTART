@@ -12,7 +12,7 @@ print("Are you wanna do this?")
 answer = input("[No] | Yes?\n") or ""
 if "yes" == answer.lower():
 
-    Project.objects.all().delete()  # Deleting Project will trigger to delete everything: Flags, Hits, Assessments, Screenshots
+    Project.objects.all().delete()  # Deleting Project will trigger to delete everything: Flags, Hits, Assessments, Screenshots, Attachments
     Case.objects.all().delete()
     Module.objects.all().delete()
     Methodology.objects.all().delete()

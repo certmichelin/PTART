@@ -9,7 +9,7 @@
 
         {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:hit.assessment.project.pk|addstr:"/summary" sub_text=hit.assessment.project third_icon='fa fa-cube' third_url="/assessment/"|addstr:hit.assessment.pk third_text=hit.assessment active_icon='' active_text=hit.title %}
         {% include "_include/html/messages.html" %}
-    
+
         <div class="row">
             <div class="col-lg-7">
                 <div class="form-group">
@@ -23,7 +23,7 @@
                 <div class="form-group">
                     <label>CVSS v3</label>
                     <h5><span id="cvssValue" class="cvss-badge cvss-badge-secondary">No Rating (---)</span></h5>
-                    <input id="cvss cvss-badge cvss-badge-secondary" type="hidden" value="---"/> 
+                    <input id="cvss cvss-badge cvss-badge-secondary" type="hidden" value="---" />
                 </div>
                 <div class="form-group">
                     <label>Title</label>
@@ -62,6 +62,7 @@
             </div>
             <div class="col-lg-5">
                 {% include "_include/html/cvss.html" %}
+                {% include "_include/html/attachments.html" %}
                 {% include "_include/html/screenshots.html" %}
             </div>
         </div>
@@ -108,7 +109,7 @@
     /**
      * Hit CVSS deletion callback
      */
-    function cvssDeletionSuccess(data){
+    function cvssDeletionSuccess(data) {
         addCVSSv3ToHit($("#id").val());
     }
 
@@ -118,7 +119,7 @@
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
-        ajaxRemoveCVSSv3(cvssDeletionSuccess,commonFailure,$("#id").val());
+        ajaxRemoveCVSSv3(cvssDeletionSuccess, commonFailure, $("#id").val());
     });
 
     /**
@@ -155,6 +156,42 @@
      */
     function screenshotDeletionSuccess(data) {
         removeScreenshot(data.id);
+    }
+
+    /**
+     * Override openAttachment from attachment.js in order to upload the file on the fly.
+     */
+    function openAttachment() {
+        var input = event.target;
+        var reader = new FileReader();
+        reader.fileName = input.files[0].name;
+        reader.onload = function (readerEvt) {
+            ajaxUploadAttachment(attachmentCreationSuccess, commonFailure, reader.result, readerEvt.target.fileName, $("#id").val());
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    /**
+     * Attachment creation success callback.
+     */
+    function attachmentCreationSuccess(data) {
+        //Add attachment to the list.
+        $('#attachments').append($('<div>', { class: "mb-2" }).append($('<i>', { class: "far fa-file" })).append($('<a>', { id: "attachment_link_" + data.id, href: "/api/attachment/raw/" + data.id}).text(" " + data.attachment_name + " ")).append($('<i>', { class: "fa fa-close", onclick: "deleteAttachment(" + data.id + ")"})));
+        $('#AttachmentUpload').val('')
+    }
+
+    /**
+     * Delete Attachment.
+     */
+    function deleteAttachment(id) {
+        ajaxDeleteAttachment(attachmentDeletionSuccess, commonFailure, id);
+    }
+
+    /**
+     * Attachment deletion success callback.
+     */
+    function attachmentDeletionSuccess(data) {
+        removeAttachment(data.id);
     }
 </script>
 {% endblock %}

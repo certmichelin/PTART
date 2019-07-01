@@ -1,0 +1,30 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h4>Attachments</h4>
+            </div>
+        </div>
+
+        <input id="attachmentMaxId" name="attachmentMaxId" type="hidden" value="0" />
+
+        <div id="attachments">
+            {% for attachment in hit.attachment_set.all %}
+            <div class="mb-2">
+                <i class="far fa-file"></i>
+                <a id="attachment_link_{{attachment.id}}" href="/api/attachment/raw/{{attachment.id}}" >{{attachment.attachment_name}}</a>
+                <i class="fa fa-close" onclick="deleteAttachment({{attachment.id}})"></i>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not editable or editable == True %}
+        <form>
+            <div class="form-group">
+                <input type="file" class="form-control-file" id="AttachmentUpload" onchange='openAttachment(event)'>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>

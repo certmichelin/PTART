@@ -3,12 +3,15 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Screenshot,Cvss, Case, Module, Methodology
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Screenshot, Attachment, Cvss, Case, Module, Methodology
+from .tools import FileField
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username')
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)
@@ -63,6 +66,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assessment
@@ -114,10 +118,12 @@ class HitSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class CvssSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cvss
         fields = ('id', 'attack_vector', 'attack_complexity','privilege_required','user_interaction','scope','confidentiality','integrity','availability','decimal_value')
+
 
 class ScreenshotSerializer(serializers.ModelSerializer):
     screenshot = Base64ImageField()
@@ -130,6 +136,20 @@ class ScreenshotSerializer(serializers.ModelSerializer):
         screenshot=validated_data.pop('screenshot')
         hit=validated_data.pop('hit')
         return Screenshot.objects.create(screenshot=screenshot,hit=hit)
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    attachment = FileField()
+
+    class Meta:
+        model = Attachment
+        fields = ('id', 'attachment', 'attachment_name', 'hit')
+
+    def create(self, validated_data):
+        attachment=validated_data.pop('attachment')
+        attachment_name = validated_data.pop('attachment_name')
+        hit=validated_data.pop('hit')
+        return Attachment.objects.create(attachment=attachment, attachment_name=attachment_name, hit=hit)
 
 
 class TemplateSerializer(serializers.ModelSerializer):

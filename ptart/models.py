@@ -367,7 +367,6 @@ class Screenshot(models.Model):
     def get_raw_data(self):
         """Get screenshot data in binary format"""
         result = ''
-        extension = os.path.splitext(self.screenshot.url)[1]
         with open(self.screenshot.url, 'rb') as img_f:
             result = img_f.read()
         return result
@@ -395,6 +394,54 @@ class Screenshot(models.Model):
 
     def __str__(self):  
         return self.screenshot
+
+
+"""Attachment model."""
+class Attachment(models.Model):
+
+    upload_folder = 'attachments'
+
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    attachment_name = models.CharField(max_length=100, default="")
+    attachment = models.FileField(upload_to=upload_folder)
+
+    def get_data(self):
+        """Get attachment data in Base64"""
+        encoded_string = ''
+        with open(self.attachment.url, 'rb') as file_f:
+            encoded_string = base64.b64encode(file_f.read())
+        return 'data:application/octet;base64,%s' % (encoded_string.decode("utf-8"))
+
+    def get_raw_data(self):
+        """Get attachment data in binary format"""
+        result = ''
+        with open(self.attachment.url, 'rb') as file_f:
+            result = file_f.read()
+        return result
+    
+    def delete(self):
+        """Delete file related to the attachment"""
+        os.remove(self.attachment.url)
+        super(Attachment, self).delete()
+    
+    def get_viewable(user):
+        """Returns all viewable attachments"""
+        return Attachment.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this attachment"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this attachment"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this attachment"""
+        return self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.attachment
 
 
 """Flag model."""
