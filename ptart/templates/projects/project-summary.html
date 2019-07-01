@@ -15,6 +15,10 @@
                         Scope
                     </button>
 
+                    <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#conclusionModal">
+                        Conclusion
+                    </button>
+
                     {% if editable == True %}
                     <a class="btn btn-outline-warning" href="/assessments/new" role="button">Create Assessment</a>
 
@@ -50,6 +54,26 @@
                     </div>
                     <div class="modal-body">
                         <div id="projectScope">{{ project.scope }}</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conclusion modal -->
+        <div class="modal fade" id="conclusionModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Conclusion</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="projectConclusion">{{ project.conclusion }}</div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
@@ -181,5 +205,6 @@
 {% block extra_foot %}
 <script>    
     $("#projectScope").html(marked($("#projectScope").html()));
+    $("#projectConclusion").html(marked($("#projectConclusion").html()));
 </script>
 {% endblock %}

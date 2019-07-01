@@ -16,7 +16,11 @@
                 </div>
                 <div class="form-group">
                     <label>Scope</label>
-                    <textarea class="form-control" rows="10" id="scope" style="resize:vertical">{{ project.scope }}</textarea>
+                    <textarea class="form-control" rows="5" id="scope" style="resize:vertical">{{ project.scope }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Conclusion</label>
+                    <textarea class="form-control" rows="5" id="conclusion" style="resize:vertical">{{ project.conclusion }}</textarea>
                 </div>
                 <div class="form-group">
                     <label>Pentesters</label>
@@ -48,7 +52,8 @@
 {% block extra_foot %}
 {% include '_include/js/deleteItem.html' with item='Project' ajax_function='ajaxDeleteProject' %}
 <script>
-    activeMarkdown("body");
+    activeMarkdown("scope");
+    activeMarkdown("conclusion");
 
     var selectedPentesters = [];
     {% for pentester in project.pentesters.all %}
@@ -74,7 +79,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#scope").val(), $("#conclusion").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

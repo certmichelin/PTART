@@ -48,6 +48,35 @@
                 {{ project.scope }}
             </section>
 
+            <!-- Synthesis -->
+            <section>
+                {% for assessment in project.assessment_set.all %}
+                    {% if assessment.hit_set.all %}
+                        <section>
+                            <h3>{{ assessment.name }} Synthesis</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Sev</th>
+                                        <th>Vulnerability</th>
+                                        <th>CVSS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for hit in assessment.hit_set.all %}
+                                        <tr>
+                                            <td><span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span></td>
+                                            <td>{{ hit.title }}</td>
+                                            <td><span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </section>
+                    {% endif %}
+                {% endfor %}
+            </section>
+
             <!-- Hits page -->
             {% for assessment in project.assessment_set.all %}
                 {% if assessment.hit_set.all %}
@@ -84,33 +113,8 @@
                 {% endif %}
             {% endfor %}
 
-            <!-- Synthesis -->
-            <section>
-                {% for assessment in project.assessment_set.all %}
-                    {% if assessment.hit_set.all %}
-                        <section>
-                            <h3>{{ assessment.name }} Synthesis</h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Sev</th>
-                                        <th>Vulnerability</th>
-                                        <th>CVSS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for hit in assessment.hit_set.all %}
-                                        <tr>
-                                            <td><span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span></td>
-                                            <td>{{ hit.title }}</td>
-                                            <td><span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span></td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </section>
-                    {% endif %}
-                {% endfor %}
+            <section data-markdown>
+                {{ project.conclusion }}
             </section>
         </div>
     </div>

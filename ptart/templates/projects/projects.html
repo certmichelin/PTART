@@ -72,7 +72,7 @@
 
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val(), "", $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

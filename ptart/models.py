@@ -15,6 +15,7 @@ class Project(models.Model):
 
     name = models.CharField(max_length=100)
     scope = models.TextField(blank=True, default="")
+    conclusion = models.TextField(blank=True, default="")
     added = models.DateTimeField(default=datetime.now)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
     viewers = models.ManyToManyField(User, related_name='%(class)s_viewers')
