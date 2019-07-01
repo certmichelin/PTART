@@ -44,9 +44,11 @@
                 </ul>
             </section>
 
+            {% if project.scope %}
             <section data-markdown>
                 {{ project.scope }}
             </section>
+            {% endif %}
 
             <!-- Synthesis -->
             <section>
@@ -114,9 +116,11 @@
                 {% endif %}
             {% endfor %}
 
+            {% if project.conclusion %}
             <section data-markdown>
                 {{ project.conclusion }}
             </section>
+            {% endif %}
         </div>
     </div>
 
