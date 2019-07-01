@@ -90,7 +90,7 @@
 <script type="text/javascript">
 
     var mdBody = activeMarkdown("body");
-
+    
     var colorMap = new Map();
     {% for label in labels %}
     colorMap.set("{{ label.id }}", "{{ label.color }}");
@@ -104,6 +104,8 @@
             return data.text;
         }
     });
+
+    tooltipEnabler();
 
     var screenshotsToUpload = 0;
     var screenshotsUploaded = 0;
@@ -147,7 +149,7 @@
             checkUploadBatchStatus()
         } else {
             $('.screenshot_gallery').each(function () {
-                ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), data.id);
+                ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), $(this).attr("caption"), data.id);
             });
 
             $('.attachment_gallery').each(function () {

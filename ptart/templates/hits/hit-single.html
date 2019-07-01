@@ -127,8 +127,9 @@
      */
     function addScreenshot() {
         var dataURL = $("#screenshotData").val()
+        var caption = $("#screenshotCaption").val()
         if (dataURL !== "") {
-            ajaxUploadScreenshot(screenshotCreationSuccess, commonFailure, dataURL, $("#id").val());
+            ajaxUploadScreenshot(screenshotCreationSuccess, commonFailure, dataURL, caption, $("#id").val());
         } else {
             bootbox.alert("No screenshot is pasted!")
         }
@@ -147,7 +148,7 @@
      * Screenshot creation success callback.
      */
     function screenshotCreationSuccess(data) {
-        createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/")
+        createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/", data.caption)
         resetScreenshotModal();
     }
 

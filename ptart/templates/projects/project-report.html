@@ -106,6 +106,7 @@
                             {% for screenshot in hit.screenshot_set.all %}
                                 <section>
                                     <img src="/api/screenshot/png/{{screenshot.pk}}/" />
+                                    <p>{{screenshot.caption}}</p>
                                 </section>
                             {% endfor %}
                         </section>

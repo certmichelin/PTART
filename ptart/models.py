@@ -356,6 +356,7 @@ class Screenshot(models.Model):
 
     hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
     screenshot = models.ImageField(upload_to=upload_folder)
+    caption = models.CharField(blank=True, max_length=256, default="")
     
     def get_data(self):
         """Get screenshot data in Base64"""

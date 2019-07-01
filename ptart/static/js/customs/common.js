@@ -14,6 +14,13 @@ function goBackWithRefresh(event) {
  */
 function toggle(source) {
     checkboxes = document.getElementsByName('selection');
-    for(var i in checkboxes)
+    for (var i in checkboxes)
         checkboxes[i].checked = source.checked;
 }
+
+/**
+ * Enable automatically all the tooltips.
+ */
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+})

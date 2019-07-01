@@ -83,20 +83,22 @@ $("html").pasteImageReader(function (results) {
 function resetScreenshotModal() {
     $("#pushScreenshotModal").modal('toggle');
     $("#screenshotData").val("");
+    $("#screenshotCaption").val("");
     $("#screenshot").attr("src", "");
     $("#uploadMessage").show();
 }
 
 //Add screenshot.
 function addScreenshot() {
-    var dataURL = $("#screenshotData").val()
+    var dataURL = $("#screenshotData").val();
+    var caption = $("#screenshotCaption").val();
     if (dataURL !== "") {
         //Manage ID.
         var id = $('#screenshotMaxId').val();
         $('#screenshotMaxId').val(parseInt(id) + 1);
 
         //add screenshot to gallery
-        createScreenshot(id, dataURL);
+        createScreenshot(id, dataURL, caption);
         resetScreenshotModal();
     } else {
         bootbox.alert("No screenshot is pasted!")
@@ -104,8 +106,9 @@ function addScreenshot() {
 }
 
 //Create screenshot in the screenshot cointainer.
-function createScreenshot(id, dataURL) {
-    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, class: "screenshot", "data-fancybox": "gallery", draggable: "true", ondragstart: "dragStart(event)", ondragend: "dragStop(event)"}).append($('<img>', { id: "screenshot_" + id, src: dataURL, class: "screenshot_data screenshot_gallery"})));
+function createScreenshot(id, dataURL, caption) {
+    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, class: "screenshot", "data-fancybox": "gallery", draggable: "true", ondragstart: "dragStart(event)", ondragend: "dragStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, class: "screenshot_data screenshot_gallery"})));
+    $("#screenshot_link_" + id).tooltip();
 }
 
 

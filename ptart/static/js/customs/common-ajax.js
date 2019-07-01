@@ -241,12 +241,13 @@ function ajaxDeleteLabel(success_function, error_function, id) {
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} data Base64 image to upload.
+ * @param {*} caption Image caption.
  * @param {*} hitId Hit id.
  */
-function ajaxUploadScreenshot(success_function, error_function, data, hitId) {
+function ajaxUploadScreenshot(success_function, error_function, data, caption, hitId) {
     $.ajax({
         url: "/api/screenshots/",
-        data: '{"screenshot": ' + JSON.stringify(data) + ', "hit": ' + JSON.stringify(hitId) + ' }',
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "hit": ' + JSON.stringify(hitId) + ' }',
         type: 'POST',
         success: success_function,
         error: error_function

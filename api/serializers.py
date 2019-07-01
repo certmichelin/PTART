@@ -130,12 +130,13 @@ class ScreenshotSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Screenshot
-        fields = ('id', 'screenshot', 'hit')
+        fields = ('id', 'screenshot', 'caption', 'hit')
 
     def create(self, validated_data):
         screenshot=validated_data.pop('screenshot')
         hit=validated_data.pop('hit')
-        return Screenshot.objects.create(screenshot=screenshot,hit=hit)
+        caption=validated_data.pop('caption')
+        return Screenshot.objects.create(screenshot=screenshot,caption=caption,hit=hit)
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
