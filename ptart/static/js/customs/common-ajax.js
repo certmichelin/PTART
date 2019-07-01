@@ -267,6 +267,41 @@ function ajaxDeleteScreenshot(success_function, error_function, id) {
 }
 
 /**
+ * Upload an attachment for a hit.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} data Base64 attachment to upload.
+ * @param {*} name Attachment file name.
+ * @param {*} hitId Hit id.
+ */
+function ajaxUploadAttachment(success_function, error_function, data, name, hitId) {
+    $.ajax({
+        url: "/api/attachments/",
+        data: '{"attachment": ' + JSON.stringify(data) + ', "attachment_name": ' + JSON.stringify(name) + ', "hit": ' + JSON.stringify(hitId) + ' }',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete an attachment.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Attachment id.
+ */
+function ajaxDeleteAttachment(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/attachment/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Compute the cvss value a screenshot for a hit.
  * 
  * @param {*} success_function function to call in case of ajax success.

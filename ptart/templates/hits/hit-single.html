@@ -62,6 +62,7 @@
             </div>
             <div class="col-lg-5">
                 {% include "_include/html/cvss.html" %}
+                {% include "_include/html/attachments.html" %}
                 {% include "_include/html/screenshots.html" %}
             </div>
         </div>
@@ -155,6 +156,20 @@
      */
     function screenshotDeletionSuccess(data) {
         removeScreenshot(data.id);
+    }
+
+    /**
+     * Delete Attachment.
+     */
+    function deleteAttachment(id){
+        ajaxDeleteAttachment(attachmentDeletionSuccess, commonFailure, id);
+    }
+
+    /**
+     * Attachment deletion success callback.
+     */
+     function attachmentDeletionSuccess(data) {
+        removeAttachment(data.id);
     }
 </script>
 {% endblock %}
