@@ -290,7 +290,8 @@ body {
 .reveal p code {
   background-color: #23241f;
   display: inline-block;
-  border-radius: 7px; }
+  border-radius: 7px;
+  color: #be2626; }
 
 .reveal small code {
   vertical-align: baseline; }
