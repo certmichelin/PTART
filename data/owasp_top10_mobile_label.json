@@ -1,0 +1,44 @@
+{
+    "labels": [
+        {
+            "title" : "M1:2016-Improper Platform Usage",
+            "color" : "#e6194B"
+        },
+        {
+            "title" : "M2:2016-Insecure Data Storage",
+            "color" : "#3cb44b"
+        },
+        {
+            "title" : "M3:2016-Insecure Communication",
+            "color" : "#ffe119"
+        },
+        {
+            "title" : "M4:2016-Insecure Authentication",
+            "color" : "#4363d8"
+        },
+        {
+            "title" : "M5:2016-Insufficient Cryptography",
+            "color" : "#f58231"
+        },
+        {
+            "title" : "M6:2016-Insecure Authorization",
+            "color" : "#42d4f4"
+        },
+        {
+            "title" : "M7:2016-Poor Code Quality",
+            "color" : "#f032e6"
+        },
+        {
+            "title" : "M8:2016-Code Tampering",
+            "color" : "#fabebe"
+        },
+        {
+            "title" : "M9:2016-Reverse Engineering",
+            "color" : "#469990"
+        },
+        {
+            "title" : "M10:2016-Extraneous Functionality",
+            "color" : "#e6beff"
+        }
+    ]
+}
