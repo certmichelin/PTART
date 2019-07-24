@@ -14,12 +14,14 @@
             <div class="mb-2">
                 <i class="far fa-file"></i>
                 <a id="attachment_link_{{attachment.id}}" href="/api/attachment/raw/{{attachment.id}}" >{{attachment.attachment_name}}</a>
-                <i class="fa fa-close" onclick="deleteAttachment({{attachment.id}})"></i>
+                {% if editable == True %}
+                    <i class="fa fa-close" onclick="deleteAttachment({{attachment.id}})"></i>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
 
-        {% if not editable or editable == True %}
+        {% if editable == True %}
         <form>
             <div class="form-group">
                 <input type="file" class="form-control-file" id="AttachmentUpload" onchange='openAttachment(event)'>

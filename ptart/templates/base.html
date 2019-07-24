@@ -46,9 +46,11 @@
                 {% if user.is_staff %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-cogs"></i> Configuration
+                            <i class="fa fa-cogs"></i> Administration
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/admin/">Users</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/labels/">Labels</a>
                         <a class="dropdown-item" href="/templates/">Templates</a>
                         <a class="dropdown-item" href="/methodologies/">Methodologies</a>

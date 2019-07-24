@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from django.urls import re_path
 
 from ptart import views
@@ -59,3 +60,6 @@ print(settings.BANNER)
 
 # Custom Admin Site Header
 admin.site.site_header = settings.NAME
+
+#Unregister Group from Django Admin
+admin.site.unregister(Group)
