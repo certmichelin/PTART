@@ -245,7 +245,7 @@ def hits_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values})
+    return render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : True })
 
 
 @login_required

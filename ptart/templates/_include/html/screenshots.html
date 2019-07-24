@@ -17,7 +17,7 @@
             {% endfor %}
         </div>
 
-        {% if not editable or editable == True %}
+        {% if editable == True %}
         <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
         <button id="deleteZone" type="button" class="btn btn-outline-danger mb-4" ondrop="drop(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
         
