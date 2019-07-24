@@ -1,7 +1,7 @@
-![](https://img.shields.io/github/issues/Fisjkars/PTART.svg)
-![](https://img.shields.io/github/forks/Fisjkars/PTART.svg)
-![](https://img.shields.io/github/stars/Fisjkars/PTART.svg)
-![](https://img.shields.io/github/license/Fisjkars/PTART.svg)
+![](https://img.shields.io/github/issues/certmichelin/PTART.svg)
+![](https://img.shields.io/github/forks/certmichelin/PTART.svg)
+![](https://img.shields.io/github/stars/certmichelin/PTART.svg)
+![](https://img.shields.io/github/license/certmichelin/PTART.svg)
 
 # PTART (Pentests, Audits, and Reporting tool).
 
@@ -9,11 +9,11 @@ PTART is a vulnerability organizer tool developed for Pentesters, Bug bounty hun
 
 A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
 
-![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot3.PNG)
-![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot1.PNG)
-![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot2.PNG)
-![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot5.PNG)
-![enter image description here](https://raw.githubusercontent.com/Fisjkars/PTART/master/docs/screenshot6.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot3.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot1.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot2.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot5.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot6.PNG)
 
 ## Installation
 
