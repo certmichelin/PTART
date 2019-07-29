@@ -145,7 +145,7 @@ def attachment_raw(request, pk) :
         if item.is_user_can_view(request.user) :
             response = Response(item.get_raw_data())
             response.content_type = "application/octet-stream"
-            response['Content-Disposition'] = 'inline; filename=' + item.attachment_name
+            response['Content-Disposition'] = 'attachment; filename=' + item.attachment_name
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Attachment.DoesNotExist:
