@@ -348,6 +348,36 @@ class Hit(models.Model):
     class Meta:
         ordering = ('severity', '-cvss', 'title',)
 
+"""Comment model."""
+class Comment(models.Model):
+
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    text = models.CharField(max_length=1000, default="")
+    author = models.ForeignKey(User, null=True, on_delete=models.PROTECT)
+    added = models.DateTimeField(default=datetime.now)
+    
+    def get_viewable(user):
+        """Returns all viewable comments"""
+        return Comment.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this comment"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this comment"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this comment"""
+        return self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.text
+
+    class Meta:
+        ordering = ('added',)
+
 
 """Screenshot model."""
 class Screenshot(models.Model):

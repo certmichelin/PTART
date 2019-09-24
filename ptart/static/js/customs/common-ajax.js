@@ -236,6 +236,40 @@ function ajaxDeleteLabel(success_function, error_function, id) {
 }
 
 /**
+ * Create a comment.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} comment Comment Text.
+ * @param {*} hitId Id of the hit.
+ */
+function ajaxCreateComment(success_function, error_function, comment, hitId) {
+    $.ajax({
+        url: "/api/hit/" + hitId + "/comments/",
+        data: '{"text":' + JSON.stringify(comment) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete a comment.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Comment id.
+ */
+function ajaxDeleteComment(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/comment/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Upload a screenshot for a hit.
  * 
  * @param {*} success_function function to call in case of ajax success.

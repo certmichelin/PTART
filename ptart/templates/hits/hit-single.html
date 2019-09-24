@@ -64,6 +64,51 @@
                 {% include "_include/html/cvss.html" %}
                 {% include "_include/html/attachments.html" %}
                 {% include "_include/html/screenshots.html" %}
+
+                <!-- Comment area -->
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4>Comments</h4>
+                            </div>
+                        </div>
+                            
+                        <div id="comments">
+                            {% for comment in hit.comment_set.all %}
+                            <div id="comment_{{comment.id}}" class="speech-bubble">
+                                <p>&nbsp;&nbsp;<b>{{comment.author.username}}</b> wrote on {{ comment.added }} :</p>
+                                <p>{{ comment.text}}</p>
+                                {% if editable == True %}
+                                    <a class="fa fa-close" style="position: absolute; top: 8px; right: 8px; color: white" href="javascript:deleteComment({{comment.id}})"></a>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                
+                        {% if editable == True %}
+                        <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#addCommentModal">Add a comment</button>
+                        
+                        <!-- Add a comment modal -->
+                        <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Add a comment</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <textarea id="commentText" class="form-control" rows="5" id="scope" style="resize:vertical" ></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="addCommentBtn" type="submit" class="btn btn-outline-primary" onclick="addComment()">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -123,6 +168,22 @@
     });
 
     /**
+     * Add a comment.
+     */
+    function addComment(){
+        var commentText = $("#commentText").val();
+        if (commentText !== "") {
+            ajaxCreateComment(commentCreationSuccess, commonFailure, commentText, $("#id").val());
+        } else {
+            bootbox.alert("Comment is empty!")
+        }
+    }
+
+    function deleteComment(id){
+        ajaxDeleteComment(commentDeletionSuccess, commonFailure, id);
+    }
+
+    /**
      * Override addScreenshot from screenshot.js in order to upload the file on the fly.
      */
     function addScreenshot() {
@@ -150,6 +211,26 @@
     function screenshotCreationSuccess(data) {
         createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/", data.caption)
         resetScreenshotModal();
+    }
+
+    /**
+     * Comment creation success callback.
+     */
+     function commentCreationSuccess(data) {
+        $('#comments').append(
+            $('<div>', {
+                id: "comment_" + data.id,
+                class: "speech-bubble",
+            }).append("<p>&nbsp;&nbsp;You just wrote :</p><p>" + $("<div>").text(data.text).html() + "</p><a class='fa fa-close' style='position: absolute; top: 8px; right: 8px; color: white' href='javascript:deleteComment("+ data.id +")'/></a>"));
+        $("#addCommentModal").modal('toggle');
+        $("#commentText").val("");
+    }
+
+    /**
+     * Comment deletion success callback.
+     */
+     function commentDeletionSuccess(data) {
+        $("#comment_" + data.id).remove();
     }
 
     /**
