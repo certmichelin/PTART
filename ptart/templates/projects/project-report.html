@@ -98,6 +98,11 @@
                                 {% for label in hit.labels.all %}
                                     <span class="cvss-badge cvss-badge-primary" style="background-color:{{ label.color }}">{{ label.title }}</span>
                                 {% endfor %}
+                                <aside class="notes">
+                                    {% for comment in hit.comment_set.all %}
+                                        <p><b>{{comment.author.username}}</b> wrote on {{ comment.added }} : {{ comment.text}}</p>
+                                    {% endfor %}
+                                </aside>
                             </section>
                             <section>
                                 <div data-markdown>
