@@ -241,7 +241,7 @@ function ajaxDeleteLabel(success_function, error_function, id) {
  * @param {*} success_function function to call in case of ajax success.
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} comment Comment Text.
- * @param {*} color Id of the hit.
+ * @param {*} hitId Id of the hit.
  */
 function ajaxCreateComment(success_function, error_function, comment, hitId) {
     $.ajax({
