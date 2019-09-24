@@ -4,9 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, AttachmentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
@@ -32,6 +32,10 @@ def label(request, pk):
 @api_view(['GET', 'POST'])
 def labels(request):
     return items(request, Label, LabelSerializer)
+
+@api_view(['GET', 'DELETE'])
+def comment(request, pk):
+    return item(request, pk, Comment, CommentSerializer)
     
 @api_view(['DELETE'])
 def screenshot(request, pk):
@@ -200,6 +204,34 @@ def cvss_hit(request, pk):
                     response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Hit.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@api_view(['POST','GET'])
+def comments(request, pk):
+    response = None
+    try:
+        hit = Hit.objects.get(pk=pk)
+        if request.method == 'GET':
+            if hit.is_user_can_view(request.user):
+                response = Response(CommentSerializer(hit.comment_set.all(), many=True).data)
+            else :
+                response = Response(status=status.HTTP_403_FORBIDDEN)
+        else :
+            text = request.data["text"]
+            if text is not None and text.strip() :
+                try:
+                    comment = Comment(text=text, hit=hit, author = request.user)
+                    if comment.is_user_can_create(request.user):
+                        comment.save()
+                        response = Response(CommentSerializer(comment).data, status=status.HTTP_200_OK)
+                    else :
+                        response = Response(status=status.HTTP_403_FORBIDDEN)
+                except Hit.DoesNotExist:
+                    response = Response(status=status.HTTP_404_NOT_FOUND)
+            else :
+                response = Response(status=status.HTTP_400_BAD_REQUEST)
     except Hit.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
