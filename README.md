@@ -5,7 +5,20 @@
 
 # PTART (Pentests, Audits, and Reporting tool).
 
-PTART is a vulnerability organizer tool developed for Pentesters, Bug bounty hunters, Anybody who wants to hack.
+PTART is a vulnerability organizer tool developed for Pentesters, Bug bounty hunters, Anybody who wants to be a hacker. Basically this tool will allow you to :
+
+- Report a vulnerabiltity with Screenshots, Attachments, CVSSv3 Score, OWASP Top l0 labels in less than 3min.
+- Avoid retyping again and again the same vulnerability content by using templates.
+- Generate ToDo lists from Pentest methodologies. (Owasp and Wahh are natively included).
+- Have shared resources within the team.
+- Generate automatically a nice HTML/PDF RevealJS report.
+- Customize yours labels for categorizing vulnerabilities.
+
+Coming soon : 
+- Scope/Discovery Management.
+- Remediation management.
+- Timeline for hits
+- Connectivity with common service (HackerOne, Bugcrowd, JIRA, Slack, etc...) 
 
 A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
 
