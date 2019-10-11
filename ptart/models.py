@@ -633,8 +633,8 @@ class Severity():
 # ASSET MANAGEMENT                                                           #
 #-----------------------------------------------------------------------------#
 
-"""Machine model."""
-class Machine(models.Model):
+"""Host model."""
+class Host(models.Model):
 
     project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     hostname = models.CharField(max_length=100, default="")
@@ -643,19 +643,19 @@ class Machine(models.Model):
     notes = models.CharField(max_length=1000, default="")
     
     def get_viewable(user):
-        """Returns all viewable Machine"""
-        return Machine.objects.filter(project__in=Project.get_viewable(user))
+        """Returns all viewable hosts"""
+        return Host.objects.filter(project__in=Project.get_viewable(user))
 
     def is_user_can_view(self, user):
-        """Verify if the user have read access for this machine"""
+        """Verify if the user have read access for this host"""
         return self.project.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
-        """Verify if the user have write access for this machine"""
+        """Verify if the user have write access for this host"""
         return self.project.is_user_can_edit(user)
 
     def is_user_can_create(self, user):
-        """Verify if the user can create this machine"""
+        """Verify if the user can create this host"""
         return self.project.is_user_can_edit(user)
 
     def __str__(self):  
@@ -668,7 +668,7 @@ class Machine(models.Model):
 """Service model."""
 class Service(models.Model):
 
-    machine = models.ForeignKey(Machine, null=True, on_delete=models.CASCADE)
+    host = models.ForeignKey(Host, null=True, on_delete=models.CASCADE)
     port = models.IntegerField(default=0)
     protocol = models.CharField(max_length=200, default="")
     name = models.CharField(max_length=200, default="")
@@ -677,18 +677,18 @@ class Service(models.Model):
     
     def get_viewable(user):
         """Returns all viewable Services"""
-        return Machine.objects.filter(machine__in=Machine.get_viewable(user))
+        return Host.objects.filter(host__in=Host.get_viewable(user))
 
     def is_user_can_view(self, user):
-        """Verify if the user have read access for this machine"""
+        """Verify if the user have read access for this host"""
         return self.project.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
-        """Verify if the user have write access for this machine"""
+        """Verify if the user have write access for this host"""
         return self.project.is_user_can_edit(user)
 
     def is_user_can_create(self, user):
-        """Verify if the user can create this machine"""
+        """Verify if the user can create this host"""
         return self.project.is_user_can_edit(user)
 
     def __str__(self):  
