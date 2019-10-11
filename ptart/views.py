@@ -117,6 +117,19 @@ def project_summary(request, project_id):
     return response
 
 @login_required
+def project_assets(request, project_id):
+    response = None
+    try:
+        project = Project.objects.get(pk=project_id)
+        if project.is_user_can_view(request.user) :
+            response = render(request, 'projects/project-assets.html', {'project': project, 'editable' : project.is_user_can_edit(request.user)})
+        else :
+            response = redirect('/')
+    except Project.DoesNotExist:
+        response = redirect('/')
+    return response
+
+@login_required
 def project_report(request, project_id):
     response = None
     try:
