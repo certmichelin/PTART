@@ -19,74 +19,104 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-6">
-                <h3>Topology:</h3>
-                <h4>Coming soon...</h4>
-            </div>
 
-            <div class="col-lg-6">
+            <div class="col-lg-12">
 
-                <h3>Hosts:</h3>
-                <div id="accordion">
-                    {% for host in project.host_set.all %}
-                    <div class="card">
-                        <div class="card-header" id="hostHeading{{host.id}}">
-                            <h5 class="mb-0">
-                                <button class="btn btn-link" data-toggle="collapse"
-                                    data-target="#hostCollapse{{host.id}}" aria-expanded="true"
-                                    aria-controls="hostCollapse{{host.id}}">
-                                    {{ host.hostname }} - {{ host.ip}}
-                                </button>
 
-                                <button class="btn btn-outline-success float-right">
-                                    Add Service
-                                </button>
-                            </h5>
-                        </div>
+                {% for host in project.host_set.all %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <span data-toggle="modal" data-target="#host{{host.id}}Modal" style="cursor: pointer">
+                                {{ host.hostname }} - {{ host.ip}}
+                            </span>
+                            <button class="btn btn-outline-success float-right">
+                                Add Service
+                            </button>
+                        </h3>
+                    </div>
 
-                        <div id="hostCollapse{{host.id}}" class="collapse" aria-labelledby="hostHeading{{host.id}}"
-                            data-parent="#accordion">
-                            <div class="card-body">
-                                <div class="row">
-                                    {% for service in host.service_set.all %}
-                                    <div class="col-lg-4">
-                                        <div class="card mb-2" style="cursor: pointer">
-                                            <div class="card-body" data-toggle="modal" data-target="#service{{service.id}}Modal">
-                                                <h5 class="card-title">{{service.name}}</h5>
-                                                <h6 class="card-subtitle mb-2 text-muted">
-                                                    {{service.port}}-{{service.protocol}} ({{service.version}})</h6>
-                                            </div>
+                    <!-- Host Modal-->
+                    <div class="modal fade" id="host{{host.id}}Modal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Host Details</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="hostname">Hostname</label>
+                                            <input type="text" class="form-control" id="host{{host.id}}Hostname" value="{{host.hostname}}" />
                                         </div>
-
-                                        <!-- Service Modal-->
-                                        <div class="modal fade" id="service{{service.id}}Modal" tabindex="-1" role="dialog">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Service Details</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-secondary"
-                                                            data-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="form-group">
+                                            <label for="hostname">IP</label>
+                                            <input type="text" class="form-control" id="host{{host.id}}IP" value="{{host.ip}}" />
                                         </div>
-                                    </div>
-                                    {% endfor %}
+                                        <div class="form-group">
+                                            <label for="hostname">OS</label>
+                                            <input type="text" class="form-control" id="host{{host.id}}OS" value="{{host.os}}" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="hostname">Notes</label>
+                                            <textarea type="text" class="form-control" id="host{{host.id}}Notes" style="resize:vertical" rows="7">
+                                                {{host.notes}}"
+                                            </textarea>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-outline-success">Save</button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+
+                    <div class="card-body">
+                        <div class="row">
+                            {% for service in host.service_set.all %}
+                            <div class="col-lg-4">
+                                <div class="card mb-2" style="cursor: pointer">
+                                    <div class="card-body" data-toggle="modal"
+                                        data-target="#service{{service.id}}Modal">
+                                        <h5 class="card-title">{{service.name}}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">
+                                            {{service.port}}-{{service.protocol}} ({{service.version}})</h6>
+                                    </div>
+                                </div>
+
+                                <!-- Service Modal-->
+                                <div class="modal fade" id="service{{service.id}}Modal" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Service Details</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary"
+                                                    data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -96,4 +126,9 @@
 {% endblock %}
 
 {% block extra_foot %}
+<script type="text/javascript">
+{% for host in project.host_set.all %}
+activeMarkdown("host{{host.id}}Notes");
+{% endfor %}
+</script>
 {% endblock %}
