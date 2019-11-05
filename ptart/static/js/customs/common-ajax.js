@@ -733,6 +733,29 @@ function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, ass
 }
 
 /**
+ * Update a host.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Host id.
+ * @param {*} ip Host ip.
+ * @param {*} hostname Host hostname.
+ * @param {*} os Host os.
+ * @param {*} notes Host notes.
+ * @param {*} project Host project.
+ */
+function ajaxUpdateHost(success_function, error_function, id, ip, hostname, os, notes, project) {
+    $.ajax({
+        url: "/api/host/" + id + "/",
+        data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname)+ ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes)+ ',"project":' + JSON.stringify(project) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+
+/**
  * Convert array to JSON string.
  * 
  * @param {*} array Array to convert.
