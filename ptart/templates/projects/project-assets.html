@@ -19,9 +19,53 @@
                     {{ project.name }}
 
                     {% if editable == True %}
-                    <a class="btn btn-outline-danger" href="#" role="button">New Host</a>
+                    <a class="btn btn-outline-danger" href="#" role="button" data-toggle="modal"
+                        data-target="#newHostModal">New Host</a>
                     {% endif %}
                 </h1>
+                {% if editable == True %}
+                <!-- New Host Modal-->
+                <div class="modal fade" id="newHostModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add New Host</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="newHostIP">IP</label>
+                                        <input type="text" class="form-control" id="newHostIP" value="" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newHostHostname">Hostname</label>
+                                        <input type="text" class="form-control" id="newHostHostname"
+                                            value="" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newHostOS">OS</label>
+                                        <input type="text" class="form-control" id="newHostOS" value="" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newHostNotes">Notes</label>
+                                        <textarea class="form-control" id="newHostNotes"
+                                            rows="7"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-outline-success"
+                                    onclick="javacript:createHost()">Create</button>
+                                <button type="button" class="btn btn-outline-secondary"
+                                    data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
 
@@ -138,9 +182,28 @@
 
 {% block extra_foot %}
 <script type="text/javascript">
+
+    activeMarkdown("host{{host.id}}Notes");
     {% for host in project.host_set.all %}
     activeMarkdown("host{{host.id}}Notes");
     {% endfor %}
+
+    /**
+     * Host creation success callback.
+     */
+     function HostCreationSuccess(data) {
+        success($("#messages"), "Host was Created");
+        //Create host according to the result.
+        //$("#host" + data.id + "Header").text(data.hostname + " - " + data.ip);
+    }
+
+    /**
+     * Create host function.
+     */
+    function createHost() {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateHost(HostCreationSuccess, commonFailure, $("#newHostIP").val(), $("#newHostHostname").val(), $("#newHostOS").val(), $("#newHostNotes").val(), '{{project.id}}');
+    }
 
     /**
      * Host updation success callback.
@@ -152,6 +215,9 @@
         $("#host" + data.id + "Modal").modal('toggle');
     }
 
+    /**
+     * Update host function.
+     */
     function updateHost(id, ip, hostname, os, notes, project) {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateHost(HostUpdationSuccess, commonFailure, id, $(ip).val(), $(hostname).val(), $(os).val(), $(notes).val(), project);
