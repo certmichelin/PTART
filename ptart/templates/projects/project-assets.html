@@ -23,62 +23,19 @@
                         data-target="#newHostModal">New Host</a>
                     {% endif %}
                 </h1>
-                {% if editable == True %}
-                <!-- New Host Modal-->
-                <div class="modal fade" id="newHostModal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add New Host</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form>
-                                    <div class="form-group">
-                                        <label for="newHostIP">IP</label>
-                                        <input type="text" class="form-control" id="newHostIP" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="newHostHostname">Hostname</label>
-                                        <input type="text" class="form-control" id="newHostHostname"
-                                            value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="newHostOS">OS</label>
-                                        <input type="text" class="form-control" id="newHostOS" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="newHostNotes">Notes</label>
-                                        <textarea class="form-control" id="newHostNotes"
-                                            rows="7"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-outline-success"
-                                    onclick="javacript:createHost()">Create</button>
-                                <button type="button" class="btn btn-outline-secondary"
-                                    data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
             </div>
         </div>
 
         <div class="row">
 
-            <div class="col-lg-12">
+            <div class="col-lg-12" id="hostParent">
 
 
                 {% for host in project.host_set.all %}
                 <div class="card">
                     <div class="card-header">
                         <h3 class="mb-0">
-                            <span id="host{{host.id}}Header" data-toggle="modal" data-target="#host{{host.id}}Modal"
+                            <span id="host{{host.id}}Header" onclick="displayHostModal('{{host.id}}')"
                                 style="cursor: pointer">
                                 {{ host.hostname }} - {{ host.ip}}
                             </span>
@@ -86,53 +43,14 @@
                                 Add Service
                             </button>
                         </h3>
-                    </div>
-
-                    <!-- Host Modal-->
-                    <div class="modal fade" id="host{{host.id}}Modal" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Host Details</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form>
-                                        <div class="form-group">
-                                            <label for="host{{host.id}}IP">IP</label>
-                                            <input type="text" class="form-control" id="host{{host.id}}IP"
-                                                value="{{host.ip}}" />
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="host{{host.id}}Hostname">Hostname</label>
-                                            <input type="text" class="form-control" id="host{{host.id}}Hostname"
-                                                value="{{host.hostname}}" />
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="host{{host.id}}OS">OS</label>
-                                            <input type="text" class="form-control" id="host{{host.id}}OS"
-                                                value="{{host.os}}" />
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="host{{host.id}}Notes">Notes</label>
-                                            <textarea class="form-control" id="host{{host.id}}Notes"
-                                                rows="7">{{host.notes}}</textarea>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-outline-success"
-                                        onclick="javacript:updateHost('{{host.id}}', '#host{{host.id}}IP', '#host{{host.id}}Hostname', '#host{{host.id}}OS', '#host{{host.id}}Notes', '{{project.id}}')">Save</button>
-                                    <button type="button" class="btn btn-outline-secondary"
-                                        data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="hidden" id="host{{host.id}}IP" value="{{host.ip}}" />
+                        <input type="hidden" id="host{{host.id}}Hostname" value="{{host.hostname}}" />
+                        <input type="hidden" id="host{{host.id}}OS" value="{{host.os}}" />
+                        <input type="hidden" id="host{{host.id}}Notes" value="{{host.notes}}" />
                     </div>
 
                     <div class="card-body">
+
                         <div class="row">
                             {% for service in host.service_set.all %}
                             <div class="col-lg-4">
@@ -145,27 +63,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Service Modal-->
-                                <div class="modal fade" id="service{{service.id}}Modal" tabindex="-1" role="dialog">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Service Details</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
 
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-secondary"
-                                                    data-dismiss="modal">Close</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             {% endfor %}
                         </div>
@@ -177,24 +75,173 @@
     </div>
     <!-- /.container-fluid -->
 </div>
+
+<!-- Host Modal-->
+<div class="modal fade" id="hostModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Host Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="hostIP">IP</label>
+                        <input type="text" class="form-control" id="hostIP" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="hostHostname">Hostname</label>
+                        <input type="text" class="form-control" id="hostHostname" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="hostOS">OS</label>
+                        <input type="text" class="form-control" id="hostOS" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="hostNotes">Notes</label>
+                        <textarea class="form-control" id="hostNotes" rows="7"></textarea>
+                    </div>
+                    <input type="hidden" id="hostId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:updateHost()">Save</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Host Modal-->
+<div class="modal fade" id="newHostModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Host</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="newHostIP">IP</label>
+                        <input type="text" class="form-control" id="newHostIP" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newHostHostname">Hostname</label>
+                        <input type="text" class="form-control" id="newHostHostname" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newHostOS">OS</label>
+                        <input type="text" class="form-control" id="newHostOS" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newHostNotes">Notes</label>
+                        <textarea class="form-control" id="newHostNotes" rows="7"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:createHost()">Create</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Modal-->
+<div class="modal fade" id="service{{service.id}}Modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Service Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- /#page-wrapper -->
 {% endblock %}
 
 {% block extra_foot %}
 <script type="text/javascript">
 
-    activeMarkdown("host{{host.id}}Notes");
-    {% for host in project.host_set.all %}
-    activeMarkdown("host{{host.id}}Notes");
-    {% endfor %}
+
+    hostNotesSimpleMDE = activeMarkdown("hostNotes");
+    newHostNotesSimpleMDE = activeMarkdown("newHostNotes");
 
     /**
      * Host creation success callback.
      */
-     function HostCreationSuccess(data) {
+    function HostCreationSuccess(data) {
         success($("#messages"), "Host was Created");
         //Create host according to the result.
-        //$("#host" + data.id + "Header").text(data.hostname + " - " + data.ip);
+        var card = $('<div>', { class: "card" });
+        var cardHeader = $('<div>', { class: "card-header" });
+        var cardTitle = $('<h3>', { class: "mb-0" });
+        var cardTitleSpan = $('<span>', {
+            id: "host" + data.id + "Header",
+            onclick: "displayHostModal('" + data.id + "')",
+            style: "cursor: pointer"
+        });
+        cardTitleSpan.innerHtml = $("<div>").text(data.hostname).html() + " - " + $("<div>").text(data.ip).html();
+        var cardTitleAddServiceButton = $('<button>', {
+            class: "btn btn-outline-success float-right"
+        });
+        cardTitleAddServiceButton.innerHtml = "Add Service";
+        var ipInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "IP",
+            value: data.ip
+        });
+        var hostnameInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "Hostname",
+            value: data.hostname
+        });
+        var osInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "OS",
+            value: data.os
+        });
+        var notesInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "Notes",
+            value: data.notes
+        });
+        var cardBody = $('<div>', { class: "card-body" });
+        var cardBodyRow = $('<div>', { class: "row" });
+
+        //Append everything!!
+        cardTitle.append(cardTitleSpan);
+        cardTitle.append(cardTitleAddServiceButton);
+        cardHeader.append(cardTitle);
+        cardHeader.append(ipInput);
+        cardHeader.append(hostnameInput);
+        cardHeader.append(osInput);
+        cardHeader.append(notesInput);
+        cardBody.append(cardBodyRow);
+        card.append(cardHeader);
+        card.append(cardBody);
+        $("#hostParent").append(card);
+
+        $("#newHostModal").modal('toggle');
+        $("#newHostIP").val();
+        $("#newHostHostname").val();
+        $("#newHostOS").val();
+        newHostNotesSimpleMDE.value();
     }
 
     /**
@@ -212,15 +259,32 @@
         success($("#messages"), "Host was Updated!");
         //Update fields according to the result.
         $("#host" + data.id + "Header").text(data.hostname + " - " + data.ip);
-        $("#host" + data.id + "Modal").modal('toggle');
+        $("#host" + data.id + "IP").val(data.ip);
+        $("#host" + data.id + "Hostname").val(data.hostname);
+        $("#host" + data.id + "OS").val(data.os);
+        $("#host" + data.id + "Notes").val(data.notes);
+        $("#hostModal").modal('toggle');
     }
 
     /**
      * Update host function.
      */
-    function updateHost(id, ip, hostname, os, notes, project) {
+    function updateHost() {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateHost(HostUpdationSuccess, commonFailure, id, $(ip).val(), $(hostname).val(), $(os).val(), $(notes).val(), project);
+        ajaxUpdateHost(HostUpdationSuccess, commonFailure, $("#hostId").val(), $("#hostIP").val(), $("#hostHostname").val(), $("#hostOS").val(), $("#hostNotes").val(), '{{project.id}}');
+    }
+
+    /**
+     * Display host modal.
+     */
+    function displayHostModal(id) {
+        $("#hostId").val(id);
+        $("#hostIP").val($("#host" + id + "IP").val());
+        $("#hostHostname").val($("#host" + id + "Hostname").val());
+        $("#hostOS").val($("#host" + id + "OS").val());
+        hostNotesSimpleMDE.value($("#host" + id + "Notes").val());
+        $("#hostModal").modal('toggle');
+        setTimeout(function () { hostNotesSimpleMDE.codemirror.refresh(); }, 200); //Ugly : https://github.com/sparksuite/simplemde-markdown-editor/issues/313
     }
 </script>
 {% endblock %}
