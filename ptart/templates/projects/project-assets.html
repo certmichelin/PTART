@@ -56,7 +56,7 @@
 
                         <div id="host{{host.id}}Body" class="row">
                             {% for service in host.service_set.all %}
-                            <div class="col-lg-4">
+                            <div  id="service_{{service.id}}" class="col-lg-4">
                                 <div class="card mb-2" style="cursor: pointer" onclick="displayServiceModal('{{service.id}}')">
                                     <div class="card-body">
                                         <h5 class="card-title" id="service{{service.id}}Header1">{{service.name}}</h5>
@@ -197,6 +197,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-outline-success" onclick="javacript:updateService()">Save</button>
+                <button type="submit" class="btn btn-outline-danger" onclick="javacript:deleteService()">Delete</button>
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -459,6 +460,35 @@
                 }
             }
         });
+    }
+
+    function deleteService() {
+        cleanMessagesContainer($("#messages"));
+        bootbox.confirm({
+            message: "Are you sure to delete this service?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteService(removeService, commonFailure, $("#serviceId").val());
+                }
+            }
+        });
+    }
+
+    function removeService(data){
+        $("#service_" + data.id).remove();
+        success($("#messages"), "Service was removed!");
+        $("#serviceModal").modal('toggle');
     }
 
     function removeHost(data){

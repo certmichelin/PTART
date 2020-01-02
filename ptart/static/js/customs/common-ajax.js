@@ -837,6 +837,22 @@ function ajaxUpdateService(success_function, error_function, id, port, protocol,
 }
 
 /**
+ * Delete a service.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Service id.
+ */
+function ajaxDeleteService(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/service/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Convert array to JSON string.
  * 
  * @param {*} array Array to convert.
