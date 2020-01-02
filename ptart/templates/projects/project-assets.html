@@ -19,7 +19,7 @@
                     {{ project.name }}
 
                     {% if editable == True %}
-                    <a class="btn btn-outline-danger" href="#" role="button" data-toggle="modal"
+                    <a class="btn btn-outline-success" href="#" role="button" data-toggle="modal"
                         data-target="#newHostModal">New Host</a>
                     {% endif %}
                 </h1>
@@ -39,12 +39,14 @@
                                 style="cursor: pointer">
                                 {{ host.hostname }} - {{ host.ip}}
                             </span>
+                            {% if editable == True %}
                             <button class="btn btn-outline-danger float-right ml-2" onclick="deleteHost('{{host.id}}')" >
                                 Delete Host
                             </button>
                             <button class="btn btn-outline-success float-right" onclick="displayNewServiceModal('{{host.id}}')">
                                 Add Service
                             </button>
+                            {% endif %}
                         </h3>
                         <input type="hidden" id="host{{host.id}}IP" value="{{host.ip}}" />
                         <input type="hidden" id="host{{host.id}}Hostname" value="{{host.hostname}}" />
@@ -114,7 +116,9 @@
                 </form>
             </div>
             <div class="modal-footer">
+                {% if editable == True %}
                 <button type="submit" class="btn btn-outline-success" onclick="javacript:updateHost()">Save</button>
+                {% endif %}
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -196,8 +200,10 @@
                 </form>
             </div>
             <div class="modal-footer">
+                {% if editable == True %}
                 <button type="submit" class="btn btn-outline-success" onclick="javacript:updateService()">Save</button>
                 <button type="submit" class="btn btn-outline-danger" onclick="javacript:deleteService()">Delete</button>
+                {% endif %}
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
