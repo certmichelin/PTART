@@ -196,11 +196,11 @@
             onclick: "displayHostModal('" + data.id + "')",
             style: "cursor: pointer"
         });
-        cardTitleSpan.innerHtml = $("<div>").text(data.hostname).html() + " - " + $("<div>").text(data.ip).html();
+        cardTitleSpan.text(data.hostname + " - " + data.ip);
         var cardTitleAddServiceButton = $('<button>', {
             class: "btn btn-outline-success float-right"
         });
-        cardTitleAddServiceButton.innerHtml = "Add Service";
+        cardTitleAddServiceButton.text("Add Service");
         var ipInput = $('<input>', {
             type: "hidden",
             id: "host" + data.id + "IP",
