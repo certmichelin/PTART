@@ -57,16 +57,19 @@
                         <div class="row">
                             {% for service in host.service_set.all %}
                             <div class="col-lg-4">
-                                <div class="card mb-2" style="cursor: pointer">
-                                    <div class="card-body" data-toggle="modal"
-                                        data-target="#service{{service.id}}Modal">
-                                        <h5 class="card-title">{{service.name}}</h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">
-                                            {{service.port}}-{{service.protocol}} ({{service.version}})</h6>
+                                <div class="card mb-2" style="cursor: pointer" onclick="displayServiceModal('{{service.id}}')">
+                                    <div class="card-body">
+                                        <h5 class="card-title" id="service{{service.id}}Header1">{{service.name}}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted" id="service{{service.id}}Header2">
+                                            {{service.port}} - {{service.protocol}} ({{service.version}})</h6>
                                     </div>
                                 </div>
-
-
+                                <input type="hidden" id="service{{service.id}}Port" value="{{service.port}}" />
+                                <input type="hidden" id="service{{service.id}}Protocol" value="{{service.protocol}}" />
+                                <input type="hidden" id="service{{service.id}}Name" value="{{service.name}}" />
+                                <input type="hidden" id="service{{service.id}}Version" value="{{service.version}}" />
+                                <input type="hidden" id="service{{service.id}}Banner" value="{{service.banner}}" />
+                                <input type="hidden" id="service{{service.id}}HostId" value="{{service.host.id}}" />
                             </div>
                             {% endfor %}
                         </div>
@@ -157,7 +160,7 @@
 </div>
 
 <!-- Service Modal-->
-<div class="modal fade" id="service{{service.id}}Modal" tabindex="-1" role="dialog">
+<div class="modal fade" id="serviceModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -167,9 +170,33 @@
                 </button>
             </div>
             <div class="modal-body">
-
+                <form>
+                    <div class="form-group">
+                        <label for="servicePort">Port</label>
+                        <input type="number" class="form-control" id="servicePort" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceProtocol">Protocol</label>
+                        <input type="text" class="form-control" id="serviceProtocol" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceName">Name</label>
+                        <input type="text" class="form-control" id="serviceName" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceVersion">Version</label>
+                        <input type="text" class="form-control" id="serviceVersion" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceBanner">Banner</label>
+                        <textarea class="form-control" id="serviceBanner" rows="7"></textarea>
+                    </div>
+                    <input type="hidden" id="serviceHostId" />
+                    <input type="hidden" id="serviceId" />
+                </form>
             </div>
             <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:updateService()">Save</button>
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -325,6 +352,45 @@
         hostNotesSimpleMDE.value($("#host" + id + "Notes").val());
         $("#hostModal").modal('toggle');
         setTimeout(function () { hostNotesSimpleMDE.codemirror.refresh(); }, 200); //Ugly : https://github.com/sparksuite/simplemde-markdown-editor/issues/313
+    }
+
+    /**
+     * Display service modal.
+     */
+     function displayServiceModal(id) {
+        $("#serviceId").val(id);
+        $("#servicePort").val($("#service" + id + "Port").val());
+        $("#serviceProtocol").val($("#service" + id + "Protocol").val());
+        $("#serviceName").val($("#service" + id + "Name").val());
+        $("#serviceVersion").val($("#service" + id + "Version").val());
+        $("#serviceBanner").val($("#service" + id + "Banner").val());
+        $("#serviceHostId").val($("#service" + id + "HostId").val());
+        $("#serviceModal").modal('toggle');
+    }
+
+    /**
+     * Service updation success callback.
+     */
+     function ServiceUpdationSuccess(data) {
+        success($("#messages"), "Service was Updated!");
+        //Update fields according to the result.
+        $("#service" + data.id + "Header1").text(data.name);
+        $("#service" + data.id + "Header2").text(data.port + " - " + data.protocol + " (" + data.version + ")");
+        $("#service" + data.id + "Port").val(data.port);
+        $("#service" + data.id + "Protocol").val(data.protocol);
+        $("#service" + data.id + "Name").val(data.name);
+        $("#service" + data.id + "Version").val(data.version);
+        $("#service" + data.id + "Banner").val(data.banner);
+        $("#service" + data.id + "HostId").val(data.host);
+        $("#serviceModal").modal('toggle');
+    }
+
+    /**
+     * Update service function.
+     */
+    function updateService() {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateService(ServiceUpdationSuccess, commonFailure, $("#serviceId").val(), $("#servicePort").val(), $("#serviceProtocol").val(), $("#serviceName").val(), $("#serviceVersion").val(), $("#serviceBanner").val(), $("#serviceHostId").val());
     }
 </script>
 {% endblock %}

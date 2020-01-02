@@ -792,6 +792,29 @@ function ajaxDeleteHost(success_function, error_function, id) {
 }
 
 /**
+ * Update a service.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Service id.
+ * @param {*} port Service port.
+ * @param {*} protocol Service protocol.
+ * @param {*} name Service name.
+ * @param {*} version Service version.
+ * @param {*} banner Service banner.
+ * @param {*} banner Service banner.
+ */
+function ajaxUpdateService(success_function, error_function, id, port, protocol, name, version, banner, host) {
+    $.ajax({
+        url: "/api/service/" + id + "/",
+        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol)+ ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Convert array to JSON string.
  * 
  * @param {*} array Array to convert.

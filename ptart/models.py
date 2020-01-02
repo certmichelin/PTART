@@ -681,15 +681,15 @@ class Service(models.Model):
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this host"""
-        return self.project.is_user_can_view(user)
+        return self.host.is_user_can_view(user)
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this host"""
-        return self.project.is_user_can_edit(user)
+        return self.host.is_user_can_edit(user)
 
     def is_user_can_create(self, user):
         """Verify if the user can create this host"""
-        return self.project.is_user_can_edit(user)
+        return self.host.is_user_can_edit(user)
 
     def __str__(self):  
         return self.hostname + " - " + self.ip
