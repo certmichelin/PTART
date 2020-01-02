@@ -47,6 +47,8 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 
 ##### Comments in your presentation
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot8.PNG)
+
+##### Asset management
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot9.PNG)
 
 # Release Note
