@@ -732,7 +732,7 @@ function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, ass
     });
 }
 
-/**
+/**host
  * Create a host.
  * 
  * @param {*} success_function function to call in case of ajax success.
@@ -775,6 +775,21 @@ function ajaxUpdateHost(success_function, error_function, id, ip, hostname, os, 
     });
 }
 
+/**
+ * Delete a host.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Host id.
+ */
+function ajaxDeleteHost(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/host/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
 
 /**
  * Convert array to JSON string.

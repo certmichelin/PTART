@@ -32,13 +32,16 @@
 
 
                 {% for host in project.host_set.all %}
-                <div class="card">
+                <div class="card" id="host_{{host.id}}">
                     <div class="card-header">
                         <h3 class="mb-0">
                             <span id="host{{host.id}}Header" onclick="displayHostModal('{{host.id}}')"
                                 style="cursor: pointer">
                                 {{ host.hostname }} - {{ host.ip}}
                             </span>
+                            <button class="btn btn-outline-danger float-right ml-2" onclick="deleteHost('{{host.id}}')" >
+                                Delete Host
+                            </button>
                             <button class="btn btn-outline-success float-right">
                                 Add Service
                             </button>
@@ -188,7 +191,7 @@
     function HostCreationSuccess(data) {
         success($("#messages"), "Host was Created");
         //Create host according to the result.
-        var card = $('<div>', { class: "card" });
+        var card = $('<div>', { id: "host_" + data.id, class: "card" });
         var cardHeader = $('<div>', { class: "card-header" });
         var cardTitle = $('<h3>', { class: "mb-0" });
         var cardTitleSpan = $('<span>', {
@@ -197,10 +200,18 @@
             style: "cursor: pointer"
         });
         cardTitleSpan.text(data.hostname + " - " + data.ip);
+        
+        var cardTitleDeleteHostButton = $('<button>', {
+            class: "btn btn-outline-danger float-right ml-2",
+            onclick: "deleteHost('" + data.id + "')"
+        });
+        cardTitleDeleteHostButton.text("Delete Host");
+
         var cardTitleAddServiceButton = $('<button>', {
             class: "btn btn-outline-success float-right"
         });
         cardTitleAddServiceButton.text("Add Service");
+
         var ipInput = $('<input>', {
             type: "hidden",
             id: "host" + data.id + "IP",
@@ -226,6 +237,7 @@
 
         //Append everything!!
         cardTitle.append(cardTitleSpan);
+        cardTitle.append(cardTitleDeleteHostButton);
         cardTitle.append(cardTitleAddServiceButton);
         cardHeader.append(cardTitle);
         cardHeader.append(ipInput);
@@ -272,6 +284,34 @@
     function updateHost() {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateHost(HostUpdationSuccess, commonFailure, $("#hostId").val(), $("#hostIP").val(), $("#hostHostname").val(), $("#hostOS").val(), $("#hostNotes").val(), '{{project.id}}');
+    }
+
+    function deleteHost(id) {
+        cleanMessagesContainer($("#messages"));
+        bootbox.confirm({
+            message: "Are you sure to delete this host?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteHost(removeHost, commonFailure, id);
+                }
+            }
+        });
+    }
+
+    function removeHost(data){
+        $("#host_" + data.id).remove();
+        success($("#messages"), "Host was removed!");
     }
 
     /**
