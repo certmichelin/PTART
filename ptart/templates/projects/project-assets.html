@@ -42,7 +42,7 @@
                             <button class="btn btn-outline-danger float-right ml-2" onclick="deleteHost('{{host.id}}')" >
                                 Delete Host
                             </button>
-                            <button class="btn btn-outline-success float-right">
+                            <button class="btn btn-outline-success float-right" onclick="displayNewServiceModal('{{host.id}}')">
                                 Add Service
                             </button>
                         </h3>
@@ -54,7 +54,7 @@
 
                     <div class="card-body">
 
-                        <div class="row">
+                        <div id="host{{host.id}}Body" class="row">
                             {% for service in host.service_set.all %}
                             <div class="col-lg-4">
                                 <div class="card mb-2" style="cursor: pointer" onclick="displayServiceModal('{{service.id}}')">
@@ -202,6 +202,49 @@
         </div>
     </div>
 </div>
+
+<!-- New Service Modal-->
+<div class="modal fade" id="newServiceModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Service</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="newServicePort">Port</label>
+                        <input type="number" class="form-control" id="newServicePort" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceProtocol">Protocol</label>
+                        <input type="text" class="form-control" id="newServiceProtocol" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceName">Name</label>
+                        <input type="text" class="form-control" id="newServiceName" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceVersion">Version</label>
+                        <input type="text" class="form-control" id="newServiceVersion" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceBanner">Banner</label>
+                        <textarea class="form-control" id="newServiceBanner" rows="7"></textarea>
+                    </div>
+                    <input type="hidden" id="newServiceHostId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:createService()">Create</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- /#page-wrapper -->
 {% endblock %}
 
@@ -292,6 +335,88 @@
     }
 
     /**
+     * Service creation success callback.
+     */
+     function ServiceCreationSuccess(data) {
+        success($("#messages"), "Service was Created");
+        
+        //Create host according to the result.
+        var block = $('<div>', { class: "col-lg-4" });
+        var card = $('<div>', { class: "card mb-2", style: "cursor: pointer", onclick: "displayServiceModal('" + data.id + "')" });
+        var cardBody = $('<div>', { class: "card-body" });
+        var cardTitle = $('<h5>', { 
+            class: "card-title",
+            id: "service" + data.id + "Header1"
+         });
+        cardTitle.text(data.name);
+        var cardSubtitle = $('<h6>', { 
+            class: "card-subtitle mb-2 text-muted",
+            id: "service" + data.id + "Header2"
+         });
+        cardSubtitle.text(data.port + " - " + data.protocol + " (" + data.version + ")");
+        
+        var portInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Port",
+            value: data.port
+        });
+        var protocolInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Protocol",
+            value: data.protocol
+        });
+        var nameInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Name",
+            value: data.name
+        });
+        var versionInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Version",
+            value: data.version
+        });
+        var bannerInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Banner",
+            value: data.banner
+        });
+        var hostIdInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "HostId",
+            value: data.host
+        });
+
+        //Append everything!!
+        cardBody.append(cardTitle);
+        cardBody.append(cardSubtitle);
+        card.append(cardBody);
+        block.append(card);
+        block.append(portInput);
+        block.append(protocolInput);
+        block.append(nameInput);
+        block.append(versionInput);
+        block.append(bannerInput);
+        block.append(hostIdInput);
+        $("#host" + data.host + "Body").append(block);
+
+        $("#newServiceModal").modal('toggle');
+        $("#newServicePort").val();
+        $("#newServiceProtocol").val();
+        $("#newServiceName").val();
+        $("#newServiceVersion").val();
+        $("#newServiceBanner").val();
+        $("#newServiceHostId").val();
+    }
+
+    /**
+     * Create service function.
+     */
+     function createService() {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateService(ServiceCreationSuccess, commonFailure, $("#newServicePort").val(), $("#newServiceProtocol").val(), $("#newServiceName").val(), $("#newServiceVersion").val(), $("#newServiceBanner").val(), $("#newServiceHostId").val());
+    }
+
+    /**
      * Host updation success callback.
      */
     function HostUpdationSuccess(data) {
@@ -366,6 +491,14 @@
         $("#serviceBanner").val($("#service" + id + "Banner").val());
         $("#serviceHostId").val($("#service" + id + "HostId").val());
         $("#serviceModal").modal('toggle');
+    }
+    
+    /**
+     * Display new service modal.
+     */
+    function displayNewServiceModal(id) {
+        $("#newServiceHostId").val(id);
+        $("#newServiceModal").modal('toggle');
     }
 
     /**

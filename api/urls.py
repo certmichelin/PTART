@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^attachment/raw/(?P<pk>[0-9]+)/$', views.attachment_raw),
     url(r'^attachments/$', views.attachments),
     url(r'^host/(?P<pk>[0-9]+)/$', views.host),
-    url(r'^host/$', views.hosts),
+    url(r'^hosts/$', views.hosts),
     url(r'^service/(?P<pk>[0-9]+)/$', views.service),
     url(r'^services/$', views.services),
     url(r'^cvss/$', views.cvss),

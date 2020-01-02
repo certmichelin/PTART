@@ -732,7 +732,7 @@ function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, ass
     });
 }
 
-/**host
+/**
  * Create a host.
  * 
  * @param {*} success_function function to call in case of ajax success.
@@ -745,7 +745,7 @@ function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, ass
  */
 function ajaxCreateHost(success_function, error_function, ip, hostname, os, notes, project) {
     $.ajax({
-        url: "/api/host/",
+        url: "/api/hosts/",
         data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname)+ ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes)+ ',"project":' + JSON.stringify(project) + '}',
         type: 'POST',
         success: success_function,
@@ -792,6 +792,28 @@ function ajaxDeleteHost(success_function, error_function, id) {
 }
 
 /**
+ * Create a service.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} port Service port.
+ * @param {*} protocol Service protocol.
+ * @param {*} name Service name.
+ * @param {*} version Service version.
+ * @param {*} banner Service banner.
+ * @param {*} host Service host.
+ */
+function ajaxCreateService(success_function, error_function, port, protocol, name, version, banner, host) {
+    $.ajax({
+        url: "/api/services/",
+        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol)+ ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Update a service.
  * 
  * @param {*} success_function function to call in case of ajax success.
@@ -802,7 +824,7 @@ function ajaxDeleteHost(success_function, error_function, id) {
  * @param {*} name Service name.
  * @param {*} version Service version.
  * @param {*} banner Service banner.
- * @param {*} banner Service banner.
+ * @param {*} host Service host.
  */
 function ajaxUpdateService(success_function, error_function, id, port, protocol, name, version, banner, host) {
     $.ajax({
