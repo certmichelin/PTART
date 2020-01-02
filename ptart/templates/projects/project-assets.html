@@ -32,7 +32,7 @@
 
 
                 {% for host in project.host_set.all %}
-                <div class="card" id="host_{{host.id}}">
+                <div class="card mb-3" id="host_{{host.id}}">
                     <div class="card-header">
                         <h3 class="mb-0">
                             <span id="host{{host.id}}Header" onclick="displayHostModal('{{host.id}}')"
@@ -191,7 +191,7 @@
     function HostCreationSuccess(data) {
         success($("#messages"), "Host was Created");
         //Create host according to the result.
-        var card = $('<div>', { id: "host_" + data.id, class: "card" });
+        var card = $('<div>', { id: "host_" + data.id, class: "card mb-3" });
         var cardHeader = $('<div>', { class: "card-header" });
         var cardTitle = $('<h3>', { class: "mb-0" });
         var cardTitleSpan = $('<span>', {
