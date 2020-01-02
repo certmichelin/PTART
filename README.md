@@ -16,8 +16,12 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot6.PNG)
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot7.PNG)
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot8.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot9.PNG)
 
 # Release Note
+
+### Master
+- Add asset management for each project. Let's organize easily the scope of your project.
 
 ### Version 1.1
 - Add user comments in Hits, these comments will be displayed in the presentor view of Reveal js report.
