@@ -1,0 +1,565 @@
+{% extends "base.html" %}
+{% load addstr %}
+
+{% block title %} Project | PTART{% endblock %}
+
+{% block page %}
+
+
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:project.pk|addstr:"/summary" sub_text=project third_icon='fa fa-cube'%}
+        {% include "_include/html/messages.html" %}
+
+        <!-- Page Heading -->
+        <div class="row mb-4">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                    {{ project.name }}
+
+                    {% if editable == True %}
+                    <a class="btn btn-outline-success" href="#" role="button" data-toggle="modal"
+                        data-target="#newHostModal">New Host</a>
+                    {% endif %}
+                </h1>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-12" id="hostParent">
+
+
+                {% for host in project.host_set.all %}
+                <div class="card mb-3" id="host_{{host.id}}">
+                    <div class="card-header">
+                        <h3 class="mb-0">
+                            <span id="host{{host.id}}Header" onclick="displayHostModal('{{host.id}}')"
+                                style="cursor: pointer">
+                                {{ host.hostname }} - {{ host.ip}}
+                            </span>
+                            {% if editable == True %}
+                            <button class="btn btn-outline-danger float-right ml-2" onclick="deleteHost('{{host.id}}')" >
+                                Delete Host
+                            </button>
+                            <button class="btn btn-outline-success float-right" onclick="displayNewServiceModal('{{host.id}}')">
+                                Add Service
+                            </button>
+                            {% endif %}
+                        </h3>
+                        <input type="hidden" id="host{{host.id}}IP" value="{{host.ip}}" />
+                        <input type="hidden" id="host{{host.id}}Hostname" value="{{host.hostname}}" />
+                        <input type="hidden" id="host{{host.id}}OS" value="{{host.os}}" />
+                        <input type="hidden" id="host{{host.id}}Notes" value="{{host.notes}}" />
+                    </div>
+
+                    <div class="card-body">
+
+                        <div id="host{{host.id}}Body" class="row">
+                            {% for service in host.service_set.all %}
+                            <div  id="service_{{service.id}}" class="col-lg-4">
+                                <div class="card mb-2" style="cursor: pointer" onclick="displayServiceModal('{{service.id}}')">
+                                    <div class="card-body">
+                                        <h5 class="card-title" id="service{{service.id}}Header1">{{service.name}}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted" id="service{{service.id}}Header2">
+                                            {{service.port}} - {{service.protocol}} ({{service.version}})</h6>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="service{{service.id}}Port" value="{{service.port}}" />
+                                <input type="hidden" id="service{{service.id}}Protocol" value="{{service.protocol}}" />
+                                <input type="hidden" id="service{{service.id}}Name" value="{{service.name}}" />
+                                <input type="hidden" id="service{{service.id}}Version" value="{{service.version}}" />
+                                <input type="hidden" id="service{{service.id}}Banner" value="{{service.banner}}" />
+                                <input type="hidden" id="service{{service.id}}HostId" value="{{service.host.id}}" />
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</div>
+
+<!-- Host Modal-->
+<div class="modal fade" id="hostModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Host Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="hostIP">IP</label>
+                        <input type="text" class="form-control" id="hostIP" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="hostHostname">Hostname</label>
+                        <input type="text" class="form-control" id="hostHostname" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="hostOS">OS</label>
+                        <input type="text" class="form-control" id="hostOS" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="hostNotes">Notes</label>
+                        <textarea class="form-control" id="hostNotes" rows="7"></textarea>
+                    </div>
+                    <input type="hidden" id="hostId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                {% if editable == True %}
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:updateHost()">Save</button>
+                {% endif %}
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Host Modal-->
+<div class="modal fade" id="newHostModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Host</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="newHostIP">IP</label>
+                        <input type="text" class="form-control" id="newHostIP" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newHostHostname">Hostname</label>
+                        <input type="text" class="form-control" id="newHostHostname" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newHostOS">OS</label>
+                        <input type="text" class="form-control" id="newHostOS" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newHostNotes">Notes</label>
+                        <textarea class="form-control" id="newHostNotes" rows="7"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:createHost()">Create</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Modal-->
+<div class="modal fade" id="serviceModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Service Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="servicePort">Port</label>
+                        <input type="number" class="form-control" id="servicePort" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceProtocol">Protocol</label>
+                        <input type="text" class="form-control" id="serviceProtocol" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceName">Name</label>
+                        <input type="text" class="form-control" id="serviceName" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceVersion">Version</label>
+                        <input type="text" class="form-control" id="serviceVersion" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceBanner">Banner</label>
+                        <textarea class="form-control" id="serviceBanner" rows="7"></textarea>
+                    </div>
+                    <input type="hidden" id="serviceHostId" />
+                    <input type="hidden" id="serviceId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                {% if editable == True %}
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:updateService()">Save</button>
+                <button type="submit" class="btn btn-outline-danger" onclick="javacript:deleteService()">Delete</button>
+                {% endif %}
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Service Modal-->
+<div class="modal fade" id="newServiceModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Service</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="newServicePort">Port</label>
+                        <input type="number" class="form-control" id="newServicePort" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceProtocol">Protocol</label>
+                        <input type="text" class="form-control" id="newServiceProtocol" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceName">Name</label>
+                        <input type="text" class="form-control" id="newServiceName" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceVersion">Version</label>
+                        <input type="text" class="form-control" id="newServiceVersion" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="newServiceBanner">Banner</label>
+                        <textarea class="form-control" id="newServiceBanner" rows="7"></textarea>
+                    </div>
+                    <input type="hidden" id="newServiceHostId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-success" onclick="javacript:createService()">Create</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block extra_foot %}
+<script type="text/javascript">
+
+
+    hostNotesSimpleMDE = activeMarkdown("hostNotes");
+    newHostNotesSimpleMDE = activeMarkdown("newHostNotes");
+
+    /**
+     * Host creation success callback.
+     */
+    function HostCreationSuccess(data) {
+        success($("#messages"), "Host was Created");
+        //Create host according to the result.
+        var card = $('<div>', { id: "host_" + data.id, class: "card mb-3" });
+        var cardHeader = $('<div>', { class: "card-header" });
+        var cardTitle = $('<h3>', { class: "mb-0" });
+        var cardTitleSpan = $('<span>', {
+            id: "host" + data.id + "Header",
+            onclick: "displayHostModal('" + data.id + "')",
+            style: "cursor: pointer"
+        });
+        cardTitleSpan.text(data.hostname + " - " + data.ip);
+        
+        var cardTitleDeleteHostButton = $('<button>', {
+            class: "btn btn-outline-danger float-right ml-2",
+            onclick: "deleteHost('" + data.id + "')"
+        });
+        cardTitleDeleteHostButton.text("Delete Host");
+
+        var cardTitleAddServiceButton = $('<button>', {
+            class: "btn btn-outline-success float-right"
+        });
+        cardTitleAddServiceButton.text("Add Service");
+
+        var ipInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "IP",
+            value: data.ip
+        });
+        var hostnameInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "Hostname",
+            value: data.hostname
+        });
+        var osInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "OS",
+            value: data.os
+        });
+        var notesInput = $('<input>', {
+            type: "hidden",
+            id: "host" + data.id + "Notes",
+            value: data.notes
+        });
+        var cardBody = $('<div>', { class: "card-body" });
+        var cardBodyRow = $('<div>', { class: "row" });
+
+        //Append everything!!
+        cardTitle.append(cardTitleSpan);
+        cardTitle.append(cardTitleDeleteHostButton);
+        cardTitle.append(cardTitleAddServiceButton);
+        cardHeader.append(cardTitle);
+        cardHeader.append(ipInput);
+        cardHeader.append(hostnameInput);
+        cardHeader.append(osInput);
+        cardHeader.append(notesInput);
+        cardBody.append(cardBodyRow);
+        card.append(cardHeader);
+        card.append(cardBody);
+        $("#hostParent").append(card);
+
+        $("#newHostModal").modal('toggle');
+        $("#newHostIP").val();
+        $("#newHostHostname").val();
+        $("#newHostOS").val();
+        newHostNotesSimpleMDE.value();
+    }
+
+    /**
+     * Create host function.
+     */
+    function createHost() {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateHost(HostCreationSuccess, commonFailure, $("#newHostIP").val(), $("#newHostHostname").val(), $("#newHostOS").val(), $("#newHostNotes").val(), '{{project.id}}');
+    }
+
+    /**
+     * Service creation success callback.
+     */
+     function ServiceCreationSuccess(data) {
+        success($("#messages"), "Service was Created");
+        
+        //Create host according to the result.
+        var block = $('<div>', { class: "col-lg-4" });
+        var card = $('<div>', { class: "card mb-2", style: "cursor: pointer", onclick: "displayServiceModal('" + data.id + "')" });
+        var cardBody = $('<div>', { class: "card-body" });
+        var cardTitle = $('<h5>', { 
+            class: "card-title",
+            id: "service" + data.id + "Header1"
+         });
+        cardTitle.text(data.name);
+        var cardSubtitle = $('<h6>', { 
+            class: "card-subtitle mb-2 text-muted",
+            id: "service" + data.id + "Header2"
+         });
+        cardSubtitle.text(data.port + " - " + data.protocol + " (" + data.version + ")");
+        
+        var portInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Port",
+            value: data.port
+        });
+        var protocolInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Protocol",
+            value: data.protocol
+        });
+        var nameInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Name",
+            value: data.name
+        });
+        var versionInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Version",
+            value: data.version
+        });
+        var bannerInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "Banner",
+            value: data.banner
+        });
+        var hostIdInput = $('<input>', {
+            type: "hidden",
+            id: "service" + data.id + "HostId",
+            value: data.host
+        });
+
+        //Append everything!!
+        cardBody.append(cardTitle);
+        cardBody.append(cardSubtitle);
+        card.append(cardBody);
+        block.append(card);
+        block.append(portInput);
+        block.append(protocolInput);
+        block.append(nameInput);
+        block.append(versionInput);
+        block.append(bannerInput);
+        block.append(hostIdInput);
+        $("#host" + data.host + "Body").append(block);
+
+        $("#newServiceModal").modal('toggle');
+        $("#newServicePort").val();
+        $("#newServiceProtocol").val();
+        $("#newServiceName").val();
+        $("#newServiceVersion").val();
+        $("#newServiceBanner").val();
+        $("#newServiceHostId").val();
+    }
+
+    /**
+     * Create service function.
+     */
+     function createService() {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateService(ServiceCreationSuccess, commonFailure, $("#newServicePort").val(), $("#newServiceProtocol").val(), $("#newServiceName").val(), $("#newServiceVersion").val(), $("#newServiceBanner").val(), $("#newServiceHostId").val());
+    }
+
+    /**
+     * Host updation success callback.
+     */
+    function HostUpdationSuccess(data) {
+        success($("#messages"), "Host was Updated!");
+        //Update fields according to the result.
+        $("#host" + data.id + "Header").text(data.hostname + " - " + data.ip);
+        $("#host" + data.id + "IP").val(data.ip);
+        $("#host" + data.id + "Hostname").val(data.hostname);
+        $("#host" + data.id + "OS").val(data.os);
+        $("#host" + data.id + "Notes").val(data.notes);
+        $("#hostModal").modal('toggle');
+    }
+
+    /**
+     * Update host function.
+     */
+    function updateHost() {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateHost(HostUpdationSuccess, commonFailure, $("#hostId").val(), $("#hostIP").val(), $("#hostHostname").val(), $("#hostOS").val(), $("#hostNotes").val(), '{{project.id}}');
+    }
+
+    function deleteHost(id) {
+        cleanMessagesContainer($("#messages"));
+        bootbox.confirm({
+            message: "Are you sure to delete this host?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteHost(removeHost, commonFailure, id);
+                }
+            }
+        });
+    }
+
+    function deleteService() {
+        cleanMessagesContainer($("#messages"));
+        bootbox.confirm({
+            message: "Are you sure to delete this service?",
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    cleanMessagesContainer($("#messages"));
+                    ajaxDeleteService(removeService, commonFailure, $("#serviceId").val());
+                }
+            }
+        });
+    }
+
+    function removeService(data){
+        $("#service_" + data.id).remove();
+        success($("#messages"), "Service was removed!");
+        $("#serviceModal").modal('toggle');
+    }
+
+    function removeHost(data){
+        $("#host_" + data.id).remove();
+        success($("#messages"), "Host was removed!");
+    }
+
+    /**
+     * Display host modal.
+     */
+    function displayHostModal(id) {
+        $("#hostId").val(id);
+        $("#hostIP").val($("#host" + id + "IP").val());
+        $("#hostHostname").val($("#host" + id + "Hostname").val());
+        $("#hostOS").val($("#host" + id + "OS").val());
+        hostNotesSimpleMDE.value($("#host" + id + "Notes").val());
+        $("#hostModal").modal('toggle');
+        setTimeout(function () { hostNotesSimpleMDE.codemirror.refresh(); }, 200); //Ugly : https://github.com/sparksuite/simplemde-markdown-editor/issues/313
+    }
+
+    /**
+     * Display service modal.
+     */
+     function displayServiceModal(id) {
+        $("#serviceId").val(id);
+        $("#servicePort").val($("#service" + id + "Port").val());
+        $("#serviceProtocol").val($("#service" + id + "Protocol").val());
+        $("#serviceName").val($("#service" + id + "Name").val());
+        $("#serviceVersion").val($("#service" + id + "Version").val());
+        $("#serviceBanner").val($("#service" + id + "Banner").val());
+        $("#serviceHostId").val($("#service" + id + "HostId").val());
+        $("#serviceModal").modal('toggle');
+    }
+    
+    /**
+     * Display new service modal.
+     */
+    function displayNewServiceModal(id) {
+        $("#newServiceHostId").val(id);
+        $("#newServiceModal").modal('toggle');
+    }
+
+    /**
+     * Service updation success callback.
+     */
+     function ServiceUpdationSuccess(data) {
+        success($("#messages"), "Service was Updated!");
+        //Update fields according to the result.
+        $("#service" + data.id + "Header1").text(data.name);
+        $("#service" + data.id + "Header2").text(data.port + " - " + data.protocol + " (" + data.version + ")");
+        $("#service" + data.id + "Port").val(data.port);
+        $("#service" + data.id + "Protocol").val(data.protocol);
+        $("#service" + data.id + "Name").val(data.name);
+        $("#service" + data.id + "Version").val(data.version);
+        $("#service" + data.id + "Banner").val(data.banner);
+        $("#service" + data.id + "HostId").val(data.host);
+        $("#serviceModal").modal('toggle');
+    }
+
+    /**
+     * Update service function.
+     */
+    function updateService() {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateService(ServiceUpdationSuccess, commonFailure, $("#serviceId").val(), $("#servicePort").val(), $("#serviceProtocol").val(), $("#serviceName").val(), $("#serviceVersion").val(), $("#serviceBanner").val(), $("#serviceHostId").val());
+    }
+</script>
+{% endblock %}

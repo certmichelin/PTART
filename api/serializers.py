@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Comment, Screenshot, Attachment, Cvss, Case, Module, Methodology
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, Screenshot, Attachment, Cvss, Case, Module, Methodology
 from .tools import FileField
 
 
@@ -128,6 +128,15 @@ class CvssSerializer(serializers.ModelSerializer):
         model = Cvss
         fields = ('id', 'attack_vector', 'attack_complexity','privilege_required','user_interaction','scope','confidentiality','integrity','availability','decimal_value')
 
+class HostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Host
+        fields = ('id', 'hostname', 'ip', 'os', 'notes', 'project')
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = ('id', 'port', 'protocol', 'name', 'version', 'banner', 'host')
 
 class ScreenshotSerializer(serializers.ModelSerializer):
     screenshot = Base64ImageField()

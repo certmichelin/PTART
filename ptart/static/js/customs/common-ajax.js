@@ -733,6 +733,126 @@ function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, ass
 }
 
 /**
+ * Create a host.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} ip Host ip.
+ * @param {*} hostname Host hostname.
+ * @param {*} os Host os.
+ * @param {*} notes Host notes.
+ * @param {*} project Host project.
+ */
+function ajaxCreateHost(success_function, error_function, ip, hostname, os, notes, project) {
+    $.ajax({
+        url: "/api/hosts/",
+        data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname)+ ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes)+ ',"project":' + JSON.stringify(project) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update a host.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Host id.
+ * @param {*} ip Host ip.
+ * @param {*} hostname Host hostname.
+ * @param {*} os Host os.
+ * @param {*} notes Host notes.
+ * @param {*} project Host project.
+ */
+function ajaxUpdateHost(success_function, error_function, id, ip, hostname, os, notes, project) {
+    $.ajax({
+        url: "/api/host/" + id + "/",
+        data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname)+ ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes)+ ',"project":' + JSON.stringify(project) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete a host.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Host id.
+ */
+function ajaxDeleteHost(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/host/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Create a service.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} port Service port.
+ * @param {*} protocol Service protocol.
+ * @param {*} name Service name.
+ * @param {*} version Service version.
+ * @param {*} banner Service banner.
+ * @param {*} host Service host.
+ */
+function ajaxCreateService(success_function, error_function, port, protocol, name, version, banner, host) {
+    $.ajax({
+        url: "/api/services/",
+        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol)+ ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update a service.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Service id.
+ * @param {*} port Service port.
+ * @param {*} protocol Service protocol.
+ * @param {*} name Service name.
+ * @param {*} version Service version.
+ * @param {*} banner Service banner.
+ * @param {*} host Service host.
+ */
+function ajaxUpdateService(success_function, error_function, id, port, protocol, name, version, banner, host) {
+    $.ajax({
+        url: "/api/service/" + id + "/",
+        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol)+ ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete a service.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Service id.
+ */
+function ajaxDeleteService(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/service/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Convert array to JSON string.
  * 
  * @param {*} array Array to convert.

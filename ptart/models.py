@@ -629,3 +629,70 @@ class Case(models.Model):
 class Severity():
     values = [1,2,3,4,5]
 
+#-----------------------------------------------------------------------------#
+# ASSET MANAGEMENT                                                           #
+#-----------------------------------------------------------------------------#
+
+"""Host model."""
+class Host(models.Model):
+
+    project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
+    hostname = models.CharField(max_length=100, default="")
+    ip = models.CharField(max_length=100, default="")
+    os = models.CharField(max_length=100, default="")
+    notes = models.CharField(max_length=1000, default="")
+    
+    def get_viewable(user):
+        """Returns all viewable hosts"""
+        return Host.objects.filter(project__in=Project.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this host"""
+        return self.project.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this host"""
+        return self.project.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this host"""
+        return self.project.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.hostname + " - " + self.ip
+
+    class Meta:
+        ordering = ('hostname',)
+
+
+"""Service model."""
+class Service(models.Model):
+
+    host = models.ForeignKey(Host, null=True, on_delete=models.CASCADE)
+    port = models.IntegerField(default=0)
+    protocol = models.CharField(max_length=200, default="")
+    name = models.CharField(max_length=200, default="")
+    version = models.CharField(max_length=100, default="")
+    banner = models.CharField(max_length=1000, default="")
+    
+    def get_viewable(user):
+        """Returns all viewable Services"""
+        return Host.objects.filter(host__in=Host.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this host"""
+        return self.host.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this host"""
+        return self.host.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this host"""
+        return self.host.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.hostname + " - " + self.ip
+
+    class Meta:
+        ordering = ('port',)

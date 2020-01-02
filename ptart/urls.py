@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^projects/new/$', views.projects_new),
     url(r'^project/([0-9]+)/$', views.project),
     url(r'^project/([0-9]+)/summary$', views.project_summary),
+    url(r'^project/([0-9]+)/assets$', views.project_assets),
     url(r'^project/([0-9]+)/report$', views.project_report),
 
     url(r'^assessments/$', views.assessments_all),

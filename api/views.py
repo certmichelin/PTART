@@ -4,9 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
@@ -60,6 +60,22 @@ def assessment(request, pk):
 @api_view(['GET', 'POST'])
 def assessments(request):
     return items(request, Assessment, AssessmentSerializer)
+
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def host(request, pk):
+    return item(request, pk, Host, HostSerializer)
+
+@api_view(['GET', 'POST'])
+def hosts(request):
+    return items(request, Host, HostSerializer)
+
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def service(request, pk):
+    return item(request, pk, Service, ServiceSerializer)
+
+@api_view(['GET', 'POST'])
+def services(request):
+    return items(request, Service, ServiceSerializer)
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def project(request, pk):
