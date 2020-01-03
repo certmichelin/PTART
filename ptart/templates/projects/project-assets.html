@@ -285,7 +285,8 @@
         cardTitleDeleteHostButton.text("Delete Host");
 
         var cardTitleAddServiceButton = $('<button>', {
-            class: "btn btn-outline-success float-right"
+            class: "btn btn-outline-success float-right",
+            onclick: "displayNewServiceModal('" + data.id + "')"
         });
         cardTitleAddServiceButton.text("Add Service");
 
@@ -310,7 +311,10 @@
             value: data.notes
         });
         var cardBody = $('<div>', { class: "card-body" });
-        var cardBodyRow = $('<div>', { class: "row" });
+        var cardBodyRow = $('<div>', { 
+            id: "host" + data.id +"Body",
+            class: "row" 
+        });
 
         //Append everything!!
         cardTitle.append(cardTitleSpan);
