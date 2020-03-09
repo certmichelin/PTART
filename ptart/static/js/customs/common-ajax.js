@@ -131,12 +131,13 @@ function ajaxDeleteAssessment(success_function, error_function, id) {
  * @param {*} asset Hit asset.
  * @param {*} body Hit body.
  * @param {*} labels Hit labels.
+ * @param {*} displayable True if the label will be displayed in report.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateHit(success_function, error_function, severity, title, asset, body, labels, assessmentId) {
+function ajaxCreateHit(success_function, error_function, severity, title, asset, body, displayable, labels, assessmentId) {
     $.ajax({
         url: "/api/hits/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"displayable":' + JSON.stringify(displayable) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -153,13 +154,14 @@ function ajaxCreateHit(success_function, error_function, severity, title, asset,
  * @param {*} title Hit title.
  * @param {*} asset Hit asset.
  * @param {*} body Hit body.
+ * @param {*} displayable True if the label will be displayed in report.
  * @param {*} labels Hit labels.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateHit(success_function, error_function, id, severity, title, asset, body, labels, assessmentId) {
+function ajaxUpdateHit(success_function, error_function, id, severity, title, asset, body, displayable, labels, assessmentId) {
     $.ajax({
         url: "/api/hit/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"displayable":' + JSON.stringify(displayable) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -356,7 +358,7 @@ function ajaxDeleteAttachment(success_function, error_function, id) {
 function ajaxComputeCVSSv3(success_function, error_function, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
         url: "/api/cvss/",
-        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity)+ ', "privilege_required": ' + JSON.stringify(privilegeRequired)+ ', "user_interaction": ' + JSON.stringify(userInteraction)+ ', "scope": ' + JSON.stringify(scope)+ ', "confidentiality": ' + JSON.stringify(confidentiality)+ ', "integrity": ' + JSON.stringify(integrity)+ ', "availability": ' + JSON.stringify(availability) + ' }',
+        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -381,7 +383,7 @@ function ajaxComputeCVSSv3(success_function, error_function, attackVector, attac
 function ajaxAddCVSSv3(success_function, error_function, hitId, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
         url: "/api/hit/" + hitId + "/cvss/",
-        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity)+ ', "privilege_required": ' + JSON.stringify(privilegeRequired)+ ', "user_interaction": ' + JSON.stringify(userInteraction)+ ', "scope": ' + JSON.stringify(scope)+ ', "confidentiality": ' + JSON.stringify(confidentiality)+ ', "integrity": ' + JSON.stringify(integrity)+ ', "availability": ' + JSON.stringify(availability) + ' }',
+        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -746,7 +748,7 @@ function ajaxLoadFlagsFromModule(success_function, error_function, moduleId, ass
 function ajaxCreateHost(success_function, error_function, ip, hostname, os, notes, project) {
     $.ajax({
         url: "/api/hosts/",
-        data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname)+ ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes)+ ',"project":' + JSON.stringify(project) + '}',
+        data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname) + ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes) + ',"project":' + JSON.stringify(project) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -768,7 +770,7 @@ function ajaxCreateHost(success_function, error_function, ip, hostname, os, note
 function ajaxUpdateHost(success_function, error_function, id, ip, hostname, os, notes, project) {
     $.ajax({
         url: "/api/host/" + id + "/",
-        data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname)+ ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes)+ ',"project":' + JSON.stringify(project) + '}',
+        data: '{"ip":' + JSON.stringify(ip) + ',"hostname":' + JSON.stringify(hostname) + ',"os":' + JSON.stringify(os) + ',"notes":' + JSON.stringify(notes) + ',"project":' + JSON.stringify(project) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
@@ -806,7 +808,7 @@ function ajaxDeleteHost(success_function, error_function, id) {
 function ajaxCreateService(success_function, error_function, port, protocol, name, version, banner, host) {
     $.ajax({
         url: "/api/services/",
-        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol)+ ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
+        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol) + ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -829,7 +831,7 @@ function ajaxCreateService(success_function, error_function, port, protocol, nam
 function ajaxUpdateService(success_function, error_function, id, port, protocol, name, version, banner, host) {
     $.ajax({
         url: "/api/service/" + id + "/",
-        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol)+ ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
+        data: '{"port":' + JSON.stringify(port) + ',"protocol":' + JSON.stringify(protocol) + ',"name":' + JSON.stringify(name) + ',"version":' + JSON.stringify(version) + ',"banner":' + JSON.stringify(banner) + ',"host":' + JSON.stringify(host) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

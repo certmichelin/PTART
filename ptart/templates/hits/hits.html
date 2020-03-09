@@ -69,6 +69,9 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="checkbox">
+                    <label><input id="displayable" type="checkbox" checked>Displayed in report</label>
+                </div>
                 <button id="createBtn" class="btn btn-outline-primary mb-4">Submit</button>
                 {% endif %}
             </div>
@@ -90,7 +93,7 @@
 <script type="text/javascript">
 
     var mdBody = activeMarkdown("body");
-    
+
     var colorMap = new Map();
     {% for label in labels %}
     colorMap.set("{{ label.id }}", "{{ label.color }}");
@@ -191,7 +194,7 @@
     /**
      * Attachment creation success callback.
      */
-     function attachmentCreationSuccess(data) {
+    function attachmentCreationSuccess(data) {
         success($("#messages"), "Attachment uploaded!");
         ++attachmentsUploaded
         checkUploadBatchStatus();
@@ -213,6 +216,7 @@
         if (screenshotsUploaded == screenshotsToUpload && attachmentsUploaded == attachmentsToUpload) {
             $("#title").val("");
             $("#asset").val("");
+            $("#displayable").prop("checked", true);
             mdBody.value("");
             clearCVSS();
             $("#screenshots").empty();
@@ -236,7 +240,7 @@
 
     function createHit() {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#displayable").prop("checked"), $("#labels").select2("val"), $("#assessment").val());
     }
 </script>
 {% endblock %}

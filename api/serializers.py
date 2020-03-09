@@ -90,7 +90,7 @@ class HitSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Hit
-        fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'added', 'assessment')
+        fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'added', 'displayable', 'assessment')
     
     @transaction.atomic
     def create(self, validated_data):

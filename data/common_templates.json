@@ -3,7 +3,7 @@
         {
             "name": "CCE: Client Code Execution",
             "severity": 1,
-            "body": "Vulnerabilities can exist in software due to unsecure coding practices that can lead to unanticipated behavior. Adversaries can take advantage of certain vulnerabilities through targeted exploitation for the purpose of arbitrary code execution. Oftentimes the most valuable exploits to an offensive toolkit are those that can be used to obtain code execution on a remote system because they can be used to gain access to that system. Users will expect to see files related to the applications they commonly used to do work, so they are a useful target for exploit research and development because of their high utility."
+            "body": "Client Code Execution (`CCE`) occurs when an application allows executing system command based on user-supplied input on system consumers. As a result, the analysts were able to access the underlying Operating System and able to access anything on the client operating system."
         },
         {
             "name": "RCE: Remote Code Execution",
@@ -24,6 +24,11 @@
             "name": "Unsecured File Upload",
             "severity": 1,
             "body": "Uploaded files represent a significant risk to applications. The first step in many attacks is to get some code to the system to be attacked. Then the attack only needs to find a way to get the code executed. Using a file upload helps the attacker accomplish the first step."
+        },
+        {
+            "name": "XXE: XML External Entity",
+            "severity": 1,
+            "body": "An XML External Entity attack is a type of attack against an application that parses XML input. This attack occurs when XML input containing a reference to an external entity is processed by a weakly configured XML parser. This attack may lead to the disclosure of confidential data, denial of service, server side request forgery, port scanning from the perspective of the machine where the parser is located, and other system impacts."
         },
         {
             "name": "Broken Access Control",
@@ -53,12 +58,12 @@
         {
             "name": "LDAP Injection",
             "severity": 2,
-            "body": "The Lightweight Directory Access Protocol (`LDAP`) is used to store information about users, hosts, and many other objects. LDAP injection is a server side attack, which could allow sensitive information about users and hosts represented in an LDAP structure to be disclosed, modified, or inserted. This is done by manipulating input parameters afterwards passed to internal search, add, and modify functions.\n\n\nA web application could use LDAP in order to let users authenticate or search other users' information inside a corporate structure. The goal of LDAP injection attacks is to inject LDAP search filters metacharacters in a query which will be executed by the application."
+            "body": "The Lightweight Directory Access Protocol (`LDAP`) is used to store information about users, hosts, and many other objects. LDAP injection is a server side attack, which could allow sensitive information about users and hosts represented in an LDAP structure to be disclosed, modified, or inserted. This is done by manipulating input parameters afterwards passed to internal search, add, and modify functions."
         },
         {
             "name": "LFI: Local File Inclusion",
             "severity": 2,
-            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a \"dynamic file inclusion\" mechanisms implemented in the target application. The vulnerability occurs due to the use of user-supplied input without proper validation.\n\nThis can lead to something as outputting the contents of the file, but depending on the severity, it can also lead to:\n\n* Code execution on the web server\n* Code execution on the client-side such as JavaScript which can lead to other attacks such as cross site scripting (XSS)\n* Denial of Service (DoS)\n* Sensitive Information Disclosure\n\nLocal File Inclusion (also known as LFI) is the process of including files, that are already locally present on the server, through the exploiting of vulnerable inclusion procedures implemented in the application. This vulnerability occurs, for example, when a page receives, as input, the path to the file that has to be included and this input is not properly sanitized, allowing directory traversal characters (such as dot-dot-slash) to be injected. Although most examples point to vulnerable PHP scripts, we should keep in mind that it is also common in other technologies such as JSP, ASP and others."
+            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a \"dynamic file inclusion\" mechanisms implemented in the target application.\n\nThis can lead to outputting the contents of the file, code execution on the web server, cross site scripting (XSS)"
         },
         {
             "name": "Path Transversal",
@@ -68,12 +73,12 @@
         {
             "name": "RFI: Remote File Inclusion",
             "severity": 2,
-            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a \"dynamic file inclusion\" mechanisms implemented in the target application. The vulnerability occurs due to the use of user-supplied input without proper validation.\n\n\nThis can lead to something as outputting the contents of the file, but depending on the severity, it can also lead to:\n\n* Code execution on the web server\n* Code execution on the client-side such as JavaScript which can lead to other attacks such as cross site scripting (XSS)\n* Denial of Service (DoS)\n* Sensitive Information Disclosure\n\nRemote File Inclusion (also known as RFI) is the process of including remote files through the exploiting of vulnerable inclusion procedures implemented in the application. This vulnerability occurs, for example, when a page receives, as input, the path to the file that has to be included and this input is not properly sanitized, allowing external URL to be injected. Although most examples point to vulnerable PHP scripts, we should keep in mind that it is also common in other technologies such as JSP, ASP and others."
+            "body": "Remote File Inclusion (also known as RFI) is the process of including remote files through the exploiting of vulnerable inclusion procedures implemented in the application. This vulnerability occurs, for example, when a page receives, as input, the path to the file that has to be included and this input is not properly sanitized, allowing external URL to be injected."
         },
         {
             "name": "Reflected XSS: Cross-Site scripting",
             "severity": 2,
-            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites. `XSS` attacks occur when an attacker uses a web application to send malicious code, generally in the form of a browser side script, to a different end user. Flaws that allow these attacks to succeed are quite widespread and occur anywhere a web application uses input from a user within the output it generates without validating or encoding it.\n\n\nAn attacker can use `XSS` to send a malicious script to an unsuspecting user. The end user’s browser has no way to know that the script should not be trusted, and will execute the script. Because it thinks the script came from a trusted source, the malicious script can access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page."
+            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\n\nThe malicious script could access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page and/or execute valid `XHR` request."
         },
         {
             "name": "SQLi: SQL Injection",
@@ -88,7 +93,7 @@
         {
             "name": "Stored XSS: Cross-Site scripting",
             "severity": 2,
-            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites. `XSS` attacks occur when an attacker uses a web application to send malicious code, generally in the form of a browser side script, to a different end user. Flaws that allow these attacks to succeed are quite widespread and occur anywhere a web application uses input from a user within the output it generates without validating or encoding it.\n\n\nAn attacker can use `XSS` to send a malicious script to an unsuspecting user. The end user’s browser has no way to know that the script should not be trusted, and will execute the script. Because it thinks the script came from a trusted source, the malicious script can access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page."
+            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\n\nThe malicious script could access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page and/or execute valid `XHR` request. The difference with a relfected XSS is the malicious script is stored in the application and not directly coming from a direct parameter."
         },
         {
             "name": ".git folder exposed",
