@@ -59,7 +59,7 @@
             <!-- Synthesis -->
             <section>
                 {% for assessment in project.assessment_set.all %}
-                    {% if assessment.hit_set.all %}
+                    {% if assessment.displayable_hits %}
                         <section>
                             <h3>{{ assessment.name }} Synthesis</h3>
                             <table>
@@ -71,7 +71,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for hit in assessment.hit_set.all %}
+                                    {% for hit in assessment.displayable_hits %}
                                         <tr>
                                             <td><span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span></td>
                                             <td>{{ hit.title }}</td>
@@ -87,11 +87,11 @@
 
             <!-- Hits page -->
             {% for assessment in project.assessment_set.all %}
-                {% if assessment.hit_set.all %}
+                {% if assessment.displayable_hits %}
                     <section>
                         <h1>{{ assessment.name }}</h1>
                     </section>
-                    {% for hit in assessment.hit_set.all %}
+                    {% for hit in assessment.displayable_hits %}
                         <section>
                             <section>
                                 <h2>

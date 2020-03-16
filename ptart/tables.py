@@ -39,6 +39,7 @@ class HitTable(tables.Table):
     title = tables.TemplateColumn('<a href="/hit/{{ record.pk }}">{{ record.title }}</a>')
     project = tables.TemplateColumn('<a href="/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
+    displayable = tables.TemplateColumn('{% if record.displayable == True %} <span class="badge badge-success">Displayed</span> {% else %} <span class="badge badge-danger">Hidden</span> {% endif %}', verbose_name= 'Displayable')
     cvss = tables.TemplateColumn('<span class="cvss cvss-badge cvss-badge-secondary">{{ record.get_cvss_value }}</span>', verbose_name= 'CVSS v3')
 
     class Meta:

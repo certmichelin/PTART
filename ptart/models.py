@@ -86,6 +86,9 @@ class Assessment(models.Model):
     def __str__(self):  
         return self.name
 
+    def displayable_hits(self):
+        return self.hit_set.filter(displayable = True)
+
     def p1_hits(self):
         """Return all P1 hits for the assessment."""
         return self.hits_by_severity(1)
@@ -304,6 +307,7 @@ class Hit(models.Model):
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    displayable = models.BooleanField(default=True)
     cvss = models.OneToOneField(Cvss, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
 
