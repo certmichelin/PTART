@@ -149,11 +149,11 @@
         if (screenshotsToUpload == 0 && attachmentsToUpload == 0) {
             checkUploadBatchStatus()
         } else {
-            $('.screenshot_gallery').each(function () {
+            $($('.screenshot_gallery').get().reverse()).each(function () {
                 ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), $(this).attr("caption"), data.id);
             });
 
-            $('.attachment_gallery').each(function () {
+            $($('.attachment_gallery').get().reverse()).each(function () {
                 ajaxUploadAttachment(attachmentCreationSuccess, attachmentCreationFailure, $(this).attr("href"), $(this).attr("filename"), data.id);
             });
 
