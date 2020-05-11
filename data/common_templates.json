@@ -93,7 +93,12 @@
         {
             "name": "Stored XSS: Cross-Site scripting",
             "severity": 2,
-            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\n\nThe malicious script could access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page and/or execute valid `XHR` request. The difference with a relfected XSS is the malicious script is stored in the application and not directly coming from a direct parameter."
+            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\nThe malicious script could access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page and/or execute valid `XHR` request. The difference with a reflected XSS is the malicious script is stored in the application and not directly coming from a direct parameter."
+        },
+        {
+            "name": "Blind XSS: Cross-Site scripting",
+            "severity": 2,
+            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\n`Blind XSS` is a flavor of cross site scripting (XSS), where the attacker blindly deploys a series of malicious payloads on web pages that are likely to save them to a persistent state (like in a database, or in a log file). Then, without knowing any details about where the payloads have ended up, or if (and when) they are going to be executed, the attacker waits for the payloads to be pulled out of storage and rendered on a web page loaded by a user."
         },
         {
             "name": ".git folder exposed",
