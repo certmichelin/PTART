@@ -101,6 +101,11 @@
             "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\n`Blind XSS` is a flavor of cross site scripting (XSS), where the attacker blindly deploys a series of malicious payloads on web pages that are likely to save them to a persistent state (like in a database, or in a log file). Then, without knowing any details about where the payloads have ended up, or if (and when) they are going to be executed, the attacker waits for the payloads to be pulled out of storage and rendered on a web page loaded by a user."
         },
         {
+            "name": "Mass assignment",
+            "severity":2,
+            "body": "Mass assignment is a computer vulnerability where an active record pattern in a web application is abused to modify data items that the user should not normally be allowed to access such as password, granted permissions, or administrator status."
+        }
+        {
             "name": ".git folder exposed",
             "severity": 3,
             "body": "The analyst found a `GIT` folder publicly accessible in the webroot (under the `/.git/` folder).\nIn order to retrieve the files pushed on this `GIT` folder, the analyst used a publicly-known tool called [Pillage-SVN](https://github.com/evilpacket/DVCS-Pillage) allowing him to retrieve all the files locally."
