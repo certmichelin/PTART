@@ -104,7 +104,7 @@
             "name": "Mass assignment",
             "severity":2,
             "body": "Mass assignment is a computer vulnerability where an active record pattern in a web application is abused to modify data items that the user should not normally be allowed to access such as password, granted permissions, or administrator status."
-        }
+        },
         {
             "name": ".git folder exposed",
             "severity": 3,
