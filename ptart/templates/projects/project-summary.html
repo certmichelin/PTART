@@ -19,7 +19,8 @@
                         Management</a>
 
                     {% if editable == True %}
-                    <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}" role="button">Create Assessment</a>
+                    <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}"
+                        role="button">Create Assessment</a>
 
                     {% if project.assessment_set.all|length > 0 %}
                     <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create
@@ -54,7 +55,9 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <h4>Scope:</h4>
+                        <h4>Scope: <a href="/api/project/{{project.id}}/burp" data-toggle="popover"
+                                data-content="Download Burp configuration file"><img src="/static/img/burp.png"
+                                    height="30px" width="30px" /></a></h4>
                         <div id="projectScope">
                             <ul>
                                 {% for line in project.scope.splitlines %}
@@ -198,5 +201,12 @@
 <script>
     $("#projectIntroduction").html(marked($("#projectIntroduction").html()));
     $("#projectConclusion").html(marked($("#projectConclusion").html()));
+
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover({
+            placement: 'top',
+            trigger: 'hover'
+        });
+    });
 </script>
 {% endblock %}

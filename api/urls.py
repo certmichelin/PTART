@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^assessment/(?P<pk>[0-9]+)/$', views.assessment),
     url(r'^assessments/$', views.assessments),
     url(r'^project/(?P<pk>[0-9]+)/$', views.project),
+    url(r'^project/(?P<pk>[0-9]+)/burp$', views.project_burp_configuration),
     url(r'^projects/$', views.projects),
     url(r'^template/(?P<pk>[0-9]+)/$', views.template),
     url(r'^templates/$', views.templates),

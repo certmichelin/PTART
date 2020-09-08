@@ -8,6 +8,7 @@ from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host
 
 from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
+import json
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def flag(request, pk):
@@ -267,6 +268,61 @@ def markFlagAsDone(request, pk) :
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
+@api_view(['GET'])
+def project_burp_configuration(request, pk):
+    response = None
+    try:
+        project = Project.objects.get(pk=pk)
+        if project.is_user_can_view(request.user):
+            configuration = {"target": { "scope": { "advanced_mode": "true"}}}
+            targets = []
+            for target in project.scope.splitlines() :
+                burp_target = {}
+                burp_target["enabled"] = True
+
+                #Manage protocol
+                protocol = "any"
+                if target.startswith("https://") :
+                    protocol = "https"
+                    target = target.replace("https://", "")
+                elif target.startswith("http://") :
+                    protocol = "http"
+                    target = target.replace("http://", "")
+                burp_target["protocol"] = protocol
+
+                #Manage port
+                if ":" in target :
+                    port = target.split(":")[1]
+                    if "/" in port :
+                        port = port.split("/")[0]
+                    burp_target["port"] = "^"+port + "$"
+                    target = target.replace(":" + port, "")
+
+                #Manage file
+                if "/" in target :
+                    file = target.partition("/")[2]
+                    burp_target["file"] = "^" + file + "$"
+                    target = target.replace("/" + file, "")
+
+                #Manage Target
+                target = target.replace(".", "\.")
+                target = target.replace("*", ".*")
+                burp_target["host"] = "^" + target + "$"
+
+                targets.append(burp_target)
+            configuration["target"]["scope"]["include"] = targets
+            response = Response(configuration)
+            response.accepted_renderer = JsonRenderer()
+            response.accepted_media_type = 'application/json'
+            response.renderer_context = {}
+            response['Content-Disposition'] = 'attachment; filename=' + project.name + "_burp_configuration.json"
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
 #
 # CRUD operations for a specific item.
 #
@@ -328,6 +384,13 @@ def items(request, class_name, serializer_name) :
 #
 class ImageRenderer(BaseRenderer):
     def render(self, data, media_type='image/png', renderer_context=None):
+        return data
+
+#
+# JSON renderer for Burp config file.
+#
+class JsonRenderer(BaseRenderer):
+    def render(self, data, media_type='application/json', renderer_context=None):
         return data
 
 #
