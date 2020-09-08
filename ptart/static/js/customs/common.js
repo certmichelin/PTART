@@ -9,6 +9,16 @@ function goBackWithRefresh(event) {
     }
 }
 
+function urlSearchParams(name) {
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results == null) {
+        return null;
+    }
+    else {
+        return decodeURI(results[1]) || 0;
+    }
+}
+
 /**
  * Toggle all elements of a list.
  */

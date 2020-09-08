@@ -19,6 +19,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Scope</label>
+                    <textarea id="scope" class="form-control" rows="5" style="resize:vertical" placeholder="One line per target ex: *.michelin.com"></textarea>
+                </div>
+
+                <div class="form-group">
                     <label>Introduction</label>
                     <textarea id="introduction" class="form-control" rows="10" style="resize:vertical"></textarea>
                 </div>
@@ -51,7 +56,7 @@
 {% block extra_foot %}
 <script type="text/javascript">
 
-    activeMarkdown("body");
+    var introSimpleMDE = activeMarkdown("introduction");
 
     $('#pentesters').select2().val(defaultPentester()).trigger("change");
     $('#viewers').select2()
@@ -64,7 +69,8 @@
 
     function projectCreationSuccess(data) {
         $("#name").val("");
-        $("#introduction").val("");
+        $("#scope").val("");
+        introSimpleMDE.value("");
         $('#pentesters').select2().val(defaultPentester()).trigger("change");
         $('#viewers').val(null).trigger('change');
         success($("#messages"), "Project was created!");
@@ -72,7 +78,7 @@
 
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#introduction").val(), "", $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#introduction").val(), "", $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

@@ -56,6 +56,17 @@
             </section>
             {% endif %}
 
+            {% if project.scope %}
+            <section>
+                <h3>Scope :</h3>
+                <ul>
+                    {% for line in project.scope.splitlines %}
+                    <li>{{ line }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+
             <!-- Synthesis -->
             <section>
                 {% for assessment in project.assessment_set.all %}

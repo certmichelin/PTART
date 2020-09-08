@@ -17,13 +17,14 @@ $.ajaxSetup({
  * @param {*} name Project name.
  * @param {*} introduction Project introduction.
  * @param {*} conclusion Project conclusion.
+ * @param {*} scope Project scope.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  */
-function ajaxCreateProject(success_function, error_function, name, introduction, conclusion, pentesters, viewers) {
+function ajaxCreateProject(success_function, error_function, name, introduction, conclusion, scope, pentesters, viewers) {
     $.ajax({
         url: "/api/projects/",
-        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -39,13 +40,14 @@ function ajaxCreateProject(success_function, error_function, name, introduction,
  * @param {*} name Project name.
  * @param {*} introduction Project introduction.
  * @param {*} conclusion Project conclusion.
+ * @param {*} scope Project scope.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  */
-function ajaxUpdateProject(success_function, error_function, id, name, introduction, conclusion, pentesters, viewers) {
+function ajaxUpdateProject(success_function, error_function, id, name, introduction, conclusion, scope, pentesters, viewers) {
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

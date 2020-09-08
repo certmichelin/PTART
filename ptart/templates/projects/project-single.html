@@ -15,6 +15,10 @@
                     <input class="form-control" id="name" value="{{ project.name }}" />
                 </div>
                 <div class="form-group">
+                    <label>Scope</label>
+                    <textarea class="form-control" rows="5" id="scope" style="resize:vertical" placeholder="One line per target ex: *.michelin.com">{{ project.scope }}</textarea>
+                </div>
+                <div class="form-group">
                     <label>Introduction</label>
                     <textarea class="form-control" rows="5" id="introduction" style="resize:vertical">{{ project.introduction }}</textarea>
                 </div>
@@ -79,7 +83,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#introduction").val(), $("#conclusion").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#introduction").val(), $("#conclusion").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}
