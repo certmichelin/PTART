@@ -19,7 +19,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name','scope', 'conclusion', 'pentesters', 'viewers', 'added')
+        fields = ('id', 'name','introduction', 'conclusion', 'pentesters', 'viewers', 'added')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""

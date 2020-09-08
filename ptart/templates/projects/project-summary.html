@@ -51,8 +51,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <h4>Scope:</h4>
-                        <div id="projectScope">{{ project.scope }}</div>
+                        <h4>Introduction:</h4>
+                        <div id="projectIntroduction">{{ project.introduction }}</div>
                         <h4>Conclusion:</h4>
                         <div id="projectConclusion">{{ project.conclusion }}</div>
                     </div>
@@ -185,7 +185,7 @@
 
 {% block extra_foot %}
 <script>    
-    $("#projectScope").html(marked($("#projectScope").html()));
+    $("#projectIntroduction").html(marked($("#projectIntroduction").html()));
     $("#projectConclusion").html(marked($("#projectConclusion").html()));
 </script>
 {% endblock %}

@@ -19,8 +19,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Scope</label>
-                    <textarea id="scope" class="form-control" rows="10" style="resize:vertical"></textarea>
+                    <label>Introduction</label>
+                    <textarea id="introduction" class="form-control" rows="10" style="resize:vertical"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -64,7 +64,7 @@
 
     function projectCreationSuccess(data) {
         $("#name").val("");
-        $("#scope").val("");
+        $("#introduction").val("");
         $('#pentesters').select2().val(defaultPentester()).trigger("change");
         $('#viewers').val(null).trigger('change');
         success($("#messages"), "Project was created!");
@@ -72,7 +72,7 @@
 
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#scope").val(), "", $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#introduction").val(), "", $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}
