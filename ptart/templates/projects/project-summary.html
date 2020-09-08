@@ -14,18 +14,22 @@
                     <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">
                         Details
                     </button>
-                    
-                    <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset Management</a>
+
+                    <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset
+                        Management</a>
 
                     {% if editable == True %}
-                    <a class="btn btn-outline-warning" href="/assessments/new" role="button">Create Assessment</a>
+                    <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}"
+                        role="button">Create Assessment</a>
 
                     {% if project.assessment_set.all|length > 0 %}
-                        <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create Flag!</a>
+                    <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create
+                        Flag!</a>
                     {% endif %}
 
                     {% if project.assessment_set.all|length > 0 %}
-                        <a class="btn btn-outline-danger" href="/hits/new?projectId={{project.id}}" role="button">Create Hit!</a>
+                    <a class="btn btn-outline-danger" href="/hits/new?projectId={{project.id}}" role="button">Create
+                        Hit!</a>
                     {% endif %}
 
                     <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">
@@ -51,8 +55,18 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <h4>Scope:</h4>
-                        <div id="projectScope">{{ project.scope }}</div>
+                        <h4>Scope: <a href="/api/project/{{project.id}}/burp" data-toggle="popover"
+                                data-content="Download Burp configuration file"><img src="/static/img/burp.png"
+                                    height="30px" width="30px" /></a></h4>
+                        <div id="projectScope">
+                            <ul>
+                                {% for line in project.scope.splitlines %}
+                                <li>{{ line }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <h4>Introduction:</h4>
+                        <div id="projectIntroduction">{{ project.introduction }}</div>
                         <h4>Conclusion:</h4>
                         <div id="projectConclusion">{{ project.conclusion }}</div>
                     </div>
@@ -67,36 +81,36 @@
         <div class="row mb-4">
             <div class="col-lg-12">
                 {% if project.assessment_set.all|length == 0 %}
-                    <b>No assessment found. <a href="/assessments/new/">Create one</a></b>
+                <b>No assessment found. <a href="/assessments/new/">Create one</a></b>
                 {% else %}
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Name</th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p1">P1</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p2">P2</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p3">P3</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p4">P4</span></th>
-                                        <th scope="col"><span class="bc-badge bc-badge--p5">P5</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for assessment in project.assessment_set.all %}
-                                    <tr>
-                                        <td><a href="#{{assessment.name}}">{{assessment.name}}</a></td>
-                                        <td>{{assessment.p1_hits|length}}</td>
-                                        <td>{{assessment.p2_hits|length}}</td>
-                                        <td>{{assessment.p3_hits|length}}</td>
-                                        <td>{{assessment.p4_hits|length}}</td>
-                                        <td>{{assessment.p5_hits|length}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p1">P1</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p2">P2</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p3">P3</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p4">P4</span></th>
+                                    <th scope="col"><span class="bc-badge bc-badge--p5">P5</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assessment in project.assessment_set.all %}
+                                <tr>
+                                    <td><a href="#{{assessment.name}}">{{assessment.name}}</a></td>
+                                    <td>{{assessment.p1_hits|length}}</td>
+                                    <td>{{assessment.p2_hits|length}}</td>
+                                    <td>{{assessment.p3_hits|length}}</td>
+                                    <td>{{assessment.p4_hits|length}}</td>
+                                    <td>{{assessment.p5_hits|length}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -104,10 +118,10 @@
 
         <!-- Assesments summary table-->
         {% for assessment in project.assessment_set.all %}
-            {% if assessment.hit_set.all or assessment.open_flags.all  %}
-            <div id="{{assessment.name}}" class="row mb-4">
-                <div class="col-lg-12">
-                    <h3><i class="fa fa-cube"></i>{{assessment.name}}</h2>
+        {% if assessment.hit_set.all or assessment.open_flags.all  %}
+        <div id="{{assessment.name}}" class="row mb-4">
+            <div class="col-lg-12">
+                <h3><i class="fa fa-cube"></i>{{assessment.name}}</h2>
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="row">
@@ -123,21 +137,21 @@
                                         </thead>
                                         <tbody>
                                             {% for hit in assessment.hit_set.all %}
-                                                <tr>
-                                                    <td>
-                                                        <span class="bc-badge bc-badge--p{{ hit.severity }}">
-                                                            P{{ hit.severity }}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                            <span class="cvss cvss-badge cvss-badge-secondary">
-                                                                {{ hit.get_cvss_value }}
-                                                            </span>
-                                                    </td>
-                                                    <td>
-                                                        <a href="/hit/{{ hit.id }}/">{{ hit.title }}</a>
-                                                    </td>
-                                                </tr>
+                                            <tr>
+                                                <td>
+                                                    <span class="bc-badge bc-badge--p{{ hit.severity }}">
+                                                        P{{ hit.severity }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="cvss cvss-badge cvss-badge-secondary">
+                                                        {{ hit.get_cvss_value }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="/hit/{{ hit.id }}/">{{ hit.title }}</a>
+                                                </td>
+                                            </tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
@@ -153,14 +167,14 @@
                                         </thead>
                                         <tbody>
                                             {% for flag in assessment.open_flags.all %}
-                                                <tr>
-                                                    <td>
-                                                        <a href="/flag/{{ flag.id }}/">{{ flag.title }}</a>
-                                                    </td>
-                                                    <td>
-                                                        {{ flag.assignee.username }}
-                                                    </td>
-                                                </tr>
+                                            <tr>
+                                                <td>
+                                                    <a href="/flag/{{ flag.id }}/">{{ flag.title }}</a>
+                                                </td>
+                                                <td>
+                                                    {{ flag.assignee.username }}
+                                                </td>
+                                            </tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
@@ -168,9 +182,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
-            {% endif %}
+        </div>
+        {% endif %}
         {% endfor %}
         {% if project.assessment_set.all|length != 0 %}
         <a class="btn btn-outline-success mb-4" href="/project/{{project.id}}/report" target="_blank" role="button">
@@ -184,8 +198,15 @@
 {% endblock %}
 
 {% block extra_foot %}
-<script>    
-    $("#projectScope").html(marked($("#projectScope").html()));
+<script>
+    $("#projectIntroduction").html(marked($("#projectIntroduction").html()));
     $("#projectConclusion").html(marked($("#projectConclusion").html()));
+
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover({
+            placement: 'top',
+            trigger: 'hover'
+        });
+    });
 </script>
 {% endblock %}

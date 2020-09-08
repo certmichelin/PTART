@@ -63,6 +63,12 @@
     var toCreate = 0;
     var created = 0;
 
+    /* Select the project if params is given.*/
+    var projectId = urlSearchParams("projectId");
+    if(projectId){
+        $("#project").val(projectId);
+    }
+
     /**
      * Select all modules from methodology.
      */
