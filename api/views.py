@@ -4,11 +4,12 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
+
 from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
 
 from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
-
-import json
 
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def flag(request, pk):
@@ -317,6 +318,35 @@ def project_burp_configuration(request, pk):
             response.accepted_media_type = 'application/json'
             response.renderer_context = {}
             response['Content-Disposition'] = 'attachment; filename=' + project.name + "_burp_configuration.json"
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@action(methods=['GET'], detail=True)
+def project_xlsx(request, pk):
+    response = None
+    try:
+        project = Project.objects.get(pk=pk)
+        if project.is_user_can_view(request.user):
+                        
+            wb = Workbook()
+            ws = wb.active
+
+            ws.append(["Assessment","Asset", "Severity", "Title","CVSS"])
+            for assessment in project.assessment_set.all():        
+                for hit in assessment.displayable_hits():
+                    ws.append([assessment.name,hit.asset,hit.severity,hit.title,hit.get_cvss_value()])
+
+            response = Response(save_virtual_workbook(wb))
+            response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            response['Content-Disposition'] = 'attachment; filename=' + project.name + ".xlsx"
+            response.accepted_renderer = BinaryRenderer()
+            response.accepted_media_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            response.renderer_context = {}
+
+            wb.close()
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:

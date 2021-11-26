@@ -12,6 +12,7 @@ django-extra-fields = "==3.0.2"
 django-tables2      = "==2.4.1"
 psycopg2            = "==2.9.1"
 Pillow              = "==8.4.0"
+openpyxl            = "==3.0.9"
 
 [requires]
 python_version      = "3.9"
