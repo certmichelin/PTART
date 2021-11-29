@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
 
-from openpyxl import Workbook
+from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
 
 from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
@@ -334,11 +334,146 @@ def project_xlsx(request, pk):
             wb = Workbook()
             ws = wb.active
 
-            ws.append(["Assessment","Asset", "Severity", "Title","CVSS"])
+            #Define column size
+            wb.active.column_dimensions['A'].width = 28
+            wb.active.column_dimensions['B'].width = 10
+            wb.active.column_dimensions['C'].width = 10
+            wb.active.column_dimensions['D'].width = 50
+            wb.active.column_dimensions['E'].width = 30
+            wb.active.column_dimensions['F'].width = 50
+
+            #Add project data.
+            ws['A1'] = "Project Name:"
+            ws['A2'] = "Date:"
+            ws['A3'] = "Auditors:"
+            ws['B1'] = project.name
+            ws['B2'] = project.added
+            
+            #Construct the auditor string
+            pentester_str = ""
+            previous = ""
+            for pentester in project.pentesters.all():
+                pentester_str = "{}{}{} - {} {}".format(pentester_str, previous, pentester.username, pentester.first_name, pentester.last_name)
+                previous = ", "
+            ws['B3'] = pentester_str
+
+            #Beautify project data 
+            ws.merge_cells('B1:F1')
+            ws.merge_cells('B2:F2')
+            ws.merge_cells('B3:F3')
+
+            
+            projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
+            projectHeaderStyle.font = styles.Font(name = 'Calibri', size = 14, bold = True, color = '000000')
+            projectHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
+            projectHeaderStyle.alignment = styles.Alignment(horizontal= 'left')
+            ws['A1'].style = projectHeaderStyle
+            ws['A2'].style = projectHeaderStyle
+            ws['A3'].style = projectHeaderStyle
+
+            projectValueStyle = styles.NamedStyle(name = 'project_value_style')
+            projectValueStyle.font = styles.Font(name = 'Calibri', size = 14, italic = True, color = '000000')
+            projectValueStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
+            projectValueStyle.alignment = styles.Alignment(horizontal= 'left')
+
+            ws['B1'].style = projectValueStyle
+            ws['B2'].style = projectValueStyle
+            ws['B3'].style = projectValueStyle
+            ws['B2'].number_format = 'YYYY MMM DD'
+
+
+            #Add column header.
+            ws['A5'] = "Assessment"
+            ws['B5'] = "Sev"
+            ws['C5'] = "CVSS"
+            ws['D5'] = "Title"
+            ws['E5'] = "Asset"
+            ws['F5'] = "Labels"
+
+            columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
+            columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
+            columnHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '92D050')
+            columnHeaderStyle.alignment = styles.Alignment(horizontal= 'center')
+
+            ws['A5'].style = columnHeaderStyle
+            ws['B5'].style = columnHeaderStyle
+            ws['C5'].style = columnHeaderStyle
+            ws['D5'].style = columnHeaderStyle
+            ws['E5'].style = columnHeaderStyle
+            ws['F5'].style = columnHeaderStyle
+
+            #Fill the report
+            criticalStyle = styles.NamedStyle(name = 'critical_style')
+            criticalStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+            criticalStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '343a40')
+            criticalStyle.alignment = styles.Alignment(horizontal= 'center')
+
+            highStyle = styles.NamedStyle(name = 'high_style')
+            highStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+            highStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'dc3545')
+            highStyle.alignment = styles.Alignment(horizontal= 'center')
+
+            mediumStyle = styles.NamedStyle(name = 'medium_style')
+            mediumStyle.font = styles.Font(name = 'OCR A Extended', color = '212529')
+            mediumStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'ffc107')
+            mediumStyle.alignment = styles.Alignment(horizontal= 'center')
+
+            lowStyle = styles.NamedStyle(name = 'low_style')
+            lowStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+            lowStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '28a745')
+            lowStyle.alignment = styles.Alignment(horizontal= 'center')
+
+            infoStyle = styles.NamedStyle(name = 'info_style')
+            infoStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+            infoStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '6c757d')
+            infoStyle.alignment = styles.Alignment(horizontal= 'center')
+
+            line = 6
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
-                    ws.append([assessment.name,hit.asset,hit.severity,hit.title,hit.get_cvss_value()])
+                    ws.cell(row=line, column=1).value = assessment.name
+                    ws.cell(row=line, column=2).value = "P{}".format(hit.severity)
+                    ws.cell(row=line, column=3).value = hit.get_cvss_value()
+                    ws.cell(row=line, column=4).value = hit.title
+                    ws.cell(row=line, column=5).value = hit.asset
 
+                    label_str = ""
+                    previous = ""
+                    for label in hit.labels.all():
+                        label_str = "{}{}{}".format(label_str, previous, label.title)
+                        previous = ", "
+                    ws.cell(row=line, column=6).value = label_str
+
+                    #Apply style from value.
+                    if hit.severity == 1:
+                        ws.cell(row=line, column=2).style = criticalStyle
+                    elif hit.severity == 2:
+                        ws.cell(row=line, column=2).style = highStyle
+                    elif hit.severity == 3:
+                        ws.cell(row=line, column=2).style = mediumStyle
+                    elif hit.severity == 4:
+                        ws.cell(row=line, column=2).style = lowStyle
+                    elif hit.severity == 5:
+                        ws.cell(row=line, column=2).style = infoStyle
+
+                    try:
+                        if float(hit.get_cvss_value()) < 4.0:
+                            ws.cell(row=line, column=3).style = infoStyle
+                        elif float(hit.get_cvss_value()) < 4.0:
+                            ws.cell(row=line, column=3).style = lowStyle
+                        elif float(hit.get_cvss_value()) < 7.0:
+                            ws.cell(row=line, column=3).style = mediumStyle
+                        elif float(hit.get_cvss_value()) < 9.0:
+                            ws.cell(row=line, column=3).style = highStyle
+                        elif float(hit.get_cvss_value()) < 4.0:
+                            ws.cell(row=line, column=3).style = criticalStyle
+                    except ValueError:
+                        ws.cell(row=line, column=3).style = infoStyle
+                    line = line + 1
+            
+            ws.auto_filter.ref = "A5:F{}".format(line)
+
+            #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
             response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             response['Content-Disposition'] = 'attachment; filename=' + project.name + ".xlsx"
@@ -352,6 +487,8 @@ def project_xlsx(request, pk):
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
+
+
 
 #
 # CRUD operations for a specific item.

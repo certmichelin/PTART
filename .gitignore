@@ -112,3 +112,4 @@ ENV/
 .mypy_cache/
 /.vscode
 /*.sqlite3
+/Pipfile.lock
