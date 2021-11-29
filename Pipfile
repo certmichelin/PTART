@@ -6,11 +6,13 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-Django              = "==2.2.8"
-djangorestframework = "==3.9.1"
-django-extra-fields = "==1.0.0"
-django-tables2      = "==2.0.5"
-Pillow              = "==5.4.1"
+Django              = "==2.2.24"
+djangorestframework = "==3.12.4"
+django-extra-fields = "==3.0.2"
+django-tables2      = "==2.4.1"
+psycopg2            = "==2.9.1"
+Pillow              = "==8.4.0"
+openpyxl            = "==3.0.9"
 
 [requires]
-python_version      = "3.7"
+python_version      = "3.9"
