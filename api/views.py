@@ -465,7 +465,7 @@ def project_xlsx(request, pk):
                             ws.cell(row=line, column=3).style = mediumStyle
                         elif float(hit.get_cvss_value()) < 9.0:
                             ws.cell(row=line, column=3).style = highStyle
-                        elif float(hit.get_cvss_value()) < 4.0:
+                        else :
                             ws.cell(row=line, column=3).style = criticalStyle
                     except ValueError:
                         ws.cell(row=line, column=3).style = infoStyle
