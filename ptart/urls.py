@@ -3,6 +3,8 @@ from django.conf.urls import include
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.models import Group
+from django.contrib.auth.views import LoginView
+from django_otp.forms import OTPAuthenticationForm
 from django.urls import re_path
 
 from ptart import views
@@ -11,6 +13,7 @@ from ptart import views
 urlpatterns = [
     re_path(r'^api/', include('api.urls')),
     re_path(r'^admin/', admin.site.urls),
+    re_path(r'accounts/login/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
     re_path(r'^accounts/', include('django.contrib.auth.urls')),
     re_path(r'^$', views.index),
 
