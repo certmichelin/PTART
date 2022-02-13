@@ -9,12 +9,12 @@ BANNER = """
 #          #    #     # #    #     #    
 #          #    #     # #     #    #    
 
-A Testing Environment for Manual Security Testers
+A Pentest organizer tool for Manual Security Testers
 
 """
 
 NAME = "PTART"
-DESCRIPTION = "PTART is a vulnerability organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise."
+DESCRIPTION = "PTART is a assessment organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise."
 
 VERSION = 1.2
 
