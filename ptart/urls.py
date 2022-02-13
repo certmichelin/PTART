@@ -13,7 +13,7 @@ from ptart import views
 urlpatterns = [
     re_path(r'^api/', include('api.urls')),
     re_path(r'^admin/', admin.site.urls),
-    re_path(r'accounts/login/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
+    re_path(r'^accounts/login/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
     re_path(r'^accounts/', include('django.contrib.auth.urls')),
     re_path(r'^$', views.index),
 
