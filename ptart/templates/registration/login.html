@@ -13,46 +13,56 @@
 
 <body class="text-center">
 
-  <form class="form-signin" method="POST">
+  
     
     <img class="mb-4" src="/static/img/logo.png" alt="" width="110" height="110">
     
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
     
     {% if form.get_user and form.otp_device|length < 1 %}
-        <p class="alert alert-danger">Please ask your admin to register an OTP device for your account.</p>
+        <!-- TODO : Auto submit the OTP creation.-->
+        <form class="form-signin" method="POST" action="/otp/">
+            {{ form.username }}
+            {{ form.password }}
+            {% csrf_token %}  
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Generate the token</button> 
+        <form>
     {% else %}
-        <div class="form-row form-group">  
-            {{ form.username.label_tag }} 
-            {{ form.username }} 
-        </div>
-  
-        <div class="form-row form-group">  
-            {{ form.password.label_tag }} 
-            {{ form.password }} 
-        </div>
-  
-        {% if form.get_user %}
-            <div class="form-row form-group"> 
-                {{ form.otp_device.label_tag }} 
-                {{ form.otp_device }} 
+        <form class="form-signin" method="POST">
+            <!-- TODO : Use the old beautiful for le login page. -->
+            <div class="form-row form-group">  
+                {{ form.username.label_tag }} 
+                {{ form.username }} 
             </div>
-        
-            <div class="form-row form-group">
-                {{ form.otp_token.label_tag }} 
-                {{ form.otp_token }} 
-            </div>
-        {% endif %}
-        
-        <div class="submit-row">
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>    
-        </div>
-        
-        {% csrf_token %}
     
+            <div class="form-row form-group">  
+                {{ form.password.label_tag }} 
+                {{ form.password }} 
+            </div>
+    
+            {% if form.get_user %}
+                <!-- TODO : Hide login password for otp.-->
+                <!-- TODO : Hide OTP Device tag.-->
+                <div class="form-row form-group"> 
+                    {{ form.otp_device.label_tag }} 
+                    {{ form.otp_device }} 
+                </div>
+            
+                <div class="form-row form-group">
+                    {{ form.otp_token.label_tag }} 
+                    {{ form.otp_token }} 
+                </div>
+            {% endif %}
+            
+            <div class="submit-row">
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>    
+            </div>
+            
+            {% csrf_token %}
+        </form>
     {% endif %}
 
     <p class="mt-5 mb-3 text-muted">Software developed under MIT License</p>
-  </form>
+  
 </body>
 </html>

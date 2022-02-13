@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+
 from django_otp.decorators import otp_required
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
@@ -327,3 +329,16 @@ def my_todo(request):
                 'assessments' : assessments
             })
     return render(request, 'mytodo.html', {'projects':projects})
+
+def generate_totp(request) :
+    response = redirect('/')
+    if request.method == 'POST':
+        user = authenticate(request, username=request.POST.get("username", ""), password=request.POST.get("password", ""))
+
+        if user is not None:
+            response = render(request, 'registration/otp.html', {'user':user})
+            #TODO: Manage TOTP creation if required.
+        
+    return response
+
+    
