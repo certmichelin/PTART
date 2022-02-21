@@ -3,12 +3,13 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
 from django_otp.decorators import otp_required
+
+
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
 
 from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
-
 
 @otp_required
 def index(request):
@@ -329,16 +330,5 @@ def my_todo(request):
                 'assessments' : assessments
             })
     return render(request, 'mytodo.html', {'projects':projects})
-
-def generate_totp(request) :
-    response = redirect('/')
-    if request.method == 'POST':
-        user = authenticate(request, username=request.POST.get("username", ""), password=request.POST.get("password", ""))
-
-        if user is not None:
-            response = render(request, 'registration/otp.html', {'user':user})
-            #TODO: Manage TOTP creation if required.
-        
-    return response
 
     

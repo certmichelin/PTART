@@ -58,9 +58,6 @@ urlpatterns = [
 
     url(r'^todo/$', views.my_todo),
 
-    url(r'otp/$', views.generate_totp)
-]
-
 # Print banner on the console when the server starts
 print(settings.BANNER)
 

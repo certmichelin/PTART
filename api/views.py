@@ -1,10 +1,16 @@
 from django_otp.decorators import otp_required
+from django_otp.models import Device
+
+from io import BytesIO
+
+from qrcode import make as generate_qrcode
+from qrcode.image.svg import SvgPathImage as svg
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
-
 
 from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
@@ -525,7 +531,24 @@ def project_xlsx(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
-
+@action(methods=['POST'])
+def generate_totp(request, detail=True) :
+    response = Response(status=status.HTTP_403_FORBIDDEN)
+    user = authenticate(request, username=request.data["username"], password=request.data["password"],)
+    if user is not None:
+        #Check if the user already has TOTP registered.
+        if(len(user.totpdevice_set.all()) == 0):
+            device = user.totpdevice_set.create()
+            with BytesIO() as stream:
+                generate_qrcode(
+                    device.config_url, image_factory=svg
+                ).save(stream)
+                response = Response(stream.getvalue())        
+        
+    response.accepted_renderer = SvgRenderer()
+    response.accepted_media_type = 'image/png'
+    response.renderer_context = {}
+    return response
 
 #
 # CRUD operations for a specific item.
@@ -588,6 +611,13 @@ def items(request, class_name, serializer_name) :
 #
 class ImageRenderer(BaseRenderer):
     def render(self, data, media_type='image/png', renderer_context=None):
+        return data
+
+#
+# Svg renderer for QRCode.
+#
+class SvgRenderer(BaseRenderer):
+    def render(self, data, media_type='image/svg', renderer_context=None):
         return data
 
 #
