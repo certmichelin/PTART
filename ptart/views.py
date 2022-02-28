@@ -1,14 +1,24 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+
+from django_otp.decorators import otp_required
+from django_otp.models import Device
+
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
+
+import base64
+
+from io import BytesIO
+
+from qrcode import make as generate_qrcode
+from qrcode.image.svg import SvgPathImage as svg
 
 from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
 
-
-@login_required
+@otp_required
 def index(request):
     """
         Index page of PTART!
@@ -35,48 +45,48 @@ def index(request):
     return render(request, 'index.html', context)
 
 
-@login_required
+@otp_required
 def projects_all(request):
     return generic_all(request, Project.get_viewable(request.user), ProjectTable, 'projects/projects-list.html')
 
 
-@login_required
+@otp_required
 def assessments_all(request):
     return generic_all(request, Assessment.get_viewable(request.user), AssessmentTable, 'assessments/assessments-list.html')
 
 
-@login_required
+@otp_required
 def hits_all(request):
     return generic_all(request, Hit.get_viewable(request.user), HitTable, 'hits/hits-list.html')
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def labels_all(request):
     return generic_all(request, Label.get_viewable(request.user), LabelTable, 'labels/labels-list.html')
 
-@login_required
+@otp_required
 def flags_all(request):
     return generic_all(request, Flag.get_viewable(request.user), FlagTable, 'flags/flags-list.html')
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def templates_all(request):
     return generic_all(request, Template.get_viewable(request.user), TemplateTable, 'templates/templates-list.html')
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def methodologies_all(request):
     return generic_all(request, Methodology.get_viewable(request.user), MethodologyTable, 'methodologies/methodologies-list.html')
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def modules_all(request):
     return generic_all(request, Module.get_viewable(request.user), ModuleTable, 'modules/modules-list.html')
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def cases_all(request):
     return generic_all(request, Case.get_viewable(request.user), CaseTable, 'cases/cases-list.html')
@@ -89,7 +99,7 @@ def generic_all(request, items, table_class_name, template_name) :
     return render(request, template_name, context)
 
 
-@login_required
+@otp_required
 def project(request, project_id):
     response = None
     try:
@@ -103,7 +113,7 @@ def project(request, project_id):
     return response
 
 
-@login_required
+@otp_required
 def project_summary(request, project_id):
     response = None
     try:
@@ -116,7 +126,7 @@ def project_summary(request, project_id):
         response = redirect('/')
     return response
 
-@login_required
+@otp_required
 def project_assets(request, project_id):
     response = None
     try:
@@ -129,7 +139,7 @@ def project_assets(request, project_id):
         response = redirect('/')
     return response
 
-@login_required
+@otp_required
 def project_report(request, project_id):
     response = None
     try:
@@ -142,7 +152,7 @@ def project_report(request, project_id):
         response = redirect('/')
     return response
 
-@login_required
+@otp_required
 def assessment(request, assessment_id):
     response = None
     try:
@@ -156,7 +166,7 @@ def assessment(request, assessment_id):
     return response
 
 
-@login_required
+@otp_required
 def hit(request, hit_id):
     response = None
     try:
@@ -170,7 +180,7 @@ def hit(request, hit_id):
     return response
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def label(request, label_id):
     response = None
@@ -181,7 +191,7 @@ def label(request, label_id):
     return response
 
 
-@login_required
+@otp_required
 def flag(request, flag_id):
     response = None
     try:
@@ -195,7 +205,7 @@ def flag(request, flag_id):
     return response
 
     
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def template(request, template_id):
     response = None
@@ -206,7 +216,7 @@ def template(request, template_id):
     return response
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def methodology(request, methodology_id):
     response = None
@@ -217,7 +227,7 @@ def methodology(request, methodology_id):
     return response
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def module(request, module_id):
     response = None
@@ -228,7 +238,7 @@ def module(request, module_id):
     return response
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def case(request, case_id):
     response = None
@@ -239,17 +249,17 @@ def case(request, case_id):
     return response
 
 
-@login_required
+@otp_required
 def projects_new(request):
     return render(request, 'projects/projects.html', {'users': User.objects.all()})
 
 
-@login_required
+@otp_required
 def assessments_new(request): 
     return render(request, 'assessments/assessments.html', {'projects': Project.get_viewable(request.user).order_by('-added'), 'methodologies': Methodology.get_viewable(request.user)})
 
 
-@login_required
+@otp_required
 def hits_new(request):
     assessments = Assessment.get_viewable(request.user)
     try:
@@ -261,13 +271,13 @@ def hits_new(request):
     return render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : True })
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def labels_new(request):
     return render(request, 'labels/labels.html', {})
 
 
-@login_required
+@otp_required
 def flags_new(request):
     assessments = Assessment.get_viewable(request.user)
     try:
@@ -279,30 +289,30 @@ def flags_new(request):
     return render(request, 'flags/flags.html', {'assessments_list': assessments, 'users': User.objects.all()})
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def templates_new(request):
     return render(request, 'templates/templates.html', {'severities': Severity.values})
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def methodologies_new(request):
     return render(request, 'methodologies/methodologies.html')
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def modules_new(request):
     return render(request, 'modules/modules.html', {'methodologies': Methodology.get_viewable(request.user)})
 
 
-@login_required
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def cases_new(request):
     return render(request, 'cases/cases.html', {'modules': Module.get_viewable(request.user)})
 
-@login_required
+@otp_required
 def my_todo(request):
     projects = []
     for project in  Project.get_viewable(request.user) :
@@ -327,3 +337,21 @@ def my_todo(request):
                 'assessments' : assessments
             })
     return render(request, 'mytodo.html', {'projects':projects})
+
+
+def generate_totp(request, detail=True) :
+    response = redirect('/')
+    user = authenticate(request, username=request.POST.get("username", ""), password=request.POST.get("password", ""))
+    if user is not None:
+        #Check if the user already has TOTP registered.
+        if(len(user.totpdevice_set.all()) == 0):
+            device = user.totpdevice_set.create()
+            with BytesIO() as stream:
+                generate_qrcode(
+                    device.config_url, image_factory=svg
+                ).save(stream)
+                response = render(request, 'registration/otp.html', {'otp':base64.b64encode(stream.getvalue()).decode("utf-8")})        
+        
+    return response
+
+    

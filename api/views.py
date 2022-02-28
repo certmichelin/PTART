@@ -1,3 +1,5 @@
+from django_otp.decorators import otp_required
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view
@@ -11,114 +13,142 @@ from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host
 
 from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def flag(request, pk):
     return item(request, pk, Flag, FlagSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def flags(request):
     return items(request, Flag, FlagSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def hit(request, pk):
     return item(request, pk, Hit, HitSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def hits(request):
     return items(request, Hit, HitSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def label(request, pk):
     return item(request, pk, Label, LabelSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def labels(request):
     return items(request, Label, LabelSerializer)
 
+@otp_required
 @api_view(['GET', 'DELETE'])
 def comment(request, pk):
     return item(request, pk, Comment, CommentSerializer)
-    
+
+@otp_required
 @api_view(['DELETE'])
 def screenshot(request, pk):
     return item(request, pk, Screenshot, ScreenshotSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def screenshots(request):
     return items(request, Screenshot, ScreenshotSerializer)
 
+@otp_required
 @api_view(['DELETE'])
 def attachment(request, pk):
     return item(request, pk, Attachment, AttachmentSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def attachments(request):
     return items(request, Attachment, AttachmentSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def assessment(request, pk):
     return item(request, pk, Assessment, AssessmentSerializer)
-    
+
+@otp_required
 @api_view(['GET', 'POST'])
 def assessments(request):
     return items(request, Assessment, AssessmentSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def host(request, pk):
     return item(request, pk, Host, HostSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def hosts(request):
     return items(request, Host, HostSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def service(request, pk):
     return item(request, pk, Service, ServiceSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def services(request):
     return items(request, Service, ServiceSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def project(request, pk):
     return item(request, pk, Project, ProjectSerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def projects(request):
     return items(request, Project, ProjectSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def template(request, pk):
     return item(request, pk, Template, TemplateSerializer)
     
+@otp_required
 @api_view(['GET', 'POST'])
 def templates(request):
     return items(request, Template, TemplateSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def case(request, pk):
     return item(request, pk, Case, CaseSerializer)
-    
+
+@otp_required
 @api_view(['GET', 'POST'])
 def cases(request):
     return items(request, Case, CaseSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def module(request, pk):
     return item(request, pk, Module, ModuleSerializer)
-    
+
+@otp_required
 @api_view(['GET', 'POST'])
 def modules(request):
     return items(request, Module, ModuleSerializer)
 
+@otp_required
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def methodology(request, pk):
     return item(request, pk, Methodology, MethodologySerializer)
 
+@otp_required
 @api_view(['GET', 'POST'])
 def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
 
+@otp_required
 @api_view(['POST'])
 def load_module(request, pk, assessmentId):
     response = None
@@ -142,6 +172,7 @@ def load_module(request, pk, assessmentId):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@otp_required
 @action(methods=['GET'], detail=True)
 def screenshot_raw(request, pk) :
     response = None
@@ -159,6 +190,7 @@ def screenshot_raw(request, pk) :
     response.renderer_context = {}
     return response
 
+@otp_required
 @action(methods=['GET'], detail=True)
 def attachment_raw(request, pk) :
     response = None
@@ -178,6 +210,7 @@ def attachment_raw(request, pk) :
     response.renderer_context = {}
     return response
 
+@otp_required
 @api_view(['POST'])
 def cvss(request):
     serializer = CvssSerializer(data=request.data)
@@ -189,6 +222,7 @@ def cvss(request):
         response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return response
 
+@otp_required
 @api_view(['POST','DELETE'])
 def cvss_hit(request, pk):
     response = None
@@ -226,6 +260,7 @@ def cvss_hit(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@otp_required
 @api_view(['POST','GET'])
 def comments(request, pk):
     response = None
@@ -254,6 +289,7 @@ def comments(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@otp_required
 @api_view(['POST'])
 def markFlagAsDone(request, pk) :
     response = None
@@ -269,7 +305,7 @@ def markFlagAsDone(request, pk) :
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
-
+@otp_required
 @api_view(['GET'])
 def project_burp_configuration(request, pk):
     response = None
@@ -324,6 +360,7 @@ def project_burp_configuration(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@otp_required
 @action(methods=['GET'], detail=True)
 def project_xlsx(request, pk):
     response = None
@@ -487,8 +524,6 @@ def project_xlsx(request, pk):
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
-
-
 
 #
 # CRUD operations for a specific item.
