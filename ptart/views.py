@@ -3,10 +3,17 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
 from django_otp.decorators import otp_required
-
+from django_otp.models import Device
 
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
+
+import base64
+
+from io import BytesIO
+
+from qrcode import make as generate_qrcode
+from qrcode.image.svg import SvgPathImage as svg
 
 from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
@@ -330,5 +337,21 @@ def my_todo(request):
                 'assessments' : assessments
             })
     return render(request, 'mytodo.html', {'projects':projects})
+
+
+def generate_totp(request, detail=True) :
+    response = redirect('/')
+    user = authenticate(request, username=request.POST.get("username", ""), password=request.POST.get("password", ""))
+    if user is not None:
+        #Check if the user already has TOTP registered.
+        if(len(user.totpdevice_set.all()) == 0):
+            device = user.totpdevice_set.create()
+            with BytesIO() as stream:
+                generate_qrcode(
+                    device.config_url, image_factory=svg
+                ).save(stream)
+                response = render(request, 'registration/otp.html', {'otp':base64.b64encode(stream.getvalue()).decode("utf-8")})        
+        
+    return response
 
     
