@@ -1,3 +1,26 @@
- <!-- TODO : Everything -->
- 
- <img src="data:image/svg+xml;base64,{{otp}}"/>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>First login : OTP</title>
+
+  <link href="/static/img/favicon.ico" rel="shortcut icon" type="image/png" />
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/static/css/customs/signin.css" rel="stylesheet" type="text/css">
+</head>
+
+<body class="text-center">
+    <div class="form-signin" method="POST">
+        
+        <img class="mb-4" src="/static/img/logo.png" alt="" width="110" height="110">
+        
+        <h1 class="h3 mb-3 font-weight-normal">Please scan the QR code for OTP : </h1>
+        
+        <img src="data:image/svg+xml;base64,{{otp}}"/>
+    
+        <a class="btn btn-lg btn-primary btn-block" href="/">Return</a>
+        <p class="mt-5 mb-3 text-muted">Software developed under MIT License</p>
+    </div>
+</body>

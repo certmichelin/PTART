@@ -589,13 +589,6 @@ class ImageRenderer(BaseRenderer):
         return data
 
 #
-# Svg renderer for QRCode.
-#
-class SvgRenderer(BaseRenderer):
-    def render(self, data, media_type='image/svg', renderer_context=None):
-        return data
-
-#
 # JSON renderer for Burp config file.
 #
 class JsonRenderer(BaseRenderer):
