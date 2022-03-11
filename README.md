@@ -67,7 +67,7 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 Python requires Python 3.7 and a few more packages. The simplest way to set up PTART is using  [pipenv](https://github.com/pypa/pipenv). 
 
 1. Clone the project and go to the new directory.
-2. Create a new virtual environment and installing dependencies: `pipenv install`.
+2. Create a new virtual environment and installing dependencies: `pipenv install`. (If psycopg2 failed to be installed, try `sudo apt-get install libpq-dev`)
 3. Run the virtual environment: `pipenv shell`
 4. Create the database: `python manage.py migrate`
 5. Create the super user: `python manage.py createsuperuser`
