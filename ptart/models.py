@@ -18,6 +18,7 @@ class Project(models.Model):
     conclusion = models.TextField(blank=True, default="")
     scope = models.TextField(blank=True, default="")
     added = models.DateTimeField(default=datetime.now)
+    archived = models.BooleanField(default=False)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
     viewers = models.ManyToManyField(User, related_name='%(class)s_viewers')
 
@@ -51,9 +52,13 @@ class Project(models.Model):
             hits.extend(assessment.hits_by_severity(severity))
         return hits
 
-    def get_viewable(user):
-        """Returns all viewable projects"""
-        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])).distinct() 
+    def get_current_viewable(user):
+        """Returns all viewable & non-archived projects"""
+        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])).filter(archived = False).distinct()
+
+    def get_archived_viewable(user):
+        """Returns all viewable & non-archived projects"""
+        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])).filter(archived = True).distinct()  
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this project"""
@@ -123,7 +128,7 @@ class Assessment(models.Model):
 
     def get_viewable(user):
         """Returns all viewable assessments"""
-        return Assessment.objects.filter(project__in=Project.get_viewable(user))
+        return Assessment.objects.filter(project__in=Project.get_current_viewable(user))
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this assessment"""
@@ -649,7 +654,7 @@ class Host(models.Model):
     
     def get_viewable(user):
         """Returns all viewable hosts"""
-        return Host.objects.filter(project__in=Project.get_viewable(user))
+        return Host.objects.filter(project__in=Project.get_current_viewable(user))
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this host"""
