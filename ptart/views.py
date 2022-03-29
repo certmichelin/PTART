@@ -26,9 +26,9 @@ def index(request):
     """
     recent_open_flags = Flag.get_viewable(request.user).filter(done=False).order_by('-added')[:5]
     recent_hits = Hit.get_viewable(request.user).order_by('-added')[:5]
-    recent_projects = Project.get_viewable(request.user).order_by('-added')[:5]
+    recent_projects = Project.get_current_viewable(request.user).order_by('-added')[:5]
     
-    projects_count = Project.get_viewable(request.user).count()
+    projects_count = Project.get_current_viewable(request.user).count()
     assessments_count = Assessment.get_viewable(request.user).count()
     hits_count = Hit.get_viewable(request.user).count()
     open_flags_count = Flag.get_viewable(request.user).filter(done=False).count()
@@ -47,8 +47,11 @@ def index(request):
 
 @otp_required
 def projects_all(request):
-    return generic_all(request, Project.get_viewable(request.user), ProjectTable, 'projects/projects-list.html')
+    return generic_all(request, Project.get_current_viewable(request.user), ProjectTable, 'projects/projects-list.html')
 
+@otp_required
+def archives_all(request):
+    return generic_all(request, Project.get_archived_viewable(request.user), ProjectTable, 'archives/archives-list.html')
 
 @otp_required
 def assessments_all(request):
@@ -158,7 +161,7 @@ def assessment(request, assessment_id):
     try:
         assessment =  Assessment.objects.get(pk=assessment_id)
         if assessment.is_user_can_view(request.user):
-            response = render(request, 'assessments/assessment-single.html', {'assessment': assessment, 'projects': Project.get_viewable(request.user).order_by('-added'), 'editable' : assessment.is_user_can_edit(request.user)})
+            response = render(request, 'assessments/assessment-single.html', {'assessment': assessment, 'projects': Project.get_current_viewable(request.user).order_by('-added'), 'editable' : assessment.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Assessment.DoesNotExist:
@@ -256,7 +259,7 @@ def projects_new(request):
 
 @otp_required
 def assessments_new(request): 
-    return render(request, 'assessments/assessments.html', {'projects': Project.get_viewable(request.user).order_by('-added'), 'methodologies': Methodology.get_viewable(request.user)})
+    return render(request, 'assessments/assessments.html', {'projects': Project.get_current_viewable(request.user).order_by('-added'), 'methodologies': Methodology.get_viewable(request.user)})
 
 
 @otp_required
@@ -315,7 +318,7 @@ def cases_new(request):
 @otp_required
 def my_todo(request):
     projects = []
-    for project in  Project.get_viewable(request.user) :
+    for project in  Project.get_current_viewable(request.user) :
         assessments = []
         for assessment in project.assessment_set.all() :
             flags = []

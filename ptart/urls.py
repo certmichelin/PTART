@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^project/([0-9]+)/assets$', views.project_assets),
     url(r'^project/([0-9]+)/report$', views.project_report),
 
+    url(r'^archives/$', views.archives_all),
+
     url(r'^assessments/$', views.assessments_all),
     url(r'^assessments/new/$', views.assessments_new),
     url(r'^assessment/([0-9]+)/$', views.assessment),

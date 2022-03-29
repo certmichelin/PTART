@@ -42,6 +42,9 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="checkbox">
+                    <label><input id="archived" type="checkbox" {% if True == project.archived %} checked{% endif %}> Archived</label>
+                </div>
                 <input id="id" type="hidden" value="{{ project.id }}" />
                 {% if editable == True %}
                 <button id="updateBtn" class="btn btn-outline-primary mb-3">Update</button>
@@ -83,7 +86,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#introduction").val(), $("#conclusion").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#introduction").val(), $("#conclusion").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}
