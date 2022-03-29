@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %} Archived Projects | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        {% include '_include/html/header.html' with item='Archived Projects' active_text='Archived' %}
+        {% include "_include/html/messages.html" %}
+        {% include '_include/html/list.html' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+    {% include '_include/js/deleteItems.html' with item='project' items='project/s' ajax_function='ajaxDeleteProject' %}
+{% endblock %}

@@ -49,6 +49,9 @@ def index(request):
 def projects_all(request):
     return generic_all(request, Project.get_current_viewable(request.user), ProjectTable, 'projects/projects-list.html')
 
+@otp_required
+def archives_all(request):
+    return generic_all(request, Project.get_archived_viewable(request.user), ProjectTable, 'archives/archives-list.html')
 
 @otp_required
 def assessments_all(request):
