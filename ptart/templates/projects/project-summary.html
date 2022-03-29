@@ -11,6 +11,10 @@
                 <h1 class="page-header">
                     {{ project.name }}
 
+                    {% if project.archived == True %}
+                        <img src="/static/img/archived.png" width="60px" height="60px" alt="Archived" />
+                    {% endif %}
+
                     <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">
                         Details
                     </button>
@@ -19,17 +23,19 @@
                         Management</a>
 
                     {% if editable == True %}
-                    <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}"
-                        role="button">Create Assessment</a>
+                        {% if project.archived == False %}
+                            <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}"
+                                role="button">Create Assessment</a>
 
-                    {% if project.assessment_set.all|length > 0 %}
-                    <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create
-                        Flag!</a>
-                    {% endif %}
+                            {% if project.assessment_set.all|length > 0 %}
+                            <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create
+                                Flag!</a>
+                            {% endif %}
 
-                    {% if project.assessment_set.all|length > 0 %}
-                    <a class="btn btn-outline-danger" href="/hits/new?projectId={{project.id}}" role="button">Create
-                        Hit!</a>
+                            {% if project.assessment_set.all|length > 0 %}
+                            <a class="btn btn-outline-danger" href="/hits/new?projectId={{project.id}}" role="button">Create
+                                Hit!</a>
+                        {% endif %}
                     {% endif %}
 
                     <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">
