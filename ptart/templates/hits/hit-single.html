@@ -21,7 +21,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>CVSS v3</label>
+                    <label>CVSS v3.1</label>
                     <h5><span id="cvssValue" class="cvss-badge cvss-badge-secondary">No Rating (---)</span></h5>
                     <input id="cvss cvss-badge cvss-badge-secondary" type="hidden" value="---" />
                 </div>
@@ -158,7 +158,7 @@
      * Hit CVSS deletion callback
      */
     function cvssDeletionSuccess(data) {
-        addCVSSv3ToHit($("#id").val());
+        addCVSSv31ToHit($("#id").val());
     }
 
     /**
@@ -167,7 +167,7 @@
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(),$("#displayable").prop("checked"), $("#labels").select2("val"), $("#assessment").val());
-        ajaxRemoveCVSSv3(cvssDeletionSuccess, commonFailure, $("#id").val());
+        ajaxRemoveCVSSv31(cvssDeletionSuccess, commonFailure, $("#id").val());
     });
 
     /**

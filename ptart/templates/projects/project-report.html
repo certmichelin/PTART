@@ -110,7 +110,7 @@
                                     {{ hit.title }}
                                 </h2>
                                 <h4><a href="{{ hit.asset }}">{{ hit.asset }}</a></h4>
-                                <h4>CVSS v3: <span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span> </h4>
+                                <h4>CVSS v3.1: <span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span> </h4>
                                 <h5>{{ hit.get_cvss_string }}</h5>
                                 {% for label in hit.labels.all %}
                                     <span class="cvss-badge cvss-badge-primary" style="background-color:{{ label.color }}">{{ label.title }}</span>

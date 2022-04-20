@@ -7,7 +7,7 @@
 
 PTART is a vulnerability organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise. Basically this tool will help you to :
 
-- Report a vulnerabiltity with screenshots, attachments, CVSSv3 Score, OWASP top 10 labels in less than 3min.
+- Report a vulnerabiltity with screenshots, attachments, CVSSv3.1 Score, OWASP top 10 labels in less than 3min.
 - Avoid retyping again and again the same vulnerabilities content by using templates.
 - Generate ToDo lists from pentest methodologies (OWASP and Wahh are natively included) and assign tasks to a project member.
 - Generate automatically a nice HTML/PDF RevealJS report.
@@ -51,20 +51,11 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ##### Asset management
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot9.PNG)
 
-# Release Note
-
-### Version 1.1 (Not Realeased)
-- Add user comments in Hits, these comments will be displayed in the presentor view of Reveal js report.
-- Add asset management for each project. Let's organize easily the scope of your project.
-
-### Version 1.0
-- Initial Version.
-
 ## Installation
 
 **Preparing PTART environment :**
 
-Python requires Python 3.7 and a few more packages. The simplest way to set up PTART is using  [pipenv](https://github.com/pypa/pipenv). 
+Python requires Python 3.9 and a few more packages. The simplest way to set up PTART is using  [pipenv](https://github.com/pypa/pipenv). 
 
 1. Clone the project and go to the new directory.
 2. Create a new virtual environment and installing dependencies: `pipenv install`. (If psycopg2 failed to be installed, try `sudo apt-get install libpq-dev`)

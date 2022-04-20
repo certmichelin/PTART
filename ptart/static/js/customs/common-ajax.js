@@ -358,7 +358,7 @@ function ajaxDeleteAttachment(success_function, error_function, id) {
  * @param {*} integrity Integrity.
  * @param {*} availability Availability.
  */
-function ajaxComputeCVSSv3(success_function, error_function, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
+function ajaxComputeCVSSv31(success_function, error_function, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
         url: "/api/cvss/",
         data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
@@ -383,7 +383,7 @@ function ajaxComputeCVSSv3(success_function, error_function, attackVector, attac
  * @param {*} integrity Integrity.
  * @param {*} availability Availability.
  */
-function ajaxAddCVSSv3(success_function, error_function, hitId, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
+function ajaxAddCVSSv31(success_function, error_function, hitId, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
         url: "/api/hit/" + hitId + "/cvss/",
         data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
@@ -400,7 +400,7 @@ function ajaxAddCVSSv3(success_function, error_function, hitId, attackVector, at
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} hitId Hit ID.
  */
-function ajaxRemoveCVSSv3(success_function, error_function, hitId) {
+function ajaxRemoveCVSSv31(success_function, error_function, hitId) {
     $.ajax({
         url: "/api/hit/" + hitId + "/cvss/",
         type: 'DELETE',

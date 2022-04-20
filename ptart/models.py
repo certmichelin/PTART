@@ -174,7 +174,7 @@ class Label(models.Model):
     class Meta:
         ordering = ('pk',)
 
-"""CvssV3 model"""
+"""CvssV3.1 model"""
 class Cvss(models.Model):
     NALP_CHOICES = (
         ('N', 'Network'),
@@ -348,7 +348,7 @@ class Hit(models.Model):
         if self.cvss is None :
             return ""
         else : 
-            return "CVSS:3.0/AV:" + self.cvss.attack_vector + "/AC:" + self.cvss.attack_complexity + "/PR:" + self.cvss.privilege_required + "/UI:" + self.cvss.user_interaction + "/S:" + self.cvss.scope + "/C:" + self.cvss.confidentiality + "/I:" + self.cvss.integrity + "/A:" + self.cvss.availability 
+            return "CVSS:3.1/AV:" + self.cvss.attack_vector + "/AC:" + self.cvss.attack_complexity + "/PR:" + self.cvss.privilege_required + "/UI:" + self.cvss.user_interaction + "/S:" + self.cvss.scope + "/C:" + self.cvss.confidentiality + "/I:" + self.cvss.integrity + "/A:" + self.cvss.availability 
 
     def delete(self, *args, **kwargs):
         if self.cvss:

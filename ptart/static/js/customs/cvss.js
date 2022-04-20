@@ -216,17 +216,17 @@ function cvssComputationCallback(data) {
     displayCVSS(data.decimal_value);
 }
 
-function computeCVSSv3() {
+function computeCVSSv31() {
     if (isCVSSComputable()) {
-        ajaxComputeCVSSv3(cvssComputationCallback, catchErrorMethod, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
+        ajaxComputeCVSSv31(cvssComputationCallback, catchErrorMethod, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
     } else {
         displayCVSS(null);
     }
 }
 
-function addCVSSv3ToHit(hitId) {
+function addCVSSv31ToHit(hitId) {
     if (isCVSSComputable()) {
-        ajaxAddCVSSv3(catchSuccessMethod, catchErrorMethod, hitId, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
+        ajaxAddCVSSv31(catchSuccessMethod, catchErrorMethod, hitId, attackVectorValue, attackComplexityValue, privilegeRequiredValue, userInteractionValue, scopeValue, confidentialityValue, integrityValue, availabilityValue);
     }
 }
 
@@ -243,7 +243,7 @@ $('#vectorPhysical').click(function (e) {
         $('#vectorLocal').removeClass("active");
         attackVectorValue = "P";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#vectorLocal').click(function (e) {
@@ -255,7 +255,7 @@ $('#vectorLocal').click(function (e) {
         $('#vectorPhysical').removeClass("active");
         attackVectorValue = "L";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#vectorAdjacent').click(function (e) {
@@ -267,7 +267,7 @@ $('#vectorAdjacent').click(function (e) {
         $('#vectorPhysical').removeClass("active");
         attackVectorValue = "A";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#vectorNetwork').click(function (e) {
@@ -279,7 +279,7 @@ $('#vectorNetwork').click(function (e) {
         $('#vectorPhysical').removeClass("active");
         attackVectorValue = "N";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#complexityLow').click(function (e) {
@@ -289,7 +289,7 @@ $('#complexityLow').click(function (e) {
         $('#complexityHigh').removeClass("active");
         attackComplexityValue = "L";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#complexityHigh').click(function (e) {
@@ -299,7 +299,7 @@ $('#complexityHigh').click(function (e) {
         $('#complexityLow').removeClass("active");
         attackComplexityValue = "H";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#privilegesNone').click(function (e) {
@@ -310,7 +310,7 @@ $('#privilegesNone').click(function (e) {
         $('#privilegesHigh').removeClass("active");
         privilegeRequiredValue = "N";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#privilegesLow').click(function (e) {
@@ -321,7 +321,7 @@ $('#privilegesLow').click(function (e) {
         $('#privilegesHigh').removeClass("active");
         privilegeRequiredValue = "L";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#privilegesHigh').click(function (e) {
@@ -332,7 +332,7 @@ $('#privilegesHigh').click(function (e) {
         $('#privilegesLow').removeClass("active");
         privilegeRequiredValue = "H";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#userInteractionNone').click(function (e) {
@@ -342,7 +342,7 @@ $('#userInteractionNone').click(function (e) {
         $('#userInteractionRequired').removeClass("active");
         userInteractionValue = "N";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#userInteractionRequired').click(function (e) {
@@ -352,7 +352,7 @@ $('#userInteractionRequired').click(function (e) {
         $('#userInteractionNone').removeClass("active");
         userInteractionValue = "R";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#scopeUnchanged').click(function (e) {
@@ -362,7 +362,7 @@ $('#scopeUnchanged').click(function (e) {
         $('#scopeChanged').removeClass("active");
         scopeValue = "U";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#scopeChanged').click(function (e) {
@@ -372,7 +372,7 @@ $('#scopeChanged').click(function (e) {
         $('#scopeUnchanged').removeClass("active");
         scopeValue = "C";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#confidentialityNone').click(function (e) {
@@ -383,7 +383,7 @@ $('#confidentialityNone').click(function (e) {
         $('#confidentialityHigh').removeClass("active");
         confidentialityValue = "N";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#confidentialityLow').click(function (e) {
@@ -394,7 +394,7 @@ $('#confidentialityLow').click(function (e) {
         $('#confidentialityHigh').removeClass("active");
         confidentialityValue = "L";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#confidentialityHigh').click(function (e) {
@@ -405,7 +405,7 @@ $('#confidentialityHigh').click(function (e) {
         $('#confidentialityLow').removeClass("active");
         confidentialityValue = "H";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#integrityNone').click(function (e) {
@@ -416,7 +416,7 @@ $('#integrityNone').click(function (e) {
         $('#integrityHigh').removeClass("active");
         integrityValue = "N";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#integrityLow').click(function (e) {
@@ -427,7 +427,7 @@ $('#integrityLow').click(function (e) {
         $('#integrityHigh').removeClass("active");
         integrityValue = "L";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#integrityHigh').click(function (e) {
@@ -438,7 +438,7 @@ $('#integrityHigh').click(function (e) {
         $('#integrityLow').removeClass("active");
         integrityValue = "H";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#availabilityNone').click(function (e) {
@@ -449,7 +449,7 @@ $('#availabilityNone').click(function (e) {
         $('#availabilityHigh').removeClass("active");
         availabilityValue = "N";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#availabilityLow').click(function (e) {
@@ -460,7 +460,7 @@ $('#availabilityLow').click(function (e) {
         $('#availabilityHigh').removeClass("active");
         availabilityValue = "L";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
 
 $('#availabilityHigh').click(function (e) {
@@ -471,5 +471,5 @@ $('#availabilityHigh').click(function (e) {
         $('#availabilityLow').removeClass("active");
         availabilityValue = "H";
     }
-    computeCVSSv3();
+    computeCVSSv31();
 });
