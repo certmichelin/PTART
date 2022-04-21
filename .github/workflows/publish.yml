@@ -1,0 +1,24 @@
+  
+# This workflow will build the java project then build the docker image.
+
+name: PTART CI.
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build & Push the image to GitHub Packages
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: certmichelin/ptart/ptart
+        tags: latest
+        

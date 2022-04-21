@@ -1,0 +1,28 @@
+# This workflow will build the PTART docker image.
+
+name: PTART CI.
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Retrieve version number
+      id: vars
+      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+    
+    - name: Build & Push the image to GitHub Packages
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: certmichelin/ptart/ptart
+        tags: ${{ steps.vars.outputs.tag }}
+        
