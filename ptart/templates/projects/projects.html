@@ -73,7 +73,10 @@
         introSimpleMDE.value("");
         $('#pentesters').select2().val(defaultPentester()).trigger("change");
         $('#viewers').val(null).trigger('change');
-        success($("#messages"), "Project was created!");
+        success($("#messages"), "Project was created!, you will be redirected to the project page in 3s");
+        setTimeout(function(){
+            window.location.href = '/project/' + data.id + '/summary';
+         }, 3000);
     }
 
     $('#createBtn').on('click', function () {
