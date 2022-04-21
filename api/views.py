@@ -375,9 +375,10 @@ def project_xlsx(request, pk):
             wb.active.column_dimensions['A'].width = 28
             wb.active.column_dimensions['B'].width = 10
             wb.active.column_dimensions['C'].width = 10
-            wb.active.column_dimensions['D'].width = 50
-            wb.active.column_dimensions['E'].width = 30
-            wb.active.column_dimensions['F'].width = 50
+            wb.active.column_dimensions['D'].width = 17
+            wb.active.column_dimensions['E'].width = 50
+            wb.active.column_dimensions['F'].width = 30
+            wb.active.column_dimensions['G'].width = 50
 
             #Add project data.
             ws['A1'] = "Project Name:"
@@ -399,9 +400,9 @@ def project_xlsx(request, pk):
             ws['B3'] = pentester_str
 
             #Beautify project data 
-            ws.merge_cells('B1:F1')
-            ws.merge_cells('B2:F2')
-            ws.merge_cells('B3:F3')
+            ws.merge_cells('B1:G1')
+            ws.merge_cells('B2:G2')
+            ws.merge_cells('B3:G3')
 
             
             projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
@@ -427,9 +428,10 @@ def project_xlsx(request, pk):
             ws['A5'] = "Assessment"
             ws['B5'] = "Sev"
             ws['C5'] = "CVSS"
-            ws['D5'] = "Title"
-            ws['E5'] = "Asset"
-            ws['F5'] = "Labels"
+            ws['D5'] = "ID"
+            ws['E5'] = "Title"
+            ws['F5'] = "Asset"
+            ws['G5'] = "Labels"
 
             columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
             columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
@@ -442,6 +444,7 @@ def project_xlsx(request, pk):
             ws['D5'].style = columnHeaderStyle
             ws['E5'].style = columnHeaderStyle
             ws['F5'].style = columnHeaderStyle
+            ws['G5'].style = columnHeaderStyle
 
             #Fill the report
             criticalStyle = styles.NamedStyle(name = 'critical_style')
@@ -475,15 +478,16 @@ def project_xlsx(request, pk):
                     ws.cell(row=line, column=1).value = assessment.name
                     ws.cell(row=line, column=2).value = "P{}".format(hit.severity)
                     ws.cell(row=line, column=3).value = hit.get_cvss_value()
-                    ws.cell(row=line, column=4).value = hit.title
-                    ws.cell(row=line, column=5).value = hit.asset
+                    ws.cell(row=line, column=4).value = hit.get_unique_id()
+                    ws.cell(row=line, column=5).value = hit.title
+                    ws.cell(row=line, column=6).value = hit.asset
 
                     label_str = ""
                     previous = ""
                     for label in hit.labels.all():
                         label_str = "{}{}{}".format(label_str, previous, label.title)
                         previous = ", "
-                    ws.cell(row=line, column=6).value = label_str
+                    ws.cell(row=line, column=7).value = label_str
 
                     #Apply style from value.
                     if hit.severity == 1:
@@ -512,7 +516,7 @@ def project_xlsx(request, pk):
                         ws.cell(row=line, column=3).style = infoStyle
                     line = line + 1
             
-            ws.auto_filter.ref = "A5:F{}".format(line)
+            ws.auto_filter.ref = "A5:G{}".format(line)
 
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))

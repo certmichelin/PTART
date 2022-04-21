@@ -343,6 +343,10 @@ class Hit(models.Model):
         """Verify if the user can create this hit"""
         return self.assessment.is_user_can_edit(user)
 
+    def get_unique_id(self):
+        """Return a pretty value of the ID, ex: PTART-2022-<id>"""
+        return "PTART-" + str(self.added.year) + "-" + str(self.id).zfill(5)
+
     def get_cvss_value(self):
         """Return the decimal value of the cvss"""
         if self.cvss is None :

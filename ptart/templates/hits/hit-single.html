@@ -10,6 +10,7 @@
         {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:hit.assessment.project.pk|addstr:"/summary" sub_text=hit.assessment.project third_icon='fa fa-cube' third_url="/assessment/"|addstr:hit.assessment.pk third_text=hit.assessment active_icon='' active_text=hit.title %}
         {% include "_include/html/messages.html" %}
 
+        <h5>{{ hit.get_unique_id }}</h5>
         <div class="row">
             <div class="col-lg-7">
                 <div class="form-group">

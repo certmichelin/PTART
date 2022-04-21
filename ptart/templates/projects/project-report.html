@@ -83,6 +83,7 @@
                                 <thead>
                                     <tr>
                                         <th>Sev</th>
+                                        <th>ID</th>
                                         <th>Vulnerability</th>
                                         <th>CVSS</th>
                                     </tr>
@@ -91,6 +92,7 @@
                                     {% for hit in assessment.displayable_hits %}
                                         <tr>
                                             <td><span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span></td>
+                                            <td>{{ hit.get_unique_id }}</td>
                                             <td>{{ hit.title }}</td>
                                             <td><span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span></td>
                                         </tr>
@@ -111,6 +113,7 @@
                     {% for hit in assessment.displayable_hits %}
                         <section>
                             <section>
+                                <h5>{{ hit.get_unique_id }}</h5>
                                 <h2>
                                     <span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span>
                                     {{ hit.title }}

@@ -36,6 +36,7 @@ class HitTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     severity = tables.TemplateColumn('<span class="bc-badge bc-badge--p{{ record.severity }}">P{{ record.severity }}</span>')
+    id = tables.TemplateColumn('{{ record.get_unique_id}}', verbose_name= 'ID')
     title = tables.TemplateColumn('<a href="/hit/{{ record.pk }}">{{ record.title }}</a>')
     project = tables.TemplateColumn('<a href="/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
@@ -45,8 +46,8 @@ class HitTable(tables.Table):
     class Meta:
         model = Hit
         template_name = "django_tables2/bootstrap-responsive.html"
-        sequence = ('selection','severity', 'cvss', 'title', 'project', 'assessment', 'added')
-        fields = ('severity','cvss', 'title', 'project', 'assessment', 'added')
+        sequence = ('selection','severity','id', 'cvss', 'title', 'project', 'assessment', 'added')
+        fields = ('severity','cvss', 'id', 'title', 'project', 'assessment', 'added')
 
 
 class LabelTable(tables.Table):
