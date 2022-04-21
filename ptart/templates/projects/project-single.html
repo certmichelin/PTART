@@ -77,9 +77,15 @@
     activeMarkdown("conclusion");
 
     $('.datepicker').datepicker({});
-    $('#startdate').datepicker('setDate', '{{project.start_date}}');
-    $('#enddate').datepicker('setDate', '{{project.end_date}}');
 
+    {% if project.start_date %}
+        $('#startdate').datepicker('setDate', '{{project.start_date}}');
+    {% endif %}
+    
+    {% if project.end_date %}
+        $('#enddate').datepicker('setDate', '{{project.end_date}}');
+    {% endif %}
+    
     var selectedPentesters = [];
     {% for pentester in project.pentesters.all %}
     selectedPentesters.push({{ pentester.id }});
@@ -93,8 +99,12 @@
     $('#viewers').select2().val(selectedViewers).trigger("change");
 
     function manageDate(val){
-        vals = val.split("/");
-        return vals[2] + "-" + vals[0] + "-" + vals[1];
+        result = null;
+        if(val){
+            vals = val.split("/");
+            result = vals[2] + "-" + vals[0] + "-" + vals[1];
+        }
+        return result;
     }
 
     /**

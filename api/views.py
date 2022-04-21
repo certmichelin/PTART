@@ -384,7 +384,11 @@ def project_xlsx(request, pk):
             ws['A2'] = "Date:"
             ws['A3'] = "Auditors:"
             ws['B1'] = project.name
-            ws['B2'] = project.added
+            if project.start_date is not None and project.end_date is not None :
+                ws['B2'] = "From " + str(project.start_date) + " To " + str(project.end_date)
+            else :
+                ws['B2'] = project.added
+
             
             #Construct the auditor string
             pentester_str = ""

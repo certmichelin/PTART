@@ -19,6 +19,21 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Date</label>
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <input class="datepicker form-control" type="text" id="startdate" />
+                        </div>
+                        <div class="col-auto">
+                            To
+                        </div>
+                        <div class="col-auto">
+                            <input class="datepicker form-control" type="text" id="enddate" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label>Scope</label>
                     <textarea id="scope" class="form-control" rows="5" style="resize:vertical" placeholder="One line per target ex: *.michelin.com"></textarea>
                 </div>
@@ -58,6 +73,8 @@
 
     var introSimpleMDE = activeMarkdown("introduction");
 
+    $('.datepicker').datepicker({});
+
     $('#pentesters').select2().val(defaultPentester()).trigger("change");
     $('#viewers').select2()
 
@@ -79,9 +96,18 @@
          }, 3000);
     }
 
+    function manageDate(val){
+        result = null;
+        if(val){
+            vals = val.split("/");
+            result = vals[2] + "-" + vals[0] + "-" + vals[1];
+        }
+        return result;
+    }
+
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), $("#introduction").val(), "", $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#introduction").val(), "", $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

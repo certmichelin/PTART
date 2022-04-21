@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='end_date',
-            field=models.DateField(default=''),
+            field=models.DateField(null=True),
         ),
         migrations.AddField(
             model_name='project',
             name='start_date',
-            field=models.DateField(default=''),
+            field=models.DateField(null=True),
         ),
     ]
