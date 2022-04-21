@@ -38,6 +38,8 @@ function ajaxCreateProject(success_function, error_function, name, introduction,
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Project ID.
  * @param {*} name Project name.
+ * @param {*} start_date Project start date.
+ * @param {*} end_date Project end date.
  * @param {*} introduction Project introduction.
  * @param {*} conclusion Project conclusion.
  * @param {*} scope Project scope.
@@ -45,10 +47,10 @@ function ajaxCreateProject(success_function, error_function, name, introduction,
  * @param {*} viewers Project viewers.
  * @param {*} archived True if the project is archived.
  */
-function ajaxUpdateProject(success_function, error_function, id, name, introduction, conclusion, scope, pentesters, viewers, archived) {
+function ajaxUpdateProject(success_function, error_function, id, name, start_date, end_date, introduction, conclusion, scope, pentesters, viewers, archived) {
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"archived":' + JSON.stringify(archived) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"archived":' + JSON.stringify(archived) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

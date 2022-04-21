@@ -15,6 +15,20 @@
                     <input class="form-control" id="name" value="{{ project.name }}" />
                 </div>
                 <div class="form-group">
+                    <label>Date</label>
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <input class="datepicker form-control" type="text" id="startdate" />
+                        </div>
+                        <div class="col-auto">
+                            To
+                        </div>
+                        <div class="col-auto">
+                            <input class="datepicker form-control" type="text" id="enddate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label>Scope</label>
                     <textarea class="form-control" rows="5" id="scope" style="resize:vertical" placeholder="One line per target ex: *.michelin.com">{{ project.scope }}</textarea>
                 </div>
@@ -62,6 +76,10 @@
     activeMarkdown("introduction");
     activeMarkdown("conclusion");
 
+    $('.datepicker').datepicker({});
+    $('#startdate').datepicker('setDate', '{{project.start_date}}');
+    $('#enddate').datepicker('setDate', '{{project.end_date}}');
+
     var selectedPentesters = [];
     {% for pentester in project.pentesters.all %}
     selectedPentesters.push({{ pentester.id }});
@@ -73,6 +91,11 @@
     selectedViewers.push({{ viewer.id }});
     {% endfor %}
     $('#viewers').select2().val(selectedViewers).trigger("change");
+
+    function manageDate(val){
+        vals = val.split("/");
+        return vals[2] + "-" + vals[0] + "-" + vals[1];
+    }
 
     /**
      * Project updation success callback.
@@ -86,7 +109,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#introduction").val(), $("#conclusion").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#introduction").val(), $("#conclusion").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}
