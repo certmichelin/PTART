@@ -18,6 +18,9 @@
                     <label>Color</label>
                     <input class="form-control" id="color" value="{{ label.color }}" autocomplete="off" />
                 </div>
+                <div class="checkbox">
+                    <label><input id="deprecated" type="checkbox" {% if True == label.deprecated %} checked{% endif %}> Deprecated</label>
+                </div>
                 <input type="hidden" value="{{ label.id }}" id="id" />
                 <button id="updateBtn" class="btn btn-primary">Update</button>
                 <button id="delBtn" class="btn btn-danger">Delete</button>
@@ -28,12 +31,26 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/updateItem.html' with item='Label' ajax_function='ajaxUpdateLabel' params='id,title,color' %}
-    {% include '_include/js/deleteItem.html' with item='Label' ajax_function='ajaxDeleteLabel' %}
-    <script>
-        $('#color').colorpicker({
-            "format": "hex",
-            "align" : "left"
-        });
-    </script>
+{% include '_include/js/deleteItem.html' with item='Label' ajax_function='ajaxDeleteLabel' %}
+<script>
+    $('#color').colorpicker({
+        "format": "hex",
+        "align": "left"
+    });
+
+    /**
+    * Item updation success callback.
+    */
+    function itemUpdationSuccess(data) {
+        success($("#messages"), "Label was Updated!");
+    }
+
+    /**
+     * Update item.
+     */
+    $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateLabel(itemUpdationSuccess, commonFailure, $("#id").val(), $("#title").val(), $("#deprecated").prop("checked"), $("#color").val());
+    });
+</script>
 {% endblock %}

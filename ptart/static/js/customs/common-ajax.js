@@ -212,12 +212,13 @@ function ajaxCreateLabel(success_function, error_function, title, color) {
  * @param {*} error_function function to call in case of ajax failure.
  * @param {*} id Label id.
  * @param {*} title Label title.
+ * @param {*} deprecated True if label is deprecated.
  * @param {*} color Label color.
  */
-function ajaxUpdateLabel(success_function, error_function, id, title, color) {
+function ajaxUpdateLabel(success_function, error_function, id, title, deprecated, color) {
     $.ajax({
         url: "/api/label/" + id + "/",
-        data: '{"title":' + JSON.stringify(title) + ',"color":' + JSON.stringify(color) + '}',
+        data: '{"title":' + JSON.stringify(title) + ',"deprecated":' + JSON.stringify(deprecated) + ',"color":' + JSON.stringify(color) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

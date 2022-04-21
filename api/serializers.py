@@ -82,7 +82,7 @@ class FlagSerializer(serializers.ModelSerializer):
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
-        fields = ('id', 'title', 'color')
+        fields = ('id', 'title', 'deprecated', 'color')
 
 
 class HitSerializer(serializers.ModelSerializer):

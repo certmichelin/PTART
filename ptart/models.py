@@ -151,6 +151,7 @@ class Label(models.Model):
 
     title = models.CharField(max_length=200)
     color = models.CharField(max_length=7)
+    deprecated = models.BooleanField(default=False)
 
     def __str__(self):  
         return self.title
@@ -158,6 +159,10 @@ class Label(models.Model):
     def get_viewable(user):
         """Returns all viewable labels"""
         return Label.objects.all()
+
+    def get_not_deprecated(user):
+        """Returns not deprecated labels"""
+        return Label.objects.filter(deprecated=False)
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this label"""

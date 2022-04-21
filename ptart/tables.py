@@ -59,7 +59,7 @@ class LabelTable(tables.Table):
         model = Label
         template_name = "django_tables2/bootstrap-responsive.html"
         sequence = ('selection', 'title')
-        fields = ('title',)
+        fields = ('title', 'deprecated')
 
 
 class AssessmentTable(tables.Table):

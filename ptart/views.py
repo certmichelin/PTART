@@ -175,7 +175,9 @@ def hit(request, hit_id):
     try:
         hit = Hit.objects.get(pk=hit_id)
         if hit.is_user_can_view(request.user):
-            response = render(request, 'hits/hit-single.html', {'hit': hit, 'assessments': hit.assessment.project.assessment_set.all,'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : hit.is_user_can_edit(request.user)})
+            #This complex trick is necessary to continue to display the deprecated labels in old projects (https://github.com/certmichelin/PTART/issues/73). 
+            labels = list(dict.fromkeys(list(Label.get_not_deprecated(request.user)) + list(hit.labels.all())))
+            response = render(request, 'hits/hit-single.html', {'hit': hit, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'severities': Severity.values, 'editable' : hit.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Hit.DoesNotExist:
@@ -271,7 +273,7 @@ def hits_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_viewable(request.user), 'severities': Severity.values, 'editable' : True })
+    return render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
 
 
 @otp_required
