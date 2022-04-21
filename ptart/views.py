@@ -355,7 +355,7 @@ def generate_totp(request, detail=True) :
                 generate_qrcode(
                     device.config_url, image_factory=svg
                 ).save(stream)
-                response = render(request, 'registration/otp.html', {'otp':base64.b64encode(stream.getvalue()).decode("utf-8")})        
+                response = render(request, 'registration/otp.html', {'otp':base64.b64encode(stream.getvalue()).decode("utf-8"), 'key': device.key})        
         
     return response
 
