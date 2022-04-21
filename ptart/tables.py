@@ -11,8 +11,8 @@ class ProjectTable(tables.Table):
     class Meta:
         model = Project
         template_name = "django_tables2/bootstrap-responsive.html"
-        sequence = ('selection', 'name', 'added')
-        fields = ('name', 'added')
+        sequence = ('selection', 'name', 'start_date', 'end_date', 'added')
+        fields = ('name', 'start_date', 'end_date', 'added')
 
 
 class FlagTable(tables.Table):
