@@ -86,6 +86,7 @@
                                         <th>ID</th>
                                         <th>Vulnerability</th>
                                         <th>CVSS</th>
+                                        <th>Fix Compl</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -95,6 +96,7 @@
                                             <td>{{ hit.get_unique_id }}</td>
                                             <td>{{ hit.title }}</td>
                                             <td><span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span></td>
+                                            <td><span class="fix-complexity-badge fix-complexity-{{ hit.fix_complexity }}">{{ hit.get_fix_complexity_str }}</span></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -121,6 +123,7 @@
                                 <h4><a href="{{ hit.asset }}">{{ hit.asset }}</a></h4>
                                 <h4>CVSS v3.1: <span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span> </h4>
                                 <h5>{{ hit.get_cvss_string }}</h5>
+                                <h5>Fix complexity: <span class="fix-complexity-badge fix-complexity-{{ hit.fix_complexity }}">{{ hit.get_fix_complexity_str }}</span></h5>
                                 {% for label in hit.labels.all %}
                                     <span class="cvss-badge cvss-badge-primary" style="background-color:{{ label.color }}">{{ label.title }}</span>
                                 {% endfor %}

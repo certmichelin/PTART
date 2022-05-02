@@ -351,11 +351,11 @@ class Hit(models.Model):
     def get_fix_complexity_str(self) :
         value = "N/D"
         if self.fix_complexity == 1 :
-            value = "High"
+            value = "Hard"
         elif self.fix_complexity == 2 :
-            value = "Medium"
+            value = "Moderate"
         elif self.fix_complexity == 3 :
-            value = "Low"
+            value = "Easy"
         return value
 
     def get_cvss_value(self):
