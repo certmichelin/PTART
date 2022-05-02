@@ -349,7 +349,7 @@ class Hit(models.Model):
         return "PTART-" + str(self.added.year) + "-" + str(self.id).zfill(5)
 
     def get_fix_complexity_str(self) :
-        value = "N/A"
+        value = "N/D"
         if self.fix_complexity == 1 :
             value = "High"
         elif self.fix_complexity == 2 :

@@ -54,6 +54,15 @@
                     <textarea class="form-control" rows="10" id="body" style="resize:vertical"></textarea>
                 </div>
                 <div class="form-group">
+                    <label>Fix complexity</label>
+                    <select class="form-control" id="fix_complexity">
+                        <option value=0> N/A </option>
+                        <option value=1> High </option>
+                        <option value=2> Medium </option>
+                        <option value=3> Low </option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Labels</label>
                     <select class="js-states form-control" id="labels" multiple="multiple">
                         {% for label in labels %}
@@ -240,7 +249,7 @@
 
     function createHit() {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#displayable").prop("checked"), $("#labels").select2("val"), $("#assessment").val());
+        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#displayable").prop("checked"), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
     }
 </script>
 {% endblock %}
