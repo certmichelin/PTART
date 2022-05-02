@@ -348,6 +348,16 @@ class Hit(models.Model):
         """Return a pretty value of the ID, ex: PTART-2022-<id>"""
         return "PTART-" + str(self.added.year) + "-" + str(self.id).zfill(5)
 
+    def get_fix_complexity_str(self) :
+        value = "N/A"
+        if self.fix_complexity == 1 :
+            value = "High"
+        elif self.fix_complexity == 2 :
+            value = "Medium"
+        elif self.fix_complexity == 3 :
+            value = "Low"
+        return value
+
     def get_cvss_value(self):
         """Return the decimal value of the cvss"""
         if self.cvss is None :
