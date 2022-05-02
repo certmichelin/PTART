@@ -316,6 +316,7 @@ class Hit(models.Model):
 
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True, default="")
+    remediation = models.TextField(blank=True, default="")
     asset = models.CharField(blank=True, max_length=256, default="")
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
@@ -547,6 +548,7 @@ class Template(models.Model):
     name = models.CharField(max_length=100)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
     body = models.TextField(blank=True, default="")
+    remediation = models.TextField(blank=True, default="")
     asset = models.CharField(blank=True, max_length=256, default="")
 
     def __str__(self):  
