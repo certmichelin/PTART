@@ -320,6 +320,7 @@ class Hit(models.Model):
     assessment = models.ForeignKey(Assessment, null=True, on_delete=models.CASCADE)
     added = models.DateTimeField(default=datetime.now)
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    fix_complexity = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     displayable = models.BooleanField(default=True)
     cvss = models.OneToOneField(Cvss, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
