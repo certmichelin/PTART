@@ -145,6 +145,15 @@
                                     <p>{{screenshot.caption}}</p>
                                 </section>
                             {% endfor %}
+
+                            {% if hit.remediation %}
+                                <section>
+                                    <h5>Remediation :</h5>
+                                    <div data-markdown>
+                                        {{ hit.remediation }}
+                                    </div>
+                                </section>
+                            {% endif %}
                         </section>
                     {% endfor %}
                 {% endif %}
