@@ -137,15 +137,16 @@ function ajaxDeleteAssessment(success_function, error_function, id) {
  * @param {*} title Hit title.
  * @param {*} asset Hit asset.
  * @param {*} body Hit body.
+ * @param {*} remediation Hit remediation.
  * @param {*} labels Hit labels.
  * @param {*} displayable True if the label will be displayed in report.
  * @param {*} fix_complexity Hit fix complexity (N/D, High, Medium, Low)
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateHit(success_function, error_function, severity, title, asset, body, displayable, fix_complexity, labels, assessmentId) {
+function ajaxCreateHit(success_function, error_function, severity, title, asset, body, remediation, displayable, fix_complexity, labels, assessmentId) {
     $.ajax({
         url: "/api/hits/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"displayable":' + JSON.stringify(displayable) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"displayable":' + JSON.stringify(displayable) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -162,15 +163,16 @@ function ajaxCreateHit(success_function, error_function, severity, title, asset,
  * @param {*} title Hit title.
  * @param {*} asset Hit asset.
  * @param {*} body Hit body.
+ * @param {*} remediation Hit remediation.
  * @param {*} displayable True if the label will be displayed in report.
  * @param {*} fix_complexity Hit fix complexity (N/D, High, Medium, Low)
  * @param {*} labels Hit labels.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateHit(success_function, error_function, id, severity, title, asset, body, displayable, fix_complexity, labels, assessmentId) {
+function ajaxUpdateHit(success_function, error_function, id, severity, title, asset, body, remediation, displayable, fix_complexity, labels, assessmentId) {
     $.ajax({
         url: "/api/hit/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"displayable":' + JSON.stringify(displayable) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"displayable":' + JSON.stringify(displayable) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function
