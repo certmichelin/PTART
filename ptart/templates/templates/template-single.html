@@ -30,6 +30,10 @@
                         <label>Body</label>
                         <textarea id="body" class="form-control" rows="10" style="resize:vertical">{{ template.body }}</textarea>
                     </div>
+                    <div class="form-group">
+                        <label>Remediation</label>
+                        <textarea id="remediation" class="form-control" rows="10" style="resize:vertical">{{ template.remediation }}</textarea>
+                    </div>
                     <input id="id" type="hidden" value="{{ template.id }}"/>
                     <button id="updateBtn" class="btn btn-outline-primary mb-4">Update</button>
                     <button id="delBtn" class="btn btn-outline-danger mb-4">Delete</button>
@@ -40,12 +44,13 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,asset,body' %}
+    {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,asset,body,remediation' %}
     {% include '_include/js/deleteItem.html' with item='Template' ajax_function='ajaxDeleteTemplate' %}
     <script>
         /* Select the current severity */$
         $('#severity option[value={{template.severity}}]').attr('selected', 'selected');
         
         activeMarkdown("body");
+        activeMarkdown("remediation");
     </script>
 {% endblock %}

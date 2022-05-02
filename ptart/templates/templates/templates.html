@@ -32,6 +32,10 @@
                     <label>Body</label>
                     <textarea class="form-control" rows="10" id="body" style="resize:vertical"></textarea>
                 </div>
+                <div class="form-group">
+                    <label>Remediation</label>
+                    <textarea class="form-control" rows="10" id="remediation" style="resize:vertical"></textarea>
+                </div>
                 <button id="createBtn" type="submit" class="btn btn-outline-primary mb-4">Submit</button>
             </div>
         </div>
@@ -43,8 +47,9 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/createItem.html' with item='Template' ajax_function='ajaxCreateTemplate' params='severity,name,asset,body' params_to_clean='name,asset,body' %}
+    {% include '_include/js/createItem.html' with item='Template' ajax_function='ajaxCreateTemplate' params='severity,name,asset,body,remediation' params_to_clean='name,asset,body,remediation' %}
     <script>
         activeMarkdown("body");
+        activeMarkdown("remediation");
     </script>
 {% endblock %}

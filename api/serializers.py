@@ -90,7 +90,7 @@ class HitSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Hit
-        fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'added', 'displayable', 'fix_complexity', 'assessment', 'get_unique_id')
+        fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'remediation', 'added', 'displayable', 'fix_complexity', 'assessment', 'get_unique_id')
     
     @transaction.atomic
     def create(self, validated_data):
@@ -169,7 +169,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
 class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
-        fields = ('id', 'name', 'severity', 'asset', 'body')
+        fields = ('id', 'name', 'severity', 'asset', 'body', 'remediation')
 
 
 class CaseSerializer(serializers.ModelSerializer):
