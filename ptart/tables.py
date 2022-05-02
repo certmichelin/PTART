@@ -10,7 +10,7 @@ class ProjectTable(tables.Table):
 
     class Meta:
         model = Project
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name', 'start_date', 'end_date', 'added')
         fields = ('name', 'start_date', 'end_date', 'added')
 
@@ -26,7 +26,7 @@ class FlagTable(tables.Table):
 
     class Meta:
         model = Flag
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name', 'project', 'assessment', 'assignee', 'done')
         fields = ('name', 'added', 'project', 'assessment', 'assignee', 'done')
         empty_text = "No Flags yet"
@@ -46,7 +46,7 @@ class HitTable(tables.Table):
 
     class Meta:
         model = Hit
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection','severity','id', 'cvss', 'title', 'fix_complexity', 'project', 'assessment', 'added')
         fields = ('severity','cvss', 'id', 'title', 'fix_complexity', 'project', 'assessment', 'added')
 
@@ -59,7 +59,7 @@ class LabelTable(tables.Table):
 
     class Meta:
         model = Label
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'title')
         fields = ('title', 'deprecated')
 
@@ -72,7 +72,7 @@ class AssessmentTable(tables.Table):
 
     class Meta:
         model = Assessment
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name', 'project', 'added')
         fields = ('name', 'project', 'added')
 
@@ -85,7 +85,7 @@ class TemplateTable(tables.Table):
     
     class Meta:
         model = Template
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection','severity', 'name')
         fields = ('severity', 'name')
 
@@ -97,7 +97,7 @@ class MethodologyTable(tables.Table):
 
     class Meta:
         model = Methodology
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name')
         fields = ('name', )
 
@@ -110,7 +110,7 @@ class ModuleTable(tables.Table):
 
     class Meta:
         model = Module
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name', 'methodology')
         fields = ('name', 'methodology')
 
@@ -123,6 +123,6 @@ class CaseTable(tables.Table):
 
     class Meta:
         model = Case
-        template_name = "django_tables2/bootstrap-responsive.html"
+        template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name', 'module')
         fields = ('name', 'module')
