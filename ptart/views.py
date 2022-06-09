@@ -42,7 +42,7 @@ def index(request):
         'hits_count': hits_count,
         'open_flags_count': open_flags_count
     }
-    return render(request, 'index.html', context)
+    return generate_render(request, 'index.html', context)
 
 
 @otp_required
@@ -99,7 +99,7 @@ def generic_all(request, items, table_class_name, template_name) :
     table = table_class_name(items)
     RequestConfig(request).configure(table)
     context = {'table': table, 'count': items.count()}
-    return render(request, template_name, context)
+    return generate_render(request, template_name, context)
 
 
 @otp_required
@@ -108,7 +108,7 @@ def project(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'editable' : project.is_user_can_edit(request.user)})
+            response = generate_render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -122,7 +122,7 @@ def project_summary(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = render(request, 'projects/project-summary.html', {'project': project, 'editable' : project.is_user_can_edit(request.user)})
+            response = generate_render(request, 'projects/project-summary.html', {'project': project, 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -135,7 +135,7 @@ def project_assets(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = render(request, 'projects/project-assets.html', {'project': project, 'editable' : project.is_user_can_edit(request.user)})
+            response = generate_render(request, 'projects/project-assets.html', {'project': project, 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -148,7 +148,7 @@ def project_report(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = render(request, 'projects/project-report.html', {'project': project})
+            response = generate_render(request, 'projects/project-report.html', {'project': project})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -161,7 +161,7 @@ def assessment(request, assessment_id):
     try:
         assessment =  Assessment.objects.get(pk=assessment_id)
         if assessment.is_user_can_view(request.user):
-            response = render(request, 'assessments/assessment-single.html', {'assessment': assessment, 'projects': Project.get_viewable(request.user).order_by('-added'), 'editable' : assessment.is_user_can_edit(request.user)})
+            response = generate_render(request, 'assessments/assessment-single.html', {'assessment': assessment, 'projects': Project.get_viewable(request.user).order_by('-added'), 'editable' : assessment.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Assessment.DoesNotExist:
@@ -177,7 +177,7 @@ def hit(request, hit_id):
         if hit.is_user_can_view(request.user):
             #This complex trick is necessary to continue to display the deprecated labels in old projects (https://github.com/certmichelin/PTART/issues/73). 
             labels = list(dict.fromkeys(list(Label.get_not_deprecated(request.user)) + list(hit.labels.all())))
-            response = render(request, 'hits/hit-single.html', {'hit': hit, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'severities': Severity.values, 'editable' : hit.is_user_can_edit(request.user)})
+            response = generate_render(request, 'hits/hit-single.html', {'hit': hit, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'severities': Severity.values, 'editable' : hit.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Hit.DoesNotExist:
@@ -190,7 +190,7 @@ def hit(request, hit_id):
 def label(request, label_id):
     response = None
     try:
-        response = render(request, 'labels/label-single.html', {'label': Label.objects.get(pk=label_id)})
+        response = generate_render(request, 'labels/label-single.html', {'label': Label.objects.get(pk=label_id)})
     except Label.DoesNotExist:
         response = redirect('/')
     return response
@@ -202,7 +202,7 @@ def flag(request, flag_id):
     try:
         flag = Flag.objects.get(pk=flag_id)
         if flag.is_user_can_view(request.user):
-            response = render(request, 'flags/flag-single.html', {'flag': flag, 'assessments': flag.assessment.project.assessment_set.all, 'users': User.objects.all(), 'editable' : flag.is_user_can_edit(request.user)})
+            response = generate_render(request, 'flags/flag-single.html', {'flag': flag, 'assessments': flag.assessment.project.assessment_set.all, 'users': User.objects.all(), 'editable' : flag.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Flag.DoesNotExist:
@@ -215,7 +215,7 @@ def flag(request, flag_id):
 def template(request, template_id):
     response = None
     try:
-        response = render(request, 'templates/template-single.html', {'template': Template.objects.get(pk=template_id), 'severities': Severity.values})
+        response = generate_render(request, 'templates/template-single.html', {'template': Template.objects.get(pk=template_id), 'severities': Severity.values})
     except Template.DoesNotExist:
         response = redirect('/')
     return response
@@ -226,7 +226,7 @@ def template(request, template_id):
 def methodology(request, methodology_id):
     response = None
     try:
-        response = render(request, 'methodologies/methodology-single.html', {'methodology': Methodology.objects.get(pk=methodology_id)})
+        response = generate_render(request, 'methodologies/methodology-single.html', {'methodology': Methodology.objects.get(pk=methodology_id)})
     except Methodology.DoesNotExist:
         response = redirect('/')
     return response
@@ -237,7 +237,7 @@ def methodology(request, methodology_id):
 def module(request, module_id):
     response = None
     try:
-        response = render(request, 'modules/module-single.html', {'module': Module.objects.get(pk=module_id), 'methodologies': Methodology.get_viewable(request.user)})
+        response = generate_render(request, 'modules/module-single.html', {'module': Module.objects.get(pk=module_id), 'methodologies': Methodology.get_viewable(request.user)})
     except Module.DoesNotExist:
         response = redirect('/')
     return response
@@ -248,7 +248,7 @@ def module(request, module_id):
 def case(request, case_id):
     response = None
     try:
-        response = render(request, 'cases/case-single.html', {'case': Case.objects.get(pk=case_id), 'modules': Module.get_viewable(request.user)})
+        response = generate_render(request, 'cases/case-single.html', {'case': Case.objects.get(pk=case_id), 'modules': Module.get_viewable(request.user)})
     except Case.DoesNotExist:
         response = redirect("/")
     return response
@@ -256,12 +256,12 @@ def case(request, case_id):
 
 @otp_required
 def projects_new(request):
-    return render(request, 'projects/projects.html', {'users': User.objects.all()})
+    return generate_render(request, 'projects/projects.html', {'users': User.objects.all()})
 
 
 @otp_required
 def assessments_new(request): 
-    return render(request, 'assessments/assessments.html', {'projects': Project.get_viewable(request.user).order_by('-added'), 'methodologies': Methodology.get_viewable(request.user)})
+    return generate_render(request, 'assessments/assessments.html', {'projects': Project.get_viewable(request.user).order_by('-added'), 'methodologies': Methodology.get_viewable(request.user)})
 
 
 @otp_required
@@ -273,13 +273,13 @@ def hits_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
 
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
 def labels_new(request):
-    return render(request, 'labels/labels.html', {})
+    return generate_render(request, 'labels/labels.html', {})
 
 
 @otp_required
@@ -291,31 +291,31 @@ def flags_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return render(request, 'flags/flags.html', {'assessments_list': assessments, 'users': User.objects.all()})
+    return generate_render(request, 'flags/flags.html', {'assessments_list': assessments, 'users': User.objects.all()})
 
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
 def templates_new(request):
-    return render(request, 'templates/templates.html', {'severities': Severity.values})
+    return generate_render(request, 'templates/templates.html', {'severities': Severity.values})
 
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
 def methodologies_new(request):
-    return render(request, 'methodologies/methodologies.html')
+    return generate_render(request, 'methodologies/methodologies.html')
 
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
 def modules_new(request):
-    return render(request, 'modules/modules.html', {'methodologies': Methodology.get_viewable(request.user)})
+    return generate_render(request, 'modules/modules.html', {'methodologies': Methodology.get_viewable(request.user)})
 
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
 def cases_new(request):
-    return render(request, 'cases/cases.html', {'modules': Module.get_viewable(request.user)})
+    return generate_render(request, 'cases/cases.html', {'modules': Module.get_viewable(request.user)})
 
 @otp_required
 def my_todo(request):
@@ -341,8 +341,13 @@ def my_todo(request):
                 'id':project.id,
                 'assessments' : assessments
             })
-    return render(request, 'mytodo.html', {'projects':projects})
+    return generate_render(request, 'mytodo.html', {'projects':projects})
 
+
+def generate_render(request, template, data):
+    #Override data by adding menu_projects that will be used in base.html
+    data['menu_projects'] = Project.get_viewable(request.user).order_by('name')
+    return render(request, template, data)
 
 def generate_totp(request, detail=True) :
     response = redirect('/')
