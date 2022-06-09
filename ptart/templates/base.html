@@ -18,6 +18,7 @@
     <link href="/static/css/customs/badges.css" rel="stylesheet" type="text/css">
     <link href="/static/css/customs/screenshots.css" rel="stylesheet" type="text/css">
     <link href="/static/css/customs/comments.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/customs/hover.css" rel="stylesheet" type="text/css">
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -33,10 +34,19 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item {% if '/project' in request.path %}active{% endif %}">
-                    <a class="nav-link" href="/projects"><i class="fa fa-cubes"></i> Projects</a>
+                <li class="nav-item dropdown {% if '/project' in request.path %}active{% endif %}">
+                    <a class="nav-link dropdown-toggle"  href="#" id="navbarProjectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-cubes"></i> Projects
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarProjectDropdown">
+                        <a class="dropdown-item" href="/projects/">All</a>
+                        <div class="dropdown-divider"></div>
+                        {% for project in menu_projects %}
+                            <a class="dropdown-item" href="/project/{{ project.id }}/summary">{{ project.name }}</a>
+                        {% endfor %}
+                    </div>
                 </li>
-
+                
                 <li class="nav-item {% if '/todo' in request.path %}active{% endif %}">
                     <a class="nav-link" href="/todo"><i class="fa fa-list-ul"></i > My ToDo</a>
                 </li>
