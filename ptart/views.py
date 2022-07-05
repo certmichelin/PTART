@@ -18,6 +18,35 @@ from qrcode.image.svg import SvgPathImage as svg
 from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
 
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from ptart import views
+
+
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+
+            if not Token.objects.filter(user=user).exists():
+                token = Token.objects.create(user=user)
+                request.session['token'] = token.key
+            else:
+                request.session['error_message'] = "Token already defined for that user"
+        else:
+            request.session['error_message'] = "Invalid credentials provided"
+
+        return HttpResponseRedirect(reverse(views.account_generate))
+       
+
+
 @otp_required
 def index(request):
     """
@@ -43,6 +72,24 @@ def index(request):
         'open_flags_count': open_flags_count
     }
     return generate_render(request, 'index.html', context)
+
+
+@otp_required
+def account_generate(request):
+    """
+        View to generate token
+    """
+    current_username = request.user  
+    token = "" if 'token' not in request.session else request.session.pop('token')
+    error_message = "" if 'error_message' not in request.session else request.session.pop('error_message')
+
+    context = {
+        'current_username': current_username,
+        'token': token,
+        'error_message': error_message,
+    }
+
+    return generate_render(request, 'account/account_generate.html', context)
 
 
 @otp_required

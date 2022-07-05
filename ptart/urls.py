@@ -7,6 +7,7 @@ from django.contrib.auth.views import LoginView
 from django_otp.forms import OTPAuthenticationForm
 from django.urls import re_path
 
+from rest_framework.authtoken import views as authviews
 from ptart import views
 
 
@@ -59,7 +60,10 @@ urlpatterns = [
     url(r'^methodology/([0-9]+)/$', views.methodology),
 
     url(r'^todo/$', views.my_todo),
-    url(r'^otp/$', views.generate_totp)
+    url(r'^otp/$', views.generate_totp),
+
+    url(r'^account/$', views.account_generate),
+    url(r'^account/generate-token/$', views.CustomAuthToken.as_view()),
 ]
 
 # Print banner on the console when the server starts

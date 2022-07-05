@@ -19,6 +19,7 @@ from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, Pr
 
 
 
+
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def flag(request, pk):
@@ -629,3 +630,5 @@ class JsonRenderer(BaseRenderer):
 class BinaryRenderer(BaseRenderer):
     def render(self, data, media_type='application/octet-stream', renderer_context=None):
         return data
+
+
