@@ -30,8 +30,12 @@ from ptart import views
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
+        """
+            View to validate submitted credentials and generate an authentication token
+        """
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
+        
         if serializer.is_valid():
             user = serializer.validated_data['user']
 
@@ -48,6 +52,9 @@ class CustomAuthToken(ObtainAuthToken):
 
 class RevokeToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
+        """
+            View to validate submitted credentials and revoke the authentication token of submitted account
+        """
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         if serializer.is_valid():
@@ -94,7 +101,7 @@ def index(request):
 @otp_required
 def account_generate(request):
     """
-        View to generate token
+        View to generate authentication token
     """
     current_username = request.user  
     token = "" if 'token' not in request.session else request.session.pop('token')
@@ -112,7 +119,7 @@ def account_generate(request):
 @otp_required
 def revoke(request):
     """
-        View to revoke token
+        View to revoke authentication token
     """
     current_username = request.user  
     success_message = "" if 'success_message' not in request.session else request.session.pop('success_message')
