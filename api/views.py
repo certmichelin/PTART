@@ -17,144 +17,171 @@ from api.decorators import ptart_authentication
 
 from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
 
+from django.views.decorators.csrf import csrf_exempt
 
-
-
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def flag(request, pk):
     return item(request, pk, Flag, FlagSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def flags(request):
     return items(request, Flag, FlagSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def hit(request, pk):
     return item(request, pk, Hit, HitSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def hits(request):
     return items(request, Hit, HitSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def label(request, pk):
     return item(request, pk, Label, LabelSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def labels(request):
     return items(request, Label, LabelSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'DELETE'])
 def comment(request, pk):
     return item(request, pk, Comment, CommentSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['DELETE'])
 def screenshot(request, pk):
     return item(request, pk, Screenshot, ScreenshotSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def screenshots(request):
     return items(request, Screenshot, ScreenshotSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['DELETE'])
 def attachment(request, pk):
     return item(request, pk, Attachment, AttachmentSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def attachments(request):
     return items(request, Attachment, AttachmentSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def assessment(request, pk):
     return item(request, pk, Assessment, AssessmentSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def assessments(request):
     return items(request, Assessment, AssessmentSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def host(request, pk):
     return item(request, pk, Host, HostSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def hosts(request):
     return items(request, Host, HostSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def service(request, pk):
     return item(request, pk, Service, ServiceSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def services(request):
     return items(request, Service, ServiceSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def project(request, pk):
     return item(request, pk, Project, ProjectSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def projects(request):
     return items(request, Project, ProjectSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def template(request, pk):
     return item(request, pk, Template, TemplateSerializer)
-    
+
+@csrf_exempt  
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def templates(request):
     return items(request, Template, TemplateSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def case(request, pk):
     return item(request, pk, Case, CaseSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def cases(request):
     return items(request, Case, CaseSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def module(request, pk):
     return item(request, pk, Module, ModuleSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def modules(request):
     return items(request, Module, ModuleSerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def methodology(request, pk):
     return item(request, pk, Methodology, MethodologySerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['POST'])
 def load_module(request, pk, assessmentId):
@@ -179,6 +206,7 @@ def load_module(request, pk, assessmentId):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@csrf_exempt
 @ptart_authentication
 @action(methods=['GET'], detail=True)
 def screenshot_raw(request, pk) :
@@ -197,6 +225,7 @@ def screenshot_raw(request, pk) :
     response.renderer_context = {}
     return response
 
+@csrf_exempt
 @ptart_authentication
 @action(methods=['GET'], detail=True)
 def attachment_raw(request, pk) :
@@ -217,6 +246,7 @@ def attachment_raw(request, pk) :
     response.renderer_context = {}
     return response
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['POST'])
 def cvss(request):
@@ -229,6 +259,7 @@ def cvss(request):
         response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return response
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['POST','DELETE'])
 def cvss_hit(request, pk):
@@ -267,6 +298,7 @@ def cvss_hit(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['POST','GET'])
 def comments(request, pk):
@@ -296,6 +328,7 @@ def comments(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['POST'])
 def markFlagAsDone(request, pk) :
@@ -312,6 +345,7 @@ def markFlagAsDone(request, pk) :
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET'])
 def project_burp_configuration(request, pk):
@@ -367,6 +401,7 @@ def project_burp_configuration(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@csrf_exempt
 @ptart_authentication
 @action(methods=['GET'], detail=True)
 def project_xlsx(request, pk):
