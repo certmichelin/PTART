@@ -64,6 +64,8 @@ urlpatterns = [
 
     url(r'^account/$', views.account_generate),
     url(r'^account/generate-token/$', views.CustomAuthToken.as_view()),
+    url(r'^account/revoke/$', views.revoke),
+    url(r'^account/revoke-token/$', views.RevokeToken.as_view()),
 ]
 
 # Print banner on the console when the server starts

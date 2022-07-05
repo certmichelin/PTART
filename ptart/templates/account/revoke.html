@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} Generate token | PTART{% endblock %}
+{% block title %} Revoke token | PTART{% endblock %}
 
 
 {% block page %}
@@ -9,18 +9,17 @@
         {% include '_include/html/header.html' with item='' active_icon='fa fa-user' active_text='Account' %}
         {% include "_include/html/messages.html" %}
         
-        <!-- Token generation form -->
-        {% if token %}
-            <div class="alert alert-info" role="alert">Make sure to copy your personal access token now. You won’t be able to see it again! </div>
-            <div class="alert alert-success" role="alert">{{ token }}</div>
-        {% elif error_message %}
+        <!-- Token revocation form -->
+        {% if error_message %}
             <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+        {% elif success_message %}
+            <div class="alert alert-success" role="alert">{{ success_message }}</div>
         {% endif %}
 
-         <div class="row">
+        <div class="row">
             <div class="col-4">
-                <form class="form needs-validation" novalidate action="/account/generate-token/" method="post"> 
-                    <h3>Token generation</h3>
+                <form class="form needs-validation" novalidate action="/account/revoke-token/" method="post"> 
+                    <h3>Token revocation</h3>
                     <div class="form-group">
                         {% csrf_token %}
                         <label for="validationCustom01">Username</label>
@@ -31,7 +30,7 @@
                         <label for="validationCustom02">Password</label>
                         <input class="form-control" type="password" name="password" autocomplete="off" placeholder="Enter your password" id="validationCustom02" required/>
                     </div>
-                    <button id="createBtn" type="submit" class="btn btn-outline-primary mb-4">Create token</button>
+                    <button id="createBtn" type="submit" class="btn btn-outline-primary mb-4">Revoke token</button>
                 </form>
             </div>
         </div>

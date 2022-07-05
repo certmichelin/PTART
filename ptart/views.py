@@ -44,8 +44,25 @@ class CustomAuthToken(ObtainAuthToken):
             request.session['error_message'] = "Invalid credentials provided"
 
         return HttpResponseRedirect(reverse(views.account_generate))
-       
 
+
+class RevokeToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+
+            if Token.objects.filter(user=user).exists():
+                Token.objects.filter(user=user).delete()
+                request.session['success_message'] = "Token successfully revoked"
+            else:
+                request.session['error_message'] = "No token found for that user"
+        else:
+            request.session['error_message'] = "Invalid credentials provided"
+
+        return HttpResponseRedirect(reverse(views.revoke))
+       
 
 @otp_required
 def index(request):
@@ -90,6 +107,24 @@ def account_generate(request):
     }
 
     return generate_render(request, 'account/account_generate.html', context)
+
+
+@otp_required
+def revoke(request):
+    """
+        View to revoke token
+    """
+    current_username = request.user  
+    success_message = "" if 'success_message' not in request.session else request.session.pop('success_message')
+    error_message = "" if 'error_message' not in request.session else request.session.pop('error_message')
+
+    context = {
+        'current_username': current_username,
+        'error_message': error_message,
+        'success_message': success_message,
+    }
+
+    return generate_render(request, 'account/revoke.html', context)
 
 
 @otp_required
