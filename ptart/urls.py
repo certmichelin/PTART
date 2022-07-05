@@ -62,10 +62,9 @@ urlpatterns = [
     url(r'^todo/$', views.my_todo),
     url(r'^otp/$', views.generate_totp),
 
-    url(r'^account/$', views.account_generate),
-    url(r'^account/generate-token/$', views.CustomAuthToken.as_view()),
-    url(r'^account/revoke/$', views.revoke),
-    url(r'^account/revoke-token/$', views.RevokeToken.as_view()),
+    url(r'^token/$', views.token_management),
+    url(r'^token/generate/$', views.CustomAuthToken.as_view()),
+    url(r'^token/revoke/$', views.revoke_token),
 ]
 
 # Print banner on the console when the server starts

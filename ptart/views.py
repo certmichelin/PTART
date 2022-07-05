@@ -25,51 +25,7 @@ from rest_framework.response import Response
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from ptart import views
-
-
-
-class CustomAuthToken(ObtainAuthToken):
-    def post(self, request, *args, **kwargs):
-        """
-            View to validate submitted credentials and generate an authentication token
-        """
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
-        
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-
-            if not Token.objects.filter(user=user).exists():
-                token = Token.objects.create(user=user)
-                request.session['token'] = token.key
-            else:
-                request.session['error_message'] = "Token already defined for that user"
-        else:
-            request.session['error_message'] = "Invalid credentials provided"
-
-        return HttpResponseRedirect(reverse(views.account_generate))
-
-
-class RevokeToken(ObtainAuthToken):
-    def post(self, request, *args, **kwargs):
-        """
-            View to validate submitted credentials and revoke the authentication token of submitted account
-        """
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-
-            if Token.objects.filter(user=user).exists():
-                Token.objects.filter(user=user).delete()
-                request.session['success_message'] = "Token successfully revoked"
-            else:
-                request.session['error_message'] = "No token found for that user"
-        else:
-            request.session['error_message'] = "Invalid credentials provided"
-
-        return HttpResponseRedirect(reverse(views.revoke))
-       
+ 
 
 @otp_required
 def index(request):
@@ -99,39 +55,64 @@ def index(request):
 
 
 @otp_required
-def account_generate(request):
+def token_management(request):
     """
-        View to generate authentication token
+        View to generate an authentication token or to revoke an existing token
     """
-    current_username = request.user  
+    current_username = request.user
+    token_exists = False
+
+    if Token.objects.filter(user=current_username).exists():
+        token_exists = True
+
     token = "" if 'token' not in request.session else request.session.pop('token')
     error_message = "" if 'error_message' not in request.session else request.session.pop('error_message')
+    success_message = "" if 'success_message' not in request.session else request.session.pop('success_message')
+
 
     context = {
         'current_username': current_username,
         'token': token,
         'error_message': error_message,
-    }
-
-    return generate_render(request, 'account/account_generate.html', context)
-
-
-@otp_required
-def revoke(request):
-    """
-        View to revoke authentication token
-    """
-    current_username = request.user  
-    success_message = "" if 'success_message' not in request.session else request.session.pop('success_message')
-    error_message = "" if 'error_message' not in request.session else request.session.pop('error_message')
-
-    context = {
-        'current_username': current_username,
-        'error_message': error_message,
+        'token_exists': token_exists,
         'success_message': success_message,
     }
 
-    return generate_render(request, 'account/revoke.html', context)
+    return generate_render(request, 'token/management.html', context)
+
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        """
+            View to validate submitted credentials and generate an authentication token
+        """
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+
+            if not Token.objects.filter(user=user).exists():
+                token = Token.objects.create(user=user)
+                request.session['token'] = token.key
+            else:
+                request.session['error_message'] = "Token already defined for that user"
+        else:
+            request.session['error_message'] = "Invalid credentials provided"
+
+        return HttpResponseRedirect(reverse(views.token_management))
+ 
+
+@otp_required
+def revoke_token(request):
+    """
+        View to revoke an authentication token
+    """
+    if Token.objects.filter(user=request.user).exists():
+        Token.objects.filter(user=request.user).delete()
+        request.session['success_message'] = "Token successfully revoked"
+
+    return HttpResponseRedirect(reverse(views.token_management))
 
 
 @otp_required
