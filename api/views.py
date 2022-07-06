@@ -2,11 +2,10 @@ from django_otp.decorators import otp_required
 
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
 
 from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
@@ -589,6 +588,28 @@ def project_xlsx(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+@csrf_exempt
+@ptart_authentication
+@api_view(['POST','DELETE'])
+def manage_token(request):
+    """
+        Grant or Revoke authentication token.
+    """
+    print("toto")
+    response = Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'POST':
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+        if not Token.objects.filter(user=request.user).exists():
+            token = Token.objects.create(user=request.user)
+            response = Response({"token" : token.key}, status=status.HTTP_201_CREATED)
+    else :
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+        if Token.objects.filter(user=request.user).exists():
+            Token.objects.filter(user=request.user).delete()
+            response = Response({"token" : ""}, status=status.HTTP_204_NO_CONTENT)
+
+    return response
+ 
 #
 # CRUD operations for a specific item.
 #

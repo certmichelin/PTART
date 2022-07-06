@@ -40,5 +40,6 @@ urlpatterns = [
     url(r'^modules/$', views.modules),
     url(r'^methodology/(?P<pk>[0-9]+)/$', views.methodology),
     url(r'^methodologies/$', views.methodologies),
+    url(r'^token/$', views.manage_token),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
