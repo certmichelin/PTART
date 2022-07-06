@@ -3,7 +3,7 @@ from rest_framework import status
 import api.views
 
 def ptart_authentication(func):
-    def wrap(request):
+    def wrap(request, *args, **kwargs):
 
         token = request.headers.get("Authorization")
         if not token or token.startswith("Token ") is False :
@@ -15,7 +15,7 @@ def ptart_authentication(func):
                 response.renderer_context = {}
                 return response
 
-        return func(request)
+        return func(request, *args, **kwargs)
     
     return wrap
 
