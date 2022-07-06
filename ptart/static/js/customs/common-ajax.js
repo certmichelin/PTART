@@ -869,6 +869,38 @@ function ajaxDeleteService(success_function, error_function, id) {
 }
 
 /**
+ * Grant authentication token.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ */
+ function ajaxGrantToken(success_function, error_function) {
+    $.ajax({
+        url: "/api/token/",
+        type: 'POST',
+        data: {},
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Revoke authentication token.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ */
+ function ajaxRevokeToken(success_function, error_function) {
+    $.ajax({
+        url: "/api/token/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+
+/**
  * Convert array to JSON string.
  * 
  * @param {*} array Array to convert.

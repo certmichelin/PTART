@@ -58,6 +58,10 @@
                 <li class="nav-item {% if '/archives' in request.path %}active{% endif %}">
                     <a class="nav-link" href="/archives"><i class="fa fa-university"></i> Archives</a>
                 </li>
+
+                <li class="nav-item {% if '/token' in request.path %}active{% endif %}">
+                    <a class="nav-link" href="/token"><i class="fa fa-user"></i> Token</a>
+                </li>
                 
                 {% if user.is_staff %}
                 <li class="nav-item dropdown">

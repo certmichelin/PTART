@@ -59,7 +59,9 @@ urlpatterns = [
     url(r'^methodology/([0-9]+)/$', views.methodology),
 
     url(r'^todo/$', views.my_todo),
-    url(r'^otp/$', views.generate_totp)
+    url(r'^otp/$', views.generate_totp),
+
+    url(r'^token/$', views.token_management)
 ]
 
 # Print banner on the console when the server starts

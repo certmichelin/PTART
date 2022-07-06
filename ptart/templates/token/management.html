@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %} Generate token | PTART{% endblock %}
+
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='' active_icon='fa fa-user' active_text='Token' %}
+        {% include "_include/html/messages.html" %}
+
+        <!-- Token revocation section -->
+        <div id="revokeBlock">
+            <div class="row pl-3">
+                <h3>Token revocation</h3>
+            </div>
+            <div class="row pl-3">
+                <p>A token is already configured for your user</p>
+            </div>
+            <div class="row pl-3">
+                <button id="revokeTokenButton" class="btn btn-outline-danger mb-4" role="button">Revoke token</button>
+            </div>
+        </div>
+
+        <div id="grantBlock">
+            <!-- Token generation form -->
+            <div class="row">
+                <div class="col-4">
+                    <h3>Token generation</h3>
+                    <button id="grantTokenButton" class="btn btn-outline-primary mb-4" role="button">Generate token</button>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block extra_foot %}
+<script>
+    $(document).ready(function () {
+        {% if token_exists %}
+        $("#grantBlock").hide();
+        {% else %}
+        $("#revokeBlock").hide();
+        {% endif %}
+    });
+
+    /**
+     * Revoke token success callback.
+     */
+    function revokeTokenSuccess(data) {
+        success($("#messages"), "Token was revoked!");
+        $("#revokeBlock").hide();
+        $("#grantBlock").show();
+    }
+
+    /**
+     * Revoke token.
+     */
+    $('#revokeTokenButton').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxRevokeToken(revokeTokenSuccess, commonFailure);
+    });
+
+    /**
+     * Grant token success callback.
+     */
+    function grantTokenSuccess(data) {
+        success($("#messages"), "Token Generated : " + data.token);
+        success($("#messages"), "Make sure to copy your personal access token now. You won’t be able to see it again!");
+        $("#revokeBlock").show();
+        $("#grantBlock").hide();
+    }
+
+    /**
+     * Grant token.
+     */
+    $('#grantTokenButton').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxGrantToken(grantTokenSuccess, commonFailure);
+    });
+</script>
+{% endblock %}

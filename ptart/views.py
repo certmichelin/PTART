@@ -15,6 +15,8 @@ from io import BytesIO
 from qrcode import make as generate_qrcode
 from qrcode.image.svg import SvgPathImage as svg
 
+from rest_framework.authtoken.models import Token
+
 from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
 
@@ -44,6 +46,17 @@ def index(request):
     }
     return generate_render(request, 'index.html', context)
 
+
+@otp_required
+def token_management(request):
+    """
+        View to generate an authentication token or to revoke an existing token
+    """
+    context = {
+        'token_exists': Token.objects.filter(user=request.user).exists()
+    }
+
+    return generate_render(request, 'token/management.html', context)
 
 @otp_required
 def projects_all(request):
