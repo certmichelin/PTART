@@ -595,7 +595,6 @@ def manage_token(request):
     """
         Grant or Revoke authentication token.
     """
-    print("toto")
     response = Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'POST':
         response = Response(status=status.HTTP_404_NOT_FOUND)
