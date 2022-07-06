@@ -6,75 +6,81 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='' active_icon='fa fa-user' active_text='Account' %}
+        {% include '_include/html/header.html' with item='' active_icon='fa fa-user' active_text='Token' %}
         {% include "_include/html/messages.html" %}
-        
-        {% if token %}
-            <div class="alert alert-info" role="alert">Make sure to copy your personal access token now. You won’t be able to see it again! </div>
-            <div class="alert alert-success" role="alert">{{ token }}</div>
-        {% elif error_message %}
-            <div class="alert alert-danger" role="alert">{{ error_message }}</div>
-        {% elif success_message %}
-            <div class="alert alert-success" role="alert">{{ success_message }}</div>
-        {% endif %}
 
-        {% if token_exists %}
-            <!-- Token revocation section -->
+        <!-- Token revocation section -->
+        <div id="revokeBlock">
             <div class="row pl-3">
-                    <h3>Token revocation</h3>
+                <h3>Token revocation</h3>
             </div>
             <div class="row pl-3">
-                <p>A token is configured for the current user ({{ current_username}})</p>
+                <p>A token is already configured for your user</p>
             </div>
             <div class="row pl-3">
-                <a class="btn btn-outline-primary mb-4" href="/token/revoke" role="button">Revoke token</a>
-            </div>    
-        {% else %}
+                <button id="revokeTokenButton" class="btn btn-outline-danger mb-4" role="button">Revoke token</button>
+            </div>
+        </div>
+
+        <div id="grantBlock">
             <!-- Token generation form -->
             <div class="row">
                 <div class="col-4">
-                    <form class="form needs-validation" novalidate action="/token/generate/" method="post"> 
-                        <h3>Token generation</h3>
-                        <div class="form-group">
-                            {% csrf_token %}
-                            <input type="hidden" name="username" autocomplete="off" value="{{ current_username }}" />
-                        </div>
-                        <div class="form-group">
-                            {% csrf_token %}
-                            <label for="validationCustom01">Password</label>
-                            <input class="form-control" type="password" name="password" autocomplete="off" placeholder="Enter your password" id="validationCustom02" required/>
-                        </div>
-                        <button id="createBtn" type="submit" class="btn btn-outline-primary mb-4">Create token</button>
-                    </form>
+                    <h3>Token generation</h3>
+                    <button id="grantTokenButton" class="btn btn-outline-primary mb-4" role="button">Generate token</button>
                 </div>
             </div>
-            <!-- /.row -->
-        {% endif %}
+        </div>
+        <!-- /.row -->
     </div>
     <!-- /.container-fluid -->
 </div>
 <!-- /#page-wrapper -->
+{% endblock %}
 
+{% block extra_foot %}
 <script>
-    (function () {
-        'use strict'
-    
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.querySelectorAll('.needs-validation')
-    
-        // Loop over them and prevent submission
-        Array.prototype.slice.call(forms)
-        .forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-                event.preventDefault()
-                event.stopPropagation()
-            }
-    
-            form.classList.add('was-validated')
-            }, false)
-        })
-    })()
-</script>
+    $(document).ready(function () {
+        {% if token_exists %}
+        $("#grantBlock").hide();
+        {% else %}
+        $("#revokeBlock").hide();
+        {% endif %}
+    });
 
+    /**
+     * Revoke token success callback.
+     */
+    function revokeTokenSuccess(data) {
+        success($("#messages"), "Token was revoked!");
+        $("#revokeBlock").hide();
+        $("#grantBlock").show();
+    }
+
+    /**
+     * Revoke token.
+     */
+    $('#revokeTokenButton').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxRevokeToken(revokeTokenSuccess, commonFailure);
+    });
+
+    /**
+     * Grant token success callback.
+     */
+    function grantTokenSuccess(data) {
+        success($("#messages"), "Token Generated : " + data.token);
+        success($("#messages"), "Make sure to copy your personal access token now. You won’t be able to see it again!");
+        $("#revokeBlock").show();
+        $("#grantBlock").hide();
+    }
+
+    /**
+     * Grant token.
+     */
+    $('#grantTokenButton').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxGrantToken(grantTokenSuccess, commonFailure);
+    });
+</script>
 {% endblock %}
