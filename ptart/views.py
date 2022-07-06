@@ -19,7 +19,6 @@ from rest_framework.authtoken.models import Token
 
 from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
- 
 
 @otp_required
 def index(request):

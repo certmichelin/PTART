@@ -7,7 +7,6 @@ from django.contrib.auth.views import LoginView
 from django_otp.forms import OTPAuthenticationForm
 from django.urls import re_path
 
-from rest_framework.authtoken import views as authviews
 from ptart import views
 
 

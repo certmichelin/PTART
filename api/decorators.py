@@ -1,4 +1,3 @@
-#from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 import api.views

@@ -685,5 +685,3 @@ class JsonRenderer(BaseRenderer):
 class BinaryRenderer(BaseRenderer):
     def render(self, data, media_type='application/octet-stream', renderer_context=None):
         return data
-
-
