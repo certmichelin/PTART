@@ -316,7 +316,7 @@ def templates_new(request):
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
 def methodologies_new(request):
-    return generate_render(request, 'methodologies/methodologies.html')
+    return generate_render(request, 'methodologies/methodologies.html', {})
 
 
 @otp_required
