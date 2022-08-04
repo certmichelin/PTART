@@ -86,6 +86,9 @@
                     <label><input id="displayable" type="checkbox" checked>Displayed in report</label>
                 </div>
                 <button id="createBtn" class="btn btn-outline-primary mb-4">Submit</button>
+                {% if user.is_staff %}
+                    <button id="createTemplateBtn" class="btn btn-outline-success mb-4">Save as New Template</button>
+                {% endif %}
                 {% endif %}
             </div>
             <div class="col-lg-5">
@@ -259,5 +262,36 @@
         cleanMessagesContainer($("#messages"));
         ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#displayable").prop("checked"), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
     }
+
+    /**
+     * Create Template based on the new hit.
+     */
+     $('#createTemplateBtn').on('click', function () {
+        waitingDialog.show();
+        setTimeout(createNewTemplate, 500);
+    });
+
+    /**
+     * Template creation success callback.
+     */
+     function templateCreationSuccess(data) {
+        success($("#messages"), "Template was created!");
+        waitingDialog.hide();
+    }
+
+    /**
+     * Template creation failure callback.
+     */
+    function templateCreationFailure(data) {
+        errorList($("#messages"), data.responseJSON);
+        waitingDialog.hide();
+    }
+
+    function createNewTemplate(){
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateTemplate(templateCreationSuccess, templateCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val());
+    }
+
+
 </script>
 {% endblock %}
