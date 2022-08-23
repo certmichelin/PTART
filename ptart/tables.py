@@ -82,6 +82,7 @@ class TemplateTable(tables.Table):
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
     severity = tables.TemplateColumn('<span class="bc-badge bc-badge--p{{ record.severity }}">P{{ record.severity }}</span>')
     name = tables.TemplateColumn('<a href="/template/{{ record.pk }}">{{ record.name }}</a>')
+    owner = tables.TemplateColumn('{% if record.owner is None %} Common {% else %} {{ record.owner }}  {% endif %}')
     
     class Meta:
         model = Template

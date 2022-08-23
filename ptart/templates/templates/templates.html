@@ -36,6 +36,12 @@
                     <label>Remediation</label>
                     <textarea class="form-control" rows="10" id="remediation" style="resize:vertical"></textarea>
                 </div>
+                {% if user.is_staff %}
+                <div class="checkbox">
+                    <label><input id="common" type="checkbox" checked> Common</label>
+                </div>
+                <br/>
+                {% endif %}
                 <button id="createBtn" type="submit" class="btn btn-outline-primary mb-4">Submit</button>
             </div>
         </div>
@@ -47,7 +53,25 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/createItem.html' with item='Template' ajax_function='ajaxCreateTemplate' params='severity,name,asset,body,remediation' params_to_clean='name,asset,body,remediation' %}
+    <script type="text/javascript">
+
+        function itemCreationSuccess(data) {
+            $("#name").val("");$("#asset").val("");$("#body").val("");$("#remediation").val("");
+            success($("#messages"), "Template was created!");
+        }
+    
+        $('#createBtn').on('click', function () {
+            cleanMessagesContainer($("#messages"));
+
+            //Manage common template.
+            var author = "{{request.user.id}}";
+            if($('#common')[0] && $('#common')[0].checked) {
+                author = null;
+            }
+
+            ajaxCreateTemplate(itemCreationSuccess, commonFailure ,$("#severity").val(),$("#name").val(),$("#asset").val(),$("#body").val(),$("#remediation").val(), author);
+        });
+    </script>
     <script>
         activeMarkdown("body");
         activeMarkdown("remediation");

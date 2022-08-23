@@ -518,12 +518,13 @@ function ajaxGetTemplate(success_function, error_function, id) {
  * @param {*} severity Template severity.
  * @param {*} asset Template asset.
  * @param {*} body Template body.
- * @param {*} body Template remediation.
+ * @param {*} remediation Template remediation.
+ * @param {*} owner Template owner : If null, the template is common.
  */
-function ajaxCreateTemplate(success_function, error_function, severity, name, asset, body, remediation) {
+function ajaxCreateTemplate(success_function, error_function, severity, name, asset, body, remediation, owner) {
     $.ajax({
         url: "/api/templates/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"owner":' + JSON.stringify(owner) + '}',
         type: 'POST',
         success: success_function,
         error: error_function
@@ -540,12 +541,13 @@ function ajaxCreateTemplate(success_function, error_function, severity, name, as
  * @param {*} name Template name.
  * @param {*} name Template asset.
  * @param {*} body Template body.
- * @param {*} body Template remediation.
+ * @param {*} remediation Template remediation.
+ * @param {*} owner Template owner : If null, the template is common.
  */
-function ajaxUpdateTemplate(success_function, error_function, id, severity, name, asset, body, remediation) {
+function ajaxUpdateTemplate(success_function, error_function, id, severity, name, asset, body, remediation, owner) {
     $.ajax({
         url: "/api/template/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"name":' + JSON.stringify(name) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"owner":' + JSON.stringify(owner) + '}',
         type: 'PUT',
         success: success_function,
         error: error_function

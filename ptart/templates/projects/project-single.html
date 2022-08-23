@@ -44,7 +44,11 @@
                     <label>Pentesters</label>
                     <select class="js-states form-control" id="pentesters" multiple="multiple">
                         {% for usr in users %}
-                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                            {% if usr.is_active == True %}
+                                <option value="{{ usr.id }}">{{ usr.username }}</option>
+                            {% else %}
+                                <option value="{{ usr.id }}">{{ usr.username }} (inactive)</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </div>
@@ -52,7 +56,11 @@
                     <label>Viewers</label>
                     <select class="js-states form-control" id="viewers" multiple="multiple">
                         {% for usr in users %}
-                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                            {% if usr.is_active == True %}
+                                <option value="{{ usr.id }}">{{ usr.username }}</option>
+                            {% else %}
+                                <option value="{{ usr.id }}">{{ usr.username }} (inactive)</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </div>
