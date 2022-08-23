@@ -36,7 +36,7 @@
                     <label for="assignee">Assignee</label>
                     <select id="assignee" class="form-control">
                         {% for usr in users %}
-                            <option value="{{ usr.id }}" {% if usr.id == flag.assignee.id %} selected="selected" {% endif %}>{{ usr.username }}</option>
+                            <option value="{{ usr.id }}" {% if usr.id == flag.assignee.id %} selected="selected" {% endif %}>{{ usr.username }} {% if usr.is_active == False %} (inactive) {% endif %}</option>
                         {% endfor %}
                     </select>
                 </div>
