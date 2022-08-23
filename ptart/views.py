@@ -85,7 +85,6 @@ def flags_all(request):
     return generic_all(request, Flag.get_viewable(request.user), FlagTable, 'flags/flags-list.html')
 
 @otp_required
-@user_passes_test(lambda u: u.is_staff)
 def templates_all(request):
     return generic_all(request, Template.get_viewable(request.user), TemplateTable, 'templates/templates-list.html')
 
@@ -224,11 +223,14 @@ def flag(request, flag_id):
 
     
 @otp_required
-@user_passes_test(lambda u: u.is_staff)
 def template(request, template_id):
     response = None
     try:
-        response = generate_render(request, 'templates/template-single.html', {'template': Template.objects.get(pk=template_id), 'severities': Severity.values})
+        template = Template.objects.get(pk=template_id)
+        if template.is_user_can_view(request.user):
+            response = generate_render(request, 'templates/template-single.html', {'template': template , 'severities': Severity.values, 'editable': template.is_user_can_edit(request.user)})
+        else :
+            response = redirect('/')
     except Template.DoesNotExist:
         response = redirect('/')
     return response
@@ -286,7 +288,7 @@ def hits_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_viewable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
 
 
 @otp_required
@@ -308,7 +310,6 @@ def flags_new(request):
 
 
 @otp_required
-@user_passes_test(lambda u: u.is_staff)
 def templates_new(request):
     return generate_render(request, 'templates/templates.html', {'severities': Severity.values})
 

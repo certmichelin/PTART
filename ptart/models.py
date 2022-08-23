@@ -1,7 +1,6 @@
 import base64
 import math
 import os
-import uuid
 
 from datetime import datetime
 from django.contrib.auth.models import User
@@ -550,25 +549,35 @@ class Template(models.Model):
     body = models.TextField(blank=True, default="")
     remediation = models.TextField(blank=True, default="")
     asset = models.CharField(blank=True, max_length=256, default="")
+    owner = models.ForeignKey(User, null=True, blank=True, default=None, on_delete=models.PROTECT)
 
     def __str__(self):  
         return self.name
 
     def get_viewable(user):
         """Returns all viewable templates"""
-        return Template.objects.all()
+        templates = None
+        if user.is_staff :
+            templates = Template.objects.all()
+        else :
+            templates = Template.objects.filter(Q(owner=None) | Q(owner=user))
+        return templates
+
+    def get_usable(user):
+        """Returns all templates that should be usable for hit creation"""
+        return Template.objects.filter(Q(owner=None) | Q(owner=user))
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this template"""
-        return True
+        return user.is_staff or (self.owner is None or self.owner == user)
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this template"""
-        return user.is_staff
+        return user.is_staff or self.owner == user
 
     def is_user_can_create(self, user):
         """Verify if the user can create this template"""
-        return user.is_staff
+        return user.is_staff or self.owner == user
 
     class Meta:
         ordering = ('severity','name',)

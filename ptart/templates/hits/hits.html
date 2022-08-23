@@ -86,8 +86,10 @@
                     <label><input id="displayable" type="checkbox" checked>Displayed in report</label>
                 </div>
                 <button id="createBtn" class="btn btn-outline-primary mb-4">Submit</button>
+
+                <button onclick="createTemplateBtnClick(false)" class="btn btn-outline-success mb-4">Save as New Template</button>
                 {% if user.is_staff %}
-                    <button id="createTemplateBtn" class="btn btn-outline-success mb-4">Save as New Template</button>
+                    <button onclick="createTemplateBtnClick(true)" class="btn btn-outline-success mb-4">Save as New Common Template</button>
                 {% endif %}
                 {% endif %}
             </div>
@@ -266,10 +268,12 @@
     /**
      * Create Template based on the new hit.
      */
-     $('#createTemplateBtn').on('click', function () {
+     function createTemplateBtnClick(common) {
         waitingDialog.show();
-        setTimeout(createNewTemplate, 500);
-    });
+        setTimeout(function() {
+            createNewTemplate(common);
+        }, 500);
+    };
 
     /**
      * Template creation success callback.
@@ -287,9 +291,16 @@
         waitingDialog.hide();
     }
 
-    function createNewTemplate(){
+    /**
+     * Function to create a template.
+     */
+    function createNewTemplate(common){
         cleanMessagesContainer($("#messages"));
-        ajaxCreateTemplate(templateCreationSuccess, templateCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val());
+        var owner = null;
+        if(!common) {
+            owner = "{{request.user.id}}";
+        }
+        ajaxCreateTemplate(templateCreationSuccess, templateCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), owner);
     }
 
 

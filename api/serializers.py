@@ -169,7 +169,7 @@ class AttachmentSerializer(serializers.ModelSerializer):
 class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
-        fields = ('id', 'name', 'severity', 'asset', 'body', 'remediation')
+        fields = ('id', 'name', 'severity', 'asset', 'body', 'remediation', 'owner')
 
 
 class CaseSerializer(serializers.ModelSerializer):

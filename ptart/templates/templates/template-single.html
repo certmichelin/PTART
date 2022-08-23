@@ -34,9 +34,13 @@
                         <label>Remediation</label>
                         <textarea id="remediation" class="form-control" rows="10" style="resize:vertical">{{ template.remediation }}</textarea>
                     </div>
+                    <input id="owner" type="hidden" value="{{ template.owner.id }}"/>
                     <input id="id" type="hidden" value="{{ template.id }}"/>
-                    <button id="updateBtn" class="btn btn-outline-primary mb-4">Update</button>
-                    <button id="delBtn" class="btn btn-outline-danger mb-4">Delete</button>
+
+                    {% if editable == True %}
+                        <button id="updateBtn" class="btn btn-outline-primary mb-4">Update</button>
+                        <button id="delBtn" class="btn btn-outline-danger mb-4">Delete</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -44,8 +48,10 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,asset,body,remediation' %}
-    {% include '_include/js/deleteItem.html' with item='Template' ajax_function='ajaxDeleteTemplate' %}
+    {% if editable == True %}
+        {% include '_include/js/updateItem.html' with item='Template' ajax_function='ajaxUpdateTemplate' params='id,severity,name,asset,body,remediation,owner' %}
+        {% include '_include/js/deleteItem.html' with item='Template' ajax_function='ajaxDeleteTemplate' %}
+    {% endif %}
     <script>
         /* Select the current severity */$
         $('#severity option[value={{template.severity}}]').attr('selected', 'selected');
