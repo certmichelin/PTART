@@ -1,6 +1,7 @@
 import base64
 import math
 import os
+import pathlib
 
 from datetime import datetime
 from django.contrib.auth.models import User
@@ -424,14 +425,20 @@ class Screenshot(models.Model):
         """Get screenshot data in Base64"""
         encoded_string = ''
         extension = os.path.splitext(self.screenshot.url)[1]
-        with open(self.screenshot.url, 'rb') as img_f:
+        url = self.screenshot.url
+        if url.startswith('.') is False :
+            url = "." + url
+        with open(url, 'rb') as img_f:
             encoded_string = base64.b64encode(img_f.read())
         return 'data:image/%s;base64,%s' % (extension,encoded_string.decode("utf-8"))
 
     def get_raw_data(self):
         """Get screenshot data in binary format"""
         result = ''
-        with open(self.screenshot.url, 'rb') as img_f:
+        url = self.screenshot.url
+        if url.startswith('.') is False :
+            url = "." + url
+        with open(url, 'rb') as img_f:
             result = img_f.read()
         return result
 
@@ -472,14 +479,20 @@ class Attachment(models.Model):
     def get_data(self):
         """Get attachment data in Base64"""
         encoded_string = ''
-        with open(self.attachment.url, 'rb') as file_f:
+        url = self.attachment.url
+        if url.startswith('.') is False :
+            url = "." + url
+        with open(url, 'rb') as file_f:
             encoded_string = base64.b64encode(file_f.read())
         return 'data:application/octet;base64,%s' % (encoded_string.decode("utf-8"))
 
     def get_raw_data(self):
         """Get attachment data in binary format"""
         result = ''
-        with open(self.attachment.url, 'rb') as file_f:
+        url = self.attachment.url
+        if url.startswith('.') is False :
+            url = "." + url
+        with open(url, 'rb') as file_f:
             result = file_f.read()
         return result
     
