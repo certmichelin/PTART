@@ -271,7 +271,7 @@ def case(request, case_id):
 
 @otp_required
 def projects_new(request):
-    return generate_render(request, 'projects/projects.html', {'users': User.objects.all()})
+    return generate_render(request, 'projects/projects.html', {'users': User.objects.filter(is_active=True)})
 
 
 @otp_required
@@ -306,7 +306,7 @@ def flags_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return generate_render(request, 'flags/flags.html', {'assessments_list': assessments, 'users': User.objects.all()})
+    return generate_render(request, 'flags/flags.html', {'assessments_list': assessments, 'users': User.objects.filter(is_active=True)})
 
 
 @otp_required

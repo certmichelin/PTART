@@ -182,7 +182,7 @@
                                                 <a href="/flag/{{ flag.id }}/">{{ flag.title }}</a>
                                             </td>
                                             <td>
-                                                {{ flag.assignee.username }}
+                                                {{ flag.assignee.username }} {% if flag.assignee.is_active == False %} (inactive) {% endif %}
                                             </td>
                                         </tr>
                                         {% endfor %}
