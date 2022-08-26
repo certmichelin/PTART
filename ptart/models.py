@@ -444,7 +444,10 @@ class Screenshot(models.Model):
 
     def delete(self):
         """Delete file related to the screenshot"""
-        os.remove(self.screenshot.url)
+        url = self.screenshot.url
+        if url.startswith('.') is False :
+            url = "." + url
+        os.remove(url)
         super(Screenshot, self).delete()
     
     def get_viewable(user):
@@ -498,7 +501,10 @@ class Attachment(models.Model):
     
     def delete(self):
         """Delete file related to the attachment"""
-        os.remove(self.attachment.url)
+        url = self.attachment.url
+        if url.startswith('.') is False :
+            url = "." + url
+        os.remove(url)
         super(Attachment, self).delete()
     
     def get_viewable(user):
