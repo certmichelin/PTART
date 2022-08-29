@@ -17,7 +17,7 @@ from qrcode.image.svg import SvgPathImage as svg
 
 from rest_framework.authtoken.models import Token
 
-from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
 
 @otp_required
@@ -196,6 +196,19 @@ def hit(request, hit_id):
         response = redirect('/')
     return response
 
+@otp_required
+def attackscenario(request, attackscenario_id):
+    response = None
+    try:
+        attackscenario = AttackScenario.objects.get(pk=attackscenario_id)
+        if attackscenario.is_user_can_view(request.user):
+            response = generate_render(request, 'attackscenarios/attackscenario-single.html', {'attackscenario': attackscenario, 'editable' : attackscenario.is_user_can_edit(request.user)})
+        else :
+            response = redirect('/')
+    except AttackScenario.DoesNotExist:
+        response = redirect('/')
+    return response
+
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
@@ -290,6 +303,13 @@ def hits_new(request):
         pass
     return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
 
+@otp_required
+def attackscenarios_new(request):
+    try:
+        project = Project.objects.get(pk=request.GET.get("projectId", ""))
+    except :
+        pass
+    return generate_render(request, 'attackscenarios/attackscenarios.html', {'project': project})
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)

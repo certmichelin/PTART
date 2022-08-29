@@ -871,6 +871,61 @@ function ajaxDeleteService(success_function, error_function, id) {
 }
 
 /**
+ * Create an attack scenario.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} name Attack scenario name.
+ * @param {*} scenario Attack scenario content.
+ * @param {*} project Project attached to the attack scenario.
+ */
+ function ajaxCreateAttackScenario(success_function, error_function, name, scenario, project) {
+    $.ajax({
+        url: "/api/attackscenarios/",
+        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'POST',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Update an attack scenario.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Attack scenario id.
+ * @param {*} name Attack scenario name.
+ * @param {*} scenario Attack scenario content.
+ * @param {*} project Project attached to the attack scenario.
+ */
+function ajaxUpdateAttackScenario(success_function, error_function, id, name, scenario, project) {
+    $.ajax({
+        url: "/api/attackscenario/" + id + "/",
+        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'PUT',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
+ * Delete an attack scenario.
+ * 
+ * @param {*} success_function function to call in case of ajax success.
+ * @param {*} error_function function to call in case of ajax failure.
+ * @param {*} id Attack scenario id.
+ */
+function ajaxDeleteAttackScenario(success_function, error_function, id) {
+    $.ajax({
+        url: "/api/attackscenario/" + id + "/",
+        type: 'DELETE',
+        success: success_function,
+        error: error_function
+    });
+}
+
+/**
  * Grant authentication token.
  * 
  * @param {*} success_function function to call in case of ajax success.

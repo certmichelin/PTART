@@ -12,6 +12,7 @@
     <link href="/static/css/plugins/reveal/reveal.css" rel="stylesheet" type="text/css">
     <link href="/static/css/plugins/reveal/theme/blood.css" rel="stylesheet" type="text/css">
     <link href="/static/css/customs/badges.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/customs/deciduous.css" rel="stylesheet" type="text/css">  
 
     <!-- Printing and PDF exports -->
     <script>
@@ -159,6 +160,20 @@
                 {% endif %}
             {% endfor %}
 
+            <!-- Attack Scenarios -->
+            {% if project.attackscenario_set.all %}
+                <section>
+                    <h1>Attack Scenarios</h1>
+                </section>
+                {% for attackscenario in project.attackscenario_set.all %}
+                    <section>
+                        <h5>{{ attackscenario.name }}</h5>
+                        <textarea id="scenario_{{ attackscenario.id }}" class="scenarioToDraw" style="display: none;">{{ attackscenario.scenario }}</textarea>
+                        <div id="scenario_{{ attackscenario.id }}_svg" width=100 height=100></div>
+                    </section>
+                {% endfor %} 
+            {% endif %}
+
             {% if project.conclusion %}
             <section data-markdown>
                 {{ project.conclusion }}
@@ -171,6 +186,9 @@
     <script src="/static/js/jquery-3.4.0.min.js"></script>
     <script src="/static/js/plugins/reveal/reveal.js"></script>
     <script src="/static/js/customs/cvss.js"></script>
+    <script src="/static/js/plugins/hpcc/index.min.js"></script>
+    <script src="/static/js/plugins/js-yaml/js-yaml.min.js"></script>
+    <script src="/static/js/customs/deciduous.js"></script>
     <script>
         // More info about config & dependencies:
         // - https://github.com/hakimel/reveal.js#configuration
