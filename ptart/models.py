@@ -83,6 +83,34 @@ class Project(models.Model):
     class Meta:
         ordering = ('name',)
 
+"""Attack Scenario model."""
+class AttackScenario(models.Model):
+
+    project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    scenario = models.TextField(blank=True, default="")
+    
+    def __str__(self):  
+        return self.scenario
+
+    def get_viewable(user):
+        """Returns all viewable attack scenarios"""
+        return AttackScenario.objects.filter(project__in=Project.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this attack scenario"""
+        return self.project.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this attack scenario"""
+        return self.project.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this attack scenario"""
+        return self.project.is_user_can_edit(user)
+
+    class Meta:
+        ordering = ('name',)
 
 """Assesment model."""
 class Assessment(models.Model):

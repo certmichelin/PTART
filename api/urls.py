@@ -13,6 +13,8 @@ urlpatterns = [
     url(r'^hits/$', views.hits),
     url(r'^label/(?P<pk>[0-9]+)/$', views.label),
     url(r'^labels/$', views.labels),
+    url(r'^attackscenario/(?P<pk>[0-9]+)/$', views.attackscenario),
+    url(r'^attackscenarios/$', views.attackscenarios),
     url(r'^comment/(?P<pk>[0-9]+)/$', views.comment),
     url(r'^screenshot/(?P<pk>[0-9]+)/$', views.screenshot),
     url(r'^screenshot/png/(?P<pk>[0-9]+)/$', views.screenshot_raw),
