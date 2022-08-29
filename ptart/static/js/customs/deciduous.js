@@ -21,12 +21,14 @@ function wordwrap(text, limit) {
     all.push(current.join(" "));
     return all.join("\n");
 }
+
 function mangleName(name) {
     if (/^[A-Za-z]\w*$/.test(name)) {
         return name;
     }
     return JSON.stringify(name);
 }
+
 function line(name, properties) {
     const entries = Object.entries(properties);
     if (entries.length == 0) {
@@ -41,6 +43,7 @@ function parseFrom(raw) {
     }
     return [String(raw), null, {}];
 }
+
 const themes = {
     "classic": {
         "edge": "#2B303A",
@@ -83,6 +86,7 @@ const themes = {
         "goal-text": "#FFFFFF",
     },
 }
+
 function convertToDot(yaml) {
     const parsed = jsyaml.load(yaml);
     const font = 'Arial'
@@ -279,6 +283,7 @@ ${shownGoals.map(goalName => mangleName(goalName) + ";").join("\n        ")}
     const footer = "\n\n}\n";
     return [header + "    " + allNodeLines.join("\n    ") + "\n\n    " + allEdgeLines.join("\n    ") + "\n\n    // subgraphs to give proper layout\n" + subgraphs.join("\n\n")  + footer, typeof parsed.title === "string" ? parsed.title : "", types];
 }
+
 const renderTarget = document.getElementById("renderTarget");
 const errorTarget = document.getElementById("errorTarget");
 const inputSource = document.getElementById("inputSource");
@@ -296,6 +301,18 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
     let lastObjectURL = "";
     let lastSvgObjectURL = "";
     let types = {};
+    
+    //Michelin CERT customization to display attack scenario svg outside dedicated page
+    function generateSvg(dom){
+        let dot, title;
+        [dot, title, types] = convertToDot(dom.value);
+        return graphviz.layout(dot, "svg", "dot");
+    }
+
+    $('.scenarioToDraw').each(function(i, obj) {
+        document.getElementById(obj.id + "_svg").innerHTML = generateSvg(obj);
+    });
+    
     function selectRange(start, end) {
         inputSource.blur();
         inputSource.selectionEnd = inputSource.selectionStart = start;
@@ -304,6 +321,7 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
         syncScroll();
         setTimeout(syncScroll, 0);
     }
+
     function rerender() {
         syncScroll();
         const newInput = inputSource.value;

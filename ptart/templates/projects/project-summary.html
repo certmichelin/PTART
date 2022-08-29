@@ -2,6 +2,10 @@
 
 {% block title %} Project | PTART{% endblock %}
 
+{% block extra_head %}
+    <link href="/static/css/customs/deciduous.css" rel="stylesheet" type="text/css">    
+{% endblock %}
+
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
@@ -209,6 +213,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -217,13 +222,41 @@
                         <td>
                             <a href="/attackscenario/{{ attackscenario.id }}/">{{ attackscenario.name }}</a>
                         </td>
+                        <td>
+                            <!-- Structure to automatically display svg -->
+                            <!-- Create a textarea block containing scenario data with class `scenarioToDraw` -->
+                            <!-- The svg will populated into the blck having the id of the code block concatenated with '_svg' -->
+                            <textarea id="scenario_{{ attackscenario.id }}" class="scenarioToDraw" style="display: none;">{{ attackscenario.scenario }}</textarea>
+                            <div id="scenario_{{ attackscenario.id }}_svg" style="display: none;"></div>
+                            <a class="btn btn-outline-success" href="#" role="button" onclick="displayScenarioAttack('{{ attackscenario.name }}','scenario_{{ attackscenario.id }}_svg')">Display</a>                           
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="attackScenarioPreviewModal" tabindex="-1" role="dialog" aria-labelledby="attackScenarioPreviewModalTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="attackScenarioPreviewModalTitle"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="svgPreview"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endif %}
-        
+
         {% if project.assessment_set.all|length != 0 %}
         <a class="btn btn-outline-success mb-4" href="/project/{{project.id}}/report" target="_blank" role="button">
             <i class="fa fa-file-text-o" aria-hidden="true"></i> Generate HTML report.
@@ -239,6 +272,10 @@
 {% endblock %}
 
 {% block extra_foot %}
+<script src="/static/js/plugins/hpcc/index.min.js"></script>
+<script src="/static/js/plugins/js-yaml/js-yaml.min.js"></script>
+<script src="/static/js/customs/deciduous.js"></script>
+
 <script>
     $("#projectIntroduction").html(marked($("#projectIntroduction").html()));
     $("#projectConclusion").html(marked($("#projectConclusion").html()));
@@ -249,5 +286,11 @@
             trigger: 'hover'
         });
     });
+
+    function displayScenarioAttack(title, svgId){
+        $("#attackScenarioPreviewModalTitle").text(title);
+        $("#svgPreview").html($("#" + svgId).html());
+        $('#attackScenarioPreviewModal').modal();
+    }
 </script>
 {% endblock %}
