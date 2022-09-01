@@ -10,11 +10,11 @@ from rest_framework.authtoken.models import Token
 from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -41,6 +41,18 @@ def hit(request, pk):
 @api_view(['GET', 'POST'])
 def hits(request):
     return items(request, Hit, HitSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def attackscenario(request, pk):
+    return item(request, pk, AttackScenario, AttackScenarioSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def attackscenarios(request):
+    return items(request, AttackScenario, AttackScenarioSerializer)
 
 @csrf_exempt
 @ptart_authentication

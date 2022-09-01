@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load addstr %}
+
+{% block title %} Attack Scenario | PTART{% endblock %}
+
+{% block extra_head %}
+    <link href="/static/css/customs/deciduous.css" rel="stylesheet" type="text/css">    
+{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='Attack Scenarios' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:project.pk|addstr:"/summary" sub_text=project.name active_icon='fa fa-book' active_text='Attack Scenarios' %}
+        {% include "_include/html/messages.html" %} 
+        
+        <!-- Attack Scenario creation form -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" id="name" autocomplete="off" placeholder="Full compromise from XSS in search function" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- BEGIN OF DECIDIOUS BLOCK -->
+            <div id="leftPane" class="col-lg-5">
+                <textarea id="inputSource" spellcheck="false">
+                </textarea>
+                <pre id="highlighting" aria-hidden="true"><code id="inputHighlighted"></code></pre>
+            </div>
+            <div class="col-lg-7" id="rightPane">
+                <div class="right-header">
+                    <div class="downloadWrapper">
+                        <a id="downloadLink" download="decision-tree.dot">Download .dot</a>
+                        <a id="downloadSvgLink" download="decision-tree.svg">Download .svg</a>
+                    </div>
+                </div>
+                <div id="errorTarget">JavaScript is required</div>
+                <div id="renderTarget"></div>
+                <p class="copyright">&copy; Copyright 2022 Ryan Petrich & Kelly Shortridge (Team Bad, LLC)</p>
+            </div>
+            <div id="dragger"></div>
+            <!-- END OF DECIDIOUS BLOCK -->
+        </div>
+
+        <input type="hidden" value="{{ project.id }}" id="projectId"/>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <button id="createBtn" type="submit" class="btn btn-primary mb-5">Submit</button>
+            </div>
+        </div>
+
+
+        
+    <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+
+
+{% block extra_foot %}
+
+  {% include '_include/js/createItem.html' with item='Attack Scenario' ajax_function='ajaxCreateAttackScenario' params='name,inputSource,projectId' params_to_clean='name' %}
+
+  <script src="/static/js/plugins/hpcc/index.min.js"></script>
+  <script src="/static/js/plugins/js-yaml/js-yaml.min.js"></script>
+  <script src="/static/js/customs/deciduous.js"></script>
+
+  <script>
+      var defaultText = `title: (Example) From XML to RCE
+
+facts:
+- Signup: Registration page is open
+  from:
+  - start
+- LoggedAdmin: Admin user is logged
+- RetrieveCookie: Admin session cookies are exfiltrated
+  from:
+  - StoredXSS
+- NotSandbox: Freemarker is not sandboxed
+  from:
+  - SSTI
+
+attacks:
+- StoredXSS: Stored XSS in dashboard
+  from:
+  - DashboardCreation : 'Injection in title'
+  - DashboardVisit
+- SSTI: Freemarker SSTI in mail body
+  from:
+  - EditMailTemplate: 'Injection in mail body'
+
+actions:
+- LowUserPriv: Connect with created user
+  from:
+  - Signup : '#Log in'
+- DashboardCreation : Create a dashboard  
+  from:
+  - LowUserPriv
+- DashboardVisit: Visit dashboard
+  from:
+  - LoggedAdmin
+- AdminSessionTakeover: Connect with admin cookie
+  from:
+  - RetrieveCookie
+- EditMailTemplate: Edit email templates
+  from:
+  - AdminSessionTakeover
+- ReserveShell: Reverse shell to attacker server 
+  from:
+  - NotSandbox
+
+goals:
+- RCE: Shell Access to application server
+  from:
+    - ReserveShell`;
+
+        $("#inputSource").val(defaultText);
+    </script>
+{% endblock %}

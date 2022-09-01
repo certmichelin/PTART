@@ -8,12 +8,16 @@
 PTART is a vulnerability organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise. Basically this tool will help you to :
 
 - Report a vulnerabiltity with screenshots, attachments, CVSSv3.1 Score, OWASP top 10 labels in less than 3min.
-- Avoid retyping again and again the same vulnerabilities content by using templates.
+- Avoid retyping again and again the same vulnerabilities content by using templates (common and personal).
+- Generate attack scenarios that can be imagined using your findings.
 - Generate ToDo lists from pentest methodologies (OWASP and Wahh are natively included) and assign tasks to a project member.
 - Generate automatically a nice HTML/PDF RevealJS report.
+- Generate automatically an Excel report to share status with your management.
 - Customize yours labels for categorizing vulnerabilities.
 - Have discussions on a bug using the comment area.
-- Have a common and shared workspace within the team. 
+- Have a common and shared workspace within the team.
+- Secure your work with 2FA.
+- Use PTART API with dedicated token for 3rd party application 
 
 
 A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
@@ -50,6 +54,9 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 
 ##### Asset management
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot9.PNG)
+
+##### Attack Scenario
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot10.PNG)
 
 ## Installation
 
