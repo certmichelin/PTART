@@ -12,7 +12,7 @@ PTART is a vulnerability organizer tool developed for pentesters, bug bounty hun
 - Generate attack scenarios that can be imagined using your findings.
 - Generate ToDo lists from pentest methodologies (OWASP and Wahh are natively included) and assign tasks to a project member.
 - Generate automatically a nice HTML/PDF RevealJS report.
-- Generate automatically an Excel report tp share status with your management.
+- Generate automatically an Excel report to share status with your management.
 - Customize yours labels for categorizing vulnerabilities.
 - Have discussions on a bug using the comment area.
 - Have a common and shared workspace within the team.

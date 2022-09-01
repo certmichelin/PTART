@@ -404,7 +404,6 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
                 [dot, title, types] = convertToDot(newInput);
                 // Syntax highlighting
                 updateTextArea();
-                // console.log(dot);
                 // Render SVG into the document
                 const svg = graphviz.layout(dot, "svg", "dot");
                 renderTarget.innerHTML = svg;
@@ -608,14 +607,7 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
             });
         }
     }
-    if (!tryHashRender()) {
-        /*if (window.localStorage) {
-            const content = localStorage.getItem("deciduous-content");
-            if (content !== null && content !== "") {
-                inputSource.value = content;
-            }
-        }*/
-    }
+    
     window.addEventListener("hashchange", tryHashRender, false);
     rerender();
     
@@ -631,13 +623,7 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
         currentPercentage = localStorage.getItem("deciduous-divider") || 40;
     }
     function updateDivider(percent) {
-        /*
-        dragger.style.left = percent + "%";
-        leftPane.style.width = percent + "%";
-        rightPane.style.left = percent + "%";
-        rightPane.style.width = (100 - percent) + "%";
-        currentPercentage = percent;
-        */
+       
     }
     function mouseMove(e) {
         const clientWidth = document.body.clientWidth;

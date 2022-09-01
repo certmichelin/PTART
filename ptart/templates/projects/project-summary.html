@@ -30,12 +30,12 @@
                         {% if project.archived == False %}
                             {% if project.assessment_set.all|length > 0 %}
                             <a class="btn btn-outline-danger" href="/hits/new?projectId={{project.id}}" role="button">Create
-                                Hit!</a>
+                                Hit</a>
                             {% endif %}
                             
                             {% if project.assessment_set.all|length > 0 %}
                             <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create
-                                Flag!</a>
+                                Flag</a>
                             {% endif %}
                             
                             <a class="btn btn-outline-danger" href="/attackscenario/new?projectId={{project.id}}"
@@ -225,7 +225,7 @@
                         <td>
                             <!-- Structure to automatically display svg -->
                             <!-- Create a textarea block containing scenario data with class `scenarioToDraw` -->
-                            <!-- The svg will populated into the blck having the id of the code block concatenated with '_svg' -->
+                            <!-- The svg will populated into the block having the id of the code block concatenated with '_svg' -->
                             <textarea id="scenario_{{ attackscenario.id }}" class="scenarioToDraw" style="display: none;">{{ attackscenario.scenario }}</textarea>
                             <div id="scenario_{{ attackscenario.id }}_svg" style="display: none;"></div>
                             <a class="btn btn-outline-success" href="#" role="button" onclick="displayScenarioAttack('{{ attackscenario.name }}','scenario_{{ attackscenario.id }}_svg')">Display</a>                           
