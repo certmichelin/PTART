@@ -43,5 +43,6 @@ urlpatterns = [
     url(r'^methodology/(?P<pk>[0-9]+)/$', views.methodology),
     url(r'^methodologies/$', views.methodologies),
     url(r'^token/$', views.manage_token),
+    url(r'^account/change_password/$', views.change_password)
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
