@@ -87,11 +87,11 @@
     $('.datepicker').datepicker({});
 
     {% if project.start_date %}
-        $('#startdate').datepicker('setDate', '{{project.start_date}}');
+        $('#startdate').datepicker('setDate', new Date('{{project.start_date|date:"Y-m-d"}}'));
     {% endif %}
     
     {% if project.end_date %}
-        $('#enddate').datepicker('setDate', '{{project.end_date}}');
+        $('#enddate').datepicker('setDate', new Date('{{project.end_date|date:"Y-m-d"}}'));
     {% endif %}
     
     var selectedPentesters = [];
