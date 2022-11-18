@@ -956,6 +956,24 @@ function ajaxDeleteAttackScenario(successFunction, errorFunction, id) {
     });
 }
 
+/**
+ * Change current user password.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} oldPassword Old password.
+ * @param {*} newPassword1 New password1.
+ * @param {*} newPassword2 New password2.
+ */
+ function ajaxChangePassword(successFunction, errorFunction, oldPassword, newPassword1, newPassword2) {
+    $.ajax({
+        url: "/api/account/change_password/",
+        type: 'POST',
+        data: '{"oldPassword":' + JSON.stringify(oldPassword) + ',"newPassword1":' + JSON.stringify(newPassword1) + ',"newPassword2":' + JSON.stringify(newPassword2) + '}',
+        success: successFunction,
+        error: errorFunction
+    });
+}
 
 /**
  * Convert array to JSON string.

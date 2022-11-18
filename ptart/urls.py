@@ -64,7 +64,9 @@ urlpatterns = [
     url(r'^todo/$', views.my_todo),
     url(r'^otp/$', views.generate_totp),
 
-    url(r'^token/$', views.token_management)
+    url(r'^token/$', views.token_management),
+
+    url(r'^account/password/$', views.password_change)
 ]
 
 # Print banner on the console when the server starts

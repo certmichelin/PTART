@@ -63,11 +63,12 @@
                     <a class="nav-link" href="/templates"><i class="fa fa-file-code"></i> Templates</a>
                 </li>
 
+                {% if user.is_staff %}
+
                 <li class="nav-item {% if '/token' in request.path %}active{% endif %}">
                     <a class="nav-link" href="/token"><i class="fa fa-user"></i> Token</a>
                 </li>
                 
-                {% if user.is_staff %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-cogs"></i> Administration
@@ -79,6 +80,17 @@
                         <a class="dropdown-item" href="/methodologies/">Methodologies</a>
                         <a class="dropdown-item" href="/modules/">Modules</a>
                         <a class="dropdown-item" href="/cases/">Cases</a>
+                    </div>
+                </li>
+                {% else %}
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-user"></i> Account
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/account/password/"></i> Change Password</a>
+                        <a class="dropdown-item" href="/token"></i> Token</a>
                     </div>
                 </li>
                 {% endif %}

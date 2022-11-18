@@ -333,6 +333,9 @@ def flags_new(request):
 def templates_new(request):
     return generate_render(request, 'templates/templates.html', {'severities': Severity.values})
 
+@otp_required
+def password_change(request):
+    return generate_render(request, 'account/password.html', {})
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)

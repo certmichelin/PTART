@@ -1,4 +1,8 @@
-from django_otp.decorators import otp_required
+from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
 from rest_framework.decorators import action
@@ -15,8 +19,6 @@ from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host
 from api.decorators import ptart_authentication
 
 from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer
-
-from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 @ptart_authentication
@@ -619,6 +621,30 @@ def manage_token(request):
             Token.objects.filter(user=request.user).delete()
             response = Response({"token" : ""}, status=status.HTTP_204_NO_CONTENT)
 
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['POST'])
+def change_password(request):
+    """
+        Change current user password.
+    """
+    response = Response({"The current password is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+    user = authenticate(request, username=request.user, password=request.data["oldPassword"])
+    if user is not None:
+        password1 = str(request.data["newPassword1"])
+        password2 = str(request.data["newPassword2"])
+        if password1 == password2 :
+            try :
+                validate_password(password1, user)
+                user.set_password(password1)
+                user.save()
+                response = Response({}, status=status.HTTP_204_NO_CONTENT)
+            except ValidationError as err:
+                response = Response(err, status=status.HTTP_400_BAD_REQUEST)
+        else :
+            response = Response({"New passwords are not matching"}, status=status.HTTP_400_BAD_REQUEST)
     return response
  
 #
