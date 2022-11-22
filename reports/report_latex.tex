@@ -12,80 +12,24 @@
 \documentclass[12pt, table,dvipsnames]{article}
 
 %-----------------------------------------------------%
-% Docstyle                                            %
+% Package import                                      %
 %-----------------------------------------------------%
-% French support packages
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{mathptmx}
-
 \usepackage{pgf-pie}  
-
 \usepackage[USenglish]{babel}
-% Layout packages
 \usepackage{lmodern}
 \usepackage{lscape}
 \usepackage{rotating}
 \usepackage{fancyhdr}
 \usepackage{placeins}
 \usepackage{wrapfig}
-\usepackage[letterpaper, left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm, headheight=15pt]{geometry}
+\usepackage[letterpaper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm,headheight=15pt]{geometry}
 \usepackage{hyperref}
-\hypersetup{colorlinks, allcolors=black}
-
-% References
 \usepackage{csquotes}
-\usepackage[style=numeric,
-backend=biber, 
-sorting=none
-]{biblatex}
-\addbibresource{references.bib}
-
-
-% Caption
+\usepackage[style=numeric,backend=biber, sorting=none]{biblatex}
 \usepackage{capt-of}
-
-% For dotted table of content
-\makeatletter
-\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{2.3em}}
-\renewcommand*\l@subsection{\@dottedtocline{2}{2.3em}{3.2 em}}
-\makeatother
-
-%more control over table layouts
-\usepackage{tabulary}
-\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
-\usepackage{float}
-\restylefloat{table}
-
-% Horizontal line and separator
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
-\newcommand{\hseparator}{\hspace{0.3em}-\hspace{0.3em}}
-
-\newcommand{\doctitle}{}
-
-\fancypagestyle{footmark}{
-	\ps@@fancy % use {fancy} style as a base of {footmark}
-	\fancyfoot[C]{\footmark}
-}
-% sets value of \footmark and sets the correct style for this page only
-\newcommand\markfoot[1]{\gdef\footmark{#1}\thispagestyle{footmark}}
-
-% Page layout
-\pagestyle{fancy}
-
-\lhead{\client\ - \teamname}
-\rhead{\doctitle}
-\cfoot{\color{red}{NOTICE: CONFIDENTIAL FOR \cptc\ ONLY}}
-\rfoot{Page \thepage}
-
-%-----------------------------------------------------%
-% End of Docstyle                                     %
-%-----------------------------------------------------%                                          
-
-%-----------------------------------------------------%
-% Package Declaration                                 %
-%-----------------------------------------------------%
-
 \usepackage{xcolor}
 \usepackage{afterpage}
 \usepackage{tabularx}
@@ -99,131 +43,74 @@ sorting=none
 \usepackage{appendix}
 \usepackage{listings}
 \usepackage[tableposition=top]{caption}
-\floatstyle{plaintop}
-\restylefloat{table}
+\usepackage{tabulary}
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage[export]{adjustbox}
 \usepackage{xurl}
 \usepackage{easyfig}
 \usepackage{ifthen}
-
+\usepackage{float}
 %-----------------------------------------------------%
-% End of Package Declaration                          %
+% End of Package import                               %
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
 % Aliases                                             %
 %-----------------------------------------------------%
-\newcommand{\faculty}{}
-\newcommand{\client}{An Example Company}
-\newcommand{\cptc}{AEC}
-\newcommand{\teamname}{New Haven Hacking Inc.}
+\newcommand{\doctitle}{Pentest Report}
+%TODO: \newcommand{\client}{\VAR{project.name}}
+\newcommand{\client}{Sample Project}
+\newcommand{\teamname}{Michelin CERT}
+\newcommand{\company}{Michelin}
+\newcommand{\classification}{CONFIDENTIAL}
 \newcommand{\logopath}{resources/logo.png}
-\newcommand{\institution}{University of New Haven}
-\renewcommand{\doctitle}{Penetration Test Report}
+\newcommand{\companylogo}{resources/companylogo.png}
 %-----------------------------------------------------%
 % End of Aliases                                      %
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
-% Custom configuration                                %
+% Docstyle                                            %
+%-----------------------------------------------------%   
+\lhead{}
+\rhead{\client\ - \teamname}
+\cfoot{\color{red}{\classification}}
+\rfoot{Page \thepage}
+
+\floatstyle{plaintop}
+\restylefloat{table}
+
+% For dotted table of content
+\makeatletter
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{2.3em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{2.3em}{3.2 em}}
+\makeatother
+
+%more control over table layouts
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\restylefloat{table}
+
+% Horizontal line and separator
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\hseparator}{\hspace{0.3em}-\hspace{0.3em}}
+
+\fancypagestyle{footmark}{
+	\ps@@fancy % use {fancy} style as a base of {footmark}
+	\fancyfoot[C]{\footmark}
+}
+
+% sets value of \footmark and sets the correct style for this page only
+\newcommand\markfoot[1]{\gdef\footmark{#1}\thispagestyle{footmark}}
+
+% Page layout
+\pagestyle{fancy}
+
+\addbibresource{references.bib}
+\hypersetup{colorlinks, allcolors=black}
 %-----------------------------------------------------%
-
-% Custom Colors
-% Used for moderate threat level text for better readability compared to default yellow
-\definecolor{threatyellow}{RGB}{180,180,0}
-% Used to set title page background color. Useful if logo background is not transparent.
-% This makes it so there is no square with a different background color.
-\definecolor{titlebackground}{HTML}{ffffff} % Default: ffffff
-
-% Toggle Team Members list on title page
-\newboolean{teamMembersEnabled} % Do not modify this line
-% Set to true to enable the list, false to disable it.
-\setboolean{teamMembersEnabled}{true}
-
-% Team Members
-% One team member per line.
-% Example: \teammember{name}{email@example.tld}
-\newcommand{\teammembers}{
-	\teammember{Samuel Zurowski}{szuro1@unh.newhaven.edu}
-	\teammember{Charles Barone}{cbaro4@unh.newhaven.edu}
-}
-
-% Institution logo on title page
-\newboolean{institutionLogoEnabled} % Do not modify this line
-% Set to true to enable the institution logo, false to disable it.
-\setboolean{institutionLogoEnabled}{true}
-\newcommand{\institutionlogo}{resources/insitutionlogo.png}
-
-
-%
-% --- DO NOT MODIFY BELOW HERE ---
-%
-
-% Redefined Commands
-\renewcommand\theadfont{\bfseries}
-
-% Custom Commands
-\newcommand\todo[1]{\textcolor{red}{#1}}
-\newcommand{\teammember}[2]{{#1} & \href{mailto:{#2}}{{#2}}  \\}
-% Example: \vuln{Lack of MariaDB Authentication}{7.5}{5}{10}
-\newcommand{\vuln}[4]{#1 & \vulncolor{#2}#2 & \vulncolor{#3}#3 & \vulncolor{#4}#4 \\ \hline}
-\newcommand{\vulncolor}[1]{
-	\ifboolexpr{
-		test {\ifdimless{#1 pt}{4.0pt}}
-	}
-	{\cellcolor{green}} % Score < 4.0 (Low)
-	{\ifboolexpr{
-			test {\ifdimless{#1 pt}{7.0pt}}
-		}
-		{\cellcolor{yellow}} % Score < 7.0 (Moderate)
-		{\ifboolexpr{
-				test {\ifdimless{#1 pt}{9.0pt}}
-			}
-			{\cellcolor{orange}} % Score < 9.0 (High)
-			{\cellcolor{red}}}} % Score >= 9.0 (Critical)
-}
-\newcommand{\vulntext}[1]{\textbf{Threat Level}:\vulntextcolor{#1}}
-\newcommand{\vulntextcolor}[1]{
-	\ifboolexpr{
-		test {\ifdimless{#1 pt}{4.0pt}}
-	}
-	{\color{green}{Low (#1)}} % Score < 4.0 (Low)
-	{\ifboolexpr{
-			test {\ifdimless{#1 pt}{7.0pt}}
-		}
-		{\color{threatyellow}{Moderate (#1)}} % Score < 7.0 (Moderate)
-		{\ifboolexpr{
-				test {\ifdimless{#1 pt}{9.0pt}}
-			}
-			{\color{orange}{High (#1)}} % Score < 9.0 (High)
-			{\color{red}{Critical (#1)}}}} % Score >= 9.0 (Critical)
-}
-
-% Custom Environments
-\newenvironment{vulntable}
-{
-	\noindent
-	The following table breaks down the discovered vulnerabilities by overall risk score, impact, and exploitability.  The scores were calculated using NIST's CVSS v3.1 calculator \cite{nvdcvss}.
-	\begin{center}
-		\textbf{Summary of Vulnerabilities by Base Score}
-	\end{center}
-	\begin{table}[h]
-		\renewcommand{\arraystretch}{1.25}
-		\centering
-		\begin{tabular}{|>{\centering}p{15em}|c|>{\centering}p{4em}|c|}\hline
-			\textbf{Risk Summary} & \textbf{Overall Risk Score} & \textbf{Impact} & \textbf{Exploitability} \\\hline
-		}
-		{ 
-		\end{tabular}
-	\end{table}
-}
-
-%-----------------------------------------------------%
-% End of Custom configuration                         %
-%-----------------------------------------------------%
-
+% End of Docstyle                                     %
+%-----------------------------------------------------%                                          
 %-----------------------------------------------------%
 % Begin Document                                      %
 %-----------------------------------------------------%
@@ -238,52 +125,48 @@ sorting=none
 \begin{titlepage}
 	\begin{center}
 		
-		\pagecolor{titlebackground}\afterpage{\nopagecolor}
-		
 		\vspace{0.25cm}
-		\textsc{\normalsize\faculty}\\[1.0cm]
 		\begin{figure}[H]
 			\centering
-			\includegraphics[width=\textwidth/2]{\logopath}
+			\includegraphics[width=\textwidth/3]{\logopath}
 		\end{figure}
-		
 		
 		% Title
 		\HRule\\[0.2cm]
-		{\huge\bfseries\doctitle}
-		\HRule\\[1.5cm]
+		{\huge\bfseries\doctitle : \\ \client}
+		\HRule\\[0.5cm]
 		\vfill
-		\vfill
+		% End of Title
+		
+		% Team Name
 		\Large{Conducted by:}
-		\vfill
 		\LARGE{\textbf{\teamname}}
+		\vfill
+		% End of Team Name
 		
+		% Date
+		\Large{From Nov. 1, 2022 to Nov. 11, 2022}
 		\vfill
-		\vfill
-		\vfill
-		\vfill
-		\ifthenelse{\boolean{teamMembersEnabled}}{
-			\small{}
-			\begin{tabular}{l r}
-				\large\emph{Team Members} & 
-				\large\emph{Email} \\[0.5cm]
-				\teammembers
-			\end{tabular}
-			\begin{center}
-			\end{center}
-		}{}
-		\vfill
+		% End of Date
 		
-		\ifthenelse{\boolean{institutionLogoEnabled}}{\includegraphics{\institutionlogo}}{}
+		% Pentesters.
+		Auditor(s):
+		\begin{center}
+			\small{
+			\begin{itemize}
+				\centering
+				\item[] Username1 - Maxime Escourbiac
+				\item[] Username2 - John Doe
+			\end{itemize}
+			}
+		\end{center}
+		\vfill
+		% End of Pentesters.
 		
-		\vfill
-		\vfill
-		\large{\today}
-		\vfill
-		\vfill
-		
+		\includegraphics[width=\textwidth/4]{\companylogo}
+				
 		% % Bottom of the page
-		{\footnotesize {\color{red}{NOTICE: The information provided in this document is CONFIDENTIAL and is intended only for \cptc}}}
+		{\footnotesize {\color{red}{\classification}}}
 		
 	\end{center}
 \end{titlepage}

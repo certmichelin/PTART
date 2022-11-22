@@ -627,8 +627,8 @@ def project_latex(request, pk):
                         zf.writestr("screenshots/{}.png".format(screenshot.id),  screenshot.get_raw_data())
 
             #Add resources for LaTeX
-            zf.write("reports/resources/insitutionlogo.png", "reports/resources/insitutionlogo.png")
-            zf.write("reports/resources/logo.png", "reports/resources/logo.png")
+            zf.write("reports/resources/insitutionlogo.png", "resources/insitutionlogo.png")
+            zf.write("reports/resources/logo.png", "resources/logo.png")
             
             #Generate Latex report.
             with open('reports/report_latex.tex') as file_:
@@ -649,7 +649,7 @@ def project_latex(request, pk):
                     return pypandoc.convert_text(md, 'latex', format='md')
                 env.filters["mdtolatex"] = markdown_to_latex
                 template = env.from_string(file_.read())
-                zf.writestr("report.latex", template.render(project=project))     
+                zf.writestr("report.tex", template.render(project=project))     
 
             #Prepare HTTP response.
             response.content_type = 'application/zip'
