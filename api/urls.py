@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^project/(?P<pk>[0-9]+)/$', views.project),
     url(r'^project/(?P<pk>[0-9]+)/burp$', views.project_burp_configuration),
     url(r'^project/(?P<pk>[0-9]+)/xlsx$', views.project_xlsx),
+    url(r'^project/(?P<pk>[0-9]+)/latex$', views.project_latex),
     url(r'^projects/$', views.projects),
     url(r'^template/(?P<pk>[0-9]+)/$', views.template),
     url(r'^templates/$', views.templates),

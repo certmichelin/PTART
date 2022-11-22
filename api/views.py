@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
+from django.http import HttpResponse
+
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
@@ -13,6 +15,10 @@ from rest_framework.authtoken.models import Token
 
 from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
+
+import jinja2
+import pypandoc
+import zipfile
 
 from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
 
@@ -596,6 +602,44 @@ def project_xlsx(request, pk):
             response.renderer_context = {}
 
             wb.close()
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@action(methods=['GET'], detail=True)
+def project_latex(request, pk):
+    response = None
+    try:
+        project = Project.objects.get(pk=pk)
+        if project.is_user_can_view(request.user):
+            response = HttpResponse()
+            zf = zipfile.ZipFile(response, 'w')
+            
+            #Retrieve Screenshots.
+            for assessment in project.assessment_set.all():        
+                for hit in assessment.displayable_hits():
+                    for screenshot in hit.screenshot_set.all():
+                        zf.writestr("screenshots/{}.png".format(screenshot.id),  screenshot.get_raw_data())
+
+            #Generate Latex report.
+            with open('reports/report_latex.jinja2') as file_:
+                env = jinja2.Environment()
+                def markdown_to_latex(md) :
+                    return pypandoc.convert_text(md, 'latex', format='md')
+                env.filters["mdtolatex"] = markdown_to_latex
+                template = env.from_string(file_.read())
+                zf.writestr("report.latex", template.render(project=project))     
+
+            #Prepare HTTP response.
+            response.content_type = 'application/zip'
+            response['Content-Disposition'] = 'attachment; filename=' + project.name + ".zip"
+            response.accepted_renderer = BinaryRenderer()
+            response.accepted_media_type = 'application/zip'
+            response.renderer_context = {}
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
