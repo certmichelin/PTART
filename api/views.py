@@ -17,6 +17,7 @@ from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
 
 import jinja2
+import os
 import pypandoc
 import zipfile
 
@@ -625,9 +626,25 @@ def project_latex(request, pk):
                     for screenshot in hit.screenshot_set.all():
                         zf.writestr("screenshots/{}.png".format(screenshot.id),  screenshot.get_raw_data())
 
+            #Add resources for LaTeX
+            zf.write("reports/resources/insitutionlogo.png", "reports/resources/insitutionlogo.png")
+            zf.write("reports/resources/logo.png", "reports/resources/logo.png")
+            
             #Generate Latex report.
-            with open('reports/report_latex.jinja2') as file_:
-                env = jinja2.Environment()
+            with open('reports/report_latex.tex') as file_:
+                env = jinja2.Environment(
+                    block_start_string = '\BLOCK{',
+                    block_end_string = '}',
+                    variable_start_string = '\VAR{',
+                    variable_end_string = '}',
+                    comment_start_string = '\#{',
+                    comment_end_string = '}',
+                    line_statement_prefix = '%%',
+                    line_comment_prefix = '%#',
+                    trim_blocks = True,
+                    autoescape = False,
+                    loader = jinja2.FileSystemLoader(os.path.abspath('.'))
+                )
                 def markdown_to_latex(md) :
                     return pypandoc.convert_text(md, 'latex', format='md')
                 env.filters["mdtolatex"] = markdown_to_latex
