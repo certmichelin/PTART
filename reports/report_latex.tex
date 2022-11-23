@@ -27,6 +27,7 @@
 \usepackage{hyperref}
 \usepackage{ifthen}
 \usepackage[utf8]{inputenc}
+\usepackage{lipsum} 
 \usepackage{listings}
 \usepackage{lmodern}
 \usepackage{longtable}
@@ -35,7 +36,8 @@
 \usepackage{mathptmx}
 \usepackage[parfill]{parskip}
 \usepackage[final]{pdfpages}
-\usepackage{pgf-pie}  
+\usepackage{pgf-pie}
+\usepackage{pgfplots}   
 \usepackage{placeins}
 \usepackage{rotating}
 \usepackage{tabularx}
@@ -43,7 +45,6 @@
 \usepackage{tikz}
 \usepackage{tocloft}
 \usepackage{wrapfig}
-\usepackage{xcolor}
 \usepackage{xcolor}
 \usepackage{xurl}
 %-----------------------------------------------------%
@@ -55,6 +56,7 @@
 %-----------------------------------------------------%
 \newcommand{\doctitle}{Pentest Report}
 \newcommand{\project}{\VAR{project.name}}
+\newcommand{\client}{JohnDoe ltd.} %TODO add client attribute in project
 \newcommand{\teamname}{Michelin CERT}
 \newcommand{\company}{Michelin}
 \newcommand{\classification}{CONFIDENTIAL}
@@ -67,8 +69,9 @@
 %-----------------------------------------------------%
 % Docstyle                                            %
 %-----------------------------------------------------%   
-\lhead{}
-\rhead{\project\ - \teamname}
+\lhead{\client\ - \project}
+\rhead{\teamname}
+\lfoot{\today}
 \cfoot{\color{red}{\classification}}
 \rfoot{Page \thepage}
 
@@ -109,7 +112,6 @@
 % Begin Document                                      %
 %-----------------------------------------------------%
 \begin{document}
-
 \title{\doctitle}
 \pagenumbering{arabic}
 
@@ -184,7 +186,119 @@
 %-----------------------------------------------------%
 \section{Report Overview}
 \subsection{Executive Summary}
+% This is the first text in the report, it should address the you client's executives. It should include a few paragraphs (2-3) that should introduce the engagement the report is for followed by the explaining the structure of the report in a non-technical manner. Explain the "Report Overview" and "Technical Findings" sections purposes.
+% Following this you should try to address a business level risk that will catch the attention of the executive.
+% If you have any severely critical risks to the security of your client you should also add in a paragraph to explain these to the executives in a NON-TECHNICAL manner. You should also mention the potential business impact of these.
+% Lastly, you should should give a summary of the quantity of vulnerabilities by severity. You may also want to include a sentence to explain a trend in vulnerabilities, if such a trend exists.
+
 
 \VAR{ project.introduction | mdtolatex }
+%-----------------------------------------------------%
+% End of Executive Summary                            %
+%-----------------------------------------------------%
 
+%-----------------------------------------------------%
+% Engagement Overview                                 %
+%-----------------------------------------------------%
+\newpage
+\subsection{Engagement Overview}
+% This is where you should briefly explain when the penetration test was performed and how the team came into this work. This should be followed by a list of goals for the engagement.
+% List goals for the team in the engagement targeted at your client's executives (non-technical).
+\lipsum[2-4]
+%-----------------------------------------------------%
+% End of Engagement Overview                           %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Scope of Engagement                                 %
+%-----------------------------------------------------%
+\subsection{Scope of Engagement}
+% Include a short (3-4 sentences) explanation of the scope, ensure that any limitations to the scope are mentioned.
+\lipsum[1]
+
+%Automatic scope list
+\begin{itemize}
+	\BLOCK{ for line in project.scope.splitlines() }
+		\item \VAR{ line }
+	\BLOCK{ endfor }
+\end{itemize}
+\newpage
+%-----------------------------------------------------%
+% End of Scope of Engagement                          %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Observation                                         %
+%-----------------------------------------------------%
+\section{Observations}
+
+\lipsum[1]
+
+\begin{figure}[H]
+	\centering
+\begin{tikzpicture}
+	\begin{axis} [
+		bar width         =20pt,
+		axis y line       = none,
+		axis lines*       = left,
+		tickwidth         = 0pt,
+		enlarge y limits  = 0.2,
+		enlarge x limits  = 0.2,
+		symbolic x coords = {P1, P2, P3, P4, P5},
+		nodes near coords
+		]
+		\addplot [ybar,fill = black]  coordinates {(P1,\VAR{project.p1_hits()|length})};
+		\addplot [ybar,fill = red]    coordinates {(P2,\VAR{project.p2_hits()|length})};
+		\addplot [ybar,fill = yellow] coordinates {(P3,\VAR{project.p3_hits()|length})};
+		\addplot [ybar,fill = green]  coordinates {(P4,\VAR{project.p4_hits()|length})};
+		\addplot [ybar,fill = blue]   coordinates {(P5,\VAR{project.p5_hits()|length})};
+	\end{axis}
+\end{tikzpicture}
+\caption{Statistics of vulnerabilities by severity}
+\end{figure}
+
+\lipsum[1]
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \pie
+        [
+            rotate=180, 
+            after number=,
+            /tikz/nodes={text=black, font=\normalfont},
+            /tikz/every pin/.style={align=center, text=black, font=\normalfont},
+            sum=auto,
+			text = legend
+        ]
+        {
+			\BLOCK{ for key, value in project.labels_statistics().items() }
+				\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }  
+			\BLOCK{ endfor }
+	    }
+    \end{tikzpicture}
+    \caption{Statistics of vulnerabilities by label}
+\end{figure}
+\newpage
+%-----------------------------------------------------%
+% End of Observations                                 %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Recommendations                                     %
+%-----------------------------------------------------%
+\section{Recommendations}
+The most immediate observation about \client's security posture is that default, null, and passwordless authentication was discovered on multiple systems. \teamname\ was able to gain access into a SCADA system using the same credentials (which were default) as the last engagement.  The system in question is critical to the storage, delivery, and packaging processes within the warehouse facility. Moreover, several databases contained this same issue and were found to not be requiring password authentication. It is important to remember these credentials are for critical services and PII. These weaknesses can have an enormous impact on \client's ability to operate if discovered by threat actors. These vulnerabilities can be remediated with low cost and have an outsized impact on the security of \client. More details on mitigation for vulnerabilities such as these can be found in each vulnerability's remediation suggestions in Section \ref{sec:tech}. 
+
+\subsection{Recommendations 1}
+
+\lipsum[1]
+
+\subsection{Recommendations 2}
+
+\lipsum[3-4]
+
+%-----------------------------------------------------%
+% End of Recommendations                              %
+%-----------------------------------------------------%
 \end{document}

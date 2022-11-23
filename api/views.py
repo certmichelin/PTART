@@ -17,6 +17,7 @@ from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
 
 import jinja2
+import json
 import os
 import pypandoc
 import zipfile
