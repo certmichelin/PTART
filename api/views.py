@@ -627,10 +627,11 @@ def project_latex(request, pk):
                         zf.writestr("screenshots/{}.png".format(screenshot.id),  screenshot.get_raw_data())
 
             #Add resources for LaTeX
-            zf.write("reports/resources/insitutionlogo.png", "resources/insitutionlogo.png")
+            zf.write("reports/resources/companylogo.png", "resources/companylogo.png")
             zf.write("reports/resources/logo.png", "resources/logo.png")
             
             #Generate Latex report.
+            #Custom environment is used to avoid syntax conflict between Jinja & LaTex
             with open('reports/report_latex.tex') as file_:
                 env = jinja2.Environment(
                     block_start_string = '\BLOCK{',

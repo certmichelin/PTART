@@ -1,56 +1,51 @@
-%-----------------------------------------------------%
-%          Penetration Test Report Template           %
-%                     cyber@cfreg                     %
-%             https://hack.newhaven.edu/              %
-%                                                     %
-%                    Contributors:                    %
-% TJ Balon - https://github.com/balon                 %
-% Samuel Zurowski - https://github.com/samuelzurowski %
-% Charles Barone - https://github.com/CharlesBarone   %
-%-----------------------------------------------------%
+%-----------------------------------------------------------------%
+%         Template based on cyber@cfreg LaTeX template            %
+%                                                                 %
+% https://github.com/cyber-cfreg/Penetration-Test-Report-Template %
+%-----------------------------------------------------------------%
 
 \documentclass[12pt, table,dvipsnames]{article}
 
 %-----------------------------------------------------%
 % Package import                                      %
 %-----------------------------------------------------%
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{mathptmx}
-\usepackage{pgf-pie}  
-\usepackage[USenglish]{babel}
-\usepackage{lmodern}
-\usepackage{lscape}
-\usepackage{rotating}
-\usepackage{fancyhdr}
-\usepackage{placeins}
-\usepackage{wrapfig}
-\usepackage[letterpaper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm,headheight=15pt]{geometry}
-\usepackage{hyperref}
-\usepackage{csquotes}
-\usepackage[style=numeric,backend=biber, sorting=none]{biblatex}
-\usepackage{capt-of}
-\usepackage{xcolor}
+\usepackage[export]{adjustbox}
 \usepackage{afterpage}
-\usepackage{tabularx}
-\usepackage{tocloft}
-\usepackage{longtable}
+\usepackage{appendix}
+\usepackage[USenglish]{babel}
+\usepackage[style=numeric,backend=biber, sorting=none]{biblatex}
+\usepackage{booktabs}
+\usepackage{capt-of}
+\usepackage[tableposition=top]{caption}
+\usepackage{csquotes}
+\usepackage{easyfig}
+\usepackage{fancyhdr}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage[letterpaper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm,headheight=15pt]{geometry}
 \usepackage{graphicx}
-\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{ifthen}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{lmodern}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage{makecell}
+\usepackage{mathptmx}
 \usepackage[parfill]{parskip}
 \usepackage[final]{pdfpages}
-\usepackage{float}
-\usepackage{appendix}
-\usepackage{listings}
-\usepackage[tableposition=top]{caption}
+\usepackage{pgf-pie}  
+\usepackage{placeins}
+\usepackage{rotating}
+\usepackage{tabularx}
 \usepackage{tabulary}
-\usepackage{makecell}
+\usepackage{tikz}
+\usepackage{tocloft}
+\usepackage{wrapfig}
 \usepackage{xcolor}
-\usepackage[export]{adjustbox}
+\usepackage{xcolor}
 \usepackage{xurl}
-\usepackage{easyfig}
-\usepackage{ifthen}
-\usepackage{float}
 %-----------------------------------------------------%
 % End of Package import                               %
 %-----------------------------------------------------%
@@ -59,8 +54,7 @@
 % Aliases                                             %
 %-----------------------------------------------------%
 \newcommand{\doctitle}{Pentest Report}
-%TODO: \newcommand{\client}{\VAR{project.name}}
-\newcommand{\client}{Sample Project}
+\newcommand{\project}{\VAR{project.name}}
 \newcommand{\teamname}{Michelin CERT}
 \newcommand{\company}{Michelin}
 \newcommand{\classification}{CONFIDENTIAL}
@@ -74,7 +68,7 @@
 % Docstyle                                            %
 %-----------------------------------------------------%   
 \lhead{}
-\rhead{\client\ - \teamname}
+\rhead{\project\ - \teamname}
 \cfoot{\color{red}{\classification}}
 \rfoot{Page \thepage}
 
@@ -133,7 +127,7 @@
 		
 		% Title
 		\HRule\\[0.2cm]
-		{\huge\bfseries\doctitle : \\ \client}
+		{\huge\bfseries\doctitle : \\ \project}
 		\HRule\\[0.5cm]
 		\vfill
 		% End of Title
@@ -145,7 +139,7 @@
 		% End of Team Name
 		
 		% Date
-		\Large{From Nov. 1, 2022 to Nov. 11, 2022}
+		\Large{From \VAR{ project.start_date } to \VAR{ project.end_date }}
 		\vfill
 		% End of Date
 		
@@ -155,8 +149,9 @@
 			\small{
 			\begin{itemize}
 				\centering
-				\item[] Username1 - Maxime Escourbiac
-				\item[] Username2 - John Doe
+				\BLOCK{ for pentester in project.pentesters.all() }
+					\item[] \VAR{ pentester.username } - \VAR{ pentester.first_name } \VAR{ pentester.last_name }
+				\BLOCK{ endfor }
 			\end{itemize}
 			}
 		\end{center}
@@ -174,8 +169,22 @@
 % End of Title Page                                   %
 %-----------------------------------------------------%
 
+%-----------------------------------------------------%
+% Table of Contents                                   %
+%-----------------------------------------------------%
 \renewcommand{\contentsname}{Table of Contents}
 \tableofcontents\thispagestyle{fancy}
 \newpage
+%-----------------------------------------------------%
+% End of Table of Contents                            %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Executive Summary                                   %
+%-----------------------------------------------------%
+\section{Report Overview}
+\subsection{Executive Summary}
+
+\VAR{ project.introduction | mdtolatex }
 
 \end{document}
