@@ -651,7 +651,7 @@ def project_latex(request, pk):
                     return pypandoc.convert_text(md, 'latex', format='md')
                 env.filters["mdtolatex"] = markdown_to_latex
                 template = env.from_string(file_.read())
-                zf.writestr("report.tex", template.render(project=project))     
+                zf.writestr("report.tex", template.render(project=project, labels=Label.get_viewable(request.user)))     
 
             #Prepare HTTP response.
             response.content_type = 'application/zip'

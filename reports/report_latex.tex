@@ -42,7 +42,9 @@
 \usepackage{rotating}
 \usepackage{tabularx}
 \usepackage{tabulary}
+\usepackage[most]{tcolorbox}
 \usepackage{tikz}
+\usepackage{titlesec}
 \usepackage{tocloft}
 \usepackage{wrapfig}
 \usepackage{xcolor}
@@ -78,6 +80,12 @@
 \floatstyle{plaintop}
 \restylefloat{table}
 
+%Add paragraph
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
 % For dotted table of content
 \makeatletter
 \renewcommand*\l@section{\@dottedtocline{1}{1.5em}{2.3em}}
@@ -105,6 +113,45 @@
 
 \addbibresource{references.bib}
 \hypersetup{colorlinks, allcolors=black}
+
+%badge
+\newtcbox{\badge}[1][red]{
+	on line, 
+	arc=2pt,
+	colback=#1!50!black,
+	colframe=#1!50!black,
+	fontupper=\color{white},
+	boxrule=1pt, 
+	boxsep=0pt,
+	left=4pt,
+	right=4pt,
+	top=2pt,
+	bottom=2pt
+}
+
+%Colors
+
+\definecolor{bc-badge-p1}{HTML}{d13535}
+\definecolor{bc-badge-p2}{HTML}{ff6900}
+\definecolor{bc-badge-p3}{HTML}{f0ad4e}
+\definecolor{bc-badge-p4}{HTML}{5eae00}
+\definecolor{bc-badge-p5}{HTML}{0278b8}
+
+\definecolor{cvss-badge-dark}{HTML}{343a40}
+\definecolor{cvss-badge-danger}{HTML}{dc3545}
+\definecolor{cvss-badge-warning}{HTML}{ffc107}
+\definecolor{cvss-badge-success}{HTML}{28a745}
+\definecolor{cvss-badge-secondary}{HTML}{6c757d}
+
+\definecolor{fix-complexity-0}{HTML}{6c757d}
+\definecolor{fix-complexity-1}{HTML}{dc3545}
+\definecolor{fix-complexity-2}{HTML}{ffc107}
+\definecolor{fix-complexity-3}{HTML}{28a745}
+
+\BLOCK{for label in labels }
+\definecolor{label-color-\VAR{label.id }}{HTML}{\VAR{label.color | replace("#","")}}
+\BLOCK{ endfor }
+
 %-----------------------------------------------------%
 % End of Docstyle                                     %
 %-----------------------------------------------------%                                          
@@ -303,7 +350,7 @@ The most immediate observation about \client's security posture is that default,
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
-% Methodology                                         %
+% Methodologies                                         %
 %-----------------------------------------------------%
 % If a specific methodology was utilized for the penetration test, it should be indicated here:
 % This example cites PTES, MITRE ATT&K, OWASP Top 10, PCI-DSS, and NIST SP 800-53:
@@ -316,6 +363,69 @@ The most immediate observation about \client's security posture is that default,
 
 \newpage
 %-----------------------------------------------------%
-% End of Methodology                                  %
+% End of Methodologies                                %
+%-----------------------------------------------------%
+%-----------------------------------------------------%
+% Technical Findings                                  %
+%-----------------------------------------------------%
+\section{Technical Findings}
+\label{sec:tech}
+
+\BLOCK{ for assessment in project.assessment_set.all() }
+	\BLOCK{ if assessment.displayable_hits }
+		\subsection{\VAR{assessment.name}}
+		\BLOCK{ for hit in assessment.displayable_hits() }
+			\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title}}
+
+			\begin{table}[H]
+				\centering
+				{\setlength{\extrarowheight}{2pt}%
+				\begin{tabular}{| l | p{12cm} |}
+					\hline 
+					Severity & \badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }}\\
+					\hline
+					\BLOCK{ if hit.get_cvss_value() == "---" }
+						CVSS Base Score & \badge[cvss-badge-secondary]{ N.C } \\
+					\BLOCK{ elif hit.get_cvss_value() <= 0 }
+						CVSS Base Score & \badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} (\VAR{ hit.get_cvss_string() }) \\
+					\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
+						CVSS Base Score & \badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()} - Low} (\VAR{ hit.get_cvss_string() }) \\
+					\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
+						CVSS Base Score & \badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} (\VAR{ hit.get_cvss_string() }) \\
+					\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
+						CVSS Base Score & \badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()} - High} (\VAR{ hit.get_cvss_string() }) \\
+					\BLOCK{ else }
+						CVSS Base Score & \badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} (\VAR{ hit.get_cvss_string() }) \\
+					\BLOCK{ endif } 
+					\hline 
+					Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
+					\hline 
+					Asset & \VAR{ hit.asset } \\
+					\hline 
+					Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
+					\hline 
+				\end{tabular}}
+			\end{table}
+
+			\VAR{ hit.body | mdtolatex }
+		
+			\BLOCK{ for screenshot in hit.screenshot_set.all() }
+				\begin{figure}[H]
+					\centering
+					\includegraphics[width=\textwidth]{./screenshots/\VAR{screenshot.pk}.png}
+					\caption{\VAR{screenshot.caption}}
+				\end{figure}
+			\BLOCK{ endfor }
+
+			\BLOCK{ if hit.remediation }
+				\paragraph{Remediation}
+				\VAR{ hit.remediation | mdtolatex }
+			\BLOCK{ endif }
+		\BLOCK{ endfor }
+		\newpage
+	\BLOCK{ endif }
+\BLOCK{ endfor }
+%-----------------------------------------------------%
+% End of Technical Findings                           %
 %-----------------------------------------------------%
 \end{document}
