@@ -129,8 +129,14 @@
 	bottom=2pt
 }
 
-%Colors
+%List of figures
+\makeatletter
+\renewcommand\listoftables{%
+	\@starttoc{lot}%
+}
+\makeatother
 
+%Colors
 \definecolor{bc-badge-p1}{HTML}{d13535}
 \definecolor{bc-badge-p2}{HTML}{ff6900}
 \definecolor{bc-badge-p3}{HTML}{f0ad4e}
@@ -238,8 +244,8 @@
 % If you have any severely critical risks to the security of your client you should also add in a paragraph to explain these to the executives in a NON-TECHNICAL manner. You should also mention the potential business impact of these.
 % Lastly, you should should give a summary of the quantity of vulnerabilities by severity. You may also want to include a sentence to explain a trend in vulnerabilities, if such a trend exists.
 
-
 \VAR{ project.introduction | mdtolatex }
+\newpage
 %-----------------------------------------------------%
 % End of Executive Summary                            %
 %-----------------------------------------------------%
@@ -247,7 +253,6 @@
 %-----------------------------------------------------%
 % Engagement Overview                                 %
 %-----------------------------------------------------%
-\newpage
 \subsection{Engagement Overview}
 % This is where you should briefly explain when the penetration test was performed and how the team came into this work. This should be followed by a list of goals for the engagement.
 % List goals for the team in the engagement targeted at your client's executives (non-technical).
@@ -428,4 +433,38 @@ The most immediate observation about \client's security posture is that default,
 %-----------------------------------------------------%
 % End of Technical Findings                           %
 %-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Conclusion                                          %
+%-----------------------------------------------------%
+\section{Conclusion}
+\VAR{ project.conclusion | mdtolatex }
+\newpage
+%-----------------------------------------------------%
+% End of Conclusion                                   %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Appendices                                          %
+%-----------------------------------------------------%
+\appendix
+\appendixpage
+\addappheadtotoc
+
+% This should be a network topology that represents the in scope network from the engagement
+% The example below was made using Lucidchart (https://lucid.app):
+\section{Network Topology}
+\newpage
+
+% This should be a table of all tools utilized during the engagement.
+% An example of what this may look like is included below:
+\section{Tools}
+\newpage
+
+\section{List of figures}
+\listoffigures
+%-----------------------------------------------------%
+% End of Appendices                                   %
+%-----------------------------------------------------%
+
 \end{document}
