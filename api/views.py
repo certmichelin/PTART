@@ -648,7 +648,7 @@ def project_latex(request, pk):
                     loader = jinja2.FileSystemLoader(os.path.abspath('.'))
                 )
                 def markdown_to_latex(md) :
-                    return pypandoc.convert_text(md, 'latex', format='md')
+                    return pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
                 env.filters["mdtolatex"] = markdown_to_latex
                 template = env.from_string(file_.read())
                 zf.writestr("report.tex", template.render(project=project, labels=Label.get_viewable(request.user)))     
