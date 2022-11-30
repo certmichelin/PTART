@@ -14,7 +14,7 @@ from django.db.models import Q
 class Project(models.Model):
 
     name = models.CharField(max_length=100)
-    introduction = models.TextField(blank=True, default="")
+    executive_summary = models.TextField(blank=True, default="")
     conclusion = models.TextField(blank=True, default="")
     scope = models.TextField(blank=True, default="")
     added = models.DateTimeField(default=datetime.now)

@@ -79,8 +79,8 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        <h4>Introduction:</h4>
-                        <div id="projectIntroduction">{{ project.introduction }}</div>
+                        <h4>Executive Summary:</h4>
+                        <div id="projectExecutiveSummary">{{ project.executive_summary }}</div>
                         <h4>Conclusion:</h4>
                         <div id="projectConclusion">{{ project.conclusion }}</div>
                     </div>
@@ -280,7 +280,7 @@
 <script src="/static/js/customs/deciduous.js"></script>
 
 <script>
-    $("#projectIntroduction").html(marked($("#projectIntroduction").html()));
+    $("#projectExecutiveSummary").html(marked($("#projectExecutiveSummary").html()));
     $("#projectConclusion").html(marked($("#projectConclusion").html()));
 
     $(document).ready(function () {
