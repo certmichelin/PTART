@@ -454,6 +454,41 @@ The most immediate observation about \client's security posture is that default,
 % This should be a network topology that represents the in scope network from the engagement
 % The example below was made using Lucidchart (https://lucid.app):
 \section{Network Topology}
+
+\BLOCK{ for host in project.host_set.all() }
+	\subsection{\VAR{ host.ip } - \VAR{host.hostname}}
+
+	\begin{table}[H]
+		\centering
+		{\setlength{\extrarowheight}{2pt}%
+			\begin{tabular}{| l | p{12cm} |}
+				\hline 
+				OS & \VAR{host.os}\\
+				\hline 
+		\end{tabular}}
+	\end{table}
+
+	\VAR{host.notes | mdtolatex}
+
+	\BLOCK{ for service in host.service_set.all() }
+		\subsubsection{Port \VAR{service.port} - \VAR{service.protocol}}
+
+		\begin{table}[H]
+			\centering
+			{\setlength{\extrarowheight}{2pt}%
+				\begin{tabular}{| l | p{12cm} |}
+					\hline 
+					Name & \VAR{service.name}\\
+					\hline
+					Version & \VAR{service.version}\\
+					\hline 
+					Banner & \VAR{service.banner}\\
+					\hline  
+			\end{tabular}}
+		\end{table}
+	\BLOCK{ endfor }
+\BLOCK{ endfor }
+
 \newpage
 
 % This should be a table of all tools utilized during the engagement.
