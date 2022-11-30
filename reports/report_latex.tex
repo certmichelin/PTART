@@ -337,6 +337,24 @@
 %-----------------------------------------------------%
 \section{Observations}
 
+\BLOCK{ for assessment in project.assessment_set.all() }
+	\BLOCK{ if assessment.displayable_hits }
+		\paragraph{\VAR{assessment.name}}
+
+		\begin{table}[H]
+			\centering
+			{\setlength{\extrarowheight}{2pt}%
+			\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
+					\BLOCK{ for hit in assessment.displayable_hits() }
+					\hline 
+					\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title} & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+					\BLOCK{ endfor }
+					\hline 	
+			\end{tabularx}}
+		\end{table}
+	\BLOCK{ endif }
+\BLOCK{ endfor }
+
 \begin{figure}[H]
 	\centering
 \begin{tikzpicture}
