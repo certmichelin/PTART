@@ -16,10 +16,14 @@ from rest_framework.authtoken.models import Token
 from openpyxl import Workbook, styles
 from openpyxl.writer.excel import save_virtual_workbook
 
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
+
 import jinja2
 import json
 import os
 import pypandoc
+import random
 import zipfile
 
 from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
@@ -625,7 +629,21 @@ def project_latex(request, pk):
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
                     for screenshot in hit.screenshot_set.all():
-                        zf.writestr("screenshots/{}.png".format(screenshot.id),  screenshot.get_raw_data())
+                        zf.writestr("screenshots/{}.png".format(screenshot.id), screenshot.get_raw_data())
+            
+            #Retrieve AttackScenarios.
+            for attackscenario in project.attackscenario_set.all():
+                #SVG must be converted to PNG to facilitate integration in LaTeX report.
+                tempSvgFilename = "{}_{}_{}.svg".format(project.id, attackscenario.id,random.randint(0,10000))
+                tempPngFilename = "{}_{}_{}.png".format(project.id, attackscenario.id,random.randint(0,10000))
+                f = open(tempSvgFilename, "a")
+                f.write(attackscenario.svg)
+                f.close()
+                drawing = svg2rlg(tempSvgFilename)
+                renderPM.drawToFile(drawing, tempPngFilename, fmt="PNG")    
+                zf.write(tempPngFilename, "attackscenarios/{}.png".format(attackscenario.id))
+                os.remove(tempSvgFilename)
+                os.remove(tempPngFilename)
 
             #Add resources for LaTeX
             zf.write("reports/resources/companylogo.png", "resources/companylogo.png")

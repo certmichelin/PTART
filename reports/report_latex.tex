@@ -435,7 +435,6 @@
 % Technical Findings                                  %
 %-----------------------------------------------------%
 \section{Technical Findings}
-\label{sec:tech}
 
 \BLOCK{ for assessment in project.assessment_set.all() }
 	\BLOCK{ if assessment.displayable_hits }
@@ -493,6 +492,26 @@
 \BLOCK{ endfor }
 %-----------------------------------------------------%
 % End of Technical Findings                           %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Attack Scenarios                                    %
+%-----------------------------------------------------%
+\section{Attack Scenarios}
+
+\BLOCK{ for attackscenario in project.attackscenario_set.all() }
+	\subsection{\VAR{attackscenario.name}}
+	\VAR{ attackscenario.body | mdtolatex }
+    \begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{./attackscenarios/\VAR{attackscenario.id}.png}
+		\caption{\VAR{attackscenario.name}}
+	\end{figure}
+
+
+\BLOCK{ endfor }
+%-----------------------------------------------------%
+% End of Attack Scenarios                             %
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
