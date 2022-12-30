@@ -101,6 +101,8 @@ class AttackScenario(models.Model):
     project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     scenario = models.TextField(blank=True, default="")
+    svg = models.TextField(blank=True, default="")
+    body = models.TextField(blank=True, default="")
     
     def __str__(self):  
         return self.scenario

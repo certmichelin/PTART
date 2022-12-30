@@ -87,7 +87,7 @@ class LabelSerializer(serializers.ModelSerializer):
 class AttackScenarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttackScenario
-        fields = ('id', 'name', 'scenario', 'project')
+        fields = ('id', 'name', 'scenario', 'svg', 'body', 'project')
 
 class HitSerializer(serializers.ModelSerializer):
     labels = LabelSerializer(read_only=True, many=True)

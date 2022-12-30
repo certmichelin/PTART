@@ -876,13 +876,15 @@ function ajaxDeleteService(successFunction, errorfunction, id) {
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Attack scenario name.
- * @param {*} scenario Attack scenario content.
+ * @param {*} scenario Attack scenario yaml content.
+ * @param {*} svg Attack scenario svg content.
+ * @param {*} body Attack scenario body.
  * @param {*} project Project attached to the attack scenario.
  */
- function ajaxCreateAttackScenario(successFunction, errorFunction, name, scenario, project) {
+ function ajaxCreateAttackScenario(successFunction, errorFunction, name, scenario, svg, body, project) {
     $.ajax({
         url: "/api/attackscenarios/",
-        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"project":' + JSON.stringify(project) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"svg":' + JSON.stringify(svg)+ ',"body":' + JSON.stringify(body) + ',"project":' + JSON.stringify(project) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -896,13 +898,15 @@ function ajaxDeleteService(successFunction, errorfunction, id) {
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Attack scenario id.
  * @param {*} name Attack scenario name.
- * @param {*} scenario Attack scenario content.
+ * @param {*} scenario Attack scenario yaml content.
+ * @param {*} svg Attack scenario svg content.
+ * @param {*} body Attack scenario body.
  * @param {*} project Project attached to the attack scenario.
  */
-function ajaxUpdateAttackScenario(successFunction, errorFunction, id, name, scenario, project) {
+function ajaxUpdateAttackScenario(successFunction, errorFunction, id, name, scenario, svg, body, project) {
     $.ajax({
         url: "/api/attackscenario/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"project":' + JSON.stringify(project) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"svg":' + JSON.stringify(svg)+ ',"body":' + JSON.stringify(body) + ',"project":' + JSON.stringify(project) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
