@@ -31,6 +31,10 @@
             <section>
                 <h1>{{ project.name }}</h1>
                 
+                {% if project.client %}
+                    <h3>{{ project.client }}</h3>
+                {% endif %}
+
                 {% if project.start_date and project.end_date %}
                     <p>Date: From {{ project.start_date }} to {{ project.end_date }} </p>
                 {% else %}
