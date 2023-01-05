@@ -17,6 +17,7 @@ class Project(models.Model):
     executive_summary = models.TextField(blank=True, default="")
     conclusion = models.TextField(blank=True, default="")
     scope = models.TextField(blank=True, default="")
+    client = models.CharField(max_length=200, default="")
     added = models.DateTimeField(default=datetime.now)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
