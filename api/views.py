@@ -24,6 +24,7 @@ import json
 import os
 import pypandoc
 import random
+import re
 import zipfile
 
 from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
@@ -670,9 +671,31 @@ def project_latex(request, pk):
                     autoescape = False,
                     loader = jinja2.FileSystemLoader(os.path.abspath('.'))
                 )
+                
+                #Filters that has been used in the LaTex Report.
+                escape_tex_table = {
+                        '&': r'\&',
+                        '%': r'\%',
+                        '$': r'\$',
+                        '#': r'\#',
+                        '_': r'\_',
+                        '~': r'\textasciitilde{}',
+                        '^': r'\^{}',
+                        '\\': r'\textbackslash{}',
+                        '<': r'\textless{}',
+                        '>': r'\textgreater{}',
+                    }
+                tex_regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key = lambda item: - len(item))))
+                
+                def tex_escape(text):
+                    return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
+
                 def markdown_to_latex(md) :
-                    return pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                    return pypandoc.convert_text(tex_escape(md), 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                #End of filters.
+
                 env.filters["mdtolatex"] = markdown_to_latex
+                env.filters["escape"] = tex_escape
                 template = env.from_string(file_.read())
                 zf.writestr("report.tex", template.render(project=project, labels=Label.get_viewable(request.user)))     
 

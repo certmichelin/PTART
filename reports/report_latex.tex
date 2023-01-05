@@ -66,8 +66,8 @@
 % Aliases                                             %
 %-----------------------------------------------------%
 \newcommand{\doctitle}{Pentest Report}
-\newcommand{\project}{\VAR{project.name}}
-\newcommand{\client}{\VAR{project.client}}
+\newcommand{\project}{\VAR{project.name | escape}}
+\newcommand{\client}{\VAR{project.client | escape}}
 \newcommand{\teamname}{Michelin CERT}
 \newcommand{\company}{Michelin}
 \newcommand{\classification}{CONFIDENTIAL}
@@ -269,7 +269,7 @@
 			\begin{itemize}
 				\centering
 				\BLOCK{ for pentester in project.pentesters.all() }
-					\item[] \VAR{ pentester.username } - \VAR{ pentester.first_name } \VAR{ pentester.last_name }
+					\item[] \VAR{ pentester.username | escape } - \VAR{ pentester.first_name | escape } \VAR{ pentester.last_name | escape }
 				\BLOCK{ endfor }
 			\end{itemize}
 			}
@@ -322,7 +322,7 @@
 %Automatic scope list
 \begin{itemize}
 	\BLOCK{ for line in project.scope.splitlines() }
-		\item \VAR{ line }
+		\item \VAR{ line | escape }
 	\BLOCK{ endfor }
 \end{itemize}
 \newpage
@@ -337,7 +337,7 @@
 
 \BLOCK{ for assessment in project.assessment_set.all() }
 	\BLOCK{ if assessment.displayable_hits }
-		\paragraph{\VAR{assessment.name}}
+		\paragraph{\VAR{assessment.name | escape }}
 
 		\begin{table}[H]
 			\centering
@@ -345,7 +345,7 @@
 			\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
 					\BLOCK{ for hit in assessment.displayable_hits() }
 					\hline 
-					\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title} & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+					\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
 					\BLOCK{ endfor }
 					\hline 	
 			\end{tabularx}}
@@ -442,9 +442,9 @@
 
 \BLOCK{ for assessment in project.assessment_set.all() }
 	\BLOCK{ if assessment.displayable_hits }
-		\subsection{\VAR{assessment.name}}
+		\subsection{\VAR{assessment.name | escape }}
 		\BLOCK{ for hit in assessment.displayable_hits() }
-			\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title}}
+			\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title | escape }}
 
 			\begin{table}[H]
 				\centering
@@ -469,7 +469,7 @@
 					\hline 
 					Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
 					\hline 
-					Asset & \VAR{ hit.asset } \\
+					Asset & \VAR{ hit.asset | escape  } \\
 					\hline 
 					Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
 					\hline 
@@ -482,7 +482,7 @@
 				\begin{figure}[H]
 					\centering
 					\includegraphics[width=\textwidth]{./screenshots/\VAR{screenshot.pk}.png}
-					\caption{\VAR{screenshot.caption}}
+					\caption{\VAR{screenshot.caption | escape }}
 				\end{figure}
 			\BLOCK{ endfor }
 
@@ -504,12 +504,12 @@
 \section{Attack Scenarios}
 
 \BLOCK{ for attackscenario in project.attackscenario_set.all() }
-	\subsection{\VAR{attackscenario.name}}
+	\subsection{\VAR{attackscenario.name | escape }}
 	\VAR{ attackscenario.body | mdtolatex }
     \begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.5]{./attackscenarios/\VAR{attackscenario.id}.png}
-		\caption{\VAR{attackscenario.name}}
+		\caption{\VAR{attackscenario.name | escape }}
 	\end{figure}
 
 
@@ -540,14 +540,14 @@
 \section{Network Topology}
 
 \BLOCK{ for host in project.host_set.all() }
-	\subsection{\VAR{ host.ip } - \VAR{host.hostname}}
+	\subsection{\VAR{ host.ip } - \VAR{host.hostname | escape }}
 
 	\begin{table}[H]
 		\centering
 		{\setlength{\extrarowheight}{2pt}%
 			\begin{tabular}{| l | p{12cm} |}
 				\hline 
-				OS & \VAR{host.os}\\
+				OS & \VAR{host.os | escape }\\
 				\hline 
 		\end{tabular}}
 	\end{table}
@@ -555,18 +555,18 @@
 	\VAR{host.notes | mdtolatex}
 
 	\BLOCK{ for service in host.service_set.all() }
-		\subsubsection{Port \VAR{service.port} - \VAR{service.protocol}}
+		\subsubsection{Port \VAR{service.port} - \VAR{service.protocol | escape }}
 
 		\begin{table}[H]
 			\centering
 			{\setlength{\extrarowheight}{2pt}%
 				\begin{tabular}{| l | p{12cm} |}
 					\hline 
-					Name & \VAR{service.name}\\
+					Name & \VAR{service.name | escape }\\
 					\hline
-					Version & \VAR{service.version}\\
+					Version & \VAR{service.version | escape }\\
 					\hline 
-					Banner & \VAR{service.banner}\\
+					Banner & \VAR{service.banner | escape }\\
 					\hline  
 			\end{tabular}}
 		\end{table}
