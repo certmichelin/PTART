@@ -15,6 +15,10 @@
                     <input class="form-control" id="name" value="{{ project.name }}" />
                 </div>
                 <div class="form-group">
+                    <label>Client</label>
+                    <input class="form-control" id="client" value="{{ project.client }}" />
+                </div>
+                <div class="form-group">
                     <label>Date</label>
                     <div class="row g-3">
                         <div class="col-auto">
@@ -127,7 +131,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#conclusion").val(), $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}

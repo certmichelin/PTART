@@ -63,7 +63,11 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Details</h5>
+                        {% if project.client %}
+                            <h5 class="modal-title">Details (Client : {{ project.client }})</h5>
+                        {% else %}
+                            <h5 class="modal-title">Details</h5>
+                        {% endif %}
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
