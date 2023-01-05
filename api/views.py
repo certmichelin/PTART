@@ -450,13 +450,15 @@ def project_xlsx(request, pk):
 
             #Add project data.
             ws['A1'] = "Project Name:"
-            ws['A2'] = "Date:"
-            ws['A3'] = "Auditors:"
+            ws['A2'] = "Client:"
+            ws['A3'] = "Date:"
+            ws['A4'] = "Auditors:"
             ws['B1'] = project.name
+            ws['B2'] = project.client
             if project.start_date is not None and project.end_date is not None :
-                ws['B2'] = "From " + str(project.start_date) + " To " + str(project.end_date)
+                ws['B3'] = "From " + str(project.start_date) + " To " + str(project.end_date)
             else :
-                ws['B2'] = project.added
+                ws['B3'] = project.added
 
             
             #Construct the auditor string
@@ -471,6 +473,7 @@ def project_xlsx(request, pk):
             ws.merge_cells('B1:H1')
             ws.merge_cells('B2:H2')
             ws.merge_cells('B3:H3')
+            ws.merge_cells('B4:H4')
 
             
             projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
@@ -480,6 +483,7 @@ def project_xlsx(request, pk):
             ws['A1'].style = projectHeaderStyle
             ws['A2'].style = projectHeaderStyle
             ws['A3'].style = projectHeaderStyle
+            ws['A4'].style = projectHeaderStyle
 
             projectValueStyle = styles.NamedStyle(name = 'project_value_style')
             projectValueStyle.font = styles.Font(name = 'Calibri', size = 14, italic = True, color = '000000')
@@ -489,32 +493,33 @@ def project_xlsx(request, pk):
             ws['B1'].style = projectValueStyle
             ws['B2'].style = projectValueStyle
             ws['B3'].style = projectValueStyle
-            ws['B2'].number_format = 'YYYY MMM DD'
+            ws['B4'].style = projectValueStyle
+            ws['B3'].number_format = 'YYYY MMM DD'
 
 
             #Add column header.
-            ws['A5'] = "Assessment"
-            ws['B5'] = "Sev"
-            ws['C5'] = "CVSS"
-            ws['D5'] = "ID"
-            ws['E5'] = "Title"
-            ws['F5'] = "Asset"
-            ws['G5'] = "Fix Compl."
-            ws['H5'] = "Labels"
+            ws['A6'] = "Assessment"
+            ws['B6'] = "Sev"
+            ws['C6'] = "CVSS"
+            ws['D6'] = "ID"
+            ws['E6'] = "Title"
+            ws['F6'] = "Asset"
+            ws['G6'] = "Fix Compl."
+            ws['H6'] = "Labels"
 
             columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
             columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
             columnHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '92D050')
             columnHeaderStyle.alignment = styles.Alignment(horizontal= 'center')
 
-            ws['A5'].style = columnHeaderStyle
-            ws['B5'].style = columnHeaderStyle
-            ws['C5'].style = columnHeaderStyle
-            ws['D5'].style = columnHeaderStyle
-            ws['E5'].style = columnHeaderStyle
-            ws['F5'].style = columnHeaderStyle
-            ws['G5'].style = columnHeaderStyle
-            ws['H5'].style = columnHeaderStyle
+            ws['A6'].style = columnHeaderStyle
+            ws['B6'].style = columnHeaderStyle
+            ws['C6'].style = columnHeaderStyle
+            ws['D6'].style = columnHeaderStyle
+            ws['E6'].style = columnHeaderStyle
+            ws['F6'].style = columnHeaderStyle
+            ws['G6'].style = columnHeaderStyle
+            ws['H6'].style = columnHeaderStyle
 
             #Fill the report
             criticalStyle = styles.NamedStyle(name = 'critical_style')
@@ -542,7 +547,7 @@ def project_xlsx(request, pk):
             infoStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '6c757d')
             infoStyle.alignment = styles.Alignment(horizontal= 'center')
 
-            line = 6
+            line = 7
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
                     ws.cell(row=line, column=1).value = assessment.name
@@ -597,7 +602,7 @@ def project_xlsx(request, pk):
 
                     line = line + 1
             
-            ws.auto_filter.ref = "A5:H{}".format(line)
+            ws.auto_filter.ref = "A6:H{}".format(line)
 
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
