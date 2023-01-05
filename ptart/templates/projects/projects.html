@@ -45,6 +45,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Engagement Overview</label>
+                    <textarea id="engagement_overview" class="form-control" rows="10" style="resize:vertical"></textarea>
+                </div>
+
+                <div class="form-group">
                     <label>Executive Summary</label>
                     <textarea id="executive_summary" class="form-control" rows="10" style="resize:vertical"></textarea>
                 </div>
@@ -78,6 +83,7 @@
 <script type="text/javascript">
 
     var introSimpleMDE = activeMarkdown("executive_summary");
+    var engagementOverviewMDE = activeMarkdown("engagement_overview");
 
     $('.datepicker').datepicker({});
 
@@ -95,6 +101,7 @@
         $("#client").val("");
         $("#scope").val("");
         introSimpleMDE.value("");
+        engagementOverviewMDE.value("");
         $('#pentesters').select2().val(defaultPentester()).trigger("change");
         $('#viewers').val(null).trigger('change');
         success($("#messages"), "Project was created!, you will be redirected to the project page in 3s");
@@ -114,7 +121,7 @@
 
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), "", $("#scope").val(), $("#client").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), "", $("#scope").val(), $("#client").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

@@ -67,7 +67,7 @@
 %-----------------------------------------------------%
 \newcommand{\doctitle}{Pentest Report}
 \newcommand{\project}{\VAR{project.name}}
-%\newcommand{\client}{JohnDoe ltd.}
+\newcommand{\client}{\VAR{project.client}}
 \newcommand{\teamname}{Michelin CERT}
 \newcommand{\company}{Michelin}
 \newcommand{\classification}{CONFIDENTIAL}
@@ -79,9 +79,12 @@
 
 %-----------------------------------------------------%
 % Docstyle                                            %
-%-----------------------------------------------------%   
-%\lhead{\client\ - \project}
-\lhead{\project}
+%-----------------------------------------------------%
+\BLOCK{ if project.client }   
+	\lhead{\project\ - \client}
+\BLOCK{ else } 
+	\lhead{\project}
+\BLOCK{ endif } 
 \rhead{\teamname}
 \lfoot{\today}
 \cfoot{\color{red}{\classification}}
@@ -239,6 +242,14 @@
 		\HRule\\[0.5cm]
 		\vfill
 		% End of Title
+
+		% Client Name
+		\BLOCK{ if project.client }
+			\Large{Client:}
+			\LARGE{\textbf{\client}}
+			\vfill   
+		\BLOCK{ endif } 
+		% End of Client name
 		
 		% Team Name
 		\Large{Conducted by:}
@@ -299,22 +310,15 @@
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
-% Engagement Overview                                 %
+% Scope                                               %
 %-----------------------------------------------------%
-%\subsection{Engagement Overview}
+\subsection{Scope}
+\paragraph{Engagement Overview}
 % This is where you should briefly explain when the penetration test was performed and how the team came into this work. This should be followed by a list of goals for the engagement.
 % List goals for the team in the engagement targeted at your client's executives (non-technical).
-%\lipsum[2-4]
-%-----------------------------------------------------%
-% End of Engagement Overview                           %
-%-----------------------------------------------------%
+\VAR{ project.engagement_overview | mdtolatex }
 
-%-----------------------------------------------------%
-% Scope of Engagement                                 %
-%-----------------------------------------------------%
-\subsection{Scope of Engagement}
-% Include a short (3-4 sentences) explanation of the scope, ensure that any limitations to the scope are mentioned.
-
+\paragraph{Scope of Engagement}
 %Automatic scope list
 \begin{itemize}
 	\BLOCK{ for line in project.scope.splitlines() }
@@ -323,7 +327,7 @@
 \end{itemize}
 \newpage
 %-----------------------------------------------------%
-% End of Scope of Engagement                          %
+% End of Scope                                        %
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%

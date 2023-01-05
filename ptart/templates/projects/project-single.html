@@ -37,6 +37,10 @@
                     <textarea class="form-control" rows="5" id="scope" style="resize:vertical" placeholder="One line per target ex: *.michelin.com">{{ project.scope }}</textarea>
                 </div>
                 <div class="form-group">
+                    <label>Engagement Overview</label>
+                    <textarea class="form-control" rows="5" id="engagement_overview" style="resize:vertical">{{ project.engagement_overview }}</textarea>
+                </div>
+                <div class="form-group">
                     <label>Executive Summary</label>
                     <textarea class="form-control" rows="5" id="executive_summary" style="resize:vertical">{{ project.executive_summary }}</textarea>
                 </div>
@@ -86,6 +90,7 @@
 {% include '_include/js/deleteItem.html' with item='Project' ajax_function='ajaxDeleteProject' %}
 <script>
     activeMarkdown("executive_summary");
+    activeMarkdown("engagement_overview");
     activeMarkdown("conclusion");
 
     $('.datepicker').datepicker({});
@@ -131,7 +136,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}

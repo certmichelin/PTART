@@ -15,6 +15,7 @@ class Project(models.Model):
 
     name = models.CharField(max_length=100)
     executive_summary = models.TextField(blank=True, default="")
+    engagement_overview = models.TextField(blank=True, default="")
     conclusion = models.TextField(blank=True, default="")
     scope = models.TextField(blank=True, default="")
     client = models.CharField(max_length=200, blank=True, default="")
