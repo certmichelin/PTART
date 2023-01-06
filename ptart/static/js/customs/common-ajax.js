@@ -288,6 +288,43 @@ function ajaxDeleteComment(successFunction, errorFunction, id) {
 }
 
 /**
+ * Create a hit reference.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} name Hit reference name.
+ * @param {*} url Hit reference url.
+ * @param {*} hitId Id of the hit.
+ */
+function ajaxCreateHitReference(successFunction, errorFunction, name, url, hitId) {
+    $.ajax({
+        url: "/api/hit/" + hitId + "/references/",
+        data: '{"name":' + JSON.stringify(name) + ',"url":' + JSON.stringify(url) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a hit reference.10.
+ * 
+ * 
+ 
+* @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Hit reference id.
+ */
+function ajaxDeleteHitReference(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/hitreference/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Upload a screenshot for a hit.
  * 
  * @param {*} successFunction Function to call in case of ajax success.

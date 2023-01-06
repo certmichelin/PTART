@@ -27,11 +27,11 @@ import random
 import re
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -86,6 +86,12 @@ def labels(request):
 @api_view(['GET', 'DELETE'])
 def comment(request, pk):
     return item(request, pk, Comment, CommentSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'DELETE'])
+def hit_reference(request, pk):
+    return item(request, pk, HitReference, HitReferenceSerializer)
 
 @csrf_exempt
 @ptart_authentication
@@ -344,6 +350,38 @@ def comments(request, pk):
                     if comment.is_user_can_create(request.user):
                         comment.save()
                         response = Response(CommentSerializer(comment).data, status=status.HTTP_200_OK)
+                    else :
+                        response = Response(status=status.HTTP_403_FORBIDDEN)
+                except Hit.DoesNotExist:
+                    response = Response(status=status.HTTP_404_NOT_FOUND)
+            else :
+                response = Response(status=status.HTTP_400_BAD_REQUEST)
+    except Hit.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['POST','GET'])
+def hit_references(request, pk):
+    response = None
+    try:
+        hit = Hit.objects.get(pk=pk)
+        if request.method == 'GET':
+            if hit.is_user_can_view(request.user):
+                response = Response(HitReferenceSerializer(hit.hitreference_set.all(), many=True).data)
+            else :
+                response = Response(status=status.HTTP_403_FORBIDDEN)
+        else :
+            name = request.data["name"]
+            url = request.data["url"]
+            if name is not None and name.strip() and url is not None and url.strip() and url.startswith("http") :
+                try:
+                    hitreference = HitReference(name=name, url=url, hit=hit)
+                    if hitreference.is_user_can_create(request.user):
+                        hitreference.save()
+                        response = Response(HitReferenceSerializer(hitreference).data, status=status.HTTP_200_OK)
                     else :
                         response = Response(status=status.HTTP_403_FORBIDDEN)
                 except Hit.DoesNotExist:

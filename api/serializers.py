@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import AttackScenario, Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario
+from ptart.models import AttackScenario, Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario
 from .tools import FileField
 
 
@@ -126,6 +126,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'added')
+
+class HitReferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HitReference
+        fields = ('id', 'name', 'url')
 
 class CvssSerializer(serializers.ModelSerializer):
     class Meta:

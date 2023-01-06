@@ -159,6 +159,17 @@
                                     </div>
                                 </section>
                             {% endif %}
+                            
+                            {% if hit.hitreference_set.all and hit.hitreference_set.all|length > 0 %}
+                            <section>
+                                <h5>Reference(s) :</h5>
+                                <ul>
+                                    {% for reference in hit.hitreference_set.all %}
+                                        <li><b>{{ reference.name}}</b> : <a href="{{reference.url}}">{{reference.url}}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </section>
+                            {% endif %}
                         </section>
                     {% endfor %}
                 {% endif %}
