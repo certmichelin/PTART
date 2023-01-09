@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import AttackScenario, Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario
+from ptart.models import AttackScenario, Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario
 from .tools import FileField
 
 
@@ -19,7 +19,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name','introduction', 'conclusion', 'scope', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived')
+        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -87,7 +87,7 @@ class LabelSerializer(serializers.ModelSerializer):
 class AttackScenarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttackScenario
-        fields = ('id', 'name', 'scenario', 'project')
+        fields = ('id', 'name', 'scenario', 'svg', 'body', 'project')
 
 class HitSerializer(serializers.ModelSerializer):
     labels = LabelSerializer(read_only=True, many=True)
@@ -126,6 +126,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'added')
+
+class HitReferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HitReference
+        fields = ('id', 'name', 'url')
 
 class CvssSerializer(serializers.ModelSerializer):
     class Meta:

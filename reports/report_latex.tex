@@ -66,8 +66,8 @@
 % Aliases                                             %
 %-----------------------------------------------------%
 \newcommand{\doctitle}{Pentest Report}
-\newcommand{\project}{\VAR{project.name}}
-%\newcommand{\client}{JohnDoe ltd.}
+\newcommand{\project}{\VAR{project.name | escape}}
+\newcommand{\client}{\VAR{project.client | escape}}
 \newcommand{\teamname}{Michelin CERT}
 \newcommand{\company}{Michelin}
 \newcommand{\classification}{CONFIDENTIAL}
@@ -79,9 +79,12 @@
 
 %-----------------------------------------------------%
 % Docstyle                                            %
-%-----------------------------------------------------%   
-%\lhead{\client\ - \project}
-\lhead{\project}
+%-----------------------------------------------------%
+\BLOCK{ if project.client }   
+	\lhead{\project\ - \client}
+\BLOCK{ else } 
+	\lhead{\project}
+\BLOCK{ endif } 
 \rhead{\teamname}
 \lfoot{\today}
 \cfoot{\color{red}{\classification}}
@@ -239,6 +242,14 @@
 		\HRule\\[0.5cm]
 		\vfill
 		% End of Title
+
+		% Client Name
+		\BLOCK{ if project.client }
+			\Large{Client:}
+			\LARGE{\textbf{\client}}
+			\vfill   
+		\BLOCK{ endif } 
+		% End of Client name
 		
 		% Team Name
 		\Large{Conducted by:}
@@ -258,7 +269,7 @@
 			\begin{itemize}
 				\centering
 				\BLOCK{ for pentester in project.pentesters.all() }
-					\item[] \VAR{ pentester.username } - \VAR{ pentester.first_name } \VAR{ pentester.last_name }
+					\item[] \VAR{ pentester.username | escape } - \VAR{ pentester.first_name | escape } \VAR{ pentester.last_name | escape }
 				\BLOCK{ endfor }
 			\end{itemize}
 			}
@@ -291,45 +302,32 @@
 % Executive Summary                                   %
 %-----------------------------------------------------%
 \section{Report Overview}
-\subsection{Introduction}
-%\subsection{Executive Summary}
-% This is the first text in the report, it should address the you client's executives. It should include a few paragraphs (2-3) that should introduce the engagement the report is for followed by the explaining the structure of the report in a non-technical manner. Explain the "Report Overview" and "Technical Findings" sections purposes.
-% Following this you should try to address a business level risk that will catch the attention of the executive.
-% If you have any severely critical risks to the security of your client you should also add in a paragraph to explain these to the executives in a NON-TECHNICAL manner. You should also mention the potential business impact of these.
-% Lastly, you should should give a summary of the quantity of vulnerabilities by severity. You may also want to include a sentence to explain a trend in vulnerabilities, if such a trend exists.
-
-\VAR{ project.introduction | mdtolatex }
+\subsection{Executive Summary}
+\VAR{ project.executive_summary | mdtolatex }
 \newpage
 %-----------------------------------------------------%
 % End of Executive Summary                            %
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
-% Engagement Overview                                 %
+% Scope                                               %
 %-----------------------------------------------------%
-%\subsection{Engagement Overview}
+\subsection{Scope}
+\paragraph{Engagement Overview}
 % This is where you should briefly explain when the penetration test was performed and how the team came into this work. This should be followed by a list of goals for the engagement.
 % List goals for the team in the engagement targeted at your client's executives (non-technical).
-%\lipsum[2-4]
-%-----------------------------------------------------%
-% End of Engagement Overview                           %
-%-----------------------------------------------------%
+\VAR{ project.engagement_overview | mdtolatex }
 
-%-----------------------------------------------------%
-% Scope of Engagement                                 %
-%-----------------------------------------------------%
-\subsection{Scope of Engagement}
-% Include a short (3-4 sentences) explanation of the scope, ensure that any limitations to the scope are mentioned.
-
+\paragraph{Scope of Engagement}
 %Automatic scope list
 \begin{itemize}
 	\BLOCK{ for line in project.scope.splitlines() }
-		\item \VAR{ line }
+		\item \VAR{ line | escape }
 	\BLOCK{ endfor }
 \end{itemize}
 \newpage
 %-----------------------------------------------------%
-% End of Scope of Engagement                          %
+% End of Scope                                        %
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
@@ -339,7 +337,7 @@
 
 \BLOCK{ for assessment in project.assessment_set.all() }
 	\BLOCK{ if assessment.displayable_hits }
-		\paragraph{\VAR{assessment.name}}
+		\paragraph{\VAR{assessment.name | escape }}
 
 		\begin{table}[H]
 			\centering
@@ -347,7 +345,7 @@
 			\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
 					\BLOCK{ for hit in assessment.displayable_hits() }
 					\hline 
-					\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title} & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+					\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
 					\BLOCK{ endfor }
 					\hline 	
 			\end{tabularx}}
@@ -441,13 +439,12 @@
 % Technical Findings                                  %
 %-----------------------------------------------------%
 \section{Technical Findings}
-\label{sec:tech}
 
 \BLOCK{ for assessment in project.assessment_set.all() }
 	\BLOCK{ if assessment.displayable_hits }
-		\subsection{\VAR{assessment.name}}
+		\subsection{\VAR{assessment.name | escape }}
 		\BLOCK{ for hit in assessment.displayable_hits() }
-			\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title}}
+			\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title | escape }}
 
 			\begin{table}[H]
 				\centering
@@ -472,9 +469,11 @@
 					\hline 
 					Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
 					\hline 
-					Asset & \VAR{ hit.asset } \\
+					Asset & \VAR{ hit.asset | escape  } \\
 					\hline 
 					Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
+					\hline 
+					Reference(s) & \BLOCK{ if hit.hitreference_set.all() and hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
 					\hline 
 				\end{tabular}}
 			\end{table}
@@ -485,7 +484,7 @@
 				\begin{figure}[H]
 					\centering
 					\includegraphics[width=\textwidth]{./screenshots/\VAR{screenshot.pk}.png}
-					\caption{\VAR{screenshot.caption}}
+					\caption{\VAR{screenshot.caption | escape }}
 				\end{figure}
 			\BLOCK{ endfor }
 
@@ -499,6 +498,26 @@
 \BLOCK{ endfor }
 %-----------------------------------------------------%
 % End of Technical Findings                           %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Attack Scenarios                                    %
+%-----------------------------------------------------%
+\section{Attack Scenarios}
+
+\BLOCK{ for attackscenario in project.attackscenario_set.all() }
+	\subsection{\VAR{attackscenario.name | escape }}
+	\VAR{ attackscenario.body | mdtolatex }
+    \begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5]{./attackscenarios/\VAR{attackscenario.id}.png}
+		\caption{\VAR{attackscenario.name | escape }}
+	\end{figure}
+
+
+\BLOCK{ endfor }
+%-----------------------------------------------------%
+% End of Attack Scenarios                             %
 %-----------------------------------------------------%
 
 %-----------------------------------------------------%
@@ -523,14 +542,14 @@
 \section{Network Topology}
 
 \BLOCK{ for host in project.host_set.all() }
-	\subsection{\VAR{ host.ip } - \VAR{host.hostname}}
+	\subsection{\VAR{ host.ip } - \VAR{host.hostname | escape }}
 
 	\begin{table}[H]
 		\centering
 		{\setlength{\extrarowheight}{2pt}%
 			\begin{tabular}{| l | p{12cm} |}
 				\hline 
-				OS & \VAR{host.os}\\
+				OS & \VAR{host.os | escape }\\
 				\hline 
 		\end{tabular}}
 	\end{table}
@@ -538,18 +557,18 @@
 	\VAR{host.notes | mdtolatex}
 
 	\BLOCK{ for service in host.service_set.all() }
-		\subsubsection{Port \VAR{service.port} - \VAR{service.protocol}}
+		\subsubsection{Port \VAR{service.port} - \VAR{service.protocol | escape }}
 
 		\begin{table}[H]
 			\centering
 			{\setlength{\extrarowheight}{2pt}%
 				\begin{tabular}{| l | p{12cm} |}
 					\hline 
-					Name & \VAR{service.name}\\
+					Name & \VAR{service.name | escape }\\
 					\hline
-					Version & \VAR{service.version}\\
+					Version & \VAR{service.version | escape }\\
 					\hline 
-					Banner & \VAR{service.banner}\\
+					Banner & \VAR{service.banner | escape }\\
 					\hline  
 			\end{tabular}}
 		\end{table}

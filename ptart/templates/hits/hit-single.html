@@ -79,6 +79,58 @@
             </div>
             <div class="col-lg-5">
                 {% include "_include/html/cvss.html" %}
+
+                <!-- Reference Area -->
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4>References</h4>
+                            </div>
+                        </div>
+                            
+                        <div id="references">
+                            {% for reference in hit.hitreference_set.all %}
+                            <div id="reference_{{reference.id}}">
+                                <p>
+                                    {% if editable == True %}
+                                        <a class="fa fa-close" style="color:red" href="javascript:deleteReference({{reference.id}})"></a>&nbsp;
+                                    {% endif %}
+                                    <b>{{ reference.name}}</b> : <a href="{{reference.url}}">{{reference.url}}</a>
+                                </p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                {% if editable == True %}
+                    <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#addReferenceModal">Add a reference</button>
+                    
+                    <!-- Add a hit reference modal -->
+                    <div class="modal fade" id="addReferenceModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Add a reference</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input id="newReferenceName" class="form-control" autocomplete="off" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Url</label>
+                                        <input id="newReferenceUrl" class="form-control" placeholder="Only http/https url"  autocomplete="off" />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="addReferenceBtn" type="submit" class="btn btn-outline-primary" onclick="addReference()">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+
                 {% include "_include/html/attachments.html" %}
                 {% include "_include/html/screenshots.html" %}
 
@@ -187,6 +239,30 @@
     });
 
     /**
+     * Add a reference.
+     */
+     function addReference(){
+        var newReferenceName = $("#newReferenceName").val();
+        var newReferenceUrl = $("#newReferenceUrl").val();
+        if (newReferenceName !== "") {
+            if (newReferenceUrl !== "") {
+                ajaxCreateHitReference(referenceCreationSuccess, commonFailure, newReferenceName, newReferenceUrl, $("#id").val());
+            } else {
+                bootbox.alert("Url is empty!")
+            }
+        } else {
+            bootbox.alert("Name is empty!")
+        }
+    }
+
+    /**
+     * Delete a reference
+     */
+     function deleteReference(id){
+        ajaxDeleteHitReference(referenceDeletionSuccess, commonFailure, id);
+    }
+
+    /**
      * Add a comment.
      */
     function addComment(){
@@ -198,6 +274,9 @@
         }
     }
 
+    /**
+     * Delete a comment
+     */
     function deleteComment(id){
         ajaxDeleteComment(commentDeletionSuccess, commonFailure, id);
     }
@@ -230,6 +309,26 @@
     function screenshotCreationSuccess(data) {
         createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/", data.caption)
         resetScreenshotModal();
+    }
+
+    /**
+     * Reference creation success callback.
+     */
+     function referenceCreationSuccess(data) {
+        $('#references').append(
+            $('<div>', {
+                id: "reference_" + data.id,
+            }).append("<p><a class='fa fa-close' style='color:red' href='javascript:deleteReference(" + data.id + ")'></a>&nbsp;<b>" + $("<div>").text(data.name).html() + "</b> : <a href='" + $("<div>").text(data.url).html() +"'>" + $("<div>").text(data.url).html() +"</a></p></div>"));
+        $("#addReferenceModal").modal('toggle');
+        $("#newReferenceName").val("");
+        $("#newReferenceUrl").val("");
+    }
+
+    /**
+     * Reference deletion success callback.
+     */
+     function referenceDeletionSuccess(data) {
+        $("#reference_" + data.id).remove();
     }
 
     /**

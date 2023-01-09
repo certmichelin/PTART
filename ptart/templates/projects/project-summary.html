@@ -63,7 +63,11 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Details</h5>
+                        {% if project.client %}
+                            <h5 class="modal-title">Details (Client : {{ project.client }})</h5>
+                        {% else %}
+                            <h5 class="modal-title">Details</h5>
+                        {% endif %}
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -79,8 +83,8 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        <h4>Introduction:</h4>
-                        <div id="projectIntroduction">{{ project.introduction }}</div>
+                        <h4>Executive Summary:</h4>
+                        <div id="projectExecutiveSummary">{{ project.executive_summary }}</div>
                         <h4>Conclusion:</h4>
                         <div id="projectConclusion">{{ project.conclusion }}</div>
                     </div>
@@ -280,7 +284,7 @@
 <script src="/static/js/customs/deciduous.js"></script>
 
 <script>
-    $("#projectIntroduction").html(marked($("#projectIntroduction").html()));
+    $("#projectExecutiveSummary").html(marked($("#projectExecutiveSummary").html()));
     $("#projectConclusion").html(marked($("#projectConclusion").html()));
 
     $(document).ready(function () {

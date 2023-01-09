@@ -16,12 +16,18 @@
         
         <!-- Attack Scenario creation form -->
         <div class="row">
-            <div class="col-lg-12">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input class="form-control" id="name" autocomplete="off" placeholder="Full compromise from XSS in search function" />
-                </div>
+          <div class="col-lg-12">
+              <div class="form-group">
+                  <label>Name</label>
+                  <input class="form-control" id="name" autocomplete="off" placeholder="Full compromise from XSS in search function" />
+              </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="form-group">
+              <label>Body</label>
+              <textarea class="form-control" rows="10" id="body" style="resize:vertical"></textarea>
             </div>
+          </div>
         </div>
 
         <div class="row">
@@ -67,14 +73,21 @@
 
 {% block extra_foot %}
 
-  {% include '_include/js/createItem.html' with item='Attack Scenario' ajax_function='ajaxCreateAttackScenario' params='name,inputSource,projectId' params_to_clean='name' %}
-
   <script src="/static/js/plugins/hpcc/index.min.js"></script>
   <script src="/static/js/plugins/js-yaml/js-yaml.min.js"></script>
   <script src="/static/js/customs/deciduous.js"></script>
 
+  <script type="text/javascript">
+
+   
+</script>
+
   <script>
-      var defaultText = `title: (Example) From XML to RCE
+      var mdBody = activeMarkdown("body");
+      setDefaultText();
+
+      function setDefaultText(){
+        var defaultText = `title: (Example) From XML to RCE
 
 facts:
 - Signup: Registration page is open
@@ -123,5 +136,19 @@ goals:
     - ReserveShell`;
 
         $("#inputSource").val(defaultText);
+        $("#inputSource").change(); //This statement is used to force deciduous to redraw the default scenario
+      }
+
+      function itemCreationSuccess(data) {
+        $("#name").val("");
+        mdBody.value("");
+        setDefaultText();
+        success($("#messages"), "Attack Scenario was created!");
+      }
+
+      $('#createBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateAttackScenario(itemCreationSuccess, commonFailure, $("#name").val(), $("#inputSource").val(), document.getElementById('renderTarget').innerHTML, $("#body").val(), $("#projectId").val());
+      });
     </script>
 {% endblock %}

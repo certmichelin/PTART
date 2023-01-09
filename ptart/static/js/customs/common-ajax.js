@@ -17,16 +17,18 @@ $.ajaxSetup({
  * @param {*} name Project name.
  * @param {*} start_date Project start date.
  * @param {*} end_date Project end date.
- * @param {*} introduction Project introduction.
+ * @param {*} executive_summary Project executive_summary.
+ * @param {*} engagement_overview Project engagement overview.
  * @param {*} conclusion Project conclusion.
  * @param {*} scope Project scope.
+ * @param {*} client Project client.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  */
-function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, introduction, conclusion, scope, pentesters, viewers) {
+function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, pentesters, viewers) {
     $.ajax({
         url: "/api/projects/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -42,17 +44,19 @@ function ajaxCreateProject(successFunction, errorFunction, name, start_date, end
  * @param {*} name Project name.
  * @param {*} start_date Project start date.
  * @param {*} end_date Project end date.
- * @param {*} introduction Project introduction.
+ * @param {*} executive_summary Project executive_summary.
+ * @param {*} engagement_overview Project engagement overview.
  * @param {*} conclusion Project conclusion.
  * @param {*} scope Project scope.
+ * @param {*} client Project client.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  * @param {*} archived True if the project is archived.
  */
-function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, introduction, conclusion, scope, pentesters, viewers, archived) {
+function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, pentesters, viewers, archived) {
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"archived":' + JSON.stringify(archived) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"archived":' + JSON.stringify(archived) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
@@ -277,6 +281,43 @@ function ajaxCreateComment(successFunction, errorFunction, comment, hitId) {
 function ajaxDeleteComment(successFunction, errorFunction, id) {
     $.ajax({
         url: "/api/comment/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Create a hit reference.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} name Hit reference name.
+ * @param {*} url Hit reference url.
+ * @param {*} hitId Id of the hit.
+ */
+function ajaxCreateHitReference(successFunction, errorFunction, name, url, hitId) {
+    $.ajax({
+        url: "/api/hit/" + hitId + "/references/",
+        data: '{"name":' + JSON.stringify(name) + ',"url":' + JSON.stringify(url) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a hit reference.10.
+ * 
+ * 
+ 
+* @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Hit reference id.
+ */
+function ajaxDeleteHitReference(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/hitreference/" + id + "/",
         type: 'DELETE',
         success: successFunction,
         error: errorFunction
@@ -876,13 +917,15 @@ function ajaxDeleteService(successFunction, errorfunction, id) {
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Attack scenario name.
- * @param {*} scenario Attack scenario content.
+ * @param {*} scenario Attack scenario yaml content.
+ * @param {*} svg Attack scenario svg content.
+ * @param {*} body Attack scenario body.
  * @param {*} project Project attached to the attack scenario.
  */
- function ajaxCreateAttackScenario(successFunction, errorFunction, name, scenario, project) {
+ function ajaxCreateAttackScenario(successFunction, errorFunction, name, scenario, svg, body, project) {
     $.ajax({
         url: "/api/attackscenarios/",
-        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"project":' + JSON.stringify(project) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"svg":' + JSON.stringify(svg)+ ',"body":' + JSON.stringify(body) + ',"project":' + JSON.stringify(project) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -896,13 +939,15 @@ function ajaxDeleteService(successFunction, errorfunction, id) {
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Attack scenario id.
  * @param {*} name Attack scenario name.
- * @param {*} scenario Attack scenario content.
+ * @param {*} scenario Attack scenario yaml content.
+ * @param {*} svg Attack scenario svg content.
+ * @param {*} body Attack scenario body.
  * @param {*} project Project attached to the attack scenario.
  */
-function ajaxUpdateAttackScenario(successFunction, errorFunction, id, name, scenario, project) {
+function ajaxUpdateAttackScenario(successFunction, errorFunction, id, name, scenario, svg, body, project) {
     $.ajax({
         url: "/api/attackscenario/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"project":' + JSON.stringify(project) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"scenario":' + JSON.stringify(scenario) + ',"svg":' + JSON.stringify(svg)+ ',"body":' + JSON.stringify(body) + ',"project":' + JSON.stringify(project) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction

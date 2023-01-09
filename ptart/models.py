@@ -14,9 +14,11 @@ from django.db.models import Q
 class Project(models.Model):
 
     name = models.CharField(max_length=100)
-    introduction = models.TextField(blank=True, default="")
+    executive_summary = models.TextField(blank=True, default="")
+    engagement_overview = models.TextField(blank=True, default="")
     conclusion = models.TextField(blank=True, default="")
     scope = models.TextField(blank=True, default="")
+    client = models.CharField(max_length=200, blank=True, default="")
     added = models.DateTimeField(default=datetime.now)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
@@ -101,6 +103,8 @@ class AttackScenario(models.Model):
     project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     scenario = models.TextField(blank=True, default="")
+    svg = models.TextField(blank=True, default="")
+    body = models.TextField(blank=True, default="")
     
     def __str__(self):  
         return self.scenario
@@ -450,6 +454,35 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('added',)
+
+"""HitReference model."""
+class HitReference(models.Model):
+
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1000, default="")
+    url = models.CharField(max_length=1000, default="")
+    
+    def get_viewable(user):
+        """Returns all viewable hit references"""
+        return HitReference.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this hit reference"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this hit reference"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this hit reference"""
+        return self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
 
 
 """Screenshot model."""
