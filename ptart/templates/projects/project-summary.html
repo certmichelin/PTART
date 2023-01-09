@@ -41,6 +41,9 @@
                             <a class="btn btn-outline-danger" href="/attackscenario/new?projectId={{project.id}}"
                                 role="button">Create Attack Scenario</a>
 
+                                <a class="btn btn-outline-success" href="/recommendation/new?projectId={{project.id}}" role="button">Create
+                                    Recommendation</a>
+
                             <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}"
                                 role="button">Create Assessment</a>
 
@@ -210,56 +213,83 @@
         {% endfor %}
 
         <!-- Attack Scenarios -->
-        {% if project.attackscenario_set.all %}
-        <h3><i class="fa fa-book"></i> Attack Scenarios</h3>
-        <div class="col-lg-5">
-            <table class="table table-bordered table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for attackscenario in project.attackscenario_set.all %}
-                    <tr>
-                        <td>
-                            <a href="/attackscenario/{{ attackscenario.id }}/">{{ attackscenario.name }}</a>
-                        </td>
-                        <td>
-                            <!-- Structure to automatically display svg -->
-                            <!-- Create a textarea block containing scenario data with class `scenarioToDraw` -->
-                            <!-- The svg will populated into the block having the id of the code block concatenated with '_svg' -->
-                            <textarea id="scenario_{{ attackscenario.id }}" class="scenarioToDraw" style="display: none;">{{ attackscenario.scenario }}</textarea>
-                            <div id="scenario_{{ attackscenario.id }}_svg" style="display: none;"></div>
-                            <a class="btn btn-outline-success" href="#" role="button" onclick="displayScenarioAttack('{{ attackscenario.name }}','scenario_{{ attackscenario.id }}_svg')">Display</a>                           
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <div class="row">
+            {% if project.attackscenario_set.all %}
+            <div class="col-lg-7">
+                <h3><i class="fa fa-book"></i> Attack Scenarios</h3>
+            
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attackscenario in project.attackscenario_set.all %}
+                        <tr>
+                            <td>
+                                <a href="/attackscenario/{{ attackscenario.id }}/">{{ attackscenario.name }}</a>
+                            </td>
+                            <td>
+                                <!-- Structure to automatically display svg -->
+                                <!-- Create a textarea block containing scenario data with class `scenarioToDraw` -->
+                                <!-- The svg will populated into the block having the id of the code block concatenated with '_svg' -->
+                                <textarea id="scenario_{{ attackscenario.id }}" class="scenarioToDraw" style="display: none;">{{ attackscenario.scenario }}</textarea>
+                                <div id="scenario_{{ attackscenario.id }}_svg" style="display: none;"></div>
+                                <a class="btn btn-outline-success" href="#" role="button" onclick="displayScenarioAttack('{{ attackscenario.name }}','scenario_{{ attackscenario.id }}_svg')">Display</a>                           
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="attackScenarioPreviewModal" tabindex="-1" role="dialog" aria-labelledby="attackScenarioPreviewModalTitle" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="attackScenarioPreviewModalTitle"></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="svgPreview"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <!-- Modal -->
+            <div class="modal fade" id="attackScenarioPreviewModal" tabindex="-1" role="dialog" aria-labelledby="attackScenarioPreviewModalTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="attackScenarioPreviewModalTitle"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="svgPreview"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
                     </div>
                 </div>
             </div>
+            {% endif %}
+
+            <!-- Recommendations -->
+            {% if project.recommendation_set.all %}
+            
+            <div class="col-lg-5">
+                <h3><i class="fa fa-medkit"></i> Recommendations</h3>
+                <table class="table table-bordered table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recommendation in project.recommendation_set.all %}
+                        <tr>
+                            <td>
+                                <a href="/recommendation/{{ recommendation.id }}/">{{ recommendation.name }}</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
 
         {% if project.assessment_set.all|length != 0 %}
         <a class="btn btn-outline-success mb-4" href="/project/{{project.id}}/report" target="_blank" role="button">

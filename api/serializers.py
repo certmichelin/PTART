@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import AttackScenario, Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario, Recommendation
 from .tools import FileField
 
 
@@ -88,6 +88,11 @@ class AttackScenarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttackScenario
         fields = ('id', 'name', 'scenario', 'svg', 'body', 'project')
+
+class RecommendationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recommendation
+        fields = ('id', 'name', 'body', 'project')
 
 class HitSerializer(serializers.ModelSerializer):
     labels = LabelSerializer(read_only=True, many=True)

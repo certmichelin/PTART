@@ -27,11 +27,11 @@ import random
 import re
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -68,6 +68,18 @@ def attackscenario(request, pk):
 @api_view(['GET', 'POST'])
 def attackscenarios(request):
     return items(request, AttackScenario, AttackScenarioSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def recommendation(request, pk):
+    return item(request, pk, Recommendation, RecommendationSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def recommendations(request):
+    return items(request, Recommendation, RecommendationSerializer)
 
 @csrf_exempt
 @ptart_authentication
