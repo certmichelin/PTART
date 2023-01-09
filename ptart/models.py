@@ -54,6 +54,18 @@ class Project(models.Model):
             hits.extend(assessment.hits_by_severity(severity))
         return hits
 
+    def labels_statistics(self):
+        """Compute statistics on labels"""
+        statistics = {}
+        for assessment in self.assessment_set.all() :
+            for hit in assessment.hit_set.all():
+                for label in hit.labels.all():
+                    if statistics.get(label.title) is None :
+                        statistics[label.title] = 1
+                    else:
+                        statistics[label.title] = statistics[label.title] + 1
+        return statistics
+
     def get_viewable(user):
         """Returns all viewable & non-archived projects"""
         return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])).filter(archived = False).distinct()
