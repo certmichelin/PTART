@@ -768,9 +768,7 @@ def project_latex(request, pk):
                         '_': r'\_',
                         '~': r'\textasciitilde{}',
                         '^': r'\^{}',
-                        '\\': r'\textbackslash{}',
-                        '<': r'\textless{}',
-                        '>': r'\textgreater{}',
+                        '\\': r'\textbackslash{}'
                     }
                 tex_regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key = lambda item: - len(item))))
                 
@@ -778,7 +776,7 @@ def project_latex(request, pk):
                     return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
 
                 def markdown_to_latex(md) :
-                    return pypandoc.convert_text(tex_escape(md), 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                    return pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
                 #End of filters.
 
                 env.filters["mdtolatex"] = markdown_to_latex

@@ -574,8 +574,24 @@
 		\end{table}
 	\BLOCK{ endfor }
 \BLOCK{ endfor }
-
 \newpage
+
+\BLOCK{ if project.tools.all() and project.tools.all()|length > 0 }
+	\section{Tools}
+
+	\begin{table}[H]
+		\centering
+		{\setlength{\extrarowheight}{2pt}%
+		\begin{tabular}{| l | l |}
+			\hline
+			\BLOCK{ for tool in project.tools.all() }
+				\VAR{ tool.name | escape } & \VAR{ tool.url | escape }\\
+				\hline
+			\BLOCK{ endfor } 
+		\end{tabular}}
+	\end{table}
+	\newpage
+\BLOCK{ endif } 
 
 % This should be a table of all tools utilized during the engagement.
 % An example of what this may look like is included below:
