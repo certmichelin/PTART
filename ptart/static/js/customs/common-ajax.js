@@ -971,6 +971,60 @@ function ajaxDeleteAttackScenario(successFunction, errorFunction, id) {
 }
 
 /**
+ * Create a recommendation.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} name Recommendation name.
+ * @param {*} body Recommendation body.
+ * @param {*} project Project attached to the recommendation.
+ */
+function ajaxCreateRecommendation(successFunction, errorFunction, name, body, project) {
+    $.ajax({
+        url: "/api/recommendations/",
+        data: '{"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a recommendation.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} name Recommendation name.
+ * @param {*} body Recommendation body.
+ * @param {*} project Project attached to the recommendation.
+ */
+function ajaxUpdateRecommendation(successFunction, errorFunction, id, name, body, project) {
+    $.ajax({
+        url: "/api/recommendation/" + id + "/",
+        data: '{"name":' + JSON.stringify(name) + ',"body":' + JSON.stringify(body) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a recommendation.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Recommendation id.
+ */
+function ajaxDeleteRecommendation(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/recommendation/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Grant authentication token.
  * 
  * @param {*} successFunction Function to call in case of ajax success.

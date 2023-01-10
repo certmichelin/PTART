@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
 from openpyxl import Workbook, styles
+from openpyxl.styles import Alignment
 from openpyxl.writer.excel import save_virtual_workbook
 
 from svglib.svglib import svg2rlg
@@ -27,11 +28,11 @@ import random
 import re
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -68,6 +69,18 @@ def attackscenario(request, pk):
 @api_view(['GET', 'POST'])
 def attackscenarios(request):
     return items(request, AttackScenario, AttackScenarioSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def recommendation(request, pk):
+    return item(request, pk, Recommendation, RecommendationSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def recommendations(request):
+    return items(request, Recommendation, RecommendationSerializer)
 
 @csrf_exempt
 @ptart_authentication
@@ -476,6 +489,7 @@ def project_xlsx(request, pk):
                         
             wb = Workbook()
             ws = wb.active
+            ws.title = "Synthesis"
 
             #Define column size
             wb.active.column_dimensions['A'].width = 28
@@ -506,7 +520,7 @@ def project_xlsx(request, pk):
             for pentester in project.pentesters.all():
                 pentester_str = "{}{}{} - {} {}".format(pentester_str, previous, pentester.username, pentester.first_name, pentester.last_name)
                 previous = ", "
-            ws['B3'] = pentester_str
+            ws['B4'] = pentester_str
 
             #Beautify project data 
             ws.merge_cells('B1:H1')
@@ -642,6 +656,29 @@ def project_xlsx(request, pk):
                     line = line + 1
             
             ws.auto_filter.ref = "A6:H{}".format(line)
+
+            if project.recommendation_set.all() :
+                recommendations_ws = wb.create_sheet()
+                recommendations_ws.title = "Recommendations"
+
+                #Define column size
+                recommendations_ws.column_dimensions['A'].width = 50
+                recommendations_ws.column_dimensions['B'].width = 120
+
+                recommendations_ws['A1'].style = columnHeaderStyle
+                recommendations_ws['B1'].style = columnHeaderStyle
+
+                #Add column header.
+                recommendations_ws['A1'] = "Name"
+                recommendations_ws['B1'] = "Body"
+
+                line = 2
+                for recommendation in project.recommendation_set.all():        
+                    recommendations_ws.cell(row=line, column=1).value = recommendation.name
+                    recommendations_ws.cell(row=line, column=2).value = recommendation.body
+                    recommendations_ws.cell(row=line, column=1).alignment = Alignment(horizontal='left', vertical='top')
+                    recommendations_ws.cell(row=line, column=2).alignment = Alignment(wrap_text=True)
+                    line = line + 1
 
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))

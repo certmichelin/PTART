@@ -189,6 +189,21 @@
                 {% endfor %} 
             {% endif %}
 
+            <!-- Recommendations -->
+            {% if project.recommendation_set.all %}
+                <section>
+                    <h1>Recommendations</h1>
+                </section>
+                {% for recommendation in project.recommendation_set.all %}
+                        <section>
+                            <h5>{{ recommendation.name }}</h5>
+                            <div data-markdown>
+                                {{ recommendation.body }}
+                            </div>
+                        </section>
+                {% endfor %} 
+            {% endif %}
+
             {% if project.conclusion %}
             <section data-markdown>
                 {{ project.conclusion }}
