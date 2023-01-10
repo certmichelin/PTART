@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import Project, Flag, Hit, Label, Assessment, Project, Template, Methodology, Module, Case
+from .models import Project, Flag, Hit, Label, Assessment, Project, Template, Methodology, Module, Case, Tool
 
 
 class ProjectTable(tables.Table):
@@ -62,6 +62,18 @@ class LabelTable(tables.Table):
         template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'title')
         fields = ('title', 'deprecated')
+
+
+class ToolTable(tables.Table):
+
+    selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
+    name = tables.TemplateColumn('<a href="/tool/{{ record.pk }}">{{ record.name }}</a>')
+    
+    class Meta:
+        model = Tool
+        template_name = "django_tables2/bootstrap4.html"
+        sequence = ('selection', 'name')
+        fields = ('name', 'url', 'deprecated')
 
 
 class AssessmentTable(tables.Table):

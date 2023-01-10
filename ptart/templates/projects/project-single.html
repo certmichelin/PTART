@@ -48,6 +48,16 @@
                     <label>Conclusion</label>
                     <textarea class="form-control" rows="5" id="conclusion" style="resize:vertical">{{ project.conclusion }}</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>Tools</label>
+                    <select class="js-states form-control" id="tools" multiple="multiple">
+                        {% for tool in tools %}
+                        <option value="{{ tool.id }}">{{ tool.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Pentesters</label>
                     <select class="js-states form-control" id="pentesters" multiple="multiple">
@@ -102,6 +112,18 @@
     {% if project.end_date %}
         $('#enddate').datepicker('setDate', new Date('{{project.end_date|date:"Y-m-d"}}'));
     {% endif %}
+
+    
+    var selectedTools = [];
+    {% for tool in project.tools.all %}
+        selectedTools.push({{ tool.id }});
+    {% endfor %}
+
+    $('#tools').select2({
+        templateSelection: function (data, container) {
+            return data.text;
+        }
+    }).val(selectedTools).trigger("change");
     
     var selectedPentesters = [];
     {% for pentester in project.pentesters.all %}
@@ -136,7 +158,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}

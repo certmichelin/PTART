@@ -28,11 +28,11 @@ import random
 import re
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -93,6 +93,18 @@ def label(request, pk):
 @api_view(['GET', 'POST'])
 def labels(request):
     return items(request, Label, LabelSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def tool(request, pk):
+    return item(request, pk, Tool, ToolSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def tools(request):
+    return items(request, Tool, ToolSerializer)
 
 @csrf_exempt
 @ptart_authentication
@@ -756,9 +768,7 @@ def project_latex(request, pk):
                         '_': r'\_',
                         '~': r'\textasciitilde{}',
                         '^': r'\^{}',
-                        '\\': r'\textbackslash{}',
-                        '<': r'\textless{}',
-                        '>': r'\textgreater{}',
+                        '\\': r'\textbackslash{}'
                     }
                 tex_regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key = lambda item: - len(item))))
                 
@@ -766,7 +776,7 @@ def project_latex(request, pk):
                     return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
 
                 def markdown_to_latex(md) :
-                    return pypandoc.convert_text(tex_escape(md), 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                    return pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
                 #End of filters.
 
                 env.filters["mdtolatex"] = markdown_to_latex

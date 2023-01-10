@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario, Recommendation
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario, Recommendation, Tool
 from .tools import FileField
 
 
@@ -12,14 +12,19 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username')
 
-
+class ToolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tool
+        fields = ('id', 'name', 'deprecated', 'url')
+        
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)
     viewers = UserSerializer(read_only=True, many=True)
+    tools = ToolSerializer(read_only=True, many=True)
 
     class Meta:
         model = Project
-        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived')
+        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived', 'tools')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -45,6 +50,12 @@ class ProjectSerializer(serializers.ModelSerializer):
                 viewer_instance = User.objects.get(pk=viewer)
                 project.viewers.add(viewer_instance)
 
+        if "tools" in self.initial_data:
+            tools = self.initial_data.get("tools")
+            for tool in tools:
+                tool_instance = Tool.objects.get(pk=tool)
+                project.tools.add(tool_instance)
+
         project.save()
         return project
 
@@ -61,6 +72,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         for viewer in viewers:
             viewer_instance = User.objects.get(pk=viewer)
             instance.viewers.add(viewer_instance)
+
+        instance.tools.clear()
+        tools = self.initial_data.get("tools")
+        for tool in tools:
+            tool_instance = Tool.objects.get(pk=tool)
+            instance.tools.add(tool_instance)
 
         instance.__dict__.update(**validated_data)
         instance.save()
