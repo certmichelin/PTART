@@ -17,8 +17,8 @@ from qrcode.image.svg import SvgPathImage as svg
 
 from rest_framework.authtoken.models import Token
 
-from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation
-from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool
+from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable, ToolTable
 
 @otp_required
 def index(request):
@@ -79,6 +79,11 @@ def hits_all(request):
 @user_passes_test(lambda u: u.is_staff)
 def labels_all(request):
     return generic_all(request, Label.get_viewable(request.user), LabelTable, 'labels/labels-list.html')
+
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
+def tools_all(request):
+    return generic_all(request, Tool.get_viewable(request.user), ToolTable, 'tools/tools-list.html')
 
 @otp_required
 def flags_all(request):
@@ -233,6 +238,16 @@ def label(request, label_id):
         response = redirect('/')
     return response
 
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
+def tool(request, tool_id):
+    response = None
+    try:
+        response = generate_render(request, 'tools/tool-single.html', {'tool': Tool.objects.get(pk=tool_id)})
+    except Tool.DoesNotExist:
+        response = redirect('/')
+    return response
+
 
 @otp_required
 def flag(request, flag_id):
@@ -337,6 +352,10 @@ def recommendations_new(request):
 def labels_new(request):
     return generate_render(request, 'labels/labels.html', {})
 
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
+def tools_new(request):
+    return generate_render(request, 'tools/tools.html', {})
 
 @otp_required
 def flags_new(request):

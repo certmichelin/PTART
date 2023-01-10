@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario, Recommendation
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario, Recommendation, Tool
 from .tools import FileField
 
 
@@ -83,6 +83,11 @@ class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
         fields = ('id', 'title', 'deprecated', 'color')
+
+class ToolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tool
+        fields = ('id', 'name', 'deprecated', 'url')
 
 class AttackScenarioSerializer(serializers.ModelSerializer):
     class Meta:

@@ -254,6 +254,60 @@ function ajaxDeleteLabel(successFunction, errorFunction, id) {
 }
 
 /**
+ * Create a tool.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} name Tool name.
+ * @param {*} url Tool url.
+ */
+function ajaxCreateTool(successFunction, errorFunction, name, url) {
+    $.ajax({
+        url: "/api/tools/",
+        data: '{"name":' + JSON.stringify(name) + ',"url":' + JSON.stringify(url) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a tool.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Tool id.
+ * @param {*} name Tool name.
+ * @param {*} deprecated True if tool is deprecated.
+ * @param {*} url Tool url.
+ */
+function ajaxUpdateTool(successFunction, errorFunction, id, name, deprecated, url) {
+    $.ajax({
+        url: "/api/tool/" + id + "/",
+        data: '{"name":' + JSON.stringify(name) + ',"deprecated":' + JSON.stringify(deprecated) + ',"url":' + JSON.stringify(url) + '}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a tool.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Tool id.
+ */
+function ajaxDeleteTool(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/tool/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Create a comment.
  * 
  * @param {*} successFunction Function to call in case of ajax success.

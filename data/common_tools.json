@@ -1,0 +1,12 @@
+{
+    "tools": [
+        {
+            "name" : "Burp Suite",
+            "url" : "https://portswigger.net/burp"
+        },
+        {
+            "name" : "Nmap",
+            "url" : "https://nmap.org/"
+        }
+    ]
+}

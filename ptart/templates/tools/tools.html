@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %} Tool | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='Tools' active_icon='fa fa-wrench' active_text='Tools' %}
+        {% include "_include/html/messages.html" %} 
+        
+        <!-- Tool creation form -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>New Tool</h3>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" id="name" autocomplete="off" placeholder="Tool name (ex: Burp, Nmap, etc...)" />
+                </div>
+                <div class="form-group">
+                    <label>Url</label>
+                    <input class="form-control" id="url" autocomplete="off" placeholder="https://portswigger.net/burp" />
+                </div>
+                <button id="createBtn" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block extra_foot %}
+    {% include '_include/js/createItem.html' with item='Tool' ajax_function='ajaxCreateTool' params='name,url' params_to_clean='name,url' %}
+{% endblock %}

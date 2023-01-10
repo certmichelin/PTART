@@ -28,11 +28,11 @@ import random
 import re
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -93,6 +93,18 @@ def label(request, pk):
 @api_view(['GET', 'POST'])
 def labels(request):
     return items(request, Label, LabelSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def tool(request, pk):
+    return item(request, pk, Tool, ToolSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def tools(request):
+    return items(request, Tool, ToolSerializer)
 
 @csrf_exempt
 @ptart_authentication

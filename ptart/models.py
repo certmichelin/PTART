@@ -9,7 +9,39 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 
+"""Tool model."""
+class Tool(models.Model):
 
+    name = models.CharField(max_length=200)
+    url = models.CharField(max_length=500)
+    deprecated = models.BooleanField(default=False)
+
+    def __str__(self):  
+        return self.title
+
+    def get_viewable(user):
+        """Returns all viewable tools"""
+        return Tool.objects.all()
+
+    def get_not_deprecated(user):
+        """Returns not deprecated tools"""
+        return Tool.objects.filter(deprecated=False)
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this tool"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this tool"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this tool"""
+        return user.is_staff
+
+    class Meta:
+        ordering = ('pk',)
+        
 """ Project model."""
 class Project(models.Model):
 
@@ -23,6 +55,7 @@ class Project(models.Model):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     archived = models.BooleanField(default=False)
+    tools = models.ManyToManyField(Tool)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
     viewers = models.ManyToManyField(User, related_name='%(class)s_viewers')
 
