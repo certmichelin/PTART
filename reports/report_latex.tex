@@ -214,6 +214,9 @@
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
 
+\providecommand{\tightlist}{%
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
 %-----------------------------------------------------%
 % End of Docstyle                                     %
 %-----------------------------------------------------%                                          
@@ -404,17 +407,14 @@
 %-----------------------------------------------------%
 % Recommendations                                     %
 %-----------------------------------------------------%
-%\section{Recommendations}
-%The most immediate observation about \client's security posture is that default, null, and passwordless authentication was discovered on multiple systems. \teamname\ was able to gain access into a SCADA system using the same credentials (which were default) as the last engagement.  The system in question is critical to the storage, delivery, and packaging processes within the warehouse facility. Moreover, several databases contained this same issue and were found to not be requiring password authentication. It is important to remember these credentials are for critical services and PII. These weaknesses can have an enormous impact on \client's ability to operate if discovered by threat actors. These vulnerabilities can be remediated with low cost and have an outsized impact on the security of \client. More details on mitigation for vulnerabilities such as these can be found in each vulnerability's remediation suggestions in Section \ref{sec:tech}. 
-
-%\subsection{Recommendations 1}
-
-%\lipsum[1]
-
-%\subsection{Recommendations 2}
-
-%\lipsum[3-4]
-
+\BLOCK{ if project.recommendation_set.all() and project.recommendation_set.all()|length > 0 }
+	\section{Recommendations}
+	\BLOCK{ for recommendation in project.recommendation_set.all() }
+		\subsection{\VAR{ recommendation.name | escape }}
+		\VAR{ recommendation.body | mdtolatex }
+	\BLOCK{ endfor } 
+	\newpage
+\BLOCK{ endif } 
 %-----------------------------------------------------%
 % End of Recommendations                              %
 %-----------------------------------------------------%
