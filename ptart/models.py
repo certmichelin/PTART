@@ -46,6 +46,7 @@ class Tool(models.Model):
 class Methodology(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default="")
+    deprecated = models.BooleanField(default=False)
 
     def __str__(self):  
         return self.name
@@ -53,6 +54,10 @@ class Methodology(models.Model):
     def get_viewable(user):
         """Returns all viewable methodologies"""
         return Methodology.objects.all()
+
+    def get_not_deprecated(user):
+        """Returns not deprecated methodologies"""
+        return Methodology.objects.filter(deprecated=False)
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this methodology"""

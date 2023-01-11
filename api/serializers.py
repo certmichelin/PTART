@@ -32,7 +32,7 @@ class ModuleSerializer(serializers.ModelSerializer):
 class MethodologySerializer(serializers.ModelSerializer):
     class Meta:
         model = Methodology
-        fields = ('id', 'name', 'description')
+        fields = ('id', 'name', 'description', 'deprecated')
         
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)

@@ -112,7 +112,7 @@ class MethodologyTable(tables.Table):
         model = Methodology
         template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name')
-        fields = ('name', )
+        fields = ('name', 'deprecated' )
 
 
 class ModuleTable(tables.Table):

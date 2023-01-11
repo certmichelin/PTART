@@ -695,11 +695,12 @@ function ajaxCreateMethodology(successFunction, errorFunction, name, description
  * @param {*} id Methodology id.
  * @param {*} name Methodology name.
  * @param {*} description Methodology description.
+ * @param {*} deprecated True if methodology is deprecated.
  */
-function ajaxUpdateMethodology(successFunction, errorFunction, id, name, description) {
+function ajaxUpdateMethodology(successFunction, errorFunction, id, name, description, deprecated) {
     $.ajax({
         url: "/api/methodology/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"deprecated":' + JSON.stringify(deprecated) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
