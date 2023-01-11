@@ -261,7 +261,11 @@
 		% End of Team Name
 		
 		% Date
-		\Large{From \VAR{ project.start_date } to \VAR{ project.end_date }}
+		\BLOCK{ if project.start_date and project.end_date }
+			\Large{From \VAR{ project.start_date } to \VAR{ project.end_date }}
+		\BLOCK{ else }
+			\Large{Date: \VAR{ project.added.strftime('%Y-%m-%d') }}
+		\BLOCK{ endif }
 		\vfill
 		% End of Date
 		
