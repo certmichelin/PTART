@@ -261,7 +261,11 @@
 		% End of Team Name
 		
 		% Date
-		\Large{From \VAR{ project.start_date } to \VAR{ project.end_date }}
+		\BLOCK{ if project.start_date and project.end_date }
+			\Large{From \VAR{ project.start_date } to \VAR{ project.end_date }}
+		\BLOCK{ else }
+			\Large{Date: \VAR{ project.added.strftime('%Y-%m-%d') }}
+		\BLOCK{ endif }
 		\vfill
 		% End of Date
 		
@@ -301,37 +305,46 @@
 % End of Table of Contents                            %
 %-----------------------------------------------------%
 
-%-----------------------------------------------------%
-% Executive Summary                                   %
-%-----------------------------------------------------%
-\section{Report Overview}
-\subsection{Executive Summary}
-\VAR{ project.executive_summary | mdtolatex }
-\newpage
-%-----------------------------------------------------%
-% End of Executive Summary                            %
-%-----------------------------------------------------%
+\BLOCK{ if project.executive_summary or project.engagement_overview or project.scope  }
+	\section{Report Overview}
+	%-----------------------------------------------------%
+	% Executive Summary                                   %
+	%-----------------------------------------------------%
+	\BLOCK{ if project.executive_summary }
+		\subsection{Executive Summary}
+		\VAR{ project.executive_summary | mdtolatex }
+		\newpage
+	\BLOCK{ endif } 
+	%-----------------------------------------------------%
+	% End of Executive Summary                            %
+	%-----------------------------------------------------%
 
-%-----------------------------------------------------%
-% Scope                                               %
-%-----------------------------------------------------%
-\subsection{Scope}
-\paragraph{Engagement Overview}
-% This is where you should briefly explain when the penetration test was performed and how the team came into this work. This should be followed by a list of goals for the engagement.
-% List goals for the team in the engagement targeted at your client's executives (non-technical).
-\VAR{ project.engagement_overview | mdtolatex }
+	%-----------------------------------------------------%
+	% Scope                                               %
+	%-----------------------------------------------------%
+	\BLOCK{ if project.engagement_overview or project.scope }
+		\subsection{Scope}
+		\BLOCK{ if project.engagement_overview }
+			\paragraph{Engagement Overview}
+			\VAR{ project.engagement_overview | mdtolatex }
+		\BLOCK{ endif } 
 
-\paragraph{Scope of Engagement}
-%Automatic scope list
-\begin{itemize}
-	\BLOCK{ for line in project.scope.splitlines() }
-		\item \VAR{ line | escape }
-	\BLOCK{ endfor }
-\end{itemize}
-\newpage
-%-----------------------------------------------------%
-% End of Scope                                        %
-%-----------------------------------------------------%
+		\BLOCK{ if project.scope }
+		\paragraph{Scope of Engagement}
+			%Automatic scope list
+			\begin{itemize}
+				\BLOCK{ for line in project.scope.splitlines() }
+					\item \VAR{ line | escape }
+				\BLOCK{ endfor }
+			\end{itemize}
+		\BLOCK{ endif } 
+		\newpage
+	\BLOCK{ endif } 
+	%-----------------------------------------------------%
+	% End of Scope                                        %
+	%-----------------------------------------------------%
+\BLOCK{ endif } 
+
 %-----------------------------------------------------%
 % Methodologies                                         %
 %-----------------------------------------------------%
@@ -352,69 +365,72 @@
 %-----------------------------------------------------%
 % Observation                                         %
 %-----------------------------------------------------%
-\section{Observations}
+\BLOCK{ if project.p1_hits()|length > 0 or project.p2_hits()|length or project.p3_hits()|length or project.p4_hits()|length or project.p5_hits()|length }
+	\section{Observations}
+	\BLOCK{ for assessment in project.assessment_set.all() }
+		\BLOCK{ if assessment.displayable_hits }
+			\paragraph{\VAR{assessment.name | escape }}
 
-\BLOCK{ for assessment in project.assessment_set.all() }
-	\BLOCK{ if assessment.displayable_hits }
-		\paragraph{\VAR{assessment.name | escape }}
+			\begin{table}[H]
+				\centering
+				{\setlength{\extrarowheight}{2pt}%
+				\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
+						\BLOCK{ for hit in assessment.displayable_hits() }
+						\hline 
+						\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+						\BLOCK{ endfor }
+						\hline 	
+				\end{tabularx}}
+			\end{table}
+		\BLOCK{ endif }
+	\BLOCK{ endfor }
 
-		\begin{table}[H]
-			\centering
-			{\setlength{\extrarowheight}{2pt}%
-			\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
-					\BLOCK{ for hit in assessment.displayable_hits() }
-					\hline 
-					\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
-					\BLOCK{ endfor }
-					\hline 	
-			\end{tabularx}}
-		\end{table}
-	\BLOCK{ endif }
-\BLOCK{ endfor }
+	\begin{figure}[H]
+		\centering
+	\begin{tikzpicture}
+		\begin{axis} [
+			bar width         =20pt,
+			axis y line       = none,
+			axis lines*       = left,
+			tickwidth         = 0pt,
+			enlarge y limits  = 0.2,
+			enlarge x limits  = 0.2,
+			symbolic x coords = {P1, P2, P3, P4, P5},
+			nodes near coords
+			]
+			\addplot [ybar,fill = black]  coordinates {(P1,\VAR{project.p1_hits()|length})};
+			\addplot [ybar,fill = red]    coordinates {(P2,\VAR{project.p2_hits()|length})};
+			\addplot [ybar,fill = yellow] coordinates {(P3,\VAR{project.p3_hits()|length})};
+			\addplot [ybar,fill = green]  coordinates {(P4,\VAR{project.p4_hits()|length})};
+			\addplot [ybar,fill = blue]   coordinates {(P5,\VAR{project.p5_hits()|length})};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Statistics of vulnerabilities by severity}
+	\end{figure}
+\BLOCK{ endif }
 
-\begin{figure}[H]
-	\centering
-\begin{tikzpicture}
-	\begin{axis} [
-		bar width         =20pt,
-		axis y line       = none,
-		axis lines*       = left,
-		tickwidth         = 0pt,
-		enlarge y limits  = 0.2,
-		enlarge x limits  = 0.2,
-		symbolic x coords = {P1, P2, P3, P4, P5},
-		nodes near coords
-		]
-		\addplot [ybar,fill = black]  coordinates {(P1,\VAR{project.p1_hits()|length})};
-		\addplot [ybar,fill = red]    coordinates {(P2,\VAR{project.p2_hits()|length})};
-		\addplot [ybar,fill = yellow] coordinates {(P3,\VAR{project.p3_hits()|length})};
-		\addplot [ybar,fill = green]  coordinates {(P4,\VAR{project.p4_hits()|length})};
-		\addplot [ybar,fill = blue]   coordinates {(P5,\VAR{project.p5_hits()|length})};
-	\end{axis}
-\end{tikzpicture}
-\caption{Statistics of vulnerabilities by severity}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \pie
-        [
-            rotate=180, 
-            after number=,
-            /tikz/nodes={text=black, font=\normalfont},
-            /tikz/every pin/.style={align=center, text=black, font=\normalfont},
-            sum=auto,
-			text = legend
-        ]
-        {
-			\BLOCK{ for key, value in project.labels_statistics().items() }
-				\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }  
-			\BLOCK{ endfor }
-	    }
-    \end{tikzpicture}
-    \caption{Statistics of vulnerabilities by label}
-\end{figure}
+\BLOCK{ if project.labels_statistics().items()|length > 0 }
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\pie
+			[
+				rotate=180, 
+				after number=,
+				/tikz/nodes={text=black, font=\normalfont},
+				/tikz/every pin/.style={align=center, text=black, font=\normalfont},
+				sum=auto,
+				text = legend
+			]
+			{
+				\BLOCK{ for key, value in project.labels_statistics().items() }
+					\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }  
+				\BLOCK{ endfor }
+			}
+		\end{tikzpicture}
+		\caption{Statistics of vulnerabilities by label}
+	\end{figure}
+\BLOCK{ endif }
 \newpage
 %-----------------------------------------------------%
 % End of Observations                                 %
@@ -437,64 +453,66 @@
 %-----------------------------------------------------%
 % Technical Findings                                  %
 %-----------------------------------------------------%
-\section{Technical Findings}
+\BLOCK{ if project.p1_hits()|length > 0 or project.p2_hits()|length or project.p3_hits()|length or project.p4_hits()|length or project.p5_hits()|length }
+	\section{Technical Findings}
 
-\BLOCK{ for assessment in project.assessment_set.all() }
-	\BLOCK{ if assessment.displayable_hits }
-		\subsection{\VAR{assessment.name | escape }}
-		\BLOCK{ for hit in assessment.displayable_hits() }
-			\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title | escape }}
+	\BLOCK{ for assessment in project.assessment_set.all() }
+		\BLOCK{ if assessment.displayable_hits }
+			\subsection{\VAR{assessment.name | escape }}
+			\BLOCK{ for hit in assessment.displayable_hits() }
+				\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title | escape }}
 
-			\begin{table}[H]
-				\centering
-				{\setlength{\extrarowheight}{2pt}%
-				\begin{tabular}{| l | p{12cm} |}
-					\hline 
-					Severity & \badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }}\\
-					\hline
-					\BLOCK{ if hit.get_cvss_value() == "---" }
-						CVSS Base Score & \badge[cvss-badge-secondary]{ N.C } \\
-					\BLOCK{ elif hit.get_cvss_value() <= 0 }
-						CVSS Base Score & \badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} (\VAR{ hit.get_cvss_string() }) \\
-					\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
-						CVSS Base Score & \badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()} - Low} (\VAR{ hit.get_cvss_string() }) \\
-					\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
-						CVSS Base Score & \badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} (\VAR{ hit.get_cvss_string() }) \\
-					\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
-						CVSS Base Score & \badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()} - High} (\VAR{ hit.get_cvss_string() }) \\
-					\BLOCK{ else }
-						CVSS Base Score & \badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} (\VAR{ hit.get_cvss_string() }) \\
-					\BLOCK{ endif } 
-					\hline 
-					Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
-					\hline 
-					Asset & \VAR{ hit.asset | escape  } \\
-					\hline 
-					Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
-					\hline 
-					Reference(s) & \BLOCK{ if hit.hitreference_set.all() and hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
-					\hline 
-				\end{tabular}}
-			\end{table}
-
-			\VAR{ hit.body | mdtolatex }
-		
-			\BLOCK{ for screenshot in hit.screenshot_set.all() }
-				\begin{figure}[H]
+				\begin{table}[H]
 					\centering
-					\includegraphics[width=\textwidth]{./screenshots/\VAR{screenshot.pk}.png}
-					\caption{\VAR{screenshot.caption | escape }}
-				\end{figure}
-			\BLOCK{ endfor }
+					{\setlength{\extrarowheight}{2pt}%
+					\begin{tabular}{| l | p{12cm} |}
+						\hline 
+						Severity & \badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }}\\
+						\hline
+						\BLOCK{ if hit.get_cvss_value() == "---" }
+							CVSS Base Score & \badge[cvss-badge-secondary]{ N.C } \\
+						\BLOCK{ elif hit.get_cvss_value() <= 0 }
+							CVSS Base Score & \badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
+							CVSS Base Score & \badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()} - Low} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
+							CVSS Base Score & \badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
+							CVSS Base Score & \badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()} - High} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ else }
+							CVSS Base Score & \badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ endif } 
+						\hline 
+						Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
+						\hline 
+						Asset & \VAR{ hit.asset | escape  } \\
+						\hline 
+						Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
+						\hline 
+						Reference(s) & \BLOCK{ if hit.hitreference_set.all() and hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
+						\hline 
+					\end{tabular}}
+				\end{table}
 
-			\BLOCK{ if hit.remediation }
-				\paragraph{Remediation}
-				\VAR{ hit.remediation | mdtolatex }
-			\BLOCK{ endif }
-		\BLOCK{ endfor }
-		\newpage
-	\BLOCK{ endif }
-\BLOCK{ endfor }
+				\VAR{ hit.body | mdtolatex }
+			
+				\BLOCK{ for screenshot in hit.screenshot_set.all() }
+					\begin{figure}[H]
+						\centering
+						\includegraphics[max width=\textwidth]{./screenshots/\VAR{screenshot.pk}.png}
+						\caption{\VAR{screenshot.caption | escape }}
+					\end{figure}
+				\BLOCK{ endfor }
+
+				\BLOCK{ if hit.remediation }
+					\paragraph{Remediation}
+					\VAR{ hit.remediation | mdtolatex }
+				\BLOCK{ endif }
+			\BLOCK{ endfor }
+			\newpage
+		\BLOCK{ endif }
+	\BLOCK{ endfor }
+\BLOCK{ endif }
 %-----------------------------------------------------%
 % End of Technical Findings                           %
 %-----------------------------------------------------%
@@ -502,19 +520,20 @@
 %-----------------------------------------------------%
 % Attack Scenarios                                    %
 %-----------------------------------------------------%
-\section{Attack Scenarios}
+\BLOCK{ if project.attackscenario_set.all() and project.attackscenario_set.all()|length > 0 }
+	\section{Attack Scenarios}
 
-\BLOCK{ for attackscenario in project.attackscenario_set.all() }
-	\subsection{\VAR{attackscenario.name | escape }}
-	\VAR{ attackscenario.body | mdtolatex }
-    \begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.5]{./attackscenarios/\VAR{attackscenario.id}.png}
-		\caption{\VAR{attackscenario.name | escape }}
-	\end{figure}
-
-
-\BLOCK{ endfor }
+	\BLOCK{ for attackscenario in project.attackscenario_set.all() }
+		\subsection{\VAR{attackscenario.name | escape }}
+		\VAR{ attackscenario.body | mdtolatex }
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{./attackscenarios/\VAR{attackscenario.id}.png}
+			\caption{\VAR{attackscenario.name | escape }}
+		\end{figure}
+	\BLOCK{ endfor }
+	\newpage
+\BLOCK{ endif }
 %-----------------------------------------------------%
 % End of Attack Scenarios                             %
 %-----------------------------------------------------%
@@ -522,9 +541,11 @@
 %-----------------------------------------------------%
 % Conclusion                                          %
 %-----------------------------------------------------%
-\section{Conclusion}
-\VAR{ project.conclusion | mdtolatex }
-\newpage
+\BLOCK{ if project.executive_summary }
+	\section{Conclusion}
+	\VAR{ project.conclusion | mdtolatex }
+	\newpage
+\BLOCK{ endif }
 %-----------------------------------------------------%
 % End of Conclusion                                   %
 %-----------------------------------------------------%
@@ -538,42 +559,44 @@
 
 % This should be a network topology that represents the in scope network from the engagement
 % The example below was made using Lucidchart (https://lucid.app):
-\section{Network Topology}
+\BLOCK{ if project.host_set.all() and project.host_set.all()|length > 0 }
+	\section{Network Topology}
 
-\BLOCK{ for host in project.host_set.all() }
-	\subsection{\VAR{ host.ip } - \VAR{host.hostname | escape }}
-
-	\begin{table}[H]
-		\centering
-		{\setlength{\extrarowheight}{2pt}%
-			\begin{tabular}{| l | p{12cm} |}
-				\hline 
-				OS & \VAR{host.os | escape }\\
-				\hline 
-		\end{tabular}}
-	\end{table}
-
-	\VAR{host.notes | mdtolatex}
-
-	\BLOCK{ for service in host.service_set.all() }
-		\subsubsection{Port \VAR{service.port} - \VAR{service.protocol | escape }}
+	\BLOCK{ for host in project.host_set.all() }
+		\subsection{\VAR{ host.ip } - \VAR{host.hostname | escape }}
 
 		\begin{table}[H]
 			\centering
 			{\setlength{\extrarowheight}{2pt}%
 				\begin{tabular}{| l | p{12cm} |}
 					\hline 
-					Name & \VAR{service.name | escape }\\
-					\hline
-					Version & \VAR{service.version | escape }\\
+					OS & \VAR{host.os | escape }\\
 					\hline 
-					Banner & \VAR{service.banner | escape }\\
-					\hline  
 			\end{tabular}}
 		\end{table}
+
+		\VAR{host.notes | mdtolatex}
+
+		\BLOCK{ for service in host.service_set.all() }
+			\subsubsection{Port \VAR{service.port} - \VAR{service.protocol | escape }}
+
+			\begin{table}[H]
+				\centering
+				{\setlength{\extrarowheight}{2pt}%
+					\begin{tabular}{| l | p{12cm} |}
+						\hline 
+						Name & \VAR{service.name | escape }\\
+						\hline
+						Version & \VAR{service.version | escape }\\
+						\hline 
+						Banner & \VAR{service.banner | escape }\\
+						\hline  
+				\end{tabular}}
+			\end{table}
+		\BLOCK{ endfor }
 	\BLOCK{ endfor }
-\BLOCK{ endfor }
-\newpage
+	\newpage
+\BLOCK{ endif }
 
 \BLOCK{ if project.tools.all() and project.tools.all()|length > 0 }
 	\section{Tools}
@@ -614,12 +637,6 @@
 	\newpage
 \BLOCK{ endif } 
 
-% This should be a table of all tools utilized during the engagement.
-% An example of what this may look like is included below:
-%\section{Tools}
-%\newpage
-
-\section{List of figures}
 \listoffigures
 %-----------------------------------------------------%
 % End of Appendices                                   %
