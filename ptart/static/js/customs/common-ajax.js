@@ -782,12 +782,13 @@ function ajaxDeleteModule(successFunction, errorFunction, id) {
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Case name.
  * @param {*} description Case description.
+ * @param {*} reference Case reference.
  * @param {*} module Case module.
  */
-function ajaxCreateCase(successFunction, errorFunction, name, description, module) {
+function ajaxCreateCase(successFunction, errorFunction, name, description, reference, module) {
     $.ajax({
         url: "/api/cases/",
-        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"module":' + JSON.stringify(module) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"reference":' + JSON.stringify(reference) + ',"module":' + JSON.stringify(module) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -802,12 +803,13 @@ function ajaxCreateCase(successFunction, errorFunction, name, description, modul
  * @param {*} id Case id.
  * @param {*} name Case name.
  * @param {*} description Case description.
+ * @param {*} reference Case reference.
  * @param {*} module Case module.
  */
-function ajaxUpdateCase(successFunction, errorFunction, id, name, description, module) {
+function ajaxUpdateCase(successFunction, errorFunction, id, name, description, reference, module) {
     $.ajax({
         url: "/api/case/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"module":' + JSON.stringify(module) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description) + ',"reference":' + JSON.stringify(reference) + ',"module":' + JSON.stringify(module) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction

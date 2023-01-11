@@ -798,6 +798,7 @@ class Module(models.Model):
 class Case(models.Model):
     name = models.CharField(max_length=100)
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
+    reference = models.CharField(blank=True, default="",max_length=500)
     description = models.TextField(blank=True, default="")
 
     def get_viewable(user):
