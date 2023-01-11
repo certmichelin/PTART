@@ -20,6 +20,9 @@
                     <label>Description</label>
                     <textarea class="form-control" rows="10" id="description" style="resize:vertical">{{ methodology.description}}</textarea>
                 </div>
+                <div class="checkbox">
+                    <label><input id="deprecated" type="checkbox" {% if True == methodology.deprecated %} checked{% endif %}> Deprecated</label>
+                </div>
 
                 <input type="hidden" value="{{ methodology.id }}" id="id" />
                 <button id="updateBtn" class="btn btn-outline-primary mb-4">Update</button>
@@ -31,6 +34,23 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/updateItem.html' with item='Methodology' ajax_function='ajaxUpdateMethodology' params='id,name,description' %}
     {% include '_include/js/deleteItem.html' with item='Methodology' ajax_function='ajaxDeleteMethodology' %}
+    <script>
+        activeMarkdown("description");
+   
+        /**
+        * Item updation success callback.
+        */
+        function itemUpdationSuccess(data) {
+            success($("#messages"), "Methodology was Updated!");
+        }
+    
+        /**
+         * Update item.
+         */
+        $('#updateBtn').on('click', function () {
+            cleanMessagesContainer($("#messages"));
+            ajaxUpdateMethodology(itemUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#description").val(), $("#deprecated").prop("checked"));
+        });
+    </script>
 {% endblock %}

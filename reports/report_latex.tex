@@ -332,7 +332,23 @@
 %-----------------------------------------------------%
 % End of Scope                                        %
 %-----------------------------------------------------%
+%-----------------------------------------------------%
+% Methodologies                                         %
+%-----------------------------------------------------%
+\BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
+	\section{Testing Methodology}
+	 
+	\BLOCK{ for methodology in project.methodologies.all() }
+		\subsection{\VAR{ methodology.name | escape }}
+		
+		\VAR{ methodology.description | mdtolatex }
+	\BLOCK{ endfor }
 
+	\newpage
+\BLOCK{ endif } 
+%-----------------------------------------------------%
+% End of Methodologies                                %
+%-----------------------------------------------------%
 %-----------------------------------------------------%
 % Observation                                         %
 %-----------------------------------------------------%
@@ -417,23 +433,6 @@
 \BLOCK{ endif } 
 %-----------------------------------------------------%
 % End of Recommendations                              %
-%-----------------------------------------------------%
-
-%-----------------------------------------------------%
-% Methodologies                                         %
-%-----------------------------------------------------%
-% If a specific methodology was utilized for the penetration test, it should be indicated here:
-% This example cites PTES, MITRE ATT&K, OWASP Top 10, PCI-DSS, and NIST SP 800-53:
-%\section{Testing Methodology}
-%\subsection{Methodology 1}
-%\lipsum[1]
-
-%\subsection{Methodology 2}
-%\lipsum[1]
-
-%\newpage
-%-----------------------------------------------------%
-% End of Methodologies                                %
 %-----------------------------------------------------%
 %-----------------------------------------------------%
 % Technical Findings                                  %
@@ -590,6 +589,28 @@
 			\BLOCK{ endfor } 
 		\end{tabular}}
 	\end{table}
+	\newpage
+\BLOCK{ endif } 
+
+
+\BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
+	\section{Testing Methodology Details}
+	 
+	\BLOCK{ for methodology in project.methodologies.all() }
+		\subsection{\VAR{ methodology.name | escape }}
+		\BLOCK{ for module in methodology.module_set.all()}
+			\subsubsection{\VAR{ module.name | escape }}
+			\VAR{ module.description | mdtolatex }
+
+			\BLOCK{ for case in module.case_set.all()}
+				\paragraph{\VAR{ case.name | escape }}
+				\VAR{ case.description | mdtolatex }
+				
+				\url{\VAR{ case.reference }}
+			\BLOCK{ endfor }
+		\BLOCK{ endfor }
+	\BLOCK{ endfor }
+
 	\newpage
 \BLOCK{ endif } 
 
