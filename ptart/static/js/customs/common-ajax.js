@@ -22,14 +22,15 @@ $.ajaxSetup({
  * @param {*} conclusion Project conclusion.
  * @param {*} scope Project scope.
  * @param {*} client Project client.
+ * @param {*} methodologies Project methodologies.
  * @param {*} tools Project tools.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  */
-function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, tools, pentesters, viewers) {
+function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, methodologies, tools, pentesters, viewers) {
     $.ajax({
         url: "/api/projects/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -50,15 +51,16 @@ function ajaxCreateProject(successFunction, errorFunction, name, start_date, end
  * @param {*} conclusion Project conclusion.
  * @param {*} scope Project scope.
  * @param {*} client Project client.
+ * @param {*} methodologies Project methodologies.
  * @param {*} tools Project tools.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  * @param {*} archived True if the project is archived.
  */
-function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, tools, pentesters, viewers, archived) {
+function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, methodologies, tools, pentesters, viewers, archived) {
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"archived":' + JSON.stringify(archived) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"archived":' + JSON.stringify(archived) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction

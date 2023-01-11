@@ -16,15 +16,33 @@ class ToolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tool
         fields = ('id', 'name', 'deprecated', 'url')
+
+class CaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Case
+        fields = ('id', 'name', 'description', 'reference', 'module')
+
+
+class ModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = ('id', 'name', 'description', 'methodology')
+
+
+class MethodologySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Methodology
+        fields = ('id', 'name', 'description')
         
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)
     viewers = UserSerializer(read_only=True, many=True)
     tools = ToolSerializer(read_only=True, many=True)
+    methodologies = MethodologySerializer(read_only=True, many=True)
 
     class Meta:
         model = Project
-        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived', 'tools')
+        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived', 'tools', 'methodologies')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -56,6 +74,12 @@ class ProjectSerializer(serializers.ModelSerializer):
                 tool_instance = Tool.objects.get(pk=tool)
                 project.tools.add(tool_instance)
 
+        if "methodologies" in self.initial_data:
+            methodologies = self.initial_data.get("methodologies")
+            for methodology in methodologies:
+                methodology_instance = Methodology.objects.get(pk=methodology)
+                project.methodologies.add(methodology_instance)
+
         project.save()
         return project
 
@@ -78,6 +102,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         for tool in tools:
             tool_instance = Tool.objects.get(pk=tool)
             instance.tools.add(tool_instance)
+
+        instance.methodologies.clear()
+        methodologies = self.initial_data.get("methodologies")
+        for methodology in methodologies:
+            methodology_instance = Methodology.objects.get(pk=methodology)
+            instance.methodologies.add(methodology_instance)
 
         instance.__dict__.update(**validated_data)
         instance.save()
@@ -201,21 +231,3 @@ class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = ('id', 'name', 'severity', 'asset', 'body', 'remediation', 'owner')
-
-
-class CaseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Case
-        fields = ('id', 'name', 'description', 'module')
-
-
-class ModuleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Module
-        fields = ('id', 'name', 'description', 'methodology')
-
-
-class MethodologySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Methodology
-        fields = ('id', 'name', 'description')

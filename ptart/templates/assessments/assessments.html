@@ -73,8 +73,6 @@
      * Select all modules from methodology.
      */
     $('.methodology').on('change', function () {
-        var text = '.child-' + $(this).val();
-        var value = $(this).is(":checked");
         $('.child-' + $(this).val()).prop('checked', $(this).is(":checked"));
     });
 

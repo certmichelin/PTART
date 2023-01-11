@@ -50,6 +50,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Methodologies</label>
+                    <select class="js-states form-control" id="methodologies" multiple="multiple">
+                        {% for methodology in methodologies %}
+                        <option value="{{ methodology.id }}">{{ methodology.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Tools</label>
                     <select class="js-states form-control" id="tools" multiple="multiple">
                         {% for tool in tools %}
@@ -113,17 +122,19 @@
         $('#enddate').datepicker('setDate', new Date('{{project.end_date|date:"Y-m-d"}}'));
     {% endif %}
 
+    var selectedMethodologies = [];
+    {% for methodology in project.methodologies.all %}
+        selectedMethodologies.push({{ methodology.id }});
+    {% endfor %}
+
+    $('#methodologies').select2().val(selectedMethodologies).trigger("change");
     
     var selectedTools = [];
     {% for tool in project.tools.all %}
         selectedTools.push({{ tool.id }});
     {% endfor %}
 
-    $('#tools').select2({
-        templateSelection: function (data, container) {
-            return data.text;
-        }
-    }).val(selectedTools).trigger("change");
+    $('#tools').select2().val(selectedTools).trigger("change");
     
     var selectedPentesters = [];
     {% for pentester in project.pentesters.all %}
@@ -158,7 +169,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}

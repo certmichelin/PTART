@@ -127,7 +127,7 @@ def project(request, project_id):
         if project.is_user_can_view(request.user) :
             #This complex trick is necessary to continue to display the deprecated tools in old projects. 
             tools = list(dict.fromkeys(list(Tool.get_not_deprecated(request.user)) + list(project.tools.all())))
-            response = generate_render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'tools': tools, 'editable' : project.is_user_can_edit(request.user)})
+            response = generate_render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'tools': tools, 'methodologies': Methodology.get_viewable(request.user), 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -314,7 +314,7 @@ def case(request, case_id):
 
 @otp_required
 def projects_new(request):
-    return generate_render(request, 'projects/projects.html', {'users': User.objects.filter(is_active=True),'tools': Tool.get_not_deprecated(request.user)})
+    return generate_render(request, 'projects/projects.html', {'users': User.objects.filter(is_active=True),'tools': Tool.get_not_deprecated(request.user), 'methodologies': Methodology.get_viewable(request.user)})
 
 
 @otp_required
