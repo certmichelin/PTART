@@ -33,7 +33,7 @@ if not current_methodology :
             case_description = ""
             for objective in test["objectives"] :
                 case_description = case_description + objective + "\n"
-            case = Case(name=module_name, description = case_description, reference = test["reference"], module = module)
+            case = Case(name=case_name, description = case_description, reference = test["reference"], module = module)
             case.save()
 
     print("OWASP Testing Guide V4 methodology has been imported !")
