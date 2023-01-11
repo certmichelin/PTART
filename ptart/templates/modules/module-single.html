@@ -38,4 +38,7 @@
 {% block extra_foot %}
     {% include '_include/js/updateItem.html' with item='Module' ajax_function='ajaxUpdateModule' params='id,name,description,methodology' %}
     {% include '_include/js/deleteItem.html' with item='Module' ajax_function='ajaxDeleteModule' %}
+    <script>
+        activeMarkdown("description");
+    </script>
 {% endblock %}

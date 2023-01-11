@@ -101,7 +101,7 @@ class Module(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('id',)
 
 
 """Case model."""
@@ -131,7 +131,7 @@ class Case(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('id',)
         
 """ Project model."""
 class Project(models.Model):

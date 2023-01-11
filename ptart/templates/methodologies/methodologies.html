@@ -32,4 +32,7 @@
 
 {% block extra_foot %}
     {% include '_include/js/createItem.html' with item='Methodology' ajax_function='ajaxCreateMethodology' params='name,description' params_to_clean='name,description' %}
+    <script>
+        activeMarkdown("description");
+    </script>
 {% endblock %}

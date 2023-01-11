@@ -31,8 +31,12 @@ if not current_methodology :
         for test in owasp_json['categories'][category_key]["tests"]:
             case_name = "{id}: {name}".format(id = test["id"], name = test["name"])
             case_description = ""
-            for objective in test["objectives"] :
-                case_description = case_description + objective + "\n"
+            if len(test["objectives"]) > 1 :
+                for objective in test["objectives"] :
+                    case_description = case_description + "* " + objective + "\n"
+            elif len(test["objectives"]) == 1 :
+                case_description = test["objectives"][0]
+
             case = Case(name=case_name, description = case_description, reference = test["reference"], module = module)
             case.save()
 

@@ -35,7 +35,9 @@
 
 {% block extra_foot %}
     {% include '_include/js/deleteItem.html' with item='Methodology' ajax_function='ajaxDeleteMethodology' %}
-    <script>    
+    <script>
+        activeMarkdown("description");
+   
         /**
         * Item updation success callback.
         */
