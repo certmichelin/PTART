@@ -1,195 +1,202 @@
 {
     "templates": [
         {
+            "body": "Client Code Execution (`CCE`) occurs when an application allows executing system command based on user-supplied input on system consumers. As a result, the analysts were able to access the underlying Operating System and able to access anything on the client operating system. Very often, an attacker can leverage a Client Code Execution vulnerability to compromise other parts of the enterprise infrastructure, exploiting trust relationships to pivot the attack to other systems within the organization.",
             "name": "CCE: Client Code Execution",
-            "severity": 1,
-            "body": "Client Code Execution (`CCE`) occurs when an application allows executing system command based on user-supplied input on system consumers. As a result, the analysts were able to access the underlying Operating System and able to access anything on the client operating system.",
-            "remediation":""
+            "remediation": "By far the most effective way to prevent Client Code Execution vulnerabilities is to never call out to OS commands from application-layer code.\n\nIf it is considered unavoidable to call out to OS commands with user-supplied input, then strong input validation must be performed. Some examples of effective validation include:\n\n* Validating against a whitelist of permitted values.\n* Validating that the input is a number.\n* Validating that the input contains only alphanumeric characters, no other syntax or whitespace.\n\nNever attempt to sanitize input by escaping shell metacharacters. In practice, this is just too error-prone and vulnerable to being bypassed by a skilled attacker.",
+            "severity": 1
         },
         {
-            "name": "RCE: Remote Code Execution",
-            "severity": 1,
-            "body": "Remote Code Execution (`RCE`) occurs when an application allows executing system command based on user-supplied input. As a result, the analysts were able to access the underlying Operating System and able to access anything on the remote server."
+            "body": "OS command injection (also known as shell injection) is a web security vulnerability that allows an attacker to execute arbitrary operating system (OS) commands on the server that is running an application, and typically fully compromise the application and all its data. Very often, an attacker can leverage an OS command injection vulnerability to compromise other parts of the hosting infrastructure, exploiting trust relationships to pivot the attack to other systems within the organization.",
+            "name": "RCE : OS command injection",
+            "remediation": "By far the most effective way to prevent OS command injection vulnerabilities is to never call out to OS commands from application-layer code. In virtually every case, there are alternate ways of implementing the required functionality using safer platform APIs.\n\nIf it is considered unavoidable to call out to OS commands with user-supplied input, then strong input validation must be performed. Some examples of effective validation include:\n\n* Validating against a whitelist of permitted values.\n* Validating that the input is a number.\n* Validating that the input contains only alphanumeric characters, no other syntax or whitespace.\n\nNever attempt to sanitize input by escaping shell metacharacters. In practice, this is just too error-prone and vulnerable to being bypassed by a skilled attacker.",
+            "severity": 1
         },
         {
+            "body": "Server-side template injection is when an attacker is able to use native template syntax to inject a malicious payload into a template, which is then executed server-side.\n\nTemplate engines are designed to generate web pages by combining fixed templates with volatile data. Server-side template injection attacks can occur when user input is concatenated directly into a template, rather than passed in as data. This allows attackers to inject arbitrary template directives in order to manipulate the template engine, often enabling them to take complete control of the server. As the name suggests, server-side template injection payloads are delivered and evaluated server-side, potentially making them much more dangerous than a typical client-side template injection.",
             "name": "SSTI: Server Side Template Injection",
-            "severity": 1,
-            "body": "Web applications frequently use template systems such as Twig and FreeMarker to embed dynamic content in web pages and emails. Template Injection occurs when user input is embedded in a template in an unsafe manner.",
-            "remediation":""
+            "remediation": "The best way to prevent server-side template injection is to not allow any users to modify or submit new templates. However, this is sometimes unavoidable due to business requirements.\n\nOne of the simplest ways to avoid introducing server-side template injection vulnerabilities is to always use a \"logic-less\" template engine, such as Mustache, unless absolutely necessary. Separating the logic from presentation as much as possible can greatly reduce your exposure to the most dangerous template-based attacks.\n\nAnother measure is to only execute users' code in a sandboxed environment where potentially dangerous modules and functions have been removed altogether. Unfortunately, sandboxing untrusted code is inherently difficult and prone to bypasses.\n\nFinally, another complementary approach is to accept that arbitrary code execution is all but inevitable and apply your own sandboxing by deploying your template environment in a locked-down Docker container, for example.",
+            "severity": 1
         },
         {
+            "body": "Sensitive Information Disclosure (also known as Sensitive Data Exposure) happens when an application does not adequately protect sensitive information that may wind up being disclosed to parties that are not supposed to have access to it.\n\nSensitive data can include application-related information, such as session tokens, file names, stack traces, or confidential information, such as passwords, credit card data, sensitive health data, private communications, intellectual property, metadata, the product’s source code, etc.",
             "name": "Sensitive Data Exposure",
-            "severity": 1,
-            "body": "",
-            "remediation":""
+            "remediation": "",
+            "severity": 1
         },
         {
+            "body": "File upload vulnerabilities are when a web server allows users to upload files to its filesystem without sufficiently validating things like their name, type, contents, or size. Failing to properly enforce restrictions on these could mean that even a basic image upload function can be used to upload arbitrary and potentially dangerous files instead. This could even include server-side script files that enable remote code execution.\n\nIn some cases, the act of uploading the file is in itself enough to cause damage. Other attacks may involve a follow-up HTTP request for the file, typically to trigger its execution by the server.",
             "name": "Unsecured File Upload",
-            "severity": 1,
-            "body": "Uploaded files represent a significant risk to applications. The first step in many attacks is to get some code to the system to be attacked. Then the attack only needs to find a way to get the code executed. Using a file upload helps the attacker accomplish the first step.",
-            "remediation":""
+            "remediation": "Allowing users to upload files is commonplace and doesn't have to be dangerous as long as you take the right precautions. In general, the most effective way to protect your own websites from these vulnerabilities is to implement all of the following practices:\n\n* Check the file extension against a whitelist of permitted extensions rather than a blacklist of prohibited ones. It's much easier to guess which extensions you might want to allow than it is to guess which ones an attacker might try to upload.\n* Make sure the filename doesn't contain any substrings that may be interpreted as a directory or a traversal sequence (../).\n* Rename uploaded files to avoid collisions that may cause existing files to be overwritten.\n* Do not upload files to the server's permanent filesystem until they have been fully validated.\n* As much as possible, use an established framework for preprocessing file uploads rather than attempting to write your own validation mechanisms.",
+            "severity": 1
         },
         {
+            "body": "XML external entity injection (also known as `XXE`) is a web security vulnerability that allows an attacker to interfere with an application's processing of XML data. It often allows an attacker to view files on the application server filesystem, and to interact with any back-end or external systems that the application itself can access.\n\nIn some situations, an attacker can escalate an `XXE` attack to compromise the underlying server or other back-end infrastructure, by leveraging the `XXE` vulnerability to perform server-side request forgery (`SSRF`) attacks.",
             "name": "XXE: XML External Entity",
-            "severity": 1,
-            "body": "An XML External Entity attack is a type of attack against an application that parses XML input. This attack occurs when XML input containing a reference to an external entity is processed by a weakly configured XML parser. This attack may lead to the disclosure of confidential data, denial of service, server side request forgery, port scanning from the perspective of the machine where the parser is located, and other system impacts.",
-            "remediation":""
+            "remediation": "Virtually all XXE vulnerabilities arise because the application's XML parsing library supports potentially dangerous XML features that the application does not need or intend to use. The easiest and most effective way to prevent XXE attacks is to disable those features.\n\nGenerally, it is sufficient to disable resolution of external entities and disable support for XInclude. This can usually be done via configuration options or by programmatically overriding default behavior. Consult the documentation for your XML parsing library or API for details about how to disable unnecessary capabilities.",
+            "severity": 1
         },
         {
-            "name": "Broken Access Control",
-            "severity": 2,
             "body": "Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure, modification or destruction of all data, or performing a business function outside of the limits of the user.",
-            "remediation":""
+            "name": "Broken Access Control",
+            "remediation": "Access control vulnerabilities can generally be prevented by taking a defense-in-depth approach and applying the following principles:\n\n* Never rely on obfuscation alone for access control.\n* Unless a resource is intended to be publicly accessible, deny access by default.\n* Wherever possible, use a single application-wide mechanism for enforcing access controls.\n* At the code level, make it mandatory for developers to declare the access that is allowed for each resource, and deny access by default.\n* Thoroughly audit and test access controls to ensure they are working as designed.",
+            "severity": 2
         },
         {
-            "name": "CSRF: Cross-Site Request Forgery",
-            "severity": 2,
             "body": "Cross-Site Request Forgery (`CSRF`) is an attack that forces an end user to execute unwanted actions on a web application in which they're currently authenticated. If the victim is an administrative account, CSRF can compromise the entire web application.",
-            "remediation":""
+            "name": "CSRF: Cross-Site Request Forgery",
+            "remediation": "Nowadays, successfully finding and exploiting CSRF vulnerabilities often involves bypassing anti-CSRF measures deployed by the target website, the victim's browser, or both. The most common defenses you'll encounter are as follows:\n\n* **CSRF tokens**- A CSRF token is a unique, secret, and unpredictable value that is generated by the server-side application and shared with the client. When attempting to perform a sensitive action, such as submitting a form, the client must include the correct CSRF token in the request. This makes it very difficult for an attacker to construct a valid request on behalf of the victim.\n* **SameSite cookies** - SameSite is a browser security mechanism that determines when a website's cookies are included in requests originating from other websites. As requests to perform sensitive actions typically require an authenticated session cookie, the appropriate SameSite restrictions may prevent an attacker from triggering these actions cross-site. Since 2021, Chrome enforces Lax SameSite restrictions by default. As this is the proposed standard, we expect other major browsers to adopt this behavior in future.\n* **Referer-based validation** - Some applications make use of the HTTP Referer header to attempt to defend against CSRF attacks, normally by verifying that the request originated from the application's own domain. This is generally less effective than CSRF token validation.",
+            "severity": 2
         },
         {
-            "name": "CSRF: Cross-Site Request Forgery using FLASH",
-            "severity": 2,
-            "body": "Cross-Site Request Forgery (`CSRF`) is an attack that forces an end user to execute unwanted actions on a web application in which they're currently authenticated.\nThe API POST requests accept only `application/json` content type that means that the vulnerability is more complicated to exploit.\nHowever, the analyst used the method described here (using flash and `307` redirection) to exploit the vulnerability.\nToolbox used by the analyst can be found [here](https://github.com/sp1d3r/swf_json_csrf)",
-            "remediation":""
-        },
-        {
-            "name": "CSTI : Client Side Template Injection",
-            "severity": 2,
-            "body": "Client-side template injection vulnerabilities arise when applications using a client-side template framework dynamically embed user input in web pages. When a web page is rendered, the framework will scan the page for template expressions, and execute any that it encounters. An attacker can exploit this by supplying a malicious template expression that launches a cross-site scripting (`XSS`) attack. As with normal cross-site scripting, the attacker-supplied code can perform a wide variety of actions, such as stealing the victim's session token or login credentials, performing arbitrary actions on the victim's behalf, and logging their keystrokes.",
-            "remediation":""
-        },
-        {
+            "body": "Insecure direct object references (`IDOR`) are a type of access control vulnerability that arises when an application uses user-supplied input to access objects directly. The term `IDOR` was popularized by its appearance in the `OWASP 2007` Top Ten. However, it is just one example of many access control implementation mistakes that can lead to access controls being circumvented. `IDOR` vulnerabilities are most commonly associated with horizontal privilege escalation, but they can also arise in relation to vertical privilege escalation.",
             "name": "IDOR: Insecure Direct Object References",
-            "severity": 2,
-            "body": "Insecure Direct Object References occur when an application provides direct access to objects based on user-supplied input. As a result of this vulnerability attackers can bypass authorization and access resources in the system directly, for example database records or files.",
-            "remediation":""
+            "remediation": "Randomly assigning numbers to reference objects instead of sequentially can slightly mitigate (but does not fully solve) the problem of insecure direct object references. For example, suppose all users are given a nine-digit ID number. In that case, adversaries can try a brute-force attack, testing various nine-digit numbers until they find one that refers to a valid user. \n\nEven user ID generation methods with a high degree of randomness, such as Universally Unique Identifiers (UUIDs), are not a perfect solution for IDOR vulnerabilities. If a company’s list of user IDs is leaked, adversaries could use this list to execute attacks as long as the web application does not implement access control. Thus, organizations need a more robust approach that can stop IDOR vulnerabilities in their tracks.\n\nThe best option is to apply broken access control vulnerabilities mitigation\n\n* Never rely on obfuscation alone for access control.\n* Unless a resource is intended to be publicly accessible, deny access by default.\n* Wherever possible, use a single application-wide mechanism for enforcing access controls.\n* At the code level, make it mandatory for developers to declare the access that is allowed for each resource, and deny access by default.\n* Thoroughly audit and test access controls to ensure they are working as designed.",
+            "severity": 2
         },
         {
+            "body": "LDAP Injection is an attack used to exploit web based applications that construct LDAP statements based on user input. When an application fails to properly sanitize user input, it’s possible to modify LDAP statements using a local proxy. This could result in the execution of arbitrary commands such as granting permissions to unauthorized queries, and content modification inside the LDAP tree. The same advanced exploitation techniques available in SQL Injection can be similarly applied in LDAP Injection.",
             "name": "LDAP Injection",
-            "severity": 2,
-            "body": "The Lightweight Directory Access Protocol (`LDAP`) is used to store information about users, hosts, and many other objects. LDAP injection is a server side attack, which could allow sensitive information about users and hosts represented in an LDAP structure to be disclosed, modified, or inserted. This is done by manipulating input parameters afterwards passed to internal search, add, and modify functions.",
-            "remediation":""
+            "remediation": "Just like other injection attack vulnerabilities, the primary defense against LDAP injection is proper input validation. Unfortunately, there are no prepared statements interfaces for LDAP like those used in SQL. Therefore, the most effective solution is a strong validation of untrusted input. If you can properly encode and sanitize all input in the application layer, then you can significantly minimize the possibilities of these threats. Here are some other secure coding practices that can help you avoid LDAP injections:\n\n*  Whitelist input validation\n* Escaping all variables using the right encoding functions\n* Indexing of fields containing sensitive information such as user passwords\n* Using Frameworks such as LINQtoAD to automatically prevent LDAP Injection\n* Minimize privileges assigned to LDAP binding accounts",
+            "severity": 2
         },
         {
+            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a `dynamic file inclusion` mechanisms implemented in the target application. The vulnerability occurs due to the use of user-supplied input without proper validation.\n\nThis can lead to something as outputting the contents of the file, but depending on the severity, it can also lead to:\n\n* Code execution on the web server\n* Code execution on the client-side such as JavaScript which can lead to other attacks such as cross site scripting (XSS)\n* Denial of Service (DoS)\n* Sensitive Information Disclosure",
             "name": "LFI: Local File Inclusion",
-            "severity": 2,
-            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a \"dynamic file inclusion\" mechanisms implemented in the target application.\n\nThis can lead to outputting the contents of the file, code execution on the web server, cross site scripting (XSS)",
-            "remediation":""
+            "remediation": "The most effective solution to eliminate file inclusion vulnerabilities is to avoid passing user-submitted input to any filesystem/framework API. If this is not possible the application can maintain an allow list of files, that may be included by the page, and then use an identifier (for example the index number) to access to the selected file. Any request containing an invalid identifier has to be rejected, in this way there is no attack surface for malicious users to manipulate the path.",
+            "severity": 2
         },
         {
-            "name": "Path Transversal",
-            "severity": 2,
-            "body": "A path traversal attack (also known as directory traversal) aims to access files and directories that are stored outside the web root folder. By manipulating variables that reference files with `dot-dot-slash (../)` sequences and its variations or by using absolute file paths, it may be possible to access arbitrary files and directories stored on file system including application source code or configuration and critical system files.",
-            "remediation":""
+            "body": "Directory traversal (also known as file path traversal) is a web security vulnerability that allows an attacker to read arbitrary files on the server that is running an application. This might include application code and data, credentials for back-end systems, and sensitive operating system files. In some cases, an attacker might be able to write to arbitrary files on the server, allowing them to modify application data or behavior, and ultimately take full control of the server.",
+            "name": "Directory traversal",
+            "remediation": "The most effective way to prevent file path traversal vulnerabilities is to avoid passing user-supplied input to filesystem APIs altogether. Many application functions that do this can be rewritten to deliver the same behavior in a safer way.\n\nIf it is considered unavoidable to pass user-supplied input to filesystem APIs, then two layers of defense should be used together to prevent attacks:\n\n* The application should validate the user input before processing it. Ideally, the validation should compare against a whitelist of permitted values. If that isn't possible for the required functionality, then the validation should verify that the input contains only permitted content, such as purely alphanumeric characters.\n* After validating the supplied input, the application should append the input to the base directory and use a platform filesystem API to canonicalize the path. It should verify that the canonicalized path starts with the expected base directory.",
+            "severity": 2
         },
         {
+            "body": "The File Inclusion vulnerability allows an attacker to include a file, usually exploiting a `dynamic file inclusion` mechanisms implemented in the target application. The vulnerability occurs due to the use of user-supplied input without proper validation.\n\nThis can lead to something as outputting the contents of the file, but depending on the severity, it can also lead to:\n\n* Code execution on the web server\n* Code execution on the client-side such as JavaScript which can lead to other attacks such as cross site scripting (XSS)\n* Denial of Service (DoS)\n* Sensitive Information Disclosure",
             "name": "RFI: Remote File Inclusion",
-            "severity": 2,
-            "body": "Remote File Inclusion (also known as RFI) is the process of including remote files through the exploiting of vulnerable inclusion procedures implemented in the application. This vulnerability occurs, for example, when a page receives, as input, the path to the file that has to be included and this input is not properly sanitized, allowing external URL to be injected.",
-            "remediation":""
+            "remediation": "The most effective solution to eliminate file inclusion vulnerabilities is to avoid passing user-submitted input to any filesystem/framework API. If this is not possible the application can maintain an allow list of files, that may be included by the page, and then use an identifier (for example the index number) to access to the selected file. Any request containing an invalid identifier has to be rejected, in this way there is no attack surface for malicious users to manipulate the path.",
+            "severity": 2
         },
         {
+            "body": "Cross-site scripting (also known as `XSS`) is a web security vulnerability that allows an attacker to compromise the interactions that users have with a vulnerable application. It allows an attacker to circumvent the same origin policy, which is designed to segregate different websites from each other. Cross-site scripting vulnerabilities normally allow an attacker to masquerade as a victim user, to carry out any actions that the user is able to perform, and to access any of the user's data. If the victim user has privileged access within the application, then the attacker might be able to gain full control over all of the application's functionality and data.\n\nReflected cross-site scripting (or `XSS`) arises when an application receives data in an HTTP request and includes that data within the immediate response in an unsafe way.",
             "name": "Reflected XSS: Cross-Site scripting",
-            "severity": 2,
-            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\n\nThe malicious script could access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page and/or execute valid `XHR` request.",
-            "remediation":""
+            "remediation": "Preventing cross-site scripting is trivial in some cases but can be much harder depending on the complexity of the application and the ways it handles user-controllable data.\n\nIn general, effectively preventing `XSS` vulnerabilities is likely to involve a combination of the following measures:\n\n* Filter input on arrival. At the point where user input is received, filter as strictly as possible based on what is expected or valid input.\n* Encode data on output. At the point where user-controllable data is output in HTTP responses, encode the output to prevent it from being interpreted as active content. Depending on the output context, this might require applying combinations of HTML, URL, `JavaScript`, and `CSS` encoding.\n* Use appropriate response headers. To prevent `XSS` in HTTP responses that aren't intended to contain any HTML or `JavaScript`, you can use the Content-Type and X-Content-Type-Options headers to ensure that browsers interpret the responses in the way you intend.\n* Content Security Policy. As a last line of defense, you can use Content Security Policy (`CSP`) to reduce the severity of any `XSS` vulnerabilities that still occur.",
+            "severity": 2
         },
         {
+            "body": "SQL injection (`SQLi`) is a web security vulnerability that allows an attacker to interfere with the queries that an application makes to its database. It generally allows an attacker to view data that they are not normally able to retrieve. This might include data belonging to other users, or any other data that the application itself is able to access. In many cases, an attacker can modify or delete this data, causing persistent changes to the application's content or behavior.\n\nIn some situations, an attacker can escalate an SQL injection attack to compromise the underlying server or other back-end infrastructure, or perform a denial-of-service attack.",
             "name": "SQLi: SQL Injection",
-            "severity": 2,
-            "body": "A SQL injection attack consists of insertion or \"injection\" of a SQL query via the input data from the client to the application. A successful SQL injection exploit can read/edit sensitive data from the database.",
-            "remediation":""
+            "remediation": "Most instances of SQL injection can be prevented by using parameterized queries (also known as prepared statements) instead of string concatenation within the query.\n\nParameterized queries can be used for any situation where untrusted input appears as data within the query, including the WHERE clause and values in an INSERT or UPDATE statement. They can't be used to handle untrusted input in other parts of the query, such as table or column names, or the ORDER BY clause. Application functionality that places untrusted data into those parts of the query will need to take a different approach, such as white-listing permitted input values, or using different logic to deliver the required behavior.\n\nFor a parameterized query to be effective in preventing SQL injection, the string that is used in the query must always be a hard-coded constant, and must never contain any variable data from any origin. Do not be tempted to decide case-by-case whether an item of data is trusted, and continue using string concatenation within the query for cases that are considered safe. It is all too easy to make mistakes about the possible origin of data, or for changes in other code to violate assumptions about what data is tainted.",
+            "severity": 2
         },
         {
+            "body": "Server-side request forgery (also known as SSRF) is a web security vulnerability that allows an attacker to induce the server-side application to make requests to an unintended location.\n\nIn a typical SSRF attack, the attacker might cause the server to make a connection to internal-only services within the organization's infrastructure. In other cases, they may be able to force the server to connect to arbitrary external systems, potentially leaking sensitive data such as authorization credentials.",
             "name": "SSRF: Server Side Request Forgery",
-            "severity": 2,
-            "body": "For a Server-Side Request Forgery (`SSRF`) attack, the attacker can abuse functionality on the server to read or update internal resources. The attacker can supply or a modify a URL which the code running on the server will read or submit data to, and by carefully selecting the URLs, the attacker may be able to connect to internal services like http enabled databases or perform post requests towards internal services which are not intended to be exposed.",
-            "remediation":""
+            "remediation": "Mitigations for SSRF can typically occur in two broad categories: you apply controls either at the network layer or application layer.\n\nA common mitigation for SSRF is to implement firewall policies about what the hosts running the application are able to connect to. This is most commonly applied to existing network infrastructure where firewalls are placed at strategic locations within the network architecture, or placed closer to the hosts using interface ACLs on networking equipment, or even host-based firewalls to restrict outbound connectivity.\n\nIf you either don’t have control of the network configuration or can’t run additional software like an HTTP CONNECT proxy, you can mitigate SSRF with application layer controls by checking that the target address is not within a blocked range.",
+            "severity": 2
         },
         {
+            "body": "Cross-site scripting (also known as `XSS`) is a web security vulnerability that allows an attacker to compromise the interactions that users have with a vulnerable application. It allows an attacker to circumvent the same origin policy, which is designed to segregate different websites from each other. Cross-site scripting vulnerabilities normally allow an attacker to masquerade as a victim user, to carry out any actions that the user is able to perform, and to access any of the user's data. If the victim user has privileged access within the application, then the attacker might be able to gain full control over all of the application's functionality and data.\n\nStored cross-site scripting (also known as second-order or persistent XSS) arises when an application receives data from an untrusted source and includes that data within its later HTTP responses in an unsafe way.",
             "name": "Stored XSS: Cross-Site scripting",
-            "severity": 2,
-            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\nThe malicious script could access any cookies, session tokens, or other sensitive information retained by the browser and used with that site. These scripts can even rewrite the content of the HTML page and/or execute valid `XHR` request. The difference with a reflected XSS is the malicious script is stored in the application and not directly coming from a direct parameter.",
-            "remediation":""
+            "remediation": "Preventing cross-site scripting is trivial in some cases but can be much harder depending on the complexity of the application and the ways it handles user-controllable data.\n\nIn general, effectively preventing `XSS` vulnerabilities is likely to involve a combination of the following measures:\n\n* Filter input on arrival. At the point where user input is received, filter as strictly as possible based on what is expected or valid input.\n* Encode data on output. At the point where user-controllable data is output in HTTP responses, encode the output to prevent it from being interpreted as active content. Depending on the output context, this might require applying combinations of HTML, URL, `JavaScript`, and `CSS` encoding.\n* Use appropriate response headers. To prevent `XSS` in HTTP responses that aren't intended to contain any HTML or `JavaScript`, you can use the Content-Type and X-Content-Type-Options headers to ensure that browsers interpret the responses in the way you intend.\n* Content Security Policy. As a last line of defense, you can use Content Security Policy (`CSP`) to reduce the severity of any `XSS` vulnerabilities that still occur.",
+            "severity": 2
         },
         {
+            "body": "Cross-site scripting (also known as `XSS`) is a web security vulnerability that allows an attacker to compromise the interactions that users have with a vulnerable application. It allows an attacker to circumvent the same origin policy, which is designed to segregate different websites from each other. Cross-site scripting vulnerabilities normally allow an attacker to masquerade as a victim user, to carry out any actions that the user is able to perform, and to access any of the user's data. If the victim user has privileged access within the application, then the attacker might be able to gain full control over all of the application's functionality and data.\n\n`Blind XSS` is a flavor of cross site scripting (XSS), where the attacker blindly deploys a series of malicious payloads on web pages that are likely to save them to a persistent state (like in a database, or in a log file). Then, without knowing any details about where the payloads have ended up, or if (and when) they are going to be executed, the attacker waits for the payloads to be pulled out of storage and rendered on a web page loaded by a user.",
             "name": "Blind XSS: Cross-Site scripting",
-            "severity": 2,
-            "body": "Cross-Site Scripting (`XSS`) attacks are a type of injection, in which malicious scripts are injected into otherwise benign and trusted websites.\n\n`Blind XSS` is a flavor of cross site scripting (XSS), where the attacker blindly deploys a series of malicious payloads on web pages that are likely to save them to a persistent state (like in a database, or in a log file). Then, without knowing any details about where the payloads have ended up, or if (and when) they are going to be executed, the attacker waits for the payloads to be pulled out of storage and rendered on a web page loaded by a user.",
-            "remediation":""
+            "remediation": "Preventing cross-site scripting is trivial in some cases but can be much harder depending on the complexity of the application and the ways it handles user-controllable data.\n\nIn general, effectively preventing XSS vulnerabilities is likely to involve a combination of the following measures:\n\n* **Filter input on arrival**. At the point where user input is received, filter as strictly as possible based on what is expected or valid input.\n* **Encode data on output**. At the point where user-controllable data is output in HTTP responses, encode the output to prevent it from being interpreted as active content. Depending on the output context, this might require applying combinations of HTML, URL, JavaScript, and CSS encoding.\n* **Use appropriate response headers**. To prevent XSS in HTTP responses that aren't intended to contain any HTML or JavaScript, you can use the Content-Type and X-Content-Type-Options headers to ensure that browsers interpret the responses in the way you intend.\n* **Content Security Policy**. As a last line of defense, you can use Content Security Policy (CSP) to reduce the severity of any XSS vulnerabilities that still occur.",
+            "severity": 2
         },
         {
+            "body": "Mass Assignment is a vulnerability wherein an active record pattern is manipulated into modifying data items that should normally restrict user functions such as passwords, granted permissions, or admin access. They arise when objects on the backend e.g. database records, are created by using the object representation received with the client request including fields that are not intended to be freely altered.",
             "name": "Mass assignment",
-            "severity":2,
-            "body": "Mass assignment is a computer vulnerability where an active record pattern in a web application is abused to modify data items that the user should not normally be allowed to access such as password, granted permissions, or administrator status.",
-            "remediation":""
+            "remediation": "Developers must avoid using functions that bind client input into variables or internal objects automatically. Additionally, developers must explicitly define all payloads and parameters that the server is expecting.\n\nDepending on the application framework, it may be possible to only allow fields that are determined safe to be fetched from the client request. If the application does not allow for this process, developers must ensure they manually determine which fields are allowed to be extracted from the request and used in downstream contexts.",
+            "severity": 2
         },
         {
-            "name": ".git folder exposed",
-            "severity": 3,
             "body": "The analyst found a `GIT` folder publicly accessible in the webroot (under the `/.git/` folder).\nIn order to retrieve the files pushed on this `GIT` folder, the analyst used a publicly-known tool called [Pillage-SVN](https://github.com/evilpacket/DVCS-Pillage) allowing him to retrieve all the files locally.",
-            "remediation":""
+            "name": ".git folder exposed",
+            "remediation": "Delete the folder from the webapp folder.",
+            "severity": 3
         },
         {
-            "name": ".svn folder exposed",
-            "severity": 3,
             "body": "The analyst found a `SVN` folder publicly accessible in the webroot (under the `/.svn/` folder).\nIn order to retrieve the files pushed on this `SVN` folder, the analyst used a publicly-known tool called [Pillage-SVN](https://github.com/lanjelot/pillage-svn) allowing him to retrieve all the files locally.",
-            "remediation":""
+            "name": ".svn folder exposed",
+            "remediation": "Delete the folder from the webapp folder.",
+            "severity": 3
         },
         {
-            "name": "User Enumeration",
-            "severity": 3,
             "body": "Username enumeration is the process of developing a list of all valid usernames on a server or web application. It becomes possible if the server or application provides a clue as to whether or not the username exists. Usually it occurs when a user-related form or URL returns different results when a user exists than when no user exists. However, username enumeration also includes cases when the server can be made to reveal a list of usernames, such as through `SQL Injection`.",
-            "remediation":""
+            "name": "User Enumeration",
+            "remediation": "",
+            "severity": 3
         },
         {
-            "name": "CSV Command Injection",
-            "severity": 4,
             "body": "`CSV` Injection, also known as Formula Injection, occurs when websites embed untrusted input inside CSV files. When a spreadsheet program such as Microsoft is used to open a CSV, any cells starting with '=' will be interpreted by the software as a formula. Maliciously crafted formulas can be used for make the user executing code on their machine.",
-            "remediation":""
+            "name": "CSV Command Injection",
+            "remediation": "The following guidelines can be implemented to prevent CSV Injection:\n\n* Allow List Input Validation\n* Restrict the following values: `+, -, =, and @`\n* Encode File Output\n* Prepend the cells with a specific character\n* Adding a space or single tick to the beginning of the cell\n* Remove any tab characters (0x09) in the cell",
+            "severity": 4
         },
         {
-            "name": "HTML Injection",
-            "severity": 4,
             "body": "HTML injection is a type of injection issue that occurs when a user is able to control an input point and is able to inject arbitrary HTML code into a vulnerable web page. This vulnerability can have many consequences, like disclosure of a user's session cookies that could be used to impersonate the victim, or, more generally, it can allow the attacker to modify the page content seen by the victims.",
-            "remediation":""
+            "name": "HTML Injection",
+            "remediation": "Preventing HTML injection is trivial in some cases but can be much harder depending on the complexity of the application and the ways it handles user-controllable data.\n\nIn general, effectively preventing HTML injection vulnerabilities is likely to involve a combination of the following measures:\n\n* **Filter input on arrival**. At the point where user input is received, filter as strictly as possible based on what is expected or valid input.\n* **Encode data on output**. At the point where user-controllable data is output in HTTP responses, encode the output to prevent it from being interpreted as active content. Depending on the output context, this might require applying combinations of HTML, URL, JavaScript, and CSS encoding.",
+            "severity": 4
         },
         {
-            "name": "Usage of obsolete component",
-            "severity": 4,
-            "body": "",
-            "remediation":""
-        },
-        {
-            "name": "Weak TLS Configuration",
-            "severity": 4,
-            "body": "",
-            "remediation":""
-        },
-        {
-            "name": "Cookie Misconfiguration: HttpOnly",
-            "severity": 5,
             "body": "If the `HttpOnly` flag (optional) is included in the HTTP response header, the cookie cannot be accessed through client side script (again if the browser supports this flag). As a result, even if a cross-site scripting (`XSS`) flaw exists, and a user accidentally accesses a link that exploits this flaw, the browser (primarily Internet Explorer) will not reveal the cookie to a third party.",
-            "remediation":""
+            "name": "Cookie Misconfiguration: HttpOnly",
+            "remediation": "",
+            "severity": 5
         },
         {
-            "name": "Cookie Misconfiguration: Secure Flag",
-            "severity": 5,
             "body": "The secure flag is an option that can be set by the application server when sending a new cookie to the user within an HTTP Response. The purpose of the secure flag is to prevent cookies from being observed by unauthorized parties due to the transmission of a the cookie in clear text.\n\nTo accomplish this goal, browsers which support the secure flag will only send cookies with the secure flag when the request is going to a HTTPS page. Said in another way, the browser will not send a cookie with the secure flag set over an unencrypted HTTP request.\n\nBy setting the secure flag, the browser will prevent the transmission of a cookie over an unencrypted channel.",
-            "remediation":""
+            "name": "Cookie Misconfiguration: Secure Flag",
+            "remediation": "",
+            "severity": 5
         },
         {
-            "name": "Security Headers Misconfiguration",
-            "severity": 5,
             "body": "HTTP headers which should be included by default. Methods for modifying or removing the headers for specific instances should be provided, but by default there are secure settings which should be enabled unless there are other overriding concerns.\n```\nX-Frame-Options: SAMEORIGIN \nX-XSS-Protection: 1; mode=block \nX-Content-Type-Options: nosniff\nContent-Type: text/html; charset=utf-8\n```\nAdditionally, no headers should be included that needlessly divulge information about the server or it's configuration that an end user wouldn't need.",
-            "remediation":""
+            "name": "Security Headers Misconfiguration",
+            "remediation": "",
+            "severity": 5
         },
         {
+            "body": "Open Redirects, otherwise known as Unvalidated Redirects and Forwards, are a class of vulnerability made possible when a web application, comprised of insufficient input-validation controls, is manipulated into redirecting unwitting users of the application to a malicious, attacker-controlled URL.\n\nThis type of exploit is popular with criminals involved in phishing and credential theft, unsurprising given the false layer of trust attributed to the fact that the modified link and the original site share the same server name.",
             "name": "Open Redirect",
-            "severity": 5,
-            "body": "Open redirection vulnerabilities arise when an application incorporates user-controllable data into the target of a redirection in an unsafe way. An attacker can construct a URL within the application that causes a redirection to an arbitrary external domain. This behavior can be leveraged to facilitate phishing attacks against users of the application. The ability to use an authentic application URL, targeting the correct domain and with a valid SSL certificate (if SSL is used), lends credibility to the phishing attack because many users, even if they verify these features, will not notice the subsequent redirection to a different domain.",
-            "remediation":""
+            "remediation": "The following measures can be applied to either eliminate or drastically reduce the potential for Open Redirect exploitation:\n\n* Validation of the supplied value, its appropriateness for the application, and ensure it is authorized for the user:\n* If possible, force the user to provide an ID or token that is mapped server-side to a complete target URL;\n* Input sanitization should be implemented by creating an allow list of trusted URLs determined by host or regex.",
+            "severity": 5
+        },
+        {
+            "body": "The Regular expression Denial of Service (ReDoS) is a Denial of Service attack, that exploits the fact that most Regular Expression implementations may reach extreme situations that cause them to work very slowly (exponentially related to input size). An attacker can then cause a program using a Regular Expression (Regex) to enter these extreme situations and then hang for a very long time.",
+            "name": "ReDos : Regular expression Denial of Service",
+            "remediation": "",
+            "severity": 3
+        },
+        {
+            "body": "Cross-site scripting (also known as `XSS`) is a web security vulnerability that allows an attacker to compromise the interactions that users have with a vulnerable application. It allows an attacker to circumvent the same origin policy, which is designed to segregate different websites from each other. Cross-site scripting vulnerabilities normally allow an attacker to masquerade as a victim user, to carry out any actions that the user is able to perform, and to access any of the user's data. If the victim user has privileged access within the application, then the attacker might be able to gain full control over all of the application's functionality and data.\n\nDOM-based XSS vulnerabilities usually arise when JavaScript takes data from an attacker-controllable source, such as the URL, and passes it to a sink that supports dynamic code execution, such as `eval()` or `innerHTML`. This enables attackers to execute malicious `JavaScript`, which typically allows them to hijack other users' accounts",
+            "name": "DOM-based XSS: Cross-Site scripting",
+            "remediation": "Preventing cross-site scripting is trivial in some cases but can be much harder depending on the complexity of the application and the ways it handles user-controllable data.\n\nIn general, effectively preventing XSS vulnerabilities is likely to involve a combination of the following measures:\n\n* **Filter input on arrival**. At the point where user input is received, filter as strictly as possible based on what is expected or valid input.\n* **Encode data on output**. At the point where user-controllable data is output in HTTP responses, encode the output to prevent it from being interpreted as active content. Depending on the output context, this might require applying combinations of HTML, URL, JavaScript, and CSS encoding.\n* **Use appropriate response headers**. To prevent XSS in HTTP responses that aren't intended to contain any HTML or JavaScript, you can use the Content-Type and X-Content-Type-Options headers to ensure that browsers interpret the responses in the way you intend.\n* **Content Security Policy**. As a last line of defense, you can use Content Security Policy (CSP) to reduce the severity of any XSS vulnerabilities that still occur.",
+            "severity": 2
+        },
+        {
+            "body": "Cross-site scripting (also known as `XSS`) is a web security vulnerability that allows an attacker to compromise the interactions that users have with a vulnerable application. It allows an attacker to circumvent the same origin policy, which is designed to segregate different websites from each other. Cross-site scripting vulnerabilities normally allow an attacker to masquerade as a victim user, to carry out any actions that the user is able to perform, and to access any of the user's data. If the victim user has privileged access within the application, then the attacker might be able to gain full control over all of the application's functionality and data.\n\nPost-Message XSS arise when a script sends attacker-controllable data as a web message to another document within the browser. An attacker may be able to use the web message data as a source by constructing a web page that, if visited by a user, will cause the user's browser to send a web message containing data that is under the attacker's control",
+            "name": "Post-Message XSS: Cross-Site scripting",
+            "remediation": "In addition to the general DOM-based vulnerabilities measures. The origin of any incoming messages must be verified.",
+            "severity": 2
+        },
+        {
+            "body": "Insecure deserialization is when user-controllable data is deserialized by a website. This potentially enables an attacker to manipulate serialized objects in order to pass harmful data into the application code.\n\nIt is even possible to replace a serialized object with an object of an entirely different class. Alarmingly, objects of any class that is available to the website will be deserialized and instantiated, regardless of which class was expected. For this reason, insecure deserialization is sometimes known as an \"object injection\" vulnerability.",
+            "name": "Insecure deserialization",
+            "remediation": "Generally speaking, deserialization of user input should be avoided unless absolutely necessary. The high severity of exploits that it potentially enables, and the difficulty in protecting against them, outweigh the benefits in many cases.",
+            "severity": 1
+        },
+        {
+            "body": "Log Injection (also known as Log Forgery) attacks result from untrusted input being introduced into application or system log files, compromising or convoluting the integrity of the data therein. Malicious actors deploying this technique can tamper or forge logs to mislead log audit processes, obfuscate application records to cover the traces of an attack, and in the most extreme cases, achieve Remote Code Execution on the application",
+            "name": "Log Injection",
+            "remediation": "The susceptibility of applications to this attack is highly dependent on the controls set in place over the writing of logs. A primary defense against Log Injection attacks is to strictly sanitize outbound log messages by implementing an allow list of characters. This may include the limitation of alphanumeric characters and spaces in all logs.",
+            "severity": 4
         }
     ]
 }
