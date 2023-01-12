@@ -20,6 +20,10 @@
                         <input class="form-control" id="name" autocomplete="off" placeholder="Case name (ex: Test for SQLi, etc...)"/>
                     </div>
                     <div class="form-group">
+                        <label>Reference</label>
+                        <input class="form-control" id="reference" autocomplete="off" />
+                    </div>
+                    <div class="form-group">
                         <label>Description</label>
                         <textarea class="form-control" rows="10" id="description" style="resize:vertical"></textarea>
                     </div>
@@ -43,7 +47,7 @@
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/createItem.html' with item='Case' ajax_function='ajaxCreateCase' params='name,description,module' params_to_clean='name,description' %}
+    {% include '_include/js/createItem.html' with item='Case' ajax_function='ajaxCreateCase' params='name,description,module' params_to_clean='name,description,reference' %}
     <script>
         activeMarkdown("description");
     </script>

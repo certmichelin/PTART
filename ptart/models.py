@@ -9,18 +9,145 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 
+"""Tool model."""
+class Tool(models.Model):
 
+    name = models.CharField(max_length=200)
+    url = models.CharField(max_length=500)
+    deprecated = models.BooleanField(default=False)
+
+    def __str__(self):  
+        return self.title
+
+    def get_viewable(user):
+        """Returns all viewable tools"""
+        return Tool.objects.all()
+
+    def get_not_deprecated(user):
+        """Returns not deprecated tools"""
+        return Tool.objects.filter(deprecated=False)
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this tool"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this tool"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this tool"""
+        return user.is_staff
+
+    class Meta:
+        ordering = ('pk',)
+
+"""Methodology model."""
+class Methodology(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, default="")
+    deprecated = models.BooleanField(default=False)
+
+    def __str__(self):  
+        return self.name
+
+    def get_viewable(user):
+        """Returns all viewable methodologies"""
+        return Methodology.objects.all()
+
+    def get_not_deprecated(user):
+        """Returns not deprecated methodologies"""
+        return Methodology.objects.filter(deprecated=False)
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this methodology"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this methodology"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this methodology"""
+        return user.is_staff
+
+    class Meta:
+        ordering = ('name',)
+
+
+"""Module model."""
+class Module(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, default="")
+    methodology = models.ForeignKey(Methodology, on_delete=models.CASCADE, null=True, default=None)
+
+    def get_viewable(user):
+        """Returns all viewable modules"""
+        return Module.objects.all()
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this module"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this module"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this module"""
+        return user.is_staff
+
+    def __str__(self):  
+        return self.name
+
+    class Meta:
+        ordering = ('id',)
+
+
+"""Case model."""
+class Case(models.Model):
+    name = models.CharField(max_length=100)
+    module = models.ForeignKey(Module, on_delete=models.CASCADE)
+    reference = models.CharField(blank=True, default="",max_length=500)
+    description = models.TextField(blank=True, default="")
+
+    def get_viewable(user):
+        """Returns all viewable cases"""
+        return Case.objects.all()
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this case"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this case"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this case"""
+        return user.is_staff
+
+    def __str__(self):  
+        return self.name
+
+    class Meta:
+        ordering = ('id',)
+        
 """ Project model."""
 class Project(models.Model):
 
     name = models.CharField(max_length=100)
-    introduction = models.TextField(blank=True, default="")
+    executive_summary = models.TextField(blank=True, default="")
+    engagement_overview = models.TextField(blank=True, default="")
     conclusion = models.TextField(blank=True, default="")
     scope = models.TextField(blank=True, default="")
+    client = models.CharField(max_length=200, blank=True, default="")
     added = models.DateTimeField(default=datetime.now)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     archived = models.BooleanField(default=False)
+    tools = models.ManyToManyField(Tool)
+    methodologies = models.ManyToManyField(Methodology)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
     viewers = models.ManyToManyField(User, related_name='%(class)s_viewers')
 
@@ -53,6 +180,18 @@ class Project(models.Model):
         for assessment in self.assessment_set.all() :
             hits.extend(assessment.hits_by_severity(severity))
         return hits
+
+    def labels_statistics(self):
+        """Compute statistics on labels"""
+        statistics = {}
+        for assessment in self.assessment_set.all() :
+            for hit in assessment.hit_set.all():
+                for label in hit.labels.all():
+                    if statistics.get(label.title) is None :
+                        statistics[label.title] = 1
+                    else:
+                        statistics[label.title] = statistics[label.title] + 1
+        return statistics
 
     def get_viewable(user):
         """Returns all viewable & non-archived projects"""
@@ -89,6 +228,8 @@ class AttackScenario(models.Model):
     project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     scenario = models.TextField(blank=True, default="")
+    svg = models.TextField(blank=True, default="")
+    body = models.TextField(blank=True, default="")
     
     def __str__(self):  
         return self.scenario
@@ -108,6 +249,35 @@ class AttackScenario(models.Model):
     def is_user_can_create(self, user):
         """Verify if the user can create this attack scenario"""
         return self.project.is_user_can_edit(user)
+
+    class Meta:
+        ordering = ('name',)
+
+"""Recommendation model."""
+class Recommendation(models.Model):
+
+    project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1000, default="")
+    body = models.TextField(blank=True, default="")
+    
+    def get_viewable(user):
+        """Returns all viewable recommendations"""
+        return Recommendation.objects.filter(project__in=Project.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this recommendation"""
+        return self.project.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this recommendation"""
+        return self.project.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this recommendation"""
+        return self.project.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.name
 
     class Meta:
         ordering = ('name',)
@@ -439,6 +609,35 @@ class Comment(models.Model):
     class Meta:
         ordering = ('added',)
 
+"""HitReference model."""
+class HitReference(models.Model):
+
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1000, default="")
+    url = models.CharField(max_length=1000, default="")
+    
+    def get_viewable(user):
+        """Returns all viewable hit references"""
+        return HitReference.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this hit reference"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this hit reference"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this hit reference"""
+        return self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+
 
 """Screenshot model."""
 class Screenshot(models.Model):
@@ -629,91 +828,6 @@ class Template(models.Model):
     class Meta:
         ordering = ('severity','name',)
 
-
-"""Methodology model."""
-class Methodology(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, default="")
-
-    def __str__(self):  
-        return self.name
-
-    def get_viewable(user):
-        """Returns all viewable methodologies"""
-        return Methodology.objects.all()
-
-    def is_user_can_view(self, user):
-        """Verify if the user have read access for this methodology"""
-        return True
-
-    def is_user_can_edit(self, user):
-        """Verify if the user have write access for this methodology"""
-        return user.is_staff
-
-    def is_user_can_create(self, user):
-        """Verify if the user can create this methodology"""
-        return user.is_staff
-
-    class Meta:
-        ordering = ('name',)
-
-
-"""Module model."""
-class Module(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, default="")
-    methodology = models.ForeignKey(Methodology, on_delete=models.CASCADE, null=True, default=None)
-
-    def get_viewable(user):
-        """Returns all viewable modules"""
-        return Module.objects.all()
-
-    def is_user_can_view(self, user):
-        """Verify if the user have read access for this module"""
-        return True
-
-    def is_user_can_edit(self, user):
-        """Verify if the user have write access for this module"""
-        return user.is_staff
-
-    def is_user_can_create(self, user):
-        """Verify if the user can create this module"""
-        return user.is_staff
-
-    def __str__(self):  
-        return self.name
-
-    class Meta:
-        ordering = ('name',)
-
-
-"""Case model."""
-class Case(models.Model):
-    name = models.CharField(max_length=100)
-    module = models.ForeignKey(Module, on_delete=models.CASCADE)
-    description = models.TextField(blank=True, default="")
-
-    def get_viewable(user):
-        """Returns all viewable cases"""
-        return Case.objects.all()
-
-    def is_user_can_view(self, user):
-        """Verify if the user have read access for this case"""
-        return True
-
-    def is_user_can_edit(self, user):
-        """Verify if the user have write access for this case"""
-        return user.is_staff
-
-    def is_user_can_create(self, user):
-        """Verify if the user can create this case"""
-        return user.is_staff
-
-    def __str__(self):  
-        return self.name
-
-    class Meta:
-        ordering = ('name',)
 
 """Severity structure."""
 class Severity():

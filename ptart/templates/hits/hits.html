@@ -96,6 +96,46 @@
             <div class="col-lg-5">
                 {% if assessments %}
                 {% include "_include/html/cvss.html" %}
+
+                <!-- Reference Area -->
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4>References</h4>
+                            </div>
+                        </div>
+                            
+                        <div id="references">
+                        </div>
+               
+                    <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#addReferenceModal">Add a reference</button>
+                    
+                    <!-- Add a hit reference modal -->
+                    <div class="modal fade" id="addReferenceModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Add a reference</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input id="newReferenceName" class="form-control" autocomplete="off" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Url</label>
+                                        <input id="newReferenceUrl" class="form-control" placeholder="Only http/https url"  autocomplete="off" />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="addReferenceBtn" type="submit" class="btn btn-outline-primary" onclick="addReference()">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 {% include "_include/html/attachments.html" %}
                 {% include "_include/html/screenshots.html" %}
                 {% endif %}
@@ -131,6 +171,8 @@
     var screenshotsUploaded = 0;
     var attachmentsToUpload = 0;
     var attachmentsUploaded = 0;
+    var referencesToCreate = 0;
+    var referencesCreated = 0;
 
     $('#template').change(function () {
         var template_id = $(this).val();
@@ -166,8 +208,9 @@
         //Upload screenshots and attachment 
         screenshotsToUpload = $('.screenshot_gallery').length;
         attachmentsToUpload = $('.attachment_gallery').length;
+        referencesToCreate  = $('.references').length;
 
-        if (screenshotsToUpload == 0 && attachmentsToUpload == 0) {
+        if (screenshotsToUpload == 0 && attachmentsToUpload == 0 && referencesToCreate == 0) {
             checkUploadBatchStatus()
         } else {
             $($('.screenshot_gallery').get().reverse()).each(function () {
@@ -176,6 +219,10 @@
 
             $($('.attachment_gallery').get().reverse()).each(function () {
                 ajaxUploadAttachment(attachmentCreationSuccess, attachmentCreationFailure, $(this).attr("href"), $(this).attr("filename"), data.id);
+            });
+
+            $($('.references').get().reverse()).each(function () {
+                ajaxCreateHitReference(referenceCreationSuccess, referenceCreationFailure, $(this).attr("name"), $(this).attr("url"), data.id);
             });
 
         }
@@ -231,10 +278,28 @@
     }
 
     /**
+     * Reference creation success callback.
+     */
+     function referenceCreationSuccess(data) {
+        success($("#messages"), "Reference created!");
+        ++referencesCreated
+        checkUploadBatchStatus();
+    }
+
+    /**
+     * Attachment creation failure callback.
+     */
+    function referenceCreationFailure(data) {
+        error($("#messages"), "Reference was not created!");
+        ++referencesCreated
+        checkUploadBatchStatus();
+    }
+
+    /**
      * Check if all images & attachments has been uploaded.
      */
     function checkUploadBatchStatus() {
-        if (screenshotsUploaded == screenshotsToUpload && attachmentsUploaded == attachmentsToUpload) {
+        if (screenshotsUploaded == screenshotsToUpload && attachmentsUploaded == attachmentsToUpload && referencesCreated == referencesToCreate) {
             $("#title").val("");
             $("#asset").val("");
             $("#displayable").prop("checked", true);
@@ -243,13 +308,40 @@
             clearCVSS();
             $("#screenshots").empty();
             $("#attachments").empty();
+            $("#references").empty();
             $('#labels').val(null).trigger('change');
             screenshotsToUpload = 0;
             screenshotsUploaded = 0;
             attachmentsToUpload = 0;
             attachmentsUploaded = 0;
+            referencesToCreate = 0;
+            referencesCreated = 0;
             waitingDialog.hide();
         }
+    }
+
+    /**
+     * Reference creation success callback.
+     */
+     function addReference() {
+        $('#references').append(
+            $('<div>', {
+                id: "reference_" + referencesToCreate,
+                class: "references",
+                name: $("#newReferenceName").val(),
+                url: $("#newReferenceUrl").val()
+            }).append("<p><a class='fa fa-close' style='color:red' href='javascript:deleteReference(" + referencesToCreate + ")'></a>&nbsp;<b>" + $("<div>").text($("#newReferenceName").val()).html() + "</b> : <a href='" + $("<div>").text($("#newReferenceUrl").val()).html() +"'>" + $("<div>").text($("#newReferenceUrl").val()).html() +"</a></p></div>"));
+        $("#addReferenceModal").modal('toggle');
+        referencesToCreate++;
+        $("#newReferenceName").val("");
+        $("#newReferenceUrl").val("");
+    }
+
+    /**
+     * Reference deletion success callback.
+     */
+     function deleteReference(id) {
+        $("#reference_" + id).remove();
     }
 
     /**

@@ -1,0 +1,24 @@
+{
+    "tools": [
+        {
+            "name" : "Burp Suite",
+            "url" : "https://portswigger.net/burp"
+        },
+        {
+            "name" : "Nmap",
+            "url" : "https://nmap.org/"
+        },
+        {
+            "name" : "Nuclei",
+            "url" : "https://github.com/projectdiscovery/nuclei"
+        },
+        {
+            "name" : "XSS Hunter",
+            "url" : "https://xsshunter.com/"
+        },
+        {
+            "name" : "Masscan",
+            "url" : "https://github.com/robertdavidgraham/masscan"
+        }
+    ]
+}

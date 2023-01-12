@@ -13,12 +13,13 @@ PTART is a vulnerability organizer tool developed for pentesters, bug bounty hun
 - Generate ToDo lists from pentest methodologies (OWASP and Wahh are natively included) and assign tasks to a project member.
 - Generate automatically a nice HTML/PDF RevealJS report.
 - Generate automatically an Excel report to share status with your management.
+- Generate automatically a full report in LaTeX.
 - Customize yours labels for categorizing vulnerabilities.
 - Have discussions on a bug using the comment area.
 - Have a common and shared workspace within the team.
 - Secure your work with 2FA.
-- Use PTART API with dedicated token for 3rd party application 
-
+- Use PTART API with dedicated token for 3rd party application.
+- Prepare the Burp configuration file according to project scope. 
 
 A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
 
@@ -43,10 +44,15 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ##### Simply paste a screenshot to add it!
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot2.PNG)
 
-##### Automatic report creation
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot5.PNG)
+##### Automatic LaTeX report creation
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot12.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot11.PNG)
 
-##### PTART main page
+##### Automatic Excel report creation
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot13.PNG)
+
+##### Automatic HTML report creation
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot5.PNG)
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot6.PNG)
 
 ##### Comments in your presentation
@@ -58,11 +64,21 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ##### Attack Scenario
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot10.PNG)
 
+##### Syntax highlight
+```java
+// Your First Program
+class HelloWorld {
+	public static void main(String[] args) {
+		System.out.println("Hello, World!");
+	}
+}
+```
+
 ## Installation
 
 **Preparing PTART environment :**
 
-Python requires Python 3.9 and a few more packages. The simplest way to set up PTART is using  [pipenv](https://github.com/pypa/pipenv). 
+Python requires Python 3.11 and a few more packages. The simplest way to set up PTART is using  [pipenv](https://github.com/pypa/pipenv). 
 
 1. Clone the project and go to the new directory.
 2. Create a new virtual environment and installing dependencies: `pipenv install`. (If psycopg2 failed to be installed, try `sudo apt-get install libpq-dev`)

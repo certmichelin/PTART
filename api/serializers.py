@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import AttackScenario, Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario, Recommendation, Tool
 from .tools import FileField
 
 
@@ -12,14 +12,37 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username')
 
+class ToolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tool
+        fields = ('id', 'name', 'deprecated', 'url')
 
+class CaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Case
+        fields = ('id', 'name', 'description', 'reference', 'module')
+
+
+class ModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = ('id', 'name', 'description', 'methodology')
+
+
+class MethodologySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Methodology
+        fields = ('id', 'name', 'description', 'deprecated')
+        
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)
     viewers = UserSerializer(read_only=True, many=True)
+    tools = ToolSerializer(read_only=True, many=True)
+    methodologies = MethodologySerializer(read_only=True, many=True)
 
     class Meta:
         model = Project
-        fields = ('id', 'name','introduction', 'conclusion', 'scope', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived')
+        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived', 'tools', 'methodologies')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -45,6 +68,18 @@ class ProjectSerializer(serializers.ModelSerializer):
                 viewer_instance = User.objects.get(pk=viewer)
                 project.viewers.add(viewer_instance)
 
+        if "tools" in self.initial_data:
+            tools = self.initial_data.get("tools")
+            for tool in tools:
+                tool_instance = Tool.objects.get(pk=tool)
+                project.tools.add(tool_instance)
+
+        if "methodologies" in self.initial_data:
+            methodologies = self.initial_data.get("methodologies")
+            for methodology in methodologies:
+                methodology_instance = Methodology.objects.get(pk=methodology)
+                project.methodologies.add(methodology_instance)
+
         project.save()
         return project
 
@@ -61,6 +96,18 @@ class ProjectSerializer(serializers.ModelSerializer):
         for viewer in viewers:
             viewer_instance = User.objects.get(pk=viewer)
             instance.viewers.add(viewer_instance)
+
+        instance.tools.clear()
+        tools = self.initial_data.get("tools")
+        for tool in tools:
+            tool_instance = Tool.objects.get(pk=tool)
+            instance.tools.add(tool_instance)
+
+        instance.methodologies.clear()
+        methodologies = self.initial_data.get("methodologies")
+        for methodology in methodologies:
+            methodology_instance = Methodology.objects.get(pk=methodology)
+            instance.methodologies.add(methodology_instance)
 
         instance.__dict__.update(**validated_data)
         instance.save()
@@ -87,7 +134,12 @@ class LabelSerializer(serializers.ModelSerializer):
 class AttackScenarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttackScenario
-        fields = ('id', 'name', 'scenario', 'project')
+        fields = ('id', 'name', 'scenario', 'svg', 'body', 'project')
+
+class RecommendationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recommendation
+        fields = ('id', 'name', 'body', 'project')
 
 class HitSerializer(serializers.ModelSerializer):
     labels = LabelSerializer(read_only=True, many=True)
@@ -126,6 +178,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'added')
+
+class HitReferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HitReference
+        fields = ('id', 'name', 'url')
 
 class CvssSerializer(serializers.ModelSerializer):
     class Meta:
@@ -174,21 +231,3 @@ class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = ('id', 'name', 'severity', 'asset', 'body', 'remediation', 'owner')
-
-
-class CaseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Case
-        fields = ('id', 'name', 'description', 'module')
-
-
-class ModuleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Module
-        fields = ('id', 'name', 'description', 'methodology')
-
-
-class MethodologySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Methodology
-        fields = ('id', 'name', 'description')

@@ -19,6 +19,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Client</label>
+                    <input class="form-control" id="client" autocomplete="off"
+                        placeholder="Project client (ex: Entity A...)" />
+                </div>
+
+                <div class="form-group">
                     <label>Date</label>
                     <div class="row g-3">
                         <div class="col-auto">
@@ -39,8 +45,31 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Introduction</label>
-                    <textarea id="introduction" class="form-control" rows="10" style="resize:vertical"></textarea>
+                    <label>Engagement Overview</label>
+                    <textarea id="engagement_overview" class="form-control" rows="10" style="resize:vertical"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Executive Summary</label>
+                    <textarea id="executive_summary" class="form-control" rows="10" style="resize:vertical"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Methodologies</label>
+                    <select class="js-states form-control" id="methodologies" multiple="multiple">
+                        {% for methodology in methodologies %}
+                        <option value="{{ methodology.id }}">{{ methodology.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tools</label>
+                    <select class="js-states form-control" id="tools" multiple="multiple">
+                        {% for tool in tools %}
+                        <option value="{{ tool.id }}">{{ tool.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -71,12 +100,15 @@
 {% block extra_foot %}
 <script type="text/javascript">
 
-    var introSimpleMDE = activeMarkdown("introduction");
+    var introSimpleMDE = activeMarkdown("executive_summary");
+    var engagementOverviewMDE = activeMarkdown("engagement_overview");
 
     $('.datepicker').datepicker({});
 
     $('#pentesters').select2().val(defaultPentester()).trigger("change");
     $('#viewers').select2()
+    $('#methodologies').select2();
+    $('#tools').select2();
 
     function defaultPentester(){
         var selectedPentesters = [];
@@ -86,10 +118,14 @@
 
     function projectCreationSuccess(data) {
         $("#name").val("");
+        $("#client").val("");
         $("#scope").val("");
         introSimpleMDE.value("");
+        engagementOverviewMDE.value("");
         $('#pentesters').select2().val(defaultPentester()).trigger("change");
         $('#viewers').val(null).trigger('change');
+        $('#methodologies').val(null).trigger('change');
+        $('#tools').val(null).trigger('change');
         success($("#messages"), "Project was created!, you will be redirected to the project page in 3s");
         setTimeout(function(){
             window.location.href = '/project/' + data.id + '/summary';
@@ -107,7 +143,7 @@
 
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#introduction").val(), "", $("#scope").val(), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), "", $("#scope").val(), $("#client").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

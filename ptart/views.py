@@ -17,8 +17,8 @@ from qrcode.image.svg import SvgPathImage as svg
 
 from rest_framework.authtoken.models import Token
 
-from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario
-from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool
+from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable, ToolTable
 
 @otp_required
 def index(request):
@@ -81,6 +81,11 @@ def labels_all(request):
     return generic_all(request, Label.get_viewable(request.user), LabelTable, 'labels/labels-list.html')
 
 @otp_required
+@user_passes_test(lambda u: u.is_staff)
+def tools_all(request):
+    return generic_all(request, Tool.get_viewable(request.user), ToolTable, 'tools/tools-list.html')
+
+@otp_required
 def flags_all(request):
     return generic_all(request, Flag.get_viewable(request.user), FlagTable, 'flags/flags-list.html')
 
@@ -120,7 +125,10 @@ def project(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         if project.is_user_can_view(request.user) :
-            response = generate_render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'editable' : project.is_user_can_edit(request.user)})
+            #This complex trick is necessary to continue to display the deprecated tools and methodologies in old projects. 
+            tools = list(dict.fromkeys(list(Tool.get_not_deprecated(request.user)) + list(project.tools.all())))
+            methodologies = list(dict.fromkeys(list(Methodology.get_not_deprecated(request.user)) + list(project.methodologies.all())))
+            response = generate_render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'tools': tools, 'methodologies': methodologies, 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -209,6 +217,19 @@ def attackscenario(request, attackscenario_id):
         response = redirect('/')
     return response
 
+@otp_required
+def recommendation(request, recommendation_id):
+    response = None
+    try:
+        recommendation = Recommendation.objects.get(pk=recommendation_id)
+        if recommendation.is_user_can_view(request.user):
+            response = generate_render(request, 'recommendations/recommendation-single.html', {'recommendation': recommendation, 'editable' : recommendation.is_user_can_edit(request.user)})
+        else :
+            response = redirect('/')
+    except Recommendation.DoesNotExist:
+        response = redirect('/')
+    return response
+
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
@@ -217,6 +238,16 @@ def label(request, label_id):
     try:
         response = generate_render(request, 'labels/label-single.html', {'label': Label.objects.get(pk=label_id)})
     except Label.DoesNotExist:
+        response = redirect('/')
+    return response
+
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
+def tool(request, tool_id):
+    response = None
+    try:
+        response = generate_render(request, 'tools/tool-single.html', {'tool': Tool.objects.get(pk=tool_id)})
+    except Tool.DoesNotExist:
         response = redirect('/')
     return response
 
@@ -284,7 +315,7 @@ def case(request, case_id):
 
 @otp_required
 def projects_new(request):
-    return generate_render(request, 'projects/projects.html', {'users': User.objects.filter(is_active=True)})
+    return generate_render(request, 'projects/projects.html', {'users': User.objects.filter(is_active=True),'tools': Tool.get_not_deprecated(request.user), 'methodologies': Methodology.get_not_deprecated(request.user)})
 
 
 @otp_required
@@ -312,10 +343,22 @@ def attackscenarios_new(request):
     return generate_render(request, 'attackscenarios/attackscenarios.html', {'project': project})
 
 @otp_required
+def recommendations_new(request):
+    try:
+        project = Project.objects.get(pk=request.GET.get("projectId", ""))
+    except :
+        pass
+    return generate_render(request, 'recommendations/recommendations.html', {'project': project})
+
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def labels_new(request):
     return generate_render(request, 'labels/labels.html', {})
 
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
+def tools_new(request):
+    return generate_render(request, 'tools/tools.html', {})
 
 @otp_required
 def flags_new(request):

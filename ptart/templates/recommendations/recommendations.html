@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load addstr %}
+
+{% block title %} Recommendation | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='Recommendations' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:project.pk|addstr:"/summary" sub_text=project.name active_icon='fa fa-medkit' active_text='Recommendations' %}
+        {% include "_include/html/messages.html" %} 
+        
+        <!-- Recommendation creation form -->
+        <div class="row">
+          <div class="col-lg-12">
+              <div class="form-group">
+                  <label>Name</label>
+                  <input class="form-control" id="name" autocomplete="off" placeholder="Sanitize API inputs" />
+              </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="form-group">
+              <label>Body</label>
+              <textarea class="form-control" rows="10" id="body" style="resize:vertical"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" value="{{ project.id }}" id="projectId"/>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <button id="createBtn" type="submit" class="btn btn-primary mb-5">Submit</button>
+            </div>
+        </div>
+
+    <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+
+
+{% block extra_foot %}
+  <script>
+      var mdBody = activeMarkdown("body");
+      
+      function itemCreationSuccess(data) {
+        $("#name").val("");
+        mdBody.value("");
+        success($("#messages"), "Recommendation was created!");
+      }
+
+      $('#createBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateRecommendation(itemCreationSuccess, commonFailure, $("#name").val(), $("#body").val(), $("#projectId").val());
+      });
+    </script>
+{% endblock %}

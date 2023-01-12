@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import Project, Flag, Hit, Label, Assessment, Project, Template, Methodology, Module, Case
+from .models import Project, Flag, Hit, Label, Assessment, Project, Template, Methodology, Module, Case, Tool
 
 
 class ProjectTable(tables.Table):
@@ -11,8 +11,8 @@ class ProjectTable(tables.Table):
     class Meta:
         model = Project
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ('selection', 'name', 'start_date', 'end_date', 'added')
-        fields = ('name', 'start_date', 'end_date', 'added')
+        sequence = ('selection', 'name', 'client', 'start_date', 'end_date', 'added')
+        fields = ('name', 'client', 'start_date', 'end_date', 'added')
 
 
 class FlagTable(tables.Table):
@@ -64,6 +64,18 @@ class LabelTable(tables.Table):
         fields = ('title', 'deprecated')
 
 
+class ToolTable(tables.Table):
+
+    selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
+    name = tables.TemplateColumn('<a href="/tool/{{ record.pk }}">{{ record.name }}</a>')
+    
+    class Meta:
+        model = Tool
+        template_name = "django_tables2/bootstrap4.html"
+        sequence = ('selection', 'name')
+        fields = ('name', 'url', 'deprecated')
+
+
 class AssessmentTable(tables.Table):
 
     selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
@@ -100,7 +112,7 @@ class MethodologyTable(tables.Table):
         model = Methodology
         template_name = "django_tables2/bootstrap4.html"
         sequence = ('selection', 'name')
-        fields = ('name', )
+        fields = ('name', 'deprecated' )
 
 
 class ModuleTable(tables.Table):
@@ -125,5 +137,5 @@ class CaseTable(tables.Table):
     class Meta:
         model = Case
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ('selection', 'name', 'module')
-        fields = ('name', 'module')
+        sequence = ('selection', 'name', 'reference', 'module')
+        fields = ('name', 'reference', 'module')

@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
+from django.http import HttpResponse
+
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
@@ -12,13 +14,25 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
 from openpyxl import Workbook, styles
+from openpyxl.styles import Alignment
 from openpyxl.writer.excel import save_virtual_workbook
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
+
+import jinja2
+import json
+import os
+import pypandoc
+import random
+import re
+import zipfile
+
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, CvssSerializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -59,6 +73,18 @@ def attackscenarios(request):
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def recommendation(request, pk):
+    return item(request, pk, Recommendation, RecommendationSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def recommendations(request):
+    return items(request, Recommendation, RecommendationSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
 def label(request, pk):
     return item(request, pk, Label, LabelSerializer)
 
@@ -70,9 +96,27 @@ def labels(request):
 
 @csrf_exempt
 @ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def tool(request, pk):
+    return item(request, pk, Tool, ToolSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def tools(request):
+    return items(request, Tool, ToolSerializer)
+
+@csrf_exempt
+@ptart_authentication
 @api_view(['GET', 'DELETE'])
 def comment(request, pk):
     return item(request, pk, Comment, CommentSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'DELETE'])
+def hit_reference(request, pk):
+    return item(request, pk, HitReference, HitReferenceSerializer)
 
 @csrf_exempt
 @ptart_authentication
@@ -341,6 +385,38 @@ def comments(request, pk):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['POST','GET'])
+def hit_references(request, pk):
+    response = None
+    try:
+        hit = Hit.objects.get(pk=pk)
+        if request.method == 'GET':
+            if hit.is_user_can_view(request.user):
+                response = Response(HitReferenceSerializer(hit.hitreference_set.all(), many=True).data)
+            else :
+                response = Response(status=status.HTTP_403_FORBIDDEN)
+        else :
+            name = request.data["name"]
+            url = request.data["url"]
+            if name is not None and name.strip() and url is not None and url.strip() and url.startswith("http") :
+                try:
+                    hitreference = HitReference(name=name, url=url, hit=hit)
+                    if hitreference.is_user_can_create(request.user):
+                        hitreference.save()
+                        response = Response(HitReferenceSerializer(hitreference).data, status=status.HTTP_200_OK)
+                    else :
+                        response = Response(status=status.HTTP_403_FORBIDDEN)
+                except Hit.DoesNotExist:
+                    response = Response(status=status.HTTP_404_NOT_FOUND)
+            else :
+                response = Response(status=status.HTTP_400_BAD_REQUEST)
+    except Hit.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['POST'])
@@ -425,6 +501,7 @@ def project_xlsx(request, pk):
                         
             wb = Workbook()
             ws = wb.active
+            ws.title = "Synthesis"
 
             #Define column size
             wb.active.column_dimensions['A'].width = 28
@@ -438,13 +515,15 @@ def project_xlsx(request, pk):
 
             #Add project data.
             ws['A1'] = "Project Name:"
-            ws['A2'] = "Date:"
-            ws['A3'] = "Auditors:"
+            ws['A2'] = "Client:"
+            ws['A3'] = "Date:"
+            ws['A4'] = "Auditors:"
             ws['B1'] = project.name
+            ws['B2'] = project.client
             if project.start_date is not None and project.end_date is not None :
-                ws['B2'] = "From " + str(project.start_date) + " To " + str(project.end_date)
+                ws['B3'] = "From " + str(project.start_date) + " To " + str(project.end_date)
             else :
-                ws['B2'] = project.added
+                ws['B3'] = project.added
 
             
             #Construct the auditor string
@@ -453,12 +532,13 @@ def project_xlsx(request, pk):
             for pentester in project.pentesters.all():
                 pentester_str = "{}{}{} - {} {}".format(pentester_str, previous, pentester.username, pentester.first_name, pentester.last_name)
                 previous = ", "
-            ws['B3'] = pentester_str
+            ws['B4'] = pentester_str
 
             #Beautify project data 
             ws.merge_cells('B1:H1')
             ws.merge_cells('B2:H2')
             ws.merge_cells('B3:H3')
+            ws.merge_cells('B4:H4')
 
             
             projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
@@ -468,6 +548,7 @@ def project_xlsx(request, pk):
             ws['A1'].style = projectHeaderStyle
             ws['A2'].style = projectHeaderStyle
             ws['A3'].style = projectHeaderStyle
+            ws['A4'].style = projectHeaderStyle
 
             projectValueStyle = styles.NamedStyle(name = 'project_value_style')
             projectValueStyle.font = styles.Font(name = 'Calibri', size = 14, italic = True, color = '000000')
@@ -477,32 +558,33 @@ def project_xlsx(request, pk):
             ws['B1'].style = projectValueStyle
             ws['B2'].style = projectValueStyle
             ws['B3'].style = projectValueStyle
-            ws['B2'].number_format = 'YYYY MMM DD'
+            ws['B4'].style = projectValueStyle
+            ws['B3'].number_format = 'YYYY MMM DD'
 
 
             #Add column header.
-            ws['A5'] = "Assessment"
-            ws['B5'] = "Sev"
-            ws['C5'] = "CVSS"
-            ws['D5'] = "ID"
-            ws['E5'] = "Title"
-            ws['F5'] = "Asset"
-            ws['G5'] = "Fix Compl."
-            ws['H5'] = "Labels"
+            ws['A6'] = "Assessment"
+            ws['B6'] = "Sev"
+            ws['C6'] = "CVSS"
+            ws['D6'] = "ID"
+            ws['E6'] = "Title"
+            ws['F6'] = "Asset"
+            ws['G6'] = "Fix Compl."
+            ws['H6'] = "Labels"
 
             columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
             columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
             columnHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '92D050')
             columnHeaderStyle.alignment = styles.Alignment(horizontal= 'center')
 
-            ws['A5'].style = columnHeaderStyle
-            ws['B5'].style = columnHeaderStyle
-            ws['C5'].style = columnHeaderStyle
-            ws['D5'].style = columnHeaderStyle
-            ws['E5'].style = columnHeaderStyle
-            ws['F5'].style = columnHeaderStyle
-            ws['G5'].style = columnHeaderStyle
-            ws['H5'].style = columnHeaderStyle
+            ws['A6'].style = columnHeaderStyle
+            ws['B6'].style = columnHeaderStyle
+            ws['C6'].style = columnHeaderStyle
+            ws['D6'].style = columnHeaderStyle
+            ws['E6'].style = columnHeaderStyle
+            ws['F6'].style = columnHeaderStyle
+            ws['G6'].style = columnHeaderStyle
+            ws['H6'].style = columnHeaderStyle
 
             #Fill the report
             criticalStyle = styles.NamedStyle(name = 'critical_style')
@@ -530,7 +612,7 @@ def project_xlsx(request, pk):
             infoStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '6c757d')
             infoStyle.alignment = styles.Alignment(horizontal= 'center')
 
-            line = 6
+            line = 7
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
                     ws.cell(row=line, column=1).value = assessment.name
@@ -585,7 +667,30 @@ def project_xlsx(request, pk):
 
                     line = line + 1
             
-            ws.auto_filter.ref = "A5:H{}".format(line)
+            ws.auto_filter.ref = "A6:H{}".format(line)
+
+            if project.recommendation_set.all() :
+                recommendations_ws = wb.create_sheet()
+                recommendations_ws.title = "Recommendations"
+
+                #Define column size
+                recommendations_ws.column_dimensions['A'].width = 50
+                recommendations_ws.column_dimensions['B'].width = 120
+
+                recommendations_ws['A1'].style = columnHeaderStyle
+                recommendations_ws['B1'].style = columnHeaderStyle
+
+                #Add column header.
+                recommendations_ws['A1'] = "Name"
+                recommendations_ws['B1'] = "Body"
+
+                line = 2
+                for recommendation in project.recommendation_set.all():        
+                    recommendations_ws.cell(row=line, column=1).value = recommendation.name
+                    recommendations_ws.cell(row=line, column=2).value = recommendation.body
+                    recommendations_ws.cell(row=line, column=1).alignment = Alignment(horizontal='left', vertical='top')
+                    recommendations_ws.cell(row=line, column=2).alignment = Alignment(wrap_text=True)
+                    line = line + 1
 
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
@@ -596,6 +701,95 @@ def project_xlsx(request, pk):
             response.renderer_context = {}
 
             wb.close()
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@action(methods=['GET'], detail=True)
+def project_latex(request, pk):
+    response = None
+    try:
+        project = Project.objects.get(pk=pk)
+        if project.is_user_can_view(request.user):
+            response = HttpResponse()
+            zf = zipfile.ZipFile(response, 'w')
+            
+            #Retrieve Screenshots.
+            for assessment in project.assessment_set.all():        
+                for hit in assessment.displayable_hits():
+                    for screenshot in hit.screenshot_set.all():
+                        zf.writestr("screenshots/{}.png".format(screenshot.id), screenshot.get_raw_data())
+            
+            #Retrieve AttackScenarios.
+            for attackscenario in project.attackscenario_set.all():
+                #SVG must be converted to PNG to facilitate integration in LaTeX report.
+                tempSvgFilename = "{}_{}_{}.svg".format(project.id, attackscenario.id,random.randint(0,10000))
+                tempPngFilename = "{}_{}_{}.png".format(project.id, attackscenario.id,random.randint(0,10000))
+                f = open(tempSvgFilename, "a")
+                f.write(attackscenario.svg)
+                f.close()
+                drawing = svg2rlg(tempSvgFilename)
+                renderPM.drawToFile(drawing, tempPngFilename, fmt="PNG")    
+                zf.write(tempPngFilename, "attackscenarios/{}.png".format(attackscenario.id))
+                os.remove(tempSvgFilename)
+                os.remove(tempPngFilename)
+
+            #Add resources for LaTeX
+            zf.write("reports/resources/companylogo.png", "resources/companylogo.png")
+            zf.write("reports/resources/logo.png", "resources/logo.png")
+            
+            #Generate Latex report.
+            #Custom environment is used to avoid syntax conflict between Jinja & LaTex
+            with open('reports/report_latex.tex') as file_:
+                env = jinja2.Environment(
+                    block_start_string = '\BLOCK{',
+                    block_end_string = '}',
+                    variable_start_string = '\VAR{',
+                    variable_end_string = '}',
+                    comment_start_string = '\#{',
+                    comment_end_string = '}',
+                    line_statement_prefix = '%%',
+                    line_comment_prefix = '%#',
+                    trim_blocks = True,
+                    autoescape = False,
+                    loader = jinja2.FileSystemLoader(os.path.abspath('.'))
+                )
+                
+                #Filters that has been used in the LaTex Report.
+                escape_tex_table = {
+                        '&': r'\&',
+                        '%': r'\%',
+                        '$': r'\$',
+                        '#': r'\#',
+                        '_': r'\_',
+                        '~': r'\textasciitilde{}',
+                        '^': r'\^{}',
+                        '\\': r'\textbackslash{}'
+                    }
+                tex_regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key = lambda item: - len(item))))
+                
+                def tex_escape(text):
+                    return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
+
+                def markdown_to_latex(md) :
+                    return pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                #End of filters.
+
+                env.filters["mdtolatex"] = markdown_to_latex
+                env.filters["escape"] = tex_escape
+                template = env.from_string(file_.read())
+                zf.writestr("report.tex", template.render(project=project, labels=Label.get_viewable(request.user)))     
+
+            #Prepare HTTP response.
+            response.content_type = 'application/zip'
+            response['Content-Disposition'] = 'attachment; filename=' + project.name + ".zip"
+            response.accepted_renderer = BinaryRenderer()
+            response.accepted_media_type = 'application/zip'
+            response.renderer_context = {}
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:

@@ -1,0 +1,645 @@
+%-----------------------------------------------------------------%
+%         Template based on cyber@cfreg LaTeX template            %
+%                                                                 %
+% https://github.com/cyber-cfreg/Penetration-Test-Report-Template %
+%-----------------------------------------------------------------%
+
+\documentclass[12pt, table,dvipsnames]{article}
+
+%-----------------------------------------------------%
+% Package import                                      %
+%-----------------------------------------------------%
+\usepackage[export]{adjustbox}
+\usepackage{afterpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{appendix}
+\usepackage[USenglish]{babel}
+\usepackage[style=numeric,backend=biber, sorting=none]{biblatex}
+\usepackage{booktabs}
+\usepackage{calc}
+\usepackage{capt-of}
+\usepackage[tableposition=top]{caption}
+\usepackage{color}
+\usepackage{csquotes}
+\usepackage{easyfig}
+\usepackage{etoolbox}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage{framed}
+\usepackage[letterpaper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm,headheight=15pt]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{iftex}
+\usepackage{ifthen}
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum} 
+\usepackage{listings}
+\usepackage{lmodern}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage{makecell}
+\usepackage{mathptmx}
+\usepackage[parfill]{parskip}
+\usepackage[final]{pdfpages}
+\usepackage{pgf-pie}
+\usepackage{pgfplots}   
+\usepackage{placeins}
+\usepackage{rotating}
+\usepackage{tabularx}
+\usepackage{tabulary}
+\usepackage[most]{tcolorbox}
+\usepackage{textcomp}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{wrapfig}
+\usepackage{xcolor}
+\usepackage{xurl}
+%-----------------------------------------------------%
+% End of Package import                               %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Aliases                                             %
+%-----------------------------------------------------%
+\newcommand{\doctitle}{Pentest Report}
+\newcommand{\project}{\VAR{project.name | escape}}
+\newcommand{\client}{\VAR{project.client | escape}}
+\newcommand{\teamname}{Michelin CERT}
+\newcommand{\company}{Michelin}
+\newcommand{\classification}{CONFIDENTIAL}
+\newcommand{\logopath}{resources/logo.png}
+\newcommand{\companylogo}{resources/companylogo.png}
+%-----------------------------------------------------%
+% End of Aliases                                      %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Docstyle                                            %
+%-----------------------------------------------------%
+\BLOCK{ if project.client }   
+	\lhead{\project\ - \client}
+\BLOCK{ else } 
+	\lhead{\project}
+\BLOCK{ endif } 
+\rhead{\teamname}
+\lfoot{\today}
+\cfoot{\color{red}{\classification}}
+\rfoot{Page \thepage}
+
+\floatstyle{plaintop}
+\restylefloat{table}
+
+%Add paragraph
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% For dotted table of content
+\makeatletter
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{2.3em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{2.3em}{3.2 em}}
+\makeatother
+
+%more control over table layouts
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\restylefloat{table}
+
+% Horizontal line and separator
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\hseparator}{\hspace{0.3em}-\hspace{0.3em}}
+
+\fancypagestyle{footmark}{
+	\ps@@fancy % use {fancy} style as a base of {footmark}
+	\fancyfoot[C]{\footmark}
+}
+
+% sets value of \footmark and sets the correct style for this page only
+\newcommand\markfoot[1]{\gdef\footmark{#1}\thispagestyle{footmark}}
+
+% Page layout
+\pagestyle{fancy}
+
+\addbibresource{references.bib}
+\hypersetup{colorlinks, allcolors=black}
+
+%badge
+\newtcbox{\badge}[1][red]{
+	on line, 
+	arc=2pt,
+	colback=#1!50!black,
+	colframe=#1!50!black,
+	fontupper=\color{white},
+	boxrule=1pt, 
+	boxsep=0pt,
+	left=4pt,
+	right=4pt,
+	top=2pt,
+	bottom=2pt
+}
+
+%List of figures
+\makeatletter
+\renewcommand\listoftables{%
+	\@starttoc{lot}%
+}
+\makeatother
+
+%Colors
+\definecolor{bc-badge-p1}{HTML}{d13535}
+\definecolor{bc-badge-p2}{HTML}{ff6900}
+\definecolor{bc-badge-p3}{HTML}{f0ad4e}
+\definecolor{bc-badge-p4}{HTML}{5eae00}
+\definecolor{bc-badge-p5}{HTML}{0278b8}
+
+\definecolor{cvss-badge-dark}{HTML}{343a40}
+\definecolor{cvss-badge-danger}{HTML}{dc3545}
+\definecolor{cvss-badge-warning}{HTML}{ffc107}
+\definecolor{cvss-badge-success}{HTML}{28a745}
+\definecolor{cvss-badge-secondary}{HTML}{6c757d}
+
+\definecolor{fix-complexity-0}{HTML}{6c757d}
+\definecolor{fix-complexity-1}{HTML}{dc3545}
+\definecolor{fix-complexity-2}{HTML}{ffc107}
+\definecolor{fix-complexity-3}{HTML}{28a745}
+
+\BLOCK{for label in labels }
+\definecolor{label-color-\VAR{label.id }}{HTML}{\VAR{label.color | replace("#","")}}
+\BLOCK{ endfor }
+
+% For code highlight
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+
+\providecommand{\tightlist}{%
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+%-----------------------------------------------------%
+% End of Docstyle                                     %
+%-----------------------------------------------------%                                          
+%-----------------------------------------------------%
+% Begin Document                                      %
+%-----------------------------------------------------%
+\begin{document}
+\title{\doctitle}
+\pagenumbering{arabic}
+
+%-----------------------------------------------------%
+% Title Page                                          %
+%-----------------------------------------------------%
+\begin{titlepage}
+	\begin{center}
+		
+		\vspace{0.25cm}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth/3]{\logopath}
+		\end{figure}
+		
+		% Title
+		\HRule\\[0.2cm]
+		{\huge\bfseries\doctitle : \\ \project}
+		\HRule\\[0.5cm]
+		\vfill
+		% End of Title
+
+		% Client Name
+		\BLOCK{ if project.client }
+			\Large{Client:}
+			\LARGE{\textbf{\client}}
+			\vfill   
+		\BLOCK{ endif } 
+		% End of Client name
+		
+		% Team Name
+		\Large{Conducted by:}
+		\LARGE{\textbf{\teamname}}
+		\vfill
+		% End of Team Name
+		
+		% Date
+		\BLOCK{ if project.start_date and project.end_date }
+			\Large{From \VAR{ project.start_date } to \VAR{ project.end_date }}
+		\BLOCK{ else }
+			\Large{Date: \VAR{ project.added.strftime('%Y-%m-%d') }}
+		\BLOCK{ endif }
+		\vfill
+		% End of Date
+		
+		% Pentesters.
+		Auditor(s):
+		\begin{center}
+			\small{
+			\begin{itemize}
+				\centering
+				\BLOCK{ for pentester in project.pentesters.all() }
+					\item[] \VAR{ pentester.username | escape } - \VAR{ pentester.first_name | escape } \VAR{ pentester.last_name | escape }
+				\BLOCK{ endfor }
+			\end{itemize}
+			}
+		\end{center}
+		\vfill
+		% End of Pentesters.
+		
+		\includegraphics[width=\textwidth/4]{\companylogo}
+				
+		% % Bottom of the page
+		{\footnotesize {\color{red}{\classification}}}
+		
+	\end{center}
+\end{titlepage}
+%-----------------------------------------------------%
+% End of Title Page                                   %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Table of Contents                                   %
+%-----------------------------------------------------%
+\renewcommand{\contentsname}{Table of Contents}
+\tableofcontents\thispagestyle{fancy}
+\newpage
+%-----------------------------------------------------%
+% End of Table of Contents                            %
+%-----------------------------------------------------%
+
+\BLOCK{ if project.executive_summary or project.engagement_overview or project.scope  }
+	\section{Report Overview}
+	%-----------------------------------------------------%
+	% Executive Summary                                   %
+	%-----------------------------------------------------%
+	\BLOCK{ if project.executive_summary }
+		\subsection{Executive Summary}
+		\VAR{ project.executive_summary | mdtolatex }
+		\newpage
+	\BLOCK{ endif } 
+	%-----------------------------------------------------%
+	% End of Executive Summary                            %
+	%-----------------------------------------------------%
+
+	%-----------------------------------------------------%
+	% Scope                                               %
+	%-----------------------------------------------------%
+	\BLOCK{ if project.engagement_overview or project.scope }
+		\subsection{Scope}
+		\BLOCK{ if project.engagement_overview }
+			\paragraph{Engagement Overview}
+			\VAR{ project.engagement_overview | mdtolatex }
+		\BLOCK{ endif } 
+
+		\BLOCK{ if project.scope }
+		\paragraph{Scope of Engagement}
+			%Automatic scope list
+			\begin{itemize}
+				\BLOCK{ for line in project.scope.splitlines() }
+					\item \VAR{ line | escape }
+				\BLOCK{ endfor }
+			\end{itemize}
+		\BLOCK{ endif } 
+		\newpage
+	\BLOCK{ endif } 
+	%-----------------------------------------------------%
+	% End of Scope                                        %
+	%-----------------------------------------------------%
+\BLOCK{ endif } 
+
+%-----------------------------------------------------%
+% Methodologies                                         %
+%-----------------------------------------------------%
+\BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
+	\section{Testing Methodology}
+	 
+	\BLOCK{ for methodology in project.methodologies.all() }
+		\subsection{\VAR{ methodology.name | escape }}
+		
+		\VAR{ methodology.description | mdtolatex }
+	\BLOCK{ endfor }
+
+	\newpage
+\BLOCK{ endif } 
+%-----------------------------------------------------%
+% End of Methodologies                                %
+%-----------------------------------------------------%
+%-----------------------------------------------------%
+% Observation                                         %
+%-----------------------------------------------------%
+\BLOCK{ if project.p1_hits()|length > 0 or project.p2_hits()|length or project.p3_hits()|length or project.p4_hits()|length or project.p5_hits()|length }
+	\section{Observations}
+	\BLOCK{ for assessment in project.assessment_set.all() }
+		\BLOCK{ if assessment.displayable_hits }
+			\paragraph{\VAR{assessment.name | escape }}
+
+			\begin{table}[H]
+				\centering
+				{\setlength{\extrarowheight}{2pt}%
+				\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
+						\BLOCK{ for hit in assessment.displayable_hits() }
+						\hline 
+						\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+						\BLOCK{ endfor }
+						\hline 	
+				\end{tabularx}}
+			\end{table}
+		\BLOCK{ endif }
+	\BLOCK{ endfor }
+
+	\begin{figure}[H]
+		\centering
+	\begin{tikzpicture}
+		\begin{axis} [
+			bar width         =20pt,
+			axis y line       = none,
+			axis lines*       = left,
+			tickwidth         = 0pt,
+			enlarge y limits  = 0.2,
+			enlarge x limits  = 0.2,
+			symbolic x coords = {P1, P2, P3, P4, P5},
+			nodes near coords
+			]
+			\addplot [ybar,fill = black]  coordinates {(P1,\VAR{project.p1_hits()|length})};
+			\addplot [ybar,fill = red]    coordinates {(P2,\VAR{project.p2_hits()|length})};
+			\addplot [ybar,fill = yellow] coordinates {(P3,\VAR{project.p3_hits()|length})};
+			\addplot [ybar,fill = green]  coordinates {(P4,\VAR{project.p4_hits()|length})};
+			\addplot [ybar,fill = blue]   coordinates {(P5,\VAR{project.p5_hits()|length})};
+		\end{axis}
+	\end{tikzpicture}
+	\caption{Statistics of vulnerabilities by severity}
+	\end{figure}
+\BLOCK{ endif }
+
+\BLOCK{ if project.labels_statistics().items()|length > 0 }
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\pie
+			[
+				rotate=180, 
+				after number=,
+				/tikz/nodes={text=black, font=\normalfont},
+				/tikz/every pin/.style={align=center, text=black, font=\normalfont},
+				sum=auto,
+				text = legend
+			]
+			{
+				\BLOCK{ for key, value in project.labels_statistics().items() }
+					\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }  
+				\BLOCK{ endfor }
+			}
+		\end{tikzpicture}
+		\caption{Statistics of vulnerabilities by label}
+	\end{figure}
+\BLOCK{ endif }
+\newpage
+%-----------------------------------------------------%
+% End of Observations                                 %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Recommendations                                     %
+%-----------------------------------------------------%
+\BLOCK{ if project.recommendation_set.all() and project.recommendation_set.all()|length > 0 }
+	\section{Recommendations}
+	\BLOCK{ for recommendation in project.recommendation_set.all() }
+		\subsection{\VAR{ recommendation.name | escape }}
+		\VAR{ recommendation.body | mdtolatex }
+	\BLOCK{ endfor } 
+	\newpage
+\BLOCK{ endif } 
+%-----------------------------------------------------%
+% End of Recommendations                              %
+%-----------------------------------------------------%
+%-----------------------------------------------------%
+% Technical Findings                                  %
+%-----------------------------------------------------%
+\BLOCK{ if project.p1_hits()|length > 0 or project.p2_hits()|length or project.p3_hits()|length or project.p4_hits()|length or project.p5_hits()|length }
+	\section{Technical Findings}
+
+	\BLOCK{ for assessment in project.assessment_set.all() }
+		\BLOCK{ if assessment.displayable_hits }
+			\subsection{\VAR{assessment.name | escape }}
+			\BLOCK{ for hit in assessment.displayable_hits() }
+				\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title | escape }}
+
+				\begin{table}[H]
+					\centering
+					{\setlength{\extrarowheight}{2pt}%
+					\begin{tabular}{| l | p{12cm} |}
+						\hline 
+						Severity & \badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }}\\
+						\hline
+						\BLOCK{ if hit.get_cvss_value() == "---" }
+							CVSS Base Score & \badge[cvss-badge-secondary]{ N.C } \\
+						\BLOCK{ elif hit.get_cvss_value() <= 0 }
+							CVSS Base Score & \badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
+							CVSS Base Score & \badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()} - Low} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
+							CVSS Base Score & \badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
+							CVSS Base Score & \badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()} - High} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ else }
+							CVSS Base Score & \badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} (\VAR{ hit.get_cvss_string() }) \\
+						\BLOCK{ endif } 
+						\hline 
+						Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
+						\hline 
+						Asset & \VAR{ hit.asset | escape  } \\
+						\hline 
+						Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
+						\hline 
+						Reference(s) & \BLOCK{ if hit.hitreference_set.all() and hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
+						\hline 
+					\end{tabular}}
+				\end{table}
+
+				\VAR{ hit.body | mdtolatex }
+			
+				\BLOCK{ for screenshot in hit.screenshot_set.all() }
+					\begin{figure}[H]
+						\centering
+						\includegraphics[max width=\textwidth]{./screenshots/\VAR{screenshot.pk}.png}
+						\caption{\VAR{screenshot.caption | escape }}
+					\end{figure}
+				\BLOCK{ endfor }
+
+				\BLOCK{ if hit.remediation }
+					\paragraph{Remediation}
+					\VAR{ hit.remediation | mdtolatex }
+				\BLOCK{ endif }
+			\BLOCK{ endfor }
+			\newpage
+		\BLOCK{ endif }
+	\BLOCK{ endfor }
+\BLOCK{ endif }
+%-----------------------------------------------------%
+% End of Technical Findings                           %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Attack Scenarios                                    %
+%-----------------------------------------------------%
+\BLOCK{ if project.attackscenario_set.all() and project.attackscenario_set.all()|length > 0 }
+	\section{Attack Scenarios}
+
+	\BLOCK{ for attackscenario in project.attackscenario_set.all() }
+		\subsection{\VAR{attackscenario.name | escape }}
+		\VAR{ attackscenario.body | mdtolatex }
+		\begin{figure}[H]
+			\centering
+			\includegraphics[scale=0.5]{./attackscenarios/\VAR{attackscenario.id}.png}
+			\caption{\VAR{attackscenario.name | escape }}
+		\end{figure}
+	\BLOCK{ endfor }
+	\newpage
+\BLOCK{ endif }
+%-----------------------------------------------------%
+% End of Attack Scenarios                             %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Conclusion                                          %
+%-----------------------------------------------------%
+\BLOCK{ if project.executive_summary }
+	\section{Conclusion}
+	\VAR{ project.conclusion | mdtolatex }
+	\newpage
+\BLOCK{ endif }
+%-----------------------------------------------------%
+% End of Conclusion                                   %
+%-----------------------------------------------------%
+
+%-----------------------------------------------------%
+% Appendices                                          %
+%-----------------------------------------------------%
+\appendix
+\appendixpage
+\addappheadtotoc
+
+% This should be a network topology that represents the in scope network from the engagement
+% The example below was made using Lucidchart (https://lucid.app):
+\BLOCK{ if project.host_set.all() and project.host_set.all()|length > 0 }
+	\section{Network Topology}
+
+	\BLOCK{ for host in project.host_set.all() }
+		\subsection{\VAR{ host.ip } - \VAR{host.hostname | escape }}
+
+		\begin{table}[H]
+			\centering
+			{\setlength{\extrarowheight}{2pt}%
+				\begin{tabular}{| l | p{12cm} |}
+					\hline 
+					OS & \VAR{host.os | escape }\\
+					\hline 
+			\end{tabular}}
+		\end{table}
+
+		\VAR{host.notes | mdtolatex}
+
+		\BLOCK{ for service in host.service_set.all() }
+			\subsubsection{Port \VAR{service.port} - \VAR{service.protocol | escape }}
+
+			\begin{table}[H]
+				\centering
+				{\setlength{\extrarowheight}{2pt}%
+					\begin{tabular}{| l | p{12cm} |}
+						\hline 
+						Name & \VAR{service.name | escape }\\
+						\hline
+						Version & \VAR{service.version | escape }\\
+						\hline 
+						Banner & \VAR{service.banner | escape }\\
+						\hline  
+				\end{tabular}}
+			\end{table}
+		\BLOCK{ endfor }
+	\BLOCK{ endfor }
+	\newpage
+\BLOCK{ endif }
+
+\BLOCK{ if project.tools.all() and project.tools.all()|length > 0 }
+	\section{Tools}
+
+	\begin{table}[H]
+		\centering
+		{\setlength{\extrarowheight}{2pt}%
+		\begin{tabular}{| l | l |}
+			\hline
+			\BLOCK{ for tool in project.tools.all() }
+				\VAR{ tool.name | escape } & \VAR{ tool.url | escape }\\
+				\hline
+			\BLOCK{ endfor } 
+		\end{tabular}}
+	\end{table}
+	\newpage
+\BLOCK{ endif } 
+
+
+\BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
+	\section{Testing Methodology Details}
+	 
+	\BLOCK{ for methodology in project.methodologies.all() }
+		\subsection{\VAR{ methodology.name | escape }}
+		\BLOCK{ for module in methodology.module_set.all()}
+			\subsubsection{\VAR{ module.name | escape }}
+			\VAR{ module.description | mdtolatex }
+
+			\BLOCK{ for case in module.case_set.all()}
+				\paragraph{\VAR{ case.name | escape }}
+				\VAR{ case.description | mdtolatex }
+				
+				\url{\VAR{ case.reference }}
+			\BLOCK{ endfor }
+		\BLOCK{ endfor }
+	\BLOCK{ endfor }
+
+	\newpage
+\BLOCK{ endif } 
+
+\listoffigures
+%-----------------------------------------------------%
+% End of Appendices                                   %
+%-----------------------------------------------------%
+
+\end{document}
