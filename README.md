@@ -36,33 +36,33 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ## Screenshots
 
 ##### PTART main page
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot3.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/3.PNG)
 
 ##### Create a new hit
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot1.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/1.PNG)
 
 ##### Simply paste a screenshot to add it!
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot2.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/2.PNG)
 
 ##### Automatic LaTeX report creation
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot12.PNG)
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot11.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/12.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/11.PNG)
 
 ##### Automatic Excel report creation
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot13.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/13.PNG)
 
 ##### Automatic HTML report creation
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot5.PNG)
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot6.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/5.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/6.PNG)
 
 ##### Comments in your presentation
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot8.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/8.PNG)
 
 ##### Asset management
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot9.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/9.PNG)
 
 ##### Attack Scenario
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/screenshot10.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/10.PNG)
 
 ##### Syntax highlight
 ```java
