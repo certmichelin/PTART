@@ -61,12 +61,6 @@
                 </ul>
             </section>
 
-            {% if project.executive_summary %}
-            <section data-markdown>
-                {{ project.executive_summary }}
-            </section>
-            {% endif %}
-
             {% if project.scope %}
             <section>
                 <h3>Scope :</h3>
@@ -205,12 +199,6 @@
                             </div>
                         </section>
                 {% endfor %} 
-            {% endif %}
-
-            {% if project.conclusion %}
-            <section data-markdown>
-                {{ project.conclusion }}
-            </section>
             {% endif %}
         </div>
     </div>
