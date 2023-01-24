@@ -826,7 +826,7 @@ class Template(models.Model):
         return user.is_staff or self.owner == user
 
     class Meta:
-        ordering = ('severity','name',)
+        ordering = ('name',)
 
 
 """Severity structure."""
