@@ -1,5 +1,8 @@
+from django.conf import settings
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
+
 from django.core.exceptions import ValidationError
 
 from django.http import HttpResponse
@@ -26,6 +29,7 @@ import os
 import pypandoc
 import random
 import re
+import requests
 import zipfile
 
 from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
@@ -794,6 +798,38 @@ def project_latex(request, pk):
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['POST'])
+def chatgpt(request):
+    response = None
+
+    if settings.CHATGPT_API_KEY != "NotConfigured" :
+        if request.data["question"] != None :
+
+            req_response = requests.post(
+                'https://api.openai.com/v1/completions', 
+                json = { 
+                    "prompt" : request.data["question"], 
+                    "max_tokens": 2048, 
+                    "model": "text-davinci-003"
+                    }, 
+                headers = {
+                    "Authorization": "Bearer " + settings.CHATGPT_API_KEY,
+                    "Content-Type": "application/json"
+                    }
+            )
+            if req_response.status_code == 200 :
+                response = Response(req_response.json()["choices"][0]["text"], status=status.HTTP_200_OK)
+            else :
+                response = Response({}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else :
+            response = Response({}, status=status.HTTP_400_BAD_REQUEST)
+    else :
+        response = Response({}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
     return response
 
 @csrf_exempt
