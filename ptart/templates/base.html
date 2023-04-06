@@ -16,9 +16,9 @@
     <link href="/static/css/plugins/select2/select2.min.css" rel="stylesheet">
     <link href="/static/css/plugins/simplemde/simplemde.min.css" rel="stylesheet">
     <link href="/static/css/customs/badges.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/customs/screenshots.css" rel="stylesheet" type="text/css">
     <link href="/static/css/customs/comments.css" rel="stylesheet" type="text/css">
     <link href="/static/css/customs/hover.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/customs/screenshots.css" rel="stylesheet" type="text/css">
     {% block extra_head %}{% endblock %}
 </head>
 
@@ -64,7 +64,6 @@
                 </li>
 
                 {% if user.is_staff %}
-
                 <li class="nav-item {% if '/token' in request.path %}active{% endif %}">
                     <a class="nav-link" href="/token"><i class="fa fa-user"></i> Token</a>
                 </li>
@@ -84,7 +83,6 @@
                     </div>
                 </li>
                 {% else %}
-
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-user"></i> Account
@@ -96,14 +94,19 @@
                 </li>
                 {% endif %}
             </ul>
-
+            {% load getsetting %}
+            {% if "CHATGPT_API_KEY"|getsetting != "" and "CHATGPT_API_KEY"|getsetting != "NotConfigured"  %}
+                <a href="#chatgptModal" class="btn btn-outline-light" data-backdrop="false" data-toggle="modal">Chat GPT</a>&nbsp;&nbsp;
+            {% endif %}
             <a href="/accounts/logout/" class="btn btn-outline-success"><i class="fa fa-power-off"></i> Log Out</a>
         </div>
     </nav>
 
+    {% include "_include/html/chatgpt.html" %}
     {% block page %}{% endblock %}
 
     <script src="/static/js/jquery-3.4.0.min.js"></script>
+    <script src="/static/js/jquery-ui.min.js"></script>
     <script src="/static/js/popper.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/plugins/bootbox/bootbox.all.min.js"></script>
@@ -116,6 +119,7 @@
     <script src="/static/js/plugins/select2/select2.full.min.js"></script>
     <script src="/static/js/plugins/simplemde/simplemde.min.js"></script>
     <script src="/static/js/customs/attachments.js"></script>
+    <script src="/static/js/customs/chatgpt.js"></script>
     <script src="/static/js/customs/common.js"></script>
     <script src="/static/js/customs/common-ajax.js"></script>
     <script src="/static/js/customs/cvss.js"></script>
