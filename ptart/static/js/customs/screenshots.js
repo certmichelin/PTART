@@ -107,7 +107,7 @@ function addScreenshot() {
 
 //Create screenshot in the screenshot cointainer.
 function createScreenshot(id, dataURL, caption) {
-    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, class: "screenshot", "data-fancybox": "gallery", draggable: "true", ondragstart: "dragStart(event)", ondragend: "dragStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
+    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragStart(event)", ondragend: "dragStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
     $("#screenshot_link_" + id).tooltip();
 }
 
