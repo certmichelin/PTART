@@ -19,7 +19,8 @@ PTART is a vulnerability organizer tool developed for pentesters, bug bounty hun
 - Have a common and shared workspace within the team.
 - Secure your work with 2FA.
 - Use PTART API with dedicated token for 3rd party application.
-- Prepare the Burp configuration file according to project scope. 
+- Prepare the Burp configuration file according to project scope.
+- Ask Chat GPT to write your report ;-)
 
 A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](https://github.com/pavanw3b/sh00t) project.
 
@@ -73,6 +74,9 @@ class HelloWorld {
 	}
 }
 ```
+##### Chat GPT.
+
+In order to enable, the `Chat GPT` console, you just need to enter your api key in settings.py upon `CHATGPT_API_KEY` key.
 
 ## Installation
 

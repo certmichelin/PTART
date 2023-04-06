@@ -1136,6 +1136,23 @@ function ajaxDeleteRecommendation(successFunction, errorFunction, id) {
 }
 
 /**
+ * Request ChatGPT.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} question Request to ChatGPT.
+ */
+function ajaxChatGpt(successFunction, errorFunction, question) {
+    $.ajax({
+        url: "/api/chatgpt/",
+        type: 'POST',
+        data: '{"question":' + JSON.stringify(question) + '}',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Convert array to JSON string.
  * 
  * @param {*} array Array to convert.

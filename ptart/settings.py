@@ -148,3 +148,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+CHATGPT_API_KEY = "NotConfigured"

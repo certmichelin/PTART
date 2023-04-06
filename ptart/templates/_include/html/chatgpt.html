@@ -1,0 +1,29 @@
+<div class="modal fade" id="chatgptModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chat GPT console</h5>
+                <button type="button" class="close" onclick="chatgpt_close_modal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input id="chatgpt_question" placeholder="Type your request to Chat GPT" class="form-control"
+                        autocomplete="off" />
+                </div>
+                <div class="form-group">
+                    <textarea id="chatgpt_response" class="form-control" rows="10" id="body"
+                        style="resize:vertical"></textarea>
+                    <div class="invalid-feedback">
+                        Error with Chat GPT, details will be inside log file.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="chatgpt_request_button" type="submit" class="btn btn-outline-primary"
+                    onclick="chatgpt_request()">Request</button>
+            </div>
+        </div>
+    </div>
+</div>
