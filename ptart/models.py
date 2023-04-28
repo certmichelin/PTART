@@ -185,7 +185,7 @@ class Project(models.Model):
         """Compute statistics on labels"""
         statistics = {}
         for assessment in self.assessment_set.all() :
-            for hit in assessment.hit_set.all():
+            for hit in assessment.displayable_hits():
                 for label in hit.labels.all():
                     if statistics.get(label.title) is None :
                         statistics[label.title] = 1
@@ -318,7 +318,7 @@ class Assessment(models.Model):
     def hits_by_severity(self, severity):
         """Filter hits by severity for the assessment."""
         hits = []
-        for hit in self.hit_set.filter(severity = severity).all() :
+        for hit in self.hit_set.filter(severity = severity).filter(displayable = True).all() :
             hits.append(hit)
         return hits
 
