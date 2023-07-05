@@ -565,15 +565,17 @@
 	\BLOCK{ for host in project.host_set.all() }
 		\subsection{\VAR{ host.ip } - \VAR{host.hostname | escape }}
 
-		\begin{table}[H]
-			\centering
-			{\setlength{\extrarowheight}{2pt}%
-				\begin{tabular}{| l | p{12cm} |}
-					\hline 
-					OS & \VAR{host.os | escape }\\
-					\hline 
-			\end{tabular}}
-		\end{table}
+		\BLOCK{ if host.os }   
+			\begin{table}[H]
+				\centering
+				{\setlength{\extrarowheight}{2pt}%
+					\begin{tabular}{| l | p{12cm} |}
+						\hline 
+						OS & \VAR{host.os | escape }\\
+						\hline 
+				\end{tabular}}
+			\end{table}
+		\BLOCK{ endif } 
 
 		\VAR{host.notes | mdtolatex}
 
