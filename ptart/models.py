@@ -842,9 +842,9 @@ class Host(models.Model):
 
     project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     hostname = models.CharField(max_length=100, default="")
-    ip = models.CharField(max_length=100, default="")
-    os = models.CharField(max_length=100, default="")
-    notes = models.CharField(max_length=1000, default="")
+    ip = models.CharField(max_length=100, blank=True, default="")
+    os = models.CharField(max_length=100, blank=True, default="")
+    notes = models.CharField(max_length=1000, blank=True, default="")
     
     def get_viewable(user):
         """Returns all viewable hosts"""
@@ -874,10 +874,10 @@ class Service(models.Model):
 
     host = models.ForeignKey(Host, null=True, on_delete=models.CASCADE)
     port = models.IntegerField(default=0)
-    protocol = models.CharField(max_length=200, default="")
-    name = models.CharField(max_length=200, default="")
-    version = models.CharField(max_length=100, default="")
-    banner = models.CharField(max_length=1000, default="")
+    protocol = models.CharField(max_length=200, blank=True, default="")
+    name = models.CharField(max_length=200, blank=True, default="")
+    version = models.CharField(max_length=100, blank=True, default="")
+    banner = models.CharField(max_length=1000, blank=True, default="")
     
     def get_viewable(user):
         """Returns all viewable Services"""
