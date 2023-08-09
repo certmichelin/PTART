@@ -786,7 +786,7 @@ def project_latex(request, pk):
                 env.filters["mdtolatex"] = markdown_to_latex
                 env.filters["escape"] = tex_escape
                 template = env.from_string(file_.read())
-                zf.writestr("report.tex", template.render(project=project, labels=Label.get_viewable(request.user)))     
+                zf.writestr("{}.tex".format(project.name).replace(" ","_"), template.render(project=project, labels=Label.get_viewable(request.user)))     
 
             #Prepare HTTP response.
             response.content_type = 'application/zip'
