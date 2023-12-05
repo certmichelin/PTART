@@ -110,5 +110,5 @@ That's all for the first time. Follow the next steps whenever you want to start 
 4. Setup any additional dependencies: `pipenv install`
 5. Run the virtual environment: `pipenv shell`
 6. Make the latest database changes: `python manage.py migrate`
-7.  Start the server: `python manage.py runserver`
+7. Start the server: `python manage.py runserver`
 8. Enjoy
