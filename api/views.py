@@ -814,7 +814,7 @@ def chatgpt(request):
                 json = { 
                     "prompt" : request.data["question"], 
                     "max_tokens": 2048, 
-                    "model": "text-davinci-003"
+                    "model": "gpt-3.5-turbo-instruct"
                     }, 
                 headers = {
                     "Authorization": "Bearer " + settings.CHATGPT_API_KEY,
