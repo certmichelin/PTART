@@ -82,11 +82,11 @@ In order to enable, the `Chat GPT` console, you just need to enter your api key 
 
 **Preparing PTART environment :**
 
-Python requires Python 3.11 and a few more packages. The simplest way to set up PTART is using  [pipenv](https://github.com/pypa/pipenv). 
+Python requires Python 3.11 and a few more packages. The simplest way to set up PTART is using [venv](https://docs.python.org/3/library/venv.html). 
 
 1. Clone the project and go to the new directory.
-2. Create a new virtual environment and installing dependencies: `pipenv install`. (If psycopg2 failed to be installed, try `sudo apt-get install libpq-dev`)
-3. Run the virtual environment: `pipenv shell`
+2. Create a new virtual environment and installing dependencies: `python3.11 -m venv venv`. 
+3. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 and pandoc failed to be installed, try `sudo apt-get install libpq-dev` or `brew install postgresql`, `brew install pandoc`)
 4. Create the database: `python manage.py migrate`
 5. Create the super user: `python manage.py createsuperuser`
 6. (Optional) Initiate PTART with integrated loaders.
@@ -95,20 +95,18 @@ That's all for the first time. Follow the next steps whenever you want to start 
 
 **Starting PTART:**
 
-1. Run the virtual environment: `pipenv shell`
-2. Start PTART server: `python manage.py runserver`
-3. Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser.
-4. Login with the user credentials.
-5. Welcome to PTART.
-6. Once you are done, stop the server: `Ctrl + C`
+1. Start PTART server: `python manage.py runserver`
+2. Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser.
+3. Login with the user credentials.
+4. Welcome to PTART.
+5. Once you are done, stop the server: `Ctrl + C`
 
 ## Upgrade:
 
 1. Navigate to the folder where PTART was cloned: `cd PTART`
 2. Stop the server if it's running: `Ctrl + C`
 3. Pull the latest code base via git: `git pull` or download the source from Github and replace the files.
-4. Setup any additional dependencies: `pipenv install`
-5. Run the virtual environment: `pipenv shell`
-6. Make the latest database changes: `python manage.py migrate`
-7.  Start the server: `python manage.py runserver`
-8. Enjoy
+4. Setup any additional dependencies: `pip install -r requirements.txt`
+5. Make the latest database changes: `python manage.py migrate`
+6. Start the server: `python manage.py runserver`
+7. Enjoy

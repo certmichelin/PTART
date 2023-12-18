@@ -185,7 +185,7 @@ class Project(models.Model):
         """Compute statistics on labels"""
         statistics = {}
         for assessment in self.assessment_set.all() :
-            for hit in assessment.hit_set.all():
+            for hit in assessment.displayable_hits():
                 for label in hit.labels.all():
                     if statistics.get(label.title) is None :
                         statistics[label.title] = 1
@@ -318,7 +318,7 @@ class Assessment(models.Model):
     def hits_by_severity(self, severity):
         """Filter hits by severity for the assessment."""
         hits = []
-        for hit in self.hit_set.filter(severity = severity).all() :
+        for hit in self.hit_set.filter(severity = severity).filter(displayable = True).all() :
             hits.append(hit)
         return hits
 
@@ -842,9 +842,9 @@ class Host(models.Model):
 
     project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     hostname = models.CharField(max_length=100, default="")
-    ip = models.CharField(max_length=100, default="")
-    os = models.CharField(max_length=100, default="")
-    notes = models.CharField(max_length=1000, default="")
+    ip = models.CharField(max_length=100, blank=True, default="")
+    os = models.CharField(max_length=100, blank=True, default="")
+    notes = models.CharField(max_length=1000, blank=True, default="")
     
     def get_viewable(user):
         """Returns all viewable hosts"""
@@ -874,10 +874,10 @@ class Service(models.Model):
 
     host = models.ForeignKey(Host, null=True, on_delete=models.CASCADE)
     port = models.IntegerField(default=0)
-    protocol = models.CharField(max_length=200, default="")
-    name = models.CharField(max_length=200, default="")
-    version = models.CharField(max_length=100, default="")
-    banner = models.CharField(max_length=1000, default="")
+    protocol = models.CharField(max_length=200, blank=True, default="")
+    name = models.CharField(max_length=200, blank=True, default="")
+    version = models.CharField(max_length=100, blank=True, default="")
+    banner = models.CharField(max_length=1000, blank=True, default="")
     
     def get_viewable(user):
         """Returns all viewable Services"""
