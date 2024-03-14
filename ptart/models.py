@@ -3,7 +3,7 @@ import math
 import os
 import pathlib
 
-from cvss import CVSS3
+from cvss import CVSS3, CVSS4
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -147,6 +147,7 @@ class Project(models.Model):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     archived = models.BooleanField(default=False)
+    cvss_type = models.IntegerField(default=3, validators=[MinValueValidator(3), MaxValueValidator(4)])
     tools = models.ManyToManyField(Tool)
     methodologies = models.ManyToManyField(Methodology)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
@@ -434,6 +435,63 @@ class Cvss(models.Model):
     class Meta:
         ordering = ('decimal_value',)
 
+"""CvssV4.0 model"""
+class Cvss4(models.Model):
+    NALP_CHOICES = (
+        ('N', 'Network'),
+        ('A', 'Adjacent'),
+        ('L', 'Local'),
+        ('P', 'Physical')
+    )
+
+    LH_CHOICES = (
+        ('L', 'Low'),
+        ('H', 'High')
+    )
+
+    NP_CHOICES = (
+        ('N', 'None'),
+        ('P', 'Present')
+    )
+
+    NLH_CHOICES = (
+        ('N', 'None'),
+        ('L', 'Low'),
+        ('H', 'High')
+    )
+
+    NPA_CHOICES = (
+        ('N', 'None'),
+        ('P', 'Passive'),
+        ('A', 'Active')
+    )
+
+    """CVSS4 String values"""
+    attack_vector = models.CharField(max_length=1,choices=NALP_CHOICES)
+    attack_complexity = models.CharField(max_length=1,choices=LH_CHOICES)
+    attack_requirements = models.CharField(max_length=1,choices=NP_CHOICES)
+    privilege_required = models.CharField(max_length=1,choices=NLH_CHOICES)
+    user_interaction = models.CharField(max_length=1,choices=NPA_CHOICES)
+    confidentiality = models.CharField(max_length=1,choices=NLH_CHOICES)
+    integrity = models.CharField(max_length=1,choices=NLH_CHOICES)
+    availability = models.CharField(max_length=1,choices=NLH_CHOICES)
+    subsequent_confidentiality = models.CharField(max_length=1,choices=NLH_CHOICES)
+    subsequent_integrity = models.CharField(max_length=1,choices=NLH_CHOICES)
+    subsequent_availability = models.CharField(max_length=1,choices=NLH_CHOICES)
+
+    """Values for usage"""
+    decimal_value = models.DecimalField(max_digits=3, decimal_places=1, default=-1.0)
+
+    def compute_cvss_value(self) :
+        c = CVSS4(self.get_cvss_string())
+        self.decimal_value = c.base_score
+
+    def get_cvss_string(self):
+        """Return the string value of the cvss"""
+        return "CVSS:4.0/AV:" + self.attack_vector + "/AC:" + self.attack_complexity + "/PR:" + self.privilege_required + "/UI:" + self.user_interaction + "/VC:" + self.confidentiality + "/VI:" + self.integrity + "/VA:" + self.availability + "/SC:" + self.subsequent_confidentiality + "/SI:" + self.subsequent_integrity + "/SA:" + self.subsequent_availability 
+
+    class Meta:
+        ordering = ('decimal_value',)
 
 """Hit model."""
 class Hit(models.Model):
@@ -447,7 +505,8 @@ class Hit(models.Model):
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
     fix_complexity = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     displayable = models.BooleanField(default=True)
-    cvss = models.OneToOneField(Cvss, null=True, on_delete=models.SET_NULL)
+    cvss3 = models.OneToOneField(Cvss, null=True, on_delete=models.SET_NULL)
+    cvss4 = models.OneToOneField(Cvss4, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
 
     def __str__(self):  
@@ -485,25 +544,27 @@ class Hit(models.Model):
 
     def get_cvss_value(self):
         """Return the decimal value of the cvss"""
-        if self.cvss is None :
+        if self.cvss3 is None :
             return "---"
         else : 
-            return self.cvss.decimal_value
+            return self.cvss3.decimal_value
 
     def get_cvss_string(self):
         """Return the string value of the cvss"""
-        if self.cvss is None :
+        if self.cvss3 is None :
             return ""
         else : 
-            return self.cvss.get_cvss_string() 
+            return self.cvss3.get_cvss_string() 
 
     def delete(self, *args, **kwargs):
-        if self.cvss:
-            self.cvss.delete()
+        if self.cvss3:
+            self.cvss3.delete()
+        if self.cvss4:
+            self.cvss4.delete()
         return super(self.__class__, self).delete(*args, **kwargs)
 
     class Meta:
-        ordering = ('severity', '-cvss', 'title',)
+        ordering = ('severity', '-cvss3','-cvss4', 'title',)
 
 """Comment model."""
 class Comment(models.Model):
