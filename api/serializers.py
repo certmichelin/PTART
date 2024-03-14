@@ -149,7 +149,7 @@ class Cvss3Serializer(serializers.ModelSerializer):
 class Cvss4Serializer(serializers.ModelSerializer):
     class Meta:
         model = Cvss4
-        fields = ('id', 'attack_vector', 'attack_complexity','privilege_required','user_interaction','scope','confidentiality','integrity','availability','subsequent_confidentiality','subsequent_integrity','subsequent_availability','decimal_value')
+        fields = ('id', 'attack_vector', 'attack_complexity', 'attack_requirements', 'privilege_required','user_interaction','confidentiality','integrity','availability','subsequent_confidentiality','subsequent_integrity','subsequent_availability','decimal_value')
 
 class HitSerializer(serializers.ModelSerializer):
     labels = LabelSerializer(read_only=True, many=True)
