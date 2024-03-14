@@ -32,11 +32,11 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -310,7 +310,7 @@ def attachment_raw(request, pk) :
 @csrf_exempt
 @ptart_authentication
 @api_view(['POST'])
-def cvss(request):
+def cvss3(request):
     serializer = Cvss3Serializer(data=request.data)
     if serializer.is_valid():
         cvss = Cvss3(**serializer.validated_data)
@@ -322,8 +322,21 @@ def cvss(request):
 
 @csrf_exempt
 @ptart_authentication
+@api_view(['POST'])
+def cvss4(request):
+    serializer = Cvss4Serializer(data=request.data)
+    if serializer.is_valid():
+        cvss = Cvss4(**serializer.validated_data)
+        cvss.compute_cvss_value()
+        response = Response(Cvss4Serializer(cvss).data, status=status.HTTP_201_CREATED)
+    else :
+        response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return response
+
+@csrf_exempt
+@ptart_authentication
 @api_view(['POST','DELETE'])
-def cvss_hit(request, pk):
+def cvss3_hit(request, pk):
     response = None
     try:
         hit = Hit.objects.get(pk=pk)
@@ -332,7 +345,7 @@ def cvss_hit(request, pk):
             if request.method == 'DELETE':
                 #Delete the cvss attached to the hit.
                 if hit.cvss is not None :
-                    Cvss3.objects.get(pk=hit.cvss.id).delete()
+                    Cvss3.objects.get(pk=hit.cvss3.id).delete()
                 response = Response(status=status.HTTP_200_OK)
 
             else :
@@ -346,9 +359,48 @@ def cvss_hit(request, pk):
 
                     #This condition prevent memory leak in DB.
                     if hit.cvss is not None : 
-                        Cvss3.objects.get(pk=hit.cvss.id).delete()
+                        Cvss3.objects.get(pk=hit.cvss3.id).delete()
 
-                    hit.cvss = cvss
+                    hit.cvss3 = cvss
+                    hit.save(update_fields=['cvss'])
+                    response = Response(status=status.HTTP_201_CREATED)
+                else :
+                    response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Hit.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['POST','DELETE'])
+def cvss4_hit(request, pk):
+    response = None
+    try:
+        hit = Hit.objects.get(pk=pk)
+        if hit.is_user_can_edit(request.user):
+            
+            if request.method == 'DELETE':
+                #Delete the cvss attached to the hit.
+                if hit.cvss is not None :
+                    Cvss4.objects.get(pk=hit.cvss4.id).delete()
+                response = Response(status=status.HTTP_200_OK)
+
+            else :
+                serializer = Cvss4Serializer(data=request.data)
+                if serializer.is_valid():
+                    #Create the new CVSS.
+                    serializer.save()
+                    cvss = Cvss4.objects.get(pk=serializer.data["id"])
+                    cvss.compute_cvss_value()
+                    cvss.save(update_fields=['decimal_value'])
+
+                    #This condition prevent memory leak in DB.
+                    if hit.cvss is not None : 
+                        Cvss4.objects.get(pk=hit.cvss4.id).delete()
+
+                    hit.cvss4 = cvss
                     hit.save(update_fields=['cvss'])
                     response = Response(status=status.HTTP_201_CREATED)
                 else :
