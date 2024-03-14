@@ -332,7 +332,7 @@ def hits_new(request):
             assessments = project.assessment_set.all
     except :
         pass
-    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'cvss_type': project.cvss_type, 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
 
 @otp_required
 def attackscenarios_new(request):

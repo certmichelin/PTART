@@ -95,7 +95,12 @@
             </div>
             <div class="col-lg-5">
                 {% if assessments %}
+
+                {% if cvss_type == 3 %}
                 {% include "_include/html/cvss3.html" %}
+                {% else %}
+                {% include "_include/html/cvss4.html" %}
+                {% endif %}
 
                 <!-- Reference Area -->
                 <div class="panel panel-default">
