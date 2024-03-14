@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss, Case, Module, Methodology, AttackScenario, Recommendation, Tool
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Case, Module, Methodology, AttackScenario, Recommendation, Tool
 from .tools import FileField
 
 
@@ -42,7 +42,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'added', 'archived', 'tools', 'methodologies')
+        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'cvss_type', 'added', 'archived', 'tools', 'methodologies')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -146,7 +146,7 @@ class HitSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Hit
-        fields = ('id', 'title', 'labels', 'severity', 'cvss', 'asset', 'body', 'remediation', 'added', 'displayable', 'fix_complexity', 'assessment', 'get_unique_id')
+        fields = ('id', 'title', 'labels', 'severity', 'cvss3','cvss4', 'asset', 'body', 'remediation', 'added', 'displayable', 'fix_complexity', 'assessment', 'get_unique_id')
     
     @transaction.atomic
     def create(self, validated_data):
@@ -184,9 +184,9 @@ class HitReferenceSerializer(serializers.ModelSerializer):
         model = HitReference
         fields = ('id', 'name', 'url')
 
-class CvssSerializer(serializers.ModelSerializer):
+class Cvss3Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Cvss
+        model = Cvss3
         fields = ('id', 'attack_vector', 'attack_complexity','privilege_required','user_interaction','scope','confidentiality','integrity','availability','decimal_value')
 
 class HostSerializer(serializers.ModelSerializer):

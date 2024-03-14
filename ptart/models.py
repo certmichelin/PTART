@@ -382,7 +382,7 @@ class Label(models.Model):
         ordering = ('pk',)
 
 """CvssV3.1 model"""
-class Cvss(models.Model):
+class Cvss3(models.Model):
     NALP_CHOICES = (
         ('N', 'Network'),
         ('A', 'Adjacent'),
@@ -505,7 +505,7 @@ class Hit(models.Model):
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
     fix_complexity = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     displayable = models.BooleanField(default=True)
-    cvss3 = models.OneToOneField(Cvss, null=True, on_delete=models.SET_NULL)
+    cvss3 = models.OneToOneField(Cvss3, null=True, on_delete=models.SET_NULL)
     cvss4 = models.OneToOneField(Cvss4, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
 
