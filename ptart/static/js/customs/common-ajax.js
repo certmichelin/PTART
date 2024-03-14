@@ -468,7 +468,7 @@ function ajaxDeleteAttachment(successFunction, errorFunction, id) {
  */
 function ajaxComputeCVSSv31(successFunction, errorFunction, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
-        url: "/api/cvss/",
+        url: "/api/cvss3/",
         data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
         type: 'POST',
         success: successFunction,
@@ -493,7 +493,7 @@ function ajaxComputeCVSSv31(successFunction, errorFunction, attackVector, attack
  */
 function ajaxAddCVSSv31(successFunction, errorFunction, hitId, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
-        url: "/api/hit/" + hitId + "/cvss/",
+        url: "/api/hit/" + hitId + "/cvss3/",
         data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
         type: 'POST',
         success: successFunction,
@@ -510,7 +510,7 @@ function ajaxAddCVSSv31(successFunction, errorFunction, hitId, attackVector, att
  */
 function ajaxRemoveCVSSv31(successFunction, errorFunction, hitId) {
     $.ajax({
-        url: "/api/hit/" + hitId + "/cvss/",
+        url: "/api/hit/" + hitId + "/cvss3/",
         type: 'DELETE',
         success: successFunction,
         error: errorFunction

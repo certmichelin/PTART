@@ -344,7 +344,7 @@ def cvss3_hit(request, pk):
             
             if request.method == 'DELETE':
                 #Delete the cvss attached to the hit.
-                if hit.cvss is not None :
+                if hit.cvss3 is not None :
                     Cvss3.objects.get(pk=hit.cvss3.id).delete()
                 response = Response(status=status.HTTP_200_OK)
 
@@ -358,11 +358,11 @@ def cvss3_hit(request, pk):
                     cvss.save(update_fields=['decimal_value'])
 
                     #This condition prevent memory leak in DB.
-                    if hit.cvss is not None : 
+                    if hit.cvss3 is not None : 
                         Cvss3.objects.get(pk=hit.cvss3.id).delete()
 
                     hit.cvss3 = cvss
-                    hit.save(update_fields=['cvss'])
+                    hit.save(update_fields=['cvss3'])
                     response = Response(status=status.HTTP_201_CREATED)
                 else :
                     response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
@@ -383,7 +383,7 @@ def cvss4_hit(request, pk):
             
             if request.method == 'DELETE':
                 #Delete the cvss attached to the hit.
-                if hit.cvss is not None :
+                if hit.cvss4 is not None :
                     Cvss4.objects.get(pk=hit.cvss4.id).delete()
                 response = Response(status=status.HTTP_200_OK)
 
@@ -397,11 +397,11 @@ def cvss4_hit(request, pk):
                     cvss.save(update_fields=['decimal_value'])
 
                     #This condition prevent memory leak in DB.
-                    if hit.cvss is not None : 
+                    if hit.cvss4 is not None : 
                         Cvss4.objects.get(pk=hit.cvss4.id).delete()
 
                     hit.cvss4 = cvss
-                    hit.save(update_fields=['cvss'])
+                    hit.save(update_fields=['cvss4'])
                     response = Response(status=status.HTTP_201_CREATED)
                 else :
                     response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
