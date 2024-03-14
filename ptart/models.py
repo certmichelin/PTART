@@ -544,17 +544,31 @@ class Hit(models.Model):
 
     def get_cvss_value(self):
         """Return the decimal value of the cvss"""
-        if self.cvss3 is None :
-            return "---"
-        else : 
-            return self.cvss3.decimal_value
+        match self.assessment.project.cvss_type :
+            case 3:
+                if self.cvss3 is None :
+                    return "---"
+                else : 
+                    return self.cvss3.decimal_value
+            case 4:
+                if self.cvss4 is None :
+                    return "---"
+                else : 
+                    return self.cvss4.decimal_value
 
     def get_cvss_string(self):
         """Return the string value of the cvss"""
-        if self.cvss3 is None :
-            return ""
-        else : 
-            return self.cvss3.get_cvss_string() 
+        match self.assessment.project.cvss_type :
+            case 3:
+                if self.cvss3 is None :
+                    return ""
+                else : 
+                    self.cvss3.get_cvss_string() 
+            case 4:
+                if self.cvss4 is None :
+                    return ""
+                else : 
+                    self.cvss4.get_cvss_string() 
 
     def delete(self, *args, **kwargs):
         if self.cvss3:
