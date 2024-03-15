@@ -40,6 +40,11 @@
     color: #000;
 }
 
+.bc-badge-secondary {
+    color: #fff;
+    background-color: #6c757d;
+}
+
 .cvss3-badge {
     display: inline-block;
     padding: .25em .4em;

@@ -563,12 +563,12 @@ class Hit(models.Model):
                 if self.cvss3 is None :
                     return ""
                 else : 
-                    self.cvss3.get_cvss_string() 
+                    return self.cvss3.get_cvss_string() 
             case 4:
                 if self.cvss4 is None :
                     return ""
                 else : 
-                    self.cvss4.get_cvss_string() 
+                    return self.cvss4.get_cvss_string() 
 
     def delete(self, *args, **kwargs):
         if self.cvss3:
