@@ -326,13 +326,15 @@ def assessments_new(request):
 @otp_required
 def hits_new(request):
     assessments = Assessment.get_viewable(request.user)
+    cvss_type = 3
     try:
         project = Project.objects.get(pk=request.GET.get("projectId", ""))
         if project.is_user_can_edit(request.user) :
             assessments = project.assessment_set.all
+            cvss_type = project.cvss_type
     except :
         pass
-    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'cvss_type': project.cvss_type, 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'cvss_type': cvss_type , 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
 
 @otp_required
 def attackscenarios_new(request):
