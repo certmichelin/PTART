@@ -156,11 +156,17 @@
 \definecolor{bc-badge-p4}{HTML}{5eae00}
 \definecolor{bc-badge-p5}{HTML}{0278b8}
 
-\definecolor{cvss-badge-dark}{HTML}{343a40}
-\definecolor{cvss-badge-danger}{HTML}{dc3545}
-\definecolor{cvss-badge-warning}{HTML}{ffc107}
-\definecolor{cvss-badge-success}{HTML}{28a745}
-\definecolor{cvss-badge-secondary}{HTML}{6c757d}
+\definecolor{cvss3-badge-dark}{HTML}{343a40}
+\definecolor{cvss3-badge-danger}{HTML}{dc3545}
+\definecolor{cvss3-badge-warning}{HTML}{ffc107}
+\definecolor{cvss3-badge-success}{HTML}{28a745}
+\definecolor{cvss3-badge-secondary}{HTML}{6c757d}
+
+\definecolor{cvss4-badge-dark}{HTML}{343a40}
+\definecolor{cvss4-badge-danger}{HTML}{dc3545}
+\definecolor{cvss4-badge-warning}{HTML}{ffc107}
+\definecolor{cvss4-badge-success}{HTML}{28a745}
+\definecolor{cvss4-badge-secondary}{HTML}{6c757d}
 
 \definecolor{fix-complexity-0}{HTML}{6c757d}
 \definecolor{fix-complexity-1}{HTML}{dc3545}
@@ -377,7 +383,11 @@
 				\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
 						\BLOCK{ for hit in assessment.displayable_hits() }
 						\hline 
-						\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+						\BLOCK{ if project.cvss_type == 3 }
+						\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss3-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss3-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss3-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss3-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss3-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss3-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+						\BLOCK{ else }
+						\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss4-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss4-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss4-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss4-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss4-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss4-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
+						\BLOCK{ endif }
 						\BLOCK{ endfor }
 						\hline 	
 				\end{tabularx}}
@@ -469,19 +479,39 @@
 						\hline 
 						Severity & \badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }}\\
 						\hline
+						\BLOCK{ if project.cvss_type == 3 }
 						\BLOCK{ if hit.get_cvss_value() == "---" }
-							CVSS Base Score & \badge[cvss-badge-secondary]{ N.C } \\
+							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{ N.C } \\
 						\BLOCK{ elif hit.get_cvss_value() <= 0 }
-							CVSS Base Score & \badge[cvss-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} (\VAR{ hit.get_cvss_string() }) \\
+							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
-							CVSS Base Score & \badge[cvss-badge-success]{\VAR{ hit.get_cvss_value()} - Low} (\VAR{ hit.get_cvss_string() }) \\
+							CVSSv3 Base Score & \badge[cvss3-badge-success]{\VAR{ hit.get_cvss_value()} - Low} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
-							CVSS Base Score & \badge[cvss-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} (\VAR{ hit.get_cvss_string() }) \\
+							CVSSv3 Base Score & \badge[cvss3-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
-							CVSS Base Score & \badge[cvss-badge-danger]{\VAR{ hit.get_cvss_value()} - High} (\VAR{ hit.get_cvss_string() }) \\
+							CVSSv3 Base Score & \badge[cvss3-badge-danger]{\VAR{ hit.get_cvss_value()} - High} \\
 						\BLOCK{ else }
-							CVSS Base Score & \badge[cvss-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} (\VAR{ hit.get_cvss_string() }) \\
-						\BLOCK{ endif } 
+							CVSSv3 Base Score & \badge[cvss3-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} () \\
+						\BLOCK{ endif }
+						\hline
+						CVSSv3 String &  \VAR{ hit.get_cvss_string() } \\
+						\BLOCK{ else }
+						\BLOCK{ if hit.get_cvss_value() == "---" }
+							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{ N.C } \\
+						\BLOCK{ elif hit.get_cvss_value() <= 0 }
+							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} \\
+						\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
+							CVSSv4 Base Score & \badge[cvss4-badge-success]{\VAR{ hit.get_cvss_value()} - Low} \\
+						\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
+							CVSSv4 Base Score & \badge[cvss4-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} \\
+						\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
+							CVSSv4 Base Score & \badge[cvss4-badge-danger]{\VAR{ hit.get_cvss_value()} - High} \\
+						\BLOCK{ else }
+							CVSSv4 Base Score & \badge[cvss4-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} \\
+						\BLOCK{ endif }
+						\hline
+						CVSSv4 String &  {\small \VAR{ hit.get_cvss_string() }} \\
+						\BLOCK{ endif }
 						\hline 
 						Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
 						\hline 

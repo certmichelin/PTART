@@ -123,7 +123,7 @@
                                         <tr>
                                             <td><a href="/hit/{{ hit.id }}/">{{ hit.title }}</a></td>
                                             <td><span class="bc-badge bc-badge--p{{ hit.severity }}">P{{ hit.severity }}</span></td>
-                                            <td><span class="cvss cvss-badge cvss-badge-secondary">{{ hit.get_cvss_value }}</span></td>
+                                            <td><span class="cvss3 cvss3-badge cvss3-badge-secondary">{{ hit.get_cvss_value }}</span></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

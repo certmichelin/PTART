@@ -22,9 +22,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>CVSS v3.1</label>
-                    <h5><span id="cvssValue" class="cvss-badge cvss-badge-secondary">No Rating (---)</span></h5>
-                    <input id="cvss cvss-badge cvss-badge-secondary" type="hidden" value="---" />
+                    <label>CVSS v{{cvss_type}}</label>
+                    <h5><span id="cvss{{cvss_type}}Value" class="cvss{{cvss_type}}-badge cvss{{cvss_type}}-badge-secondary">No Rating (---)</span></h5>
+                    <input id="cvss{{cvss_type}}" class="cvss{{cvss_type}}-badge cvss{{cvss_type}}-badge-secondary" type="hidden" value="---" />
                 </div>
                 <div class="form-group">
                     <label>Title</label>
@@ -78,7 +78,11 @@
                 {% endif %}
             </div>
             <div class="col-lg-5">
-                {% include "_include/html/cvss.html" %}
+                {% if cvss_type == 3 %}
+                {% include "_include/html/cvss3.html" %}
+                {% else %}
+                {% include "_include/html/cvss4.html" %}
+                {% endif %}
 
                 <!-- Reference Area -->
                 <div class="panel panel-default">
@@ -191,8 +195,14 @@
     $('#severity option[value={{hit.severity}}]').attr('selected', 'selected');
     $('#fix_complexity option[value={{hit.fix_complexity}}]').attr('selected', 'selected');
 
-    displayCVSS("{{hit.get_cvss_value}}")
-    loadCVSSButtonsState("{{hit.cvss.attack_vector}}", "{{hit.cvss.attack_complexity}}", "{{hit.cvss.privilege_required}}", "{{hit.cvss.user_interaction}}", "{{hit.cvss.scope}}", "{{hit.cvss.confidentiality}}", "{{hit.cvss.integrity}}", "{{hit.cvss.availability}}");
+    {% if cvss_type == 3 %}
+    displayCVSS3("{{hit.get_cvss_value}}");
+    loadCVSS3ButtonsState("{{hit.cvss3.attack_vector}}", "{{hit.cvss3.attack_complexity}}", "{{hit.cvss3.privilege_required}}", "{{hit.cvss3.user_interaction}}", "{{hit.cvss3.scope}}", "{{hit.cvss3.confidentiality}}", "{{hit.cvss3.integrity}}", "{{hit.cvss3.availability}}");
+    {% else %}
+    displayCVSS4("{{hit.get_cvss_value}}");
+    loadCVSS4ButtonsState("{{hit.cvss4.attack_vector}}", "{{hit.cvss4.attack_complexity}}", "{{hit.cvss4.attack_requirements}}", "{{hit.cvss4.privilege_required}}", "{{hit.cvss4.user_interaction}}", "{{hit.cvss4.confidentiality}}", "{{hit.cvss4.integrity}}", "{{hit.cvss4.availability}}", "{{hit.cvss4.subsequent_confidentiality}}", "{{hit.cvss4.subsequent_integrity}}", "{{hit.cvss4.subsequent_availability}}");
+    {% endif %}
+
     activeMarkdown("body");
     activeMarkdown("remediation");
 
@@ -226,7 +236,11 @@
      * Hit CVSS deletion callback
      */
     function cvssDeletionSuccess(data) {
+        {% if cvss_type == 3 %}
         addCVSSv31ToHit($("#id").val());
+        {% else %}
+        addCVSSv4ToHit($("#id").val());
+        {% endif %}
     }
 
     /**
@@ -235,7 +249,11 @@
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#displayable").prop("checked"), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
+        {% if cvss_type == 3 %}
         ajaxRemoveCVSSv31(cvssDeletionSuccess, commonFailure, $("#id").val());
+        {% else %}
+        ajaxRemoveCVSSv4(cvssDeletionSuccess, commonFailure, $("#id").val());
+        {% endif %}
     });
 
     /**

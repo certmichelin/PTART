@@ -35,9 +35,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>CVSS v3</label>
-                    <h5><span id="cvssValue" class="cvss-badge cvss-badge-secondary">No Rating (---)</span></h5>
-                    <input id="cvss cvss-badge cvss-badge-secondary" type="hidden" value="---" />
+                    <label>CVSS v{{cvss_type}}</label>
+                    <h5><span id="cvss{{cvss_type}}Value" class="cvss{{cvss_type}}-badge cvss{{cvss_type}}-badge-secondary">No Rating (---)</span></h5>
+                    <input id="cvss{{cvss_type}}" class="cvss{{cvss_type}}-badge cvss{{cvss_type}}-badge-secondary" type="hidden" value="---" />
                 </div>
                 <div class="form-group">
                     <label>Title</label>
@@ -95,7 +95,12 @@
             </div>
             <div class="col-lg-5">
                 {% if assessments %}
-                {% include "_include/html/cvss.html" %}
+
+                {% if cvss_type == 3 %}
+                {% include "_include/html/cvss3.html" %}
+                {% else %}
+                {% include "_include/html/cvss4.html" %}
+                {% endif %}
 
                 <!-- Reference Area -->
                 <div class="panel panel-default">
@@ -203,8 +208,13 @@
      */
     function hitCreationSuccess(data) {
         //Assign CVSS.
-        addCVSSv31ToHit(data.id);
 
+        {% if cvss_type == 3 %}
+        addCVSSv31ToHit(data.id);
+        {% else %}
+        addCVSSv4ToHit(data.id);
+        {% endif %}
+        
         //Upload screenshots and attachment 
         screenshotsToUpload = $('.screenshot_gallery').length;
         attachmentsToUpload = $('.attachment_gallery').length;
@@ -305,7 +315,7 @@
             $("#displayable").prop("checked", true);
             mdBody.value("");
             mdRemediation.value("");
-            clearCVSS();
+            clearCVSS3();
             $("#screenshots").empty();
             $("#attachments").empty();
             $("#references").empty();
