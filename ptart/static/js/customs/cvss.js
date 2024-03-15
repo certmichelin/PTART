@@ -352,10 +352,10 @@ function loadCVSS4ButtonsState(attackVector, attackComplexity, attackRequirement
     if (attackRequirements !== "") {
         switch (attackRequirements) {
             case "N":
-                $('#cvss4ComplexityLow').addClass("active");
+                $('#cvss4RequirementsNone').addClass("active");
                 break;
             case "P":
-                $('#cvss4ComplexityHigh').addClass("active");
+                $('#cvss4RequirementsPresent').addClass("active");
                 break;
         }
         cvss4AttackRequirementsValue = attackRequirements;
@@ -466,8 +466,8 @@ function loadCVSS4ButtonsState(attackVector, attackComplexity, attackRequirement
         cvss4SubsequentIntegrityValue = subsequentIntegrity;
     }
 
-    if (subsequentavailability !== "") {
-        switch (subsequentavailability) {
+    if (subsequentAvailability !== "") {
+        switch (subsequentAvailability) {
             case "N":
                 $('#cvss4SubsequentAvailabilityNone').addClass("active");
                 break;
@@ -478,7 +478,7 @@ function loadCVSS4ButtonsState(attackVector, attackComplexity, attackRequirement
                 $('#cvss4SubsequentAvailabilityHigh').addClass("active");
                 break;
         }
-        cvss4SubsequentAvailabilityValue = subsequentavailability;
+        cvss4SubsequentAvailabilityValue = subsequentAvailability;
     }
 }
 
