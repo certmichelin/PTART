@@ -621,7 +621,7 @@ def project_xlsx(request, pk):
             #Add column header.
             ws['A6'] = "Assessment"
             ws['B6'] = "Sev"
-            ws['C6'] = "CVSS"
+            ws['C6'] = "CVSSv3" if project.cvss_type == 3 else "CVSSv4"
             ws['D6'] = "ID"
             ws['E6'] = "Title"
             ws['F6'] = "Asset"
@@ -707,8 +707,9 @@ def project_xlsx(request, pk):
                     else :
                         ws.cell(row=line, column=7).style = infoStyle
 
+                    #For the moment, CVSS3 and CVSS4 share the same classification values.
                     try:
-                        if float(hit.get_cvss_value()) < 4.0:
+                        if float(hit.get_cvss_value()) < 0.1:
                             ws.cell(row=line, column=3).style = infoStyle
                         elif float(hit.get_cvss_value()) < 4.0:
                             ws.cell(row=line, column=3).style = lowStyle
