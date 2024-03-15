@@ -488,7 +488,7 @@ class Cvss4(models.Model):
 
     def get_cvss_string(self):
         """Return the string value of the cvss"""
-        return "CVSS:4.0/AV:" + self.attack_vector + "/AC:" + self.attack_complexity + "/PR:" + self.privilege_required + "/UI:" + self.user_interaction + "/VC:" + self.confidentiality + "/VI:" + self.integrity + "/VA:" + self.availability + "/SC:" + self.subsequent_confidentiality + "/SI:" + self.subsequent_integrity + "/SA:" + self.subsequent_availability 
+        return "CVSS:4.0/AV:" + self.attack_vector + "/AC:" + self.attack_complexity + "/AT:" + self.attack_requirements + "/PR:" + self.privilege_required + "/UI:" + self.user_interaction + "/VC:" + self.confidentiality + "/VI:" + self.integrity + "/VA:" + self.availability + "/SC:" + self.subsequent_confidentiality + "/SI:" + self.subsequent_integrity + "/SA:" + self.subsequent_availability 
 
     class Meta:
         ordering = ('decimal_value',)

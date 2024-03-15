@@ -35,9 +35,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>CVSS v3</label>
-                    <h5><span id="cvss3Value" class="cvss3-badge cvss3-badge-secondary">No Rating (---)</span></h5>
-                    <input id="cvss3 cvss3-badge cvss3-badge-secondary" type="hidden" value="---" />
+                    <label>CVSS v{{cvss_type}}</label>
+                    <h5><span id="cvss{{cvss_type}}Value" class="cvss{{cvss_type}}-badge cvss{{cvss_type}}-badge-secondary">No Rating (---)</span></h5>
+                    <input id="cvss{{cvss_type}}" class="cvss{{cvss_type}}-badge cvss{{cvss_type}}-badge-secondary" type="hidden" value="---" />
                 </div>
                 <div class="form-group">
                     <label>Title</label>
@@ -208,8 +208,13 @@
      */
     function hitCreationSuccess(data) {
         //Assign CVSS.
-        addCVSSv31ToHit(data.id);
 
+        {% if cvss_type == 3 %}
+        addCVSSv31ToHit(data.id);
+        {% else %}
+        addCVSSv4ToHit(data.id);
+        {% endif %}
+        
         //Upload screenshots and attachment 
         screenshotsToUpload = $('.screenshot_gallery').length;
         attachmentsToUpload = $('.attachment_gallery').length;
