@@ -22,15 +22,16 @@ $.ajaxSetup({
  * @param {*} conclusion Project conclusion.
  * @param {*} scope Project scope.
  * @param {*} client Project client.
+ * @param {*} cvss_type Project cvss type (3 or 4).
  * @param {*} methodologies Project methodologies.
  * @param {*} tools Project tools.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  */
-function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, methodologies, tools, pentesters, viewers) {
+function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, cvss_type, methodologies, tools, pentesters, viewers) {
     $.ajax({
         url: "/api/projects/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"cvss_type":' + JSON.stringify(cvss_type) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -51,16 +52,17 @@ function ajaxCreateProject(successFunction, errorFunction, name, start_date, end
  * @param {*} conclusion Project conclusion.
  * @param {*} scope Project scope.
  * @param {*} client Project client.
+ * @param {*} cvss_type Project cvss type (3 or 4).
  * @param {*} methodologies Project methodologies.
  * @param {*} tools Project tools.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  * @param {*} archived True if the project is archived.
  */
-function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, methodologies, tools, pentesters, viewers, archived) {
+function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, cvss_type, methodologies, tools, pentesters, viewers, archived) {
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"archived":' + JSON.stringify(archived) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"cvss_type":' + JSON.stringify(cvss_type) + ',"archived":' + JSON.stringify(archived) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
@@ -453,7 +455,7 @@ function ajaxDeleteAttachment(successFunction, errorFunction, id) {
 }
 
 /**
- * Compute the cvss value a screenshot for a hit.
+ * Compute the cvss v3 value a screenshot for a hit.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
@@ -468,7 +470,7 @@ function ajaxDeleteAttachment(successFunction, errorFunction, id) {
  */
 function ajaxComputeCVSSv31(successFunction, errorFunction, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
-        url: "/api/cvss/",
+        url: "/api/cvss3/",
         data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
         type: 'POST',
         success: successFunction,
@@ -477,7 +479,7 @@ function ajaxComputeCVSSv31(successFunction, errorFunction, attackVector, attack
 }
 
 /**
- * Compute the cvss and add it to the hit.
+ * Compute the cvss v3 and add it to the hit.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
@@ -493,7 +495,7 @@ function ajaxComputeCVSSv31(successFunction, errorFunction, attackVector, attack
  */
 function ajaxAddCVSSv31(successFunction, errorFunction, hitId, attackVector, attackComplexity, privilegeRequired, userInteraction, scope, confidentiality, integrity, availability) {
     $.ajax({
-        url: "/api/hit/" + hitId + "/cvss/",
+        url: "/api/hit/" + hitId + "/cvss3/",
         data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "scope": ' + JSON.stringify(scope) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ' }',
         type: 'POST',
         success: successFunction,
@@ -502,7 +504,7 @@ function ajaxAddCVSSv31(successFunction, errorFunction, hitId, attackVector, att
 }
 
 /**
- * Remove the CVSS value from the hit.
+ * Remove the CVSS v3 value from the hit.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
@@ -510,7 +512,78 @@ function ajaxAddCVSSv31(successFunction, errorFunction, hitId, attackVector, att
  */
 function ajaxRemoveCVSSv31(successFunction, errorFunction, hitId) {
     $.ajax({
-        url: "/api/hit/" + hitId + "/cvss/",
+        url: "/api/hit/" + hitId + "/cvss3/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Compute the cvss v4 value a screenshot for a hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} attackVector Attack vector.
+ * @param {*} attackComplexity Attack complexity.
+ * @param {*} attackRequirements Attack requirements.
+ * @param {*} privilegeRequired Privilege required for the attack.
+ * @param {*} userInteraction Attack need user interaction.
+ * @param {*} confidentiality Confidentiality.
+ * @param {*} integrity Integrity.
+ * @param {*} availability Availability.
+ * @param {*} subsequentConfidentiality Subsequent Confidentiality.
+ * @param {*} subsequentIntegrity Subsequent Integrity.
+ * @param {*} subsequentAvailability Subsequent Availability.
+ */
+function ajaxComputeCVSSv4(successFunction, errorFunction, attackVector, attackComplexity, attackRequirements, privilegeRequired, userInteraction, confidentiality, integrity, availability, subsequentConfidentiality, subsequentIntegrity, subsequentAvailability) {
+    $.ajax({
+        url: "/api/cvss4/",
+        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "attack_requirements": ' + JSON.stringify(attackRequirements) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ', "subsequent_confidentiality": ' + JSON.stringify(subsequentConfidentiality) + ', "subsequent_integrity": ' + JSON.stringify(subsequentIntegrity) + ', "subsequent_availability": ' + JSON.stringify(subsequentAvailability) + ' }',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Compute the cvss v4 and add it to the hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} hitId Hit ID.
+ * @param {*} attackVector Attack vector.
+ * @param {*} attackComplexity Attack complexity.
+ * @param {*} attackRequirements Attack requirements.
+ * @param {*} privilegeRequired Privilege required for the attack.
+ * @param {*} userInteraction Attack need user interaction.
+ * @param {*} confidentiality Confidentiality.
+ * @param {*} integrity Integrity.
+ * @param {*} availability Availability.
+ * @param {*} subsequentConfidentiality Subsequent Confidentiality.
+ * @param {*} subsequentIntegrity Subsequent Integrity.
+ * @param {*} subsequentAvailability Subsequent Availability.
+ */
+function ajaxAddCVSSv4(successFunction, errorFunction, hitId, attackVector, attackComplexity, attackRequirements, privilegeRequired, userInteraction, confidentiality, integrity, availability, subsequentConfidentiality, subsequentIntegrity, subsequentAvailability) {
+    $.ajax({
+        url: "/api/hit/" + hitId + "/cvss4/",
+        data: '{"attack_vector": ' + JSON.stringify(attackVector) + ', "attack_complexity": ' + JSON.stringify(attackComplexity) + ', "attack_requirements": ' + JSON.stringify(attackRequirements) + ', "privilege_required": ' + JSON.stringify(privilegeRequired) + ', "user_interaction": ' + JSON.stringify(userInteraction) + ', "confidentiality": ' + JSON.stringify(confidentiality) + ', "integrity": ' + JSON.stringify(integrity) + ', "availability": ' + JSON.stringify(availability) + ', "subsequent_confidentiality": ' + JSON.stringify(subsequentConfidentiality) + ', "subsequent_integrity": ' + JSON.stringify(subsequentIntegrity) + ', "subsequent_availability": ' + JSON.stringify(subsequentAvailability) + ' }',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Remove the CVSS v4 value from the hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} hitId Hit ID.
+ */
+function ajaxRemoveCVSSv4(successFunction, errorFunction, hitId) {
+    $.ajax({
+        url: "/api/hit/" + hitId + "/cvss4/",
         type: 'DELETE',
         success: successFunction,
         error: errorFunction

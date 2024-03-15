@@ -1,0 +1,119 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="inline">CVSS v4.0
+                </h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <div>Attack Vector:</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="cvss4VectorNetwork">Network</label>
+                        <label class="btn btn-warning" id="cvss4VectorAdjacent">Adjacent</label>
+                        <label class="btn btn-primary" id="cvss4VectorLocal">Local</label>
+                        <label class="btn btn-info" id="cvss4VectorPhysical">Physical</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Attack Complexity:</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="cvss4ComplexityLow">Low</label>
+                        <label class="btn btn-warning" id="cvss4ComplexityHigh">High</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Attack Requirements:</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="cvss4RequirementsNone">None</label>
+                        <label class="btn btn-warning" id="cvss4RequirementsPresent">Present</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Privileges Required:</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="cvss4PrivilegesNone">None</label>
+                        <label class="btn btn-warning" id="cvss4PrivilegesLow">Low</label>
+                        <label class="btn btn-primary" id="cvss4PrivilegesHigh">High</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>User Interaction:</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-danger" id="cvss4UserInteractionNone">None</label>
+                        <label class="btn btn-warning" id="cvss4UserInteractionPassive">Passive</label>
+                        <label class="btn btn-primary" id="cvss4UserInteractionActive">Active</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="form-group">
+                    <div>Confidentiality (VC):</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="cvss4ConfidentialityNone">None</label>
+                        <label class="btn btn-warning" id="cvss4ConfidentialityLow">Low</label>
+                        <label class="btn btn-danger" id="cvss4ConfidentialityHigh">High</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Integrity (VI):</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="cvss4IntegrityNone">None</label>
+                        <label class="btn btn-warning" id="cvss4IntegrityLow">Low</label>
+                        <label class="btn btn-danger" id="cvss4IntegrityHigh">High</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Availability (VA):</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="cvss4AvailabilityNone">None</label>
+                        <label class="btn btn-warning" id="cvss4AvailabilityLow">Low</label>
+                        <label class="btn btn-danger" id="cvss4AvailabilityHigh">High</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Confidentiality (SC):</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="cvss4SubsequentConfidentialityNone">None</label>
+                        <label class="btn btn-warning" id="cvss4SubsequentConfidentialityLow">Low</label>
+                        <label class="btn btn-danger" id="cvss4SubsequentConfidentialityHigh">High</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Integrity (SI):</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="cvss4SubsequentIntegrityNone">None</label>
+                        <label class="btn btn-warning" id="cvss4SubsequentIntegrityLow">Low</label>
+                        <label class="btn btn-danger" id="cvss4SubsequentIntegrityHigh">High</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div>Availability (SA):</div>
+                    <div class="btn-group btn-group-sm" data-toggle="buttons">
+                        <label class="btn btn-info" id="cvss4SubsequentAvailabilityNone">None</label>
+                        <label class="btn btn-warning" id="cvss4SubsequentAvailabilityLow">Low</label>
+                        <label class="btn btn-danger" id="cvss4SubsequentAvailabilityHigh">High</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <button type="button" class="btn btn-sm btn-secondary mb-4" onclick="clearCVSS4()"><i class="fa fa-eraser" aria-hidden="true"></i> Clear !</button>
+            </div>
+        </div>
+    </div>
+</div>

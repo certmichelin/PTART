@@ -156,7 +156,11 @@
                                         <thead>
                                             <tr>
                                                 <th>Severity</th>
+                                                {% if project.cvss_type == 3 %}
                                                 <th>CVSSv3.1</th>
+                                                {% else %}
+                                                <th>CVSSv4.0</th>
+                                                {% endif %}
                                                 <th>Title</th>
                                             </tr>
                                         </thead>
@@ -169,7 +173,7 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span class="cvss cvss-badge cvss-badge-secondary">
+                                                    <span class="cvss{{project.cvss_type}} cvss{{project.cvss_type}}-badge cvss{{project.cvss_type}}-badge-secondary">
                                                         {{ hit.get_cvss_value }}
                                                     </span>
                                                 </td>

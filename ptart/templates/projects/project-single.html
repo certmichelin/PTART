@@ -50,6 +50,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>CVSS v4.0&nbsp;&nbsp;</label>
+                    <input id="cvss_type" {% if project.cvss_type == 4 %} checked{% endif %} type="checkbox" data-toggle="toggle" data-onstyle="outline-primary" data-offstyle="outline-secondary" data-on="Yes" data-off="No" data-size="sm">
+                </div>
+
+                <div class="form-group">
                     <label>Methodologies</label>
                     <select class="js-states form-control" id="methodologies" multiple="multiple">
                         {% for methodology in methodologies %}
@@ -169,7 +174,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $('#cvss_type').prop('checked')? 4 : 3, $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}
