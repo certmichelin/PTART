@@ -491,7 +491,7 @@
 						\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
 							CVSSv3 Base Score & \badge[cvss3-badge-danger]{\VAR{ hit.get_cvss_value()} - High} \\
 						\BLOCK{ else }
-							CVSSv3 Base Score & \badge[cvss3-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} () \\
+							CVSSv3 Base Score & \badge[cvss3-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} \\
 						\BLOCK{ endif }
 						\hline
 						CVSSv3 String &  \VAR{ hit.get_cvss_string() } \\
