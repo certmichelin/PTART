@@ -114,3 +114,6 @@ bin
 /.vscode
 /*.sqlite3
 /Pipfile.lock
+
+#PTART
+attachments/*.png
