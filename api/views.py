@@ -1,3 +1,4 @@
+import datetime
 from django.conf import settings
 
 from django.contrib.auth import authenticate
@@ -883,6 +884,135 @@ def chatgpt(request):
     else :
         response = Response({}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@action(methods=['GET'], detail=True)
+def audit(request):
+    response = None
+    if not request.user.is_staff:
+        response = Response(status=status.HTTP_403_FORBIDDEN)
+    else :
+        try:
+          
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Audit"
+
+            #Define column size
+            wb.active.column_dimensions['A'].width = 28
+            wb.active.column_dimensions['B'].width = 15
+            wb.active.column_dimensions['C'].width = 14
+            wb.active.column_dimensions['D'].width = 14
+            wb.active.column_dimensions['E'].width = 50
+            wb.active.column_dimensions['F'].width = 9
+            wb.active.column_dimensions['G'].width = 9
+            wb.active.column_dimensions['H'].width = 9
+            wb.active.column_dimensions['I'].width = 9
+            wb.active.column_dimensions['J'].width = 9
+
+            #Add project data.
+            ws['A1'] = "Audit Report"
+            ws['A2'] = "Date:"
+            ws['A3'] = "User:"
+            ws['B2'] = datetime.datetime.now()
+            ws['B3'] = "{} - {} {}".format(request.user.username, request.user.first_name, request.user.last_name)
+
+            #Beautify project data 
+            ws.merge_cells('B1:J1')
+            ws.merge_cells('B2:J2')
+            ws.merge_cells('B3:J3')
+            
+            projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
+            projectHeaderStyle.font = styles.Font(name = 'Calibri', size = 14, bold = True, color = '000000')
+            projectHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
+            projectHeaderStyle.alignment = styles.Alignment(horizontal= 'left')
+            ws['A1'].style = projectHeaderStyle
+            ws['A2'].style = projectHeaderStyle
+            ws['A3'].style = projectHeaderStyle
+
+            projectValueStyle = styles.NamedStyle(name = 'project_value_style')
+            projectValueStyle.font = styles.Font(name = 'Calibri', size = 14, italic = True, color = '000000')
+            projectValueStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
+            projectValueStyle.alignment = styles.Alignment(horizontal= 'left')
+
+            ws['B1'].style = projectValueStyle
+            ws['B2'].style = projectValueStyle
+            ws['B3'].style = projectValueStyle
+            ws['B2'].number_format = 'YYYY MMM DD'
+
+
+            #Add column header.
+            ws['A5'] = "Project"
+            ws['B5'] = "Client"
+            ws['C5'] = "Start Date"
+            ws['D5'] = "End Date"
+            ws['E5'] = "Pentesters"
+            ws['F5'] = "#P1"
+            ws['G5'] = "#P2"
+            ws['H5'] = "#P3"
+            ws['I5'] = "#P4"
+            ws['J5'] = "#P5"
+
+            columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
+            columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
+            columnHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '92D050')
+            columnHeaderStyle.alignment = styles.Alignment(horizontal= 'center')
+
+            ws['A5'].style = columnHeaderStyle
+            ws['B5'].style = columnHeaderStyle
+            ws['C5'].style = columnHeaderStyle
+            ws['D5'].style = columnHeaderStyle
+            ws['E5'].style = columnHeaderStyle
+            ws['F5'].style = columnHeaderStyle
+            ws['G5'].style = columnHeaderStyle
+            ws['H5'].style = columnHeaderStyle
+            ws['I5'].style = columnHeaderStyle
+            ws['J5'].style = columnHeaderStyle
+
+            line = 6
+
+            for project in  Project.objects.all().order_by('added'):        
+    
+                ws.cell(row=line, column=1).value = project.name
+                ws.cell(row=line, column=2).value = project.client
+                ws["C{}".format(line)].number_format = 'YYYY MMM DD'
+                ws["D{}".format(line)].number_format = 'YYYY MMM DD'
+                ws.cell(row=line, column=3).value = project.start_date
+                ws.cell(row=line, column=4).value = project.end_date
+                
+                #Construct the auditor string
+                pentester_str = ""
+                previous = ""
+                for pentester in project.pentesters.all():
+                    pentester_str = "{}{}{}".format(pentester_str, previous, pentester.username)
+                    previous = ", "
+                ws.cell(row=line, column=5).value = pentester_str
+                
+                ws.cell(row=line, column=6).value = len(project.p1_hits())
+                ws.cell(row=line, column=7).value = len(project.p2_hits())
+                ws.cell(row=line, column=8).value = len(project.p3_hits())
+                ws.cell(row=line, column=9).value = len(project.p4_hits())
+                ws.cell(row=line, column=10).value = len(project.p5_hits())
+
+                line = line + 1
+            
+            ws.auto_filter.ref = "A5:J{}".format(line)
+
+            print("coucouou")
+            #Prepare HTTP response.
+            response = Response(save_virtual_workbook(wb))
+            print("coucouou")
+            response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            response['Content-Disposition'] = 'attachment; filename="audit.xlsx"'
+            response.accepted_renderer = BinaryRenderer()
+            response.accepted_media_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            response.renderer_context = {}
+
+            wb.close()
+        except Flag.DoesNotExist:
+            response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
 @csrf_exempt

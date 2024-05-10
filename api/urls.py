@@ -53,6 +53,7 @@ urlpatterns = [
     url(r'^methodologies/$', views.methodologies),
     url(r'^token/$', views.manage_token),
     url(r'^account/change_password/$', views.change_password),
-    url(r'^chatgpt/$', views.chatgpt)
+    url(r'^chatgpt/$', views.chatgpt),
+    url(r'^audit/$', views.audit)
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
