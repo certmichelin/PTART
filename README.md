@@ -86,7 +86,7 @@ Python requires Python 3.11 and a few more packages. The simplest way to set up 
 
 1. Clone the project and go to the new directory.
 2. Create a new virtual environment and installing dependencies: `python3.11 -m venv venv`. 
-3. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 and pandoc failed to be installed, try `sudo apt-get install libpq-dev` or `brew install postgresql`, `brew install pandoc`)
+3. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 and pandoc failed to be installed, try `sudo apt get install libpq-dev` or `brew install postgresql`, `brew install pandoc`, if rlPyCairo failed to be install, try `apt install libcairo2-dev`)
 4. Create the database: `python manage.py migrate`
 5. Create the super user: `python manage.py createsuperuser`
 6. (Optional) Initiate PTART with integrated loaders.
