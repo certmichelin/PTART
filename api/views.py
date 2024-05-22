@@ -276,7 +276,11 @@ def screenshot_raw(request, pk) :
     try:
         item = Screenshot.objects.get(pk=pk)
         if item.is_user_can_view(request.user) :
-            response = Response(item.get_raw_data())        
+            raw_data = item.get_raw_data()
+            if raw_data is not None :
+                response = Response(raw_data)
+            else :
+                response = Response(status=status.HTTP_404_NOT_FOUND)     
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Screenshot.DoesNotExist:

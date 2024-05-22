@@ -12,7 +12,7 @@
         <div id="screenshots">
             {% for screenshot in hit.screenshot_set.all %}
                 <a id="screenshot_link_{{screenshot.id}}" data-fancybox="gallery" href="/api/screenshot/png/{{screenshot.pk}}/" class="screenshot" ondragstart="dragStart(event)" ondragend="dragStop(event)" data-toggle="tooltip" data-placement="left" title="{{screenshot.caption}}">
-                    <img id="screenshot_{{screenshot.id}}" class="screenshot_data screenshot_gallery" src="/api/screenshot/png/{{screenshot.pk}}/" />
+                    <img id="screenshot_{{screenshot.id}}" alt="Screenshot not found" class="screenshot_data screenshot_gallery" src="/api/screenshot/png/{{screenshot.pk}}/" />
                 </a>
             {% endfor %}
         </div>

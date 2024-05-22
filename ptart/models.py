@@ -666,6 +666,12 @@ class Screenshot(models.Model):
         url = self.screenshot.url
         if url.startswith('.') is False :
             url = "." + url
+            try:
+                with open(url, 'rb') as img_f:
+                    result = img_f.read()
+            except FileNotFoundError:
+                result = None
+            return result
         with open(url, 'rb') as img_f:
             result = img_f.read()
         return result
@@ -675,7 +681,10 @@ class Screenshot(models.Model):
         url = self.screenshot.url
         if url.startswith('.') is False :
             url = "." + url
-        os.remove(url)
+        try:
+            os.remove(url)
+        except FileNotFoundError:
+            pass
         super(Screenshot, self).delete()
     
     def get_viewable(user):
