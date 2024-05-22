@@ -1,7 +1,5 @@
 import base64
-import math
 import os
-import pathlib
 
 from cvss import CVSS3, CVSS4
 from datetime import datetime
