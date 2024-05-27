@@ -1,10 +1,13 @@
 {% extends "base.html" %}
-
+{% load addstr %}
 {% block title %} Retest Campaign | PTART{% endblock %}
 
 {% block page %}
 <div id="page-wrapper">
     <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:retestcampaign.project.pk|addstr:"/summary" sub_text=retestcampaign.project active_icon='' active_text=retestcampaign.name %}
+
         <!-- Page Heading -->
         <div class="row mb-4">
             <div class="col-lg-12">
