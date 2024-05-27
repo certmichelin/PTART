@@ -243,4 +243,4 @@ class TemplateSerializer(serializers.ModelSerializer):
 class RetestCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = RetestCampaign
-        fields = ('id', 'name', 'start_date', 'end_date', 'project', 'introducion', 'conclusion')
+        fields = ('id', 'name', 'start_date', 'end_date', 'project', 'introduction', 'conclusion')

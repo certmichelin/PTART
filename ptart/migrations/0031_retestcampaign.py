@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
-                ('introducion', models.TextField(blank=True, default='')),
+                ('introduction', models.TextField(blank=True, default='')),
                 ('conclusion', models.TextField(blank=True, default='')),
                 ('start_date', models.DateField(null=True)),
                 ('end_date', models.DateField(null=True)),

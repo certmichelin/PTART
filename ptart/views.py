@@ -17,7 +17,7 @@ from qrcode.image.svg import SvgPathImage as svg
 
 from rest_framework.authtoken.models import Token
 
-from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool, RetestCampaign
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable, ToolTable
 
 @otp_required
@@ -227,6 +227,19 @@ def recommendation(request, recommendation_id):
         else :
             response = redirect('/')
     except Recommendation.DoesNotExist:
+        response = redirect('/')
+    return response
+
+@otp_required
+def retestcampaign_summary(request, requestcampaign_id):
+    response = None
+    try:
+        retestcampaign = RetestCampaign.objects.get(pk=requestcampaign_id)
+        if retestcampaign.is_user_can_view(request.user) :
+            response = generate_render(request, 'retestcampaigns/retestcampaign-summary.html', {'retestcampaign': retestcampaign, 'editable' : retestcampaign.is_user_can_edit(request.user)})
+        else :
+            response = redirect('/')
+    except Project.DoesNotExist:
         response = redirect('/')
     return response
 

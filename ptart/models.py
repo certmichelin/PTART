@@ -849,7 +849,7 @@ class RetestCampaign(models.Model):
 
     project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    introducion = models.TextField(blank=True, default="")
+    introduction = models.TextField(blank=True, default="")
     conclusion = models.TextField(blank=True, default="")
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
