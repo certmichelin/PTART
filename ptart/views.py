@@ -353,6 +353,14 @@ def recommendations_new(request):
     return generate_render(request, 'recommendations/recommendations.html', {'project': project})
 
 @otp_required
+def retestcampaigns_new(request):
+    try:
+        project = Project.objects.get(pk=request.GET.get("projectId", ""))
+    except :
+        pass
+    return generate_render(request, 'retestcampaigns/retestcampaigns.html', {'project': project})
+
+@otp_required
 @user_passes_test(lambda u: u.is_staff)
 def labels_new(request):
     return generate_render(request, 'labels/labels.html', {})

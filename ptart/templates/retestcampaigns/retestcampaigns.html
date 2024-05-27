@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %} Retest Campaign | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='New Retest Campaign' active_icon='fa fa-flask' active_text='Retest Campaigns' %}
+        {% include "_include/html/messages.html" %}
+
+        <!-- Retest creation form -->
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input id="name" class="form-control" autocomplete="off"
+                        placeholder="Campaign name (ex: Patch delivery, etc...)" />
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <input class="datepicker form-control" type="text" id="startdate" />
+                        </div>
+                        <div class="col-auto">
+                            To
+                        </div>
+                        <div class="col-auto">
+                            <input class="datepicker form-control" type="text" id="enddate" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Introduction</label>
+                    <textarea id="introduction" class="form-control" rows="10" style="resize:vertical"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Conclusion</label>
+                    <textarea id="conclusion" class="form-control" rows="10" style="resize:vertical"></textarea>
+                </div>
+
+                <input type="hidden" value="{{ project.id }}" id="projectId"/>
+
+                <button id="createBtn" type="submit" class="btn btn-outline-primary mb-3">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+<script type="text/javascript">
+
+    var introductionSimpleMDE = activeMarkdown("introduction");
+    var conclusionSimpleMDE = activeMarkdown("conclusion");
+
+    $('.datepicker').datepicker({});
+
+    function campaignCreationSuccess(data) {
+        $("#name").val("");
+        introductionSimpleMDE.value("");
+        conclusionSimpleMDE.value("");
+
+        success($("#messages"), "Campaign was created!, you will be redirected to the project page in 3s");
+        setTimeout(function(){
+            window.location.href = '/project/' +  {{ project.id }} + '/summary';
+         }, 3000);
+    }
+
+    function manageDate(val){
+        result = null;
+        if(val){
+            vals = val.split("/");
+            result = vals[2] + "-" + vals[0] + "-" + vals[1];
+        }
+        return result;
+    }
+
+    $('#createBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxCreateRetestCampaign(campaignCreationSuccess, commonFailure, $("#name").val(), $("#introduction").val(), $("#conclusion").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#projectId").val());
+    });
+</script>
+{% endblock %}

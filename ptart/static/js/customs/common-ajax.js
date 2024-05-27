@@ -1168,11 +1168,12 @@ function ajaxDeleteRecommendation(successFunction, errorFunction, id) {
  * @param {*} conclusion Retest campaign conclusion.
  * @param {*} start_date Retest campaign start date.
  * @param {*} end_date Retest campaign end date.
+ * @param {*} project Retest campaign project.
  */
-function ajaxCreateRetestCampaign(successFunction, errorFunction, name, introduction, conclusion, start_date, end_date) {
+function ajaxCreateRetestCampaign(successFunction, errorFunction, name, introduction, conclusion, start_date, end_date, project) {
     $.ajax({
         url: "/api/retestcampaigns/",
-        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion)+ ',"start_date":' + JSON.stringify(start_date)+ ',"end_date":' + JSON.stringify(end_date) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"project":' + JSON.stringify(project) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -1190,11 +1191,12 @@ function ajaxCreateRetestCampaign(successFunction, errorFunction, name, introduc
  * @param {*} conclusion Retest campaign conclusion.
  * @param {*} start_date Retest campaign start date.
  * @param {*} end_date Retest campaign end date.
+ * @param {*} project Retest campaign project.
  */
-function ajaxUpdateRetestCampaign(successFunction, errorFunction, id, name, introduction, conclusion, start_date, end_date) {
+function ajaxUpdateRetestCampaign(successFunction, errorFunction, id, name, introduction, conclusion, start_date, end_date, project) {
     $.ajax({
         url: "/api/retestcampaign/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion)+ ',"start_date":' + JSON.stringify(start_date)+ ',"end_date":' + JSON.stringify(end_date) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion)+ ',"start_date":' + JSON.stringify(start_date)+ ',"end_date":' + JSON.stringify(end_date) + ',"project":' + JSON.stringify(project) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction

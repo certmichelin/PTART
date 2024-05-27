@@ -35,6 +35,10 @@ urlpatterns = [
 
     url(r'^recommendation/new/$', views.recommendations_new),
     url(r'^recommendation/([0-9]+)/$', views.recommendation),
+
+    url(r'^retestcampaigns/new/$', views.retestcampaigns_new),
+    #url(r'^retestcampaign/([0-9]+)/$', views.retestcampaign),
+    #url(r'^retestcampaign/([0-9]+)/summary$', views.retestcampaign_summary),
     
     url(r'^hits/$', views.hits_all),
     url(r'^hits/new/$', views.hits_new),
