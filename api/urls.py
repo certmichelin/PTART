@@ -54,6 +54,8 @@ urlpatterns = [
     url(r'^token/$', views.manage_token),
     url(r'^account/change_password/$', views.change_password),
     url(r'^chatgpt/$', views.chatgpt),
-    url(r'^audit/$', views.audit)
+    url(r'^audit/$', views.audit),
+    url(r'^retestcampaign/(?P<pk>[0-9]+)/$', views.retestcampaign),
+    url(r'^retestcampaigns',views.retestcampaigns)
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

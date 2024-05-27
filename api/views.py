@@ -33,11 +33,11 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -242,6 +242,18 @@ def methodology(request, pk):
 @api_view(['GET', 'POST'])
 def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def retestcampaign(request, pk):
+    return item(request, pk, RetestCampaign, RetestCampaignSerializer)
+
+@csrf_exempt  
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def retestcampaigns(request):
+    return items(request, RetestCampaign, RetestCampaignSerializer)
 
 @csrf_exempt
 @ptart_authentication
