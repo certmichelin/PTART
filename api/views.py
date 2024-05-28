@@ -571,7 +571,11 @@ def project_xlsx(request, pk):
     try:
         project = Project.objects.get(pk=pk)
         if project.is_user_can_view(request.user):
-                        
+
+            # --------------------------------------------------------------------------
+            # Main sheet.
+            # --------------------------------------------------------------------------
+                    
             wb = Workbook()
             ws = wb.active
             ws.title = "Synthesis"
@@ -743,6 +747,10 @@ def project_xlsx(request, pk):
             
             ws.auto_filter.ref = "A6:H{}".format(line)
 
+            # --------------------------------------------------------------------------
+            # Recommendations
+            # --------------------------------------------------------------------------
+
             if project.recommendation_set.all() :
                 recommendations_ws = wb.create_sheet()
                 recommendations_ws.title = "Recommendations"
@@ -764,6 +772,37 @@ def project_xlsx(request, pk):
                     recommendations_ws.cell(row=line, column=2).value = recommendation.body
                     recommendations_ws.cell(row=line, column=1).alignment = Alignment(horizontal='left', vertical='top')
                     recommendations_ws.cell(row=line, column=2).alignment = Alignment(wrap_text=True)
+                    line = line + 1
+
+            # --------------------------------------------------------------------------
+            # Restest Campaigns
+            # --------------------------------------------------------------------------
+            if project.retestcampaign_set.all() :
+                retestcampaigns_ws = wb.create_sheet()
+                retestcampaigns_ws.title = "Retest Campaigns"
+
+                #Define column size
+                retestcampaigns_ws.column_dimensions['A'].width = 40
+                retestcampaigns_ws.column_dimensions['B'].width = 15
+                retestcampaigns_ws.column_dimensions['C'].width = 15
+
+                retestcampaigns_ws['A1'].style = columnHeaderStyle
+                retestcampaigns_ws['B1'].style = columnHeaderStyle
+                retestcampaigns_ws['C1'].style = columnHeaderStyle
+
+                #Add column header.
+                retestcampaigns_ws['A1'] = "Name"
+                retestcampaigns_ws['B1'] = "Start Date"
+                retestcampaigns_ws['C1'] = "End Date"
+
+                line = 2
+                for retestcampaign in project.retestcampaign_set.all():        
+                    retestcampaigns_ws.cell(row=line, column=1).value = retestcampaign.name
+                    retestcampaigns_ws.cell(row=line, column=2).value = retestcampaign.start_date
+                    retestcampaigns_ws.cell(row=line, column=3).value = retestcampaign.end_date
+
+                    retestcampaigns_ws.cell(row=line, column=2).number_format = 'YYYY MMM DD'
+                    retestcampaigns_ws.cell(row=line, column=3).number_format = 'YYYY MMM DD'
                     line = line + 1
 
             #Prepare HTTP response.
