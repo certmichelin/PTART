@@ -13,58 +13,46 @@
         <div class="row mb-4">
             <div class="col-lg-12">
                 <h1 class="page-header">
-                    {{ project.name }}
-
-                    {% if project.archived == True %}
-                        <img src="/static/img/archived.png" width="60px" height="60px" alt="Archived" />
-                    {% endif %}
-
-                    <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">
-                        Details
-                    </button>
-
-                    <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset
-                        Management</a>
-
-                    {% if editable == True %}
-                        {% if project.archived == False %}
-                            <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">
-                                Edit This Project
-                            </a>
-                            <br/>
-                            <div class="text-center">
-                                {% if project.assessment_set.all|length > 0 %}
-                                    <a class="btn btn-outline-danger" href="/hits/new?projectId={{project.id}}" role="button">Create
-                                        Hit</a>
-                                {% endif %}
-                                    
-                                {% if project.assessment_set.all|length > 0 %}
-                                    <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create
-                                        Flag</a>
-                                {% endif %}
-                                    
-                                <a class="btn btn-outline-danger" href="/attackscenario/new?projectId={{project.id}}"
-                                    role="button">Create Attack Scenario</a>
-
-                                <a class="btn btn-outline-success" href="/recommendation/new?projectId={{project.id}}" role="button">Create
-                                    Recommendation</a>
-
-                                <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}"
-                                    role="button">Create Assessment</a>
-
-                                <a class="btn btn-outline-primary" href="/retestcampaigns/new?projectId={{project.id}}"
-                                    role="button">Create Retest Campaign</a>
-                            </div>
+                    <div>
+                        {% if project.archived == True %}
+                            {{ project.name }}
+                            <img src="/static/img/archived.png" width="60px" height="60px" alt="Archived" />
+                            <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
+                            <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset Management</a>
+                            {% if editable == False %}
+                                <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">View This Project</a>
+                            {% else %}
+                                <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
+                            {% endif %}
                         {% else %}
-                            <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">
-                                View This Project
-                            </a>
+                            {% if editable == False %}
+                                {{ project.name }}
+                                <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
+                                <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset Management</a>
+                                <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">View This Project</a>
+                            {% else %}
+                                {% if project.assessment_set.all|length == 0 %}
+                                    {{ project.name }}
+                                    <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
+                                    <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}" role="button">Create Assessment</a>
+                                    <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
+                                {% else %}
+                                    <div style="position: absolute; top: 0; left: 10;">{{ project.name }}</div>
+                                    <div class="text-center" style="position: relative; top: 0;">
+                                        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
+                                        <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}" role="button">Create Assessment</a>
+                                        <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
+                                        <br/>
+                                        <a class="btn btn-outline-danger" href="/hits/new?projectId={{project.id}}" role="button">Create Hit</a>
+                                        <a class="btn btn-outline-success" href="/flags/new?projectId={{project.id}}" role="button">Create Flag</a>
+                                        <a class="btn btn-outline-danger" href="/attackscenario/new?projectId={{project.id}}" role="button">Create Attack Scenario</a>
+                                        <a class="btn btn-outline-success" href="/recommendation/new?projectId={{project.id}}" role="button">Create Recommendation</a>
+                                        <a class="btn btn-outline-primary" href="/retestcampaigns/new?projectId={{project.id}}" role="button">Create Retest Campaign</a>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
-                    {% else %}
-                        <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">
-                            View This Project
-                        </a>
-                    {% endif %}
+                    </div>                    
                 </h1>
             </div>
         </div>
