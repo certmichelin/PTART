@@ -835,7 +835,14 @@ def project_latex(request, pk):
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
                     for screenshot in hit.screenshot_set.all():
-                        zf.writestr("screenshots/{}.png".format(screenshot.id), screenshot.get_raw_data())
+                        ##Screenshots are stored in the zip file.
+                        raw_data = screenshot.get_raw_data()
+                        if raw_data is not None :
+                            zf.writestr("screenshots/{}.png".format(screenshot.id), raw_data)
+                        else :
+                            with open('reports/resources/default_image.png', 'rb') as file:
+                                default_image_data = file.read()
+                                zf.writestr("screenshots/{}.png".format(screenshot.id), default_image_data)
             
             #Retrieve AttackScenarios.
             for attackscenario in project.attackscenario_set.all():
