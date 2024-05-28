@@ -1,7 +1,5 @@
 import base64
-import math
 import os
-import pathlib
 
 from cvss import CVSS3, CVSS4
 from datetime import datetime
@@ -844,7 +842,42 @@ class Severity():
     values = [1,2,3,4,5]
 
 #-----------------------------------------------------------------------------#
-# ASSET MANAGEMENT                                                           #
+# RETEST CAMPAIGN                                                             #
+#-----------------------------------------------------------------------------#
+"""Retest campaign model."""
+class RetestCampaign(models.Model):
+
+    project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    introduction = models.TextField(blank=True, default="")
+    conclusion = models.TextField(blank=True, default="")
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    
+    def get_viewable(user):
+        """Returns all viewable retest campaigns"""
+        return RetestCampaign.objects.filter(project__in=Project.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this retest campaign"""
+        return self.project.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this retest campaign"""
+        return self.project.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this retest campaign"""
+        return self.project.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.name
+
+    class Meta:
+        ordering = ('start_date','name',)
+
+#-----------------------------------------------------------------------------#
+# ASSET MANAGEMENT                                                            #
 #-----------------------------------------------------------------------------#
 
 """Host model."""

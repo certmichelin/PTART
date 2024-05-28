@@ -1159,6 +1159,67 @@ function ajaxDeleteRecommendation(successFunction, errorFunction, id) {
 }
 
 /**
+ * Create a retest campaign.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} name Retest campaign name.
+ * @param {*} introduction Retest campaign introduction.
+ * @param {*} conclusion Retest campaign conclusion.
+ * @param {*} start_date Retest campaign start date.
+ * @param {*} end_date Retest campaign end date.
+ * @param {*} project Retest campaign project.
+ */
+function ajaxCreateRetestCampaign(successFunction, errorFunction, name, introduction, conclusion, start_date, end_date, project) {
+    $.ajax({
+        url: "/api/retestcampaigns/",
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a retest campaign.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest campaign id. 
+ * @param {*} name Retest campaign name.
+ * @param {*} introduction Retest campaign introduction.
+ * @param {*} conclusion Retest campaign conclusion.
+ * @param {*} start_date Retest campaign start date.
+ * @param {*} end_date Retest campaign end date.
+ * @param {*} project Retest campaign project.
+ */
+function ajaxUpdateRetestCampaign(successFunction, errorFunction, id, name, introduction, conclusion, start_date, end_date, project) {
+    $.ajax({
+        url: "/api/retestcampaign/" + id + "/",
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion)+ ',"start_date":' + JSON.stringify(start_date)+ ',"end_date":' + JSON.stringify(end_date) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a retest campaign.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest campaign id.
+ */
+function ajaxDeleteRetestCampaign(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/retestcampaign/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Grant authentication token.
  * 
  * @param {*} successFunction Function to call in case of ajax success.

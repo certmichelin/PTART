@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, AttackScenario, Recommendation, Tool
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, AttackScenario, Recommendation, Tool, RetestCampaign
 from .tools import FileField
 
 
@@ -238,3 +238,9 @@ class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
         fields = ('id', 'name', 'severity', 'asset', 'body', 'remediation', 'owner')
+
+
+class RetestCampaignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RetestCampaign
+        fields = ('id', 'name', 'start_date', 'end_date', 'project', 'introduction', 'conclusion')

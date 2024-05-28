@@ -33,11 +33,11 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -242,6 +242,18 @@ def methodology(request, pk):
 @api_view(['GET', 'POST'])
 def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def retestcampaign(request, pk):
+    return item(request, pk, RetestCampaign, RetestCampaignSerializer)
+
+@csrf_exempt  
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def retestcampaigns(request):
+    return items(request, RetestCampaign, RetestCampaignSerializer)
 
 @csrf_exempt
 @ptart_authentication
@@ -559,7 +571,11 @@ def project_xlsx(request, pk):
     try:
         project = Project.objects.get(pk=pk)
         if project.is_user_can_view(request.user):
-                        
+
+            # --------------------------------------------------------------------------
+            # Main sheet.
+            # --------------------------------------------------------------------------
+                    
             wb = Workbook()
             ws = wb.active
             ws.title = "Synthesis"
@@ -731,6 +747,10 @@ def project_xlsx(request, pk):
             
             ws.auto_filter.ref = "A6:H{}".format(line)
 
+            # --------------------------------------------------------------------------
+            # Recommendations
+            # --------------------------------------------------------------------------
+
             if project.recommendation_set.all() :
                 recommendations_ws = wb.create_sheet()
                 recommendations_ws.title = "Recommendations"
@@ -752,6 +772,37 @@ def project_xlsx(request, pk):
                     recommendations_ws.cell(row=line, column=2).value = recommendation.body
                     recommendations_ws.cell(row=line, column=1).alignment = Alignment(horizontal='left', vertical='top')
                     recommendations_ws.cell(row=line, column=2).alignment = Alignment(wrap_text=True)
+                    line = line + 1
+
+            # --------------------------------------------------------------------------
+            # Restest Campaigns
+            # --------------------------------------------------------------------------
+            if project.retestcampaign_set.all() :
+                retestcampaigns_ws = wb.create_sheet()
+                retestcampaigns_ws.title = "Retest Campaigns"
+
+                #Define column size
+                retestcampaigns_ws.column_dimensions['A'].width = 40
+                retestcampaigns_ws.column_dimensions['B'].width = 15
+                retestcampaigns_ws.column_dimensions['C'].width = 15
+
+                retestcampaigns_ws['A1'].style = columnHeaderStyle
+                retestcampaigns_ws['B1'].style = columnHeaderStyle
+                retestcampaigns_ws['C1'].style = columnHeaderStyle
+
+                #Add column header.
+                retestcampaigns_ws['A1'] = "Name"
+                retestcampaigns_ws['B1'] = "Start Date"
+                retestcampaigns_ws['C1'] = "End Date"
+
+                line = 2
+                for retestcampaign in project.retestcampaign_set.all():        
+                    retestcampaigns_ws.cell(row=line, column=1).value = retestcampaign.name
+                    retestcampaigns_ws.cell(row=line, column=2).value = retestcampaign.start_date
+                    retestcampaigns_ws.cell(row=line, column=3).value = retestcampaign.end_date
+
+                    retestcampaigns_ws.cell(row=line, column=2).number_format = 'YYYY MMM DD'
+                    retestcampaigns_ws.cell(row=line, column=3).number_format = 'YYYY MMM DD'
                     line = line + 1
 
             #Prepare HTTP response.
@@ -784,7 +835,14 @@ def project_latex(request, pk):
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
                     for screenshot in hit.screenshot_set.all():
-                        zf.writestr("screenshots/{}.png".format(screenshot.id), screenshot.get_raw_data())
+                        ##Screenshots are stored in the zip file.
+                        raw_data = screenshot.get_raw_data()
+                        if raw_data is not None :
+                            zf.writestr("screenshots/{}.png".format(screenshot.id), raw_data)
+                        else :
+                            with open('reports/resources/default_image.png', 'rb') as file:
+                                default_image_data = file.read()
+                                zf.writestr("screenshots/{}.png".format(screenshot.id), default_image_data)
             
             #Retrieve AttackScenarios.
             for attackscenario in project.attackscenario_set.all():
