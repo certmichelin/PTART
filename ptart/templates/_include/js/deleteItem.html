@@ -3,7 +3,11 @@
     function itemDeletionSuccess(data) {
         success($("#messages"), "{{item}} was deleted! You will redirect in 2s!");
         setTimeout(function () {
-            goBackWithRefresh();
+            {% if redirect %}
+                window.location.href = "{{redirect}}";
+            {% else %}
+                goBackWithRefresh();
+            {% endif %}
         }, 2000);
     }
 
