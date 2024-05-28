@@ -876,6 +876,48 @@ class RetestCampaign(models.Model):
     class Meta:
         ordering = ('start_date','name',)
 
+"""Retest hit model."""
+class RetestHit(models.Model):
+
+    FIX_STATUS = (
+        ('F', 'Network'),
+        ('NF', 'Adjacent'),
+        ('PF', 'Local'),
+        ('NA', 'Physical'),
+        ('NT', 'Local')
+    )
+
+    retest_campaign = models.ForeignKey(RetestCampaign, null=True, on_delete=models.CASCADE)
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    status = models.CharField(max_length=2,choices=FIX_STATUS)
+    body = models.TextField(blank=True, default="")
+            
+    def get_viewable(user):
+        """Returns all viewable retest campaign hits"""
+        return RetestHit.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this retest hit"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this retest hit"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this retest hits"""
+        return (self.retest_campaign.project.id == self.hit.assessment.project.id) and self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.id
+
+    class Meta:
+        ordering = ('hit',)
+        constraints = [
+            models.UniqueConstraint(fields=['retest_campaign', 'hit'], name='unique hitretest')
+        ]
+
+
 #-----------------------------------------------------------------------------#
 # ASSET MANAGEMENT                                                            #
 #-----------------------------------------------------------------------------#

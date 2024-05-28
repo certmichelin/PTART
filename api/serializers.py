@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, AttackScenario, Recommendation, Tool, RetestCampaign
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
 from .tools import FileField
 
 
@@ -244,3 +244,67 @@ class RetestCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = RetestCampaign
         fields = ('id', 'name', 'start_date', 'end_date', 'project', 'introduction', 'conclusion')
+
+class RetestHitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RetestHit
+        fields = ('id', 'retest_campaign', 'hit', 'status', 'body')
+
+    def validate(self, data):
+        """Validate the fact that the retest campaign and the hit belong to the same project."""
+        if "retest_campaign" not in self.initial_data :
+            raise serializers.ValidationError({
+                'retest_campaign': 'Retest Campaign id is required.'
+                })
+        
+        if "hit" not in self.initial_data:
+            raise serializers.ValidationError({
+                'hit': 'Hit id is required.'
+                })
+        
+        try:
+            campaign = RetestCampaign.objects.get(pk=self.initial_data["retest_campaign"])
+            hit = Hit.objects.get(pk=self.initial_data["hit"])
+            if campaign is None or hit is None or campaign.project.id != hit.assessment.project.id :
+                raise serializers.ValidationError({
+                'object': 'Hit and Retest Campaign must belong to the same project.'
+            })
+        except RetestCampaign.DoesNotExist:
+            raise serializers.ValidationError({
+                'retest_campaign': 'Retest Campaign does not exist.'
+            })
+        except Hit.DoesNotExist:
+            raise serializers.ValidationError({
+                'hit': 'Hit does not exist.'
+            })
+        return data
+    
+    @transaction.atomic
+    def create(self, validated_data):
+        """Force the status on create and manage the unique constraint on the campaign and hit."""
+        retest_hit = None
+        try: 
+            retest_hit = RetestHit.objects.create(**validated_data)
+            
+            if "retest_campaign" in self.initial_data:
+                retest_hit.retest_campaign = RetestCampaign.objects.get(pk=self.initial_data["retest_campaign"])
+
+            if "hit" in self.initial_data:
+                retest_hit.retest_campaign = RetestCampaign.objects.get(pk=self.initial_data["retest_campaign"])
+            
+            retest_hit.status = "NT"
+            retest_hit.save()
+        except Exception as e:
+            raise serializers.ValidationError({
+                'Error': e.__str__()
+            })
+        return retest_hit
+    
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        """Update only the status and the body of the retest hit"""
+        instance.body = validated_data.get('body')
+        instance.status = validated_data.get('status')
+        instance.save()
+        return instance
+
