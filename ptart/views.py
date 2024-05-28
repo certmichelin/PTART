@@ -231,6 +231,19 @@ def recommendation(request, recommendation_id):
     return response
 
 @otp_required
+def retestcampaign(request, requestcampaign_id):
+    response = None
+    try:
+        retestcampaign = RetestCampaign.objects.get(pk=requestcampaign_id)
+        if retestcampaign.is_user_can_view(request.user) :
+            response = generate_render(request, 'retestcampaigns/retestcampaign-single.html', {'retestcampaign': retestcampaign, 'editable' : retestcampaign.is_user_can_edit(request.user)})
+        else :
+            response = redirect('/')
+    except RetestCampaign.DoesNotExist:
+        response = redirect('/')
+    return response
+
+@otp_required
 def retestcampaign_summary(request, requestcampaign_id):
     response = None
     try:
