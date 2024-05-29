@@ -180,6 +180,13 @@ class Project(models.Model):
         for assessment in self.assessment_set.all() :
             hits.extend(assessment.hits_by_severity(severity))
         return hits
+    
+    def hits(self):
+        """Return all hits for the project."""
+        hits = []
+        for assessment in self.assessment_set.all() :
+            hits.extend(assessment.hit_set.all())
+        return hits
 
     def labels_statistics(self):
         """Compute statistics on labels"""
@@ -872,7 +879,19 @@ class RetestCampaign(models.Model):
 
     def __str__(self):  
         return self.name
+    
+    def get_unassigned_hits(self):
+        """Return all unassigned hits for the retest campaign."""
+        assigned_hits = self.get_assigned_hits()
+        return filter(lambda hit: (hit not in assigned_hits) ,self.project.hits())
 
+    def get_assigned_hits(self):
+        """Return all assigned hits for the retest campaign."""
+        hits = []
+        for retesthit in self.retesthit_set.all() :
+            hits.append(retesthit.hit)
+        return hits
+    
     class Meta:
         ordering = ('start_date','name',)
 
