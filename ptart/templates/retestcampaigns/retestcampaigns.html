@@ -117,7 +117,7 @@
         $('.retesthit').each(function() {
             if($(this).is(':checked')){
                 ++hitsToAssign;
-                ajaxCreateRetestHit(hitAssignmentSuccess, hitAssignmentFailure, "", "NT", $(this).attr('hit_id'), createdRetestCampaignId)
+                ajaxCreateRetestHit(hitAssignmentSuccess, hitAssignmentFailure, "", "NT", $(this).attr('hit_id'), createdRetestCampaignId);
             }
         });
     }
