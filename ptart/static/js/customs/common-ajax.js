@@ -1250,7 +1250,7 @@ function ajaxCreateRetestHit(successFunction, errorFunction, body, status, hit, 
  * @param {*} hit Retest hit hit.
  * @param {*} retestcampaign Retest hit campaign.
  */
-function ajaxUpdateRetestHit(successFunction, errorFunction, body, status, hit, retestcampaign) {
+function ajaxUpdateRetestHit(successFunction, errorFunction, id, body, status, hit, retestcampaign) {
     $.ajax({
         url: "/api/retesthit/" + id + "/",
         data: '{"body":' + JSON.stringify(body) + ',"status":' + JSON.stringify(status) + ',"hit":' + JSON.stringify(hit) + ',"retest_campaign":' + JSON.stringify(retestcampaign) + '}',
