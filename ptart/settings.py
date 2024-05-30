@@ -149,4 +149,6 @@ REST_FRAMEWORK = {
     ],
 }
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 CHATGPT_API_KEY = "NotConfigured"

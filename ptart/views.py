@@ -17,7 +17,7 @@ from qrcode.image.svg import SvgPathImage as svg
 
 from rest_framework.authtoken.models import Token
 
-from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool, RetestCampaign
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
 from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable, ToolTable
 
 @otp_required
@@ -194,10 +194,12 @@ def hit(request, hit_id):
     response = None
     try:
         hit = Hit.objects.get(pk=hit_id)
+        #Embedded mode is used to display the hit in a smaller window (ie : RetestHit page)
+        embedded = request.GET.get('embedded', False)
         if hit.is_user_can_view(request.user):
             #This complex trick is necessary to continue to display the deprecated labels in old projects (https://github.com/certmichelin/PTART/issues/73). 
             labels = list(dict.fromkeys(list(Label.get_not_deprecated(request.user)) + list(hit.labels.all())))
-            response = generate_render(request, 'hits/hit-single.html', {'hit': hit, 'cvss_type': hit.assessment.project.cvss_type, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'severities': Severity.values, 'editable' : hit.is_user_can_edit(request.user)})
+            response = generate_render(request, 'hits/hit-single.html', {'hit': hit, 'cvss_type': hit.assessment.project.cvss_type, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'severities': Severity.values, 'editable' : (hit.is_user_can_edit(request.user) and not embedded), 'embedded':embedded})
         else :
             response = redirect('/')
     except Hit.DoesNotExist:
@@ -256,6 +258,18 @@ def retestcampaign_summary(request, requestcampaign_id):
         response = redirect('/')
     return response
 
+@otp_required
+def retesthit(request, retesthit_id):
+    response = None
+    try:
+        retesthit = RetestHit.objects.get(pk=retesthit_id)
+        if retesthit.is_user_can_view(request.user):
+            response = generate_render(request, 'retesthits/retesthit-single.html', {'retesthit': retesthit, 'editable' : retesthit.is_user_can_edit(request.user)})
+        else :
+            response = redirect('/')
+    except Recommendation.DoesNotExist:
+        response = redirect('/')
+    return response
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
