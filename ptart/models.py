@@ -892,6 +892,30 @@ class RetestCampaign(models.Model):
             hits.append(retesthit.hit)
         return hits
     
+    def get_retest_hits_by_status(self, status):
+        """Filter retest hits by status for the campaign."""
+        return self.retesthit_set.filter(status = status)
+    
+    def get_not_tested_hits(self):
+        """Return all not tested hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NT') 
+    
+    def get_not_applicable_hits(self):
+        """Return all not applicable hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NA') 
+    
+    def get_not_fixed_hits(self):
+        """Return all not fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NF') 
+    
+    def get_partially_fixed_hits(self):
+        """Return all partially fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('PF') 
+    
+    def get_fixed_hits(self):
+        """Return all fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('F') 
+    
     class Meta:
         ordering = ('start_date','name',)
 
@@ -899,11 +923,11 @@ class RetestCampaign(models.Model):
 class RetestHit(models.Model):
 
     FIX_STATUS = (
-        ('F', 'Network'),
-        ('NF', 'Adjacent'),
-        ('PF', 'Local'),
-        ('NA', 'Physical'),
-        ('NT', 'Local')
+        ('F', 'Fixed'),
+        ('NF', 'Not Fixed'),
+        ('PF', 'Partially Fixed'),
+        ('NA', 'Not Applicable'),
+        ('NT', 'Not Tested')
     )
 
     retest_campaign = models.ForeignKey(RetestCampaign, null=True, on_delete=models.CASCADE)
