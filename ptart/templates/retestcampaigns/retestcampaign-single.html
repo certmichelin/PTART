@@ -6,7 +6,7 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:retestcampaign.project.pk|addstr:"/summary" sub_text=retestcampaign.project active_icon='' active_text=retestcampaign.name %}
+        {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:retestcampaign.project.pk|addstr:"/summary" sub_text=retestcampaign.project active_icon='' third_icon='fa fa-flask' third_url="/retestcampaign/"|addstr:retestcampaign.pk|addstr:"/summary" third_text=retestcampaign.name active_icon='' active_text='Edit' %}
         {% include "_include/html/messages.html" %}
 
         <div class="row">
@@ -28,6 +28,18 @@
                             <input class="datepicker form-control" type="text" id="enddate" />
                         </div>
                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Hits to assign &nbsp; <button id="selectAllHitBtn" class="btn btn-sm btn-outline-success">Select All</button></label>
+                    {% for hit in retestcampaign.get_unassigned_hits %}
+                        <div class="form-check">
+                            <input class="form-check-input retesthit" type="checkbox" value="" hit_id="{{ hit.id }}" id="unassigne_hit{{ hit.id }}">
+                            <label class="form-check-label" for="unassigne_hit{{ hit.id }}">
+                                {{ hit.get_unique_id }} - {{ hit.title }}
+                            </label>
+                        </div>
+                    {% endfor %}
                 </div>
                
                 <div class="form-group">
@@ -86,11 +98,31 @@
     }
 
     /**
+     * Hit assignement success callback.
+     */
+     function hitAssignmentSuccess(data) {
+        success($("#messages"), "Hit " + data.hit + " assigned with success!");
+        $('[hit_id="' + data.hit + '"]').parent().remove();
+    }
+
+    /**
      * Update item.
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateRetestCampaign(retestCampaignUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#introduction").val(), $("#conclusion").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#projectId").val())
+        ajaxUpdateRetestCampaign(retestCampaignUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), $("#introduction").val(), $("#conclusion").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#projectId").val());
+        $('.retesthit').each(function() {
+            if($(this).is(':checked')){
+                ajaxCreateRetestHit(hitAssignmentSuccess, commonFailure, "", "NT", $(this).attr('hit_id'), "{{ retestcampaign.id }}");
+            }
+        });
+    });
+
+    /**
+     * Select all hits.
+     */
+     $('#selectAllHitBtn').on('click', function () {
+        $('.retesthit').prop('checked', true);
     });
 </script>
 {% endblock %}
