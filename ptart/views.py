@@ -364,27 +364,42 @@ def hits_new(request):
 
 @otp_required
 def attackscenarios_new(request):
+    response = None
     try:
         project = Project.objects.get(pk=request.GET.get("projectId", ""))
+        if project.is_user_can_view(request.user) :
+            response = generate_render(request, 'attackscenarios/attackscenarios.html', {'project': project})
+        else :
+            response = redirect('/')
     except :
-        pass
-    return generate_render(request, 'attackscenarios/attackscenarios.html', {'project': project})
+        response = redirect('/')
+    return response
 
 @otp_required
 def recommendations_new(request):
+    response = None
     try:
         project = Project.objects.get(pk=request.GET.get("projectId", ""))
+        if project.is_user_can_view(request.user) :
+            response = generate_render(request, 'recommendations/recommendations.html', {'project': project})
+        else :
+            response = redirect('/')
     except :
-        pass
-    return generate_render(request, 'recommendations/recommendations.html', {'project': project})
+        response = redirect('/')
+    return response
 
 @otp_required
 def retestcampaigns_new(request):
+    response = None
     try:
         project = Project.objects.get(pk=request.GET.get("projectId", ""))
+        if project.is_user_can_view(request.user) :
+            response = generate_render(request, 'retestcampaigns/retestcampaigns.html', {'project': project})
+        else :
+            response = redirect('/')
     except :
-        pass
-    return generate_render(request, 'retestcampaigns/retestcampaigns.html', {'project': project})
+        response = redirect('/')
+    return response
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
