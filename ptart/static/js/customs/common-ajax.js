@@ -1220,6 +1220,63 @@ function ajaxDeleteRetestCampaign(successFunction, errorFunction, id) {
 }
 
 /**
+ * Create a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} body Retest hit body.
+ * @param {*} status Retest hit status.
+ * @param {*} hit Retest hit hit.
+ * @param {*} retestcampaign Retest hit campaign.
+ */
+function ajaxCreateRetestHit(successFunction, errorFunction, body, status, hit, retestcampaign) {
+    $.ajax({
+        url: "/api/retesthits/",
+        data: '{"body":' + JSON.stringify(body) + ',"status":' + JSON.stringify(status) + ',"hit":' + JSON.stringify(hit) + ',"retest_campaign":' + JSON.stringify(retestcampaign) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest hit id. 
+ * @param {*} body Retest hit body.
+ * @param {*} status Retest hit status.
+ * @param {*} hit Retest hit hit.
+ * @param {*} retestcampaign Retest hit campaign.
+ */
+function ajaxUpdateRetestHit(successFunction, errorFunction, body, status, hit, retestcampaign) {
+    $.ajax({
+        url: "/api/retesthit/" + id + "/",
+        data: '{"body":' + JSON.stringify(body) + ',"status":' + JSON.stringify(status) + ',"hit":' + JSON.stringify(hit) + ',"retest_campaign":' + JSON.stringify(retestcampaign) + '}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest hit id.
+ */
+function ajaxDeleteRetestHit(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/retesthit/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Grant authentication token.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
