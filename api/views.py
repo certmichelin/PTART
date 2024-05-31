@@ -797,26 +797,83 @@ def project_xlsx(request, pk):
                 retestcampaigns_ws.column_dimensions['A'].width = 40
                 retestcampaigns_ws.column_dimensions['B'].width = 15
                 retestcampaigns_ws.column_dimensions['C'].width = 15
+                retestcampaigns_ws.column_dimensions['D'].width = 7
+                retestcampaigns_ws.column_dimensions['E'].width = 7
+                retestcampaigns_ws.column_dimensions['F'].width = 7
+                retestcampaigns_ws.column_dimensions['G'].width = 7
+                retestcampaigns_ws.column_dimensions['H'].width = 7
 
-                retestcampaigns_ws['A1'].style = columnHeaderStyle
-                retestcampaigns_ws['B1'].style = columnHeaderStyle
-                retestcampaigns_ws['C1'].style = columnHeaderStyle
+                #Define column style
+                columnRetestCampaignNTStyle = styles.NamedStyle(name = 'column_retestcampaignnt_style')
+                columnRetestCampaignNTStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNTStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNTStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '36A2EB')
+                columnRetestCampaignNAStyle = styles.NamedStyle(name = 'column_retestcampaignna_style')
+                columnRetestCampaignNAStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNAStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNAStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'E0E0E0')
+                columnRetestCampaignNFStyle = styles.NamedStyle(name = 'column_retestcampaignnf_style')
+                columnRetestCampaignNFStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FF3333')
+                columnRetestCampaignPFStyle = styles.NamedStyle(name = 'column_retestcampaignpf_style')
+                columnRetestCampaignPFStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignPFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignPFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FFB266')
+                columnRetestCampaignFtyle = styles.NamedStyle(name = 'column_retestcampaignf_style')
+                columnRetestCampaignFtyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignFtyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignFtyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '33FF33')
 
-                #Add column header.
-                retestcampaigns_ws['A1'] = "Name"
-                retestcampaigns_ws['B1'] = "Start Date"
-                retestcampaigns_ws['C1'] = "End Date"
+                #Add legend data.
+                retestcampaigns_ws['A1'] = "Retest Campaign Summary"
+                retestcampaigns_ws['A2'] = "NT: Not Tested, NA: Not Applicable, NF: Not Fixed, PF: Partially Fixed, F: Fixed"
+                
+                #Beautify legend data 
+                retestcampaigns_ws.merge_cells('A1:H1')
+                retestcampaigns_ws.merge_cells('A2:H2')
 
-                line = 2
+                retestcampaigns_ws['A1'].style = projectHeaderStyle
+                retestcampaigns_ws['A2'].style = projectValueStyle
+            
+                #Add column headers.
+                retestcampaigns_ws['A4'] = "Name"
+                retestcampaigns_ws['B4'] = "Start Date"
+                retestcampaigns_ws['C4'] = "End Date"
+                retestcampaigns_ws['D4'] = "# NT"
+                retestcampaigns_ws['E4'] = "# NA"
+                retestcampaigns_ws['F4'] = "# NF"
+                retestcampaigns_ws['G4'] = "# PF"
+                retestcampaigns_ws['H4'] = "# F"
+
+                #Beautify column headers.
+                retestcampaigns_ws['A4'].style = columnHeaderStyle
+                retestcampaigns_ws['B4'].style = columnHeaderStyle
+                retestcampaigns_ws['C4'].style = columnHeaderStyle
+                retestcampaigns_ws['D4'].style = columnHeaderStyle
+                retestcampaigns_ws['E4'].style = columnHeaderStyle
+                retestcampaigns_ws['F4'].style = columnHeaderStyle
+                retestcampaigns_ws['G4'].style = columnHeaderStyle
+                retestcampaigns_ws['H4'].style = columnHeaderStyle
+                
+                #Insert data as retest campaign summary.
+                line = 5
                 for retestcampaign in project.retestcampaign_set.all():        
                     retestcampaigns_ws.cell(row=line, column=1).value = retestcampaign.name
                     retestcampaigns_ws.cell(row=line, column=2).value = retestcampaign.start_date
                     retestcampaigns_ws.cell(row=line, column=3).value = retestcampaign.end_date
-
-                    retestcampaigns_ws.cell(row=line, column=2).number_format = 'YYYY MMM DD'
-                    retestcampaigns_ws.cell(row=line, column=3).number_format = 'YYYY MMM DD'
+                    retestcampaigns_ws.cell(row=line, column=4).value = len(retestcampaign.get_not_tested_hits())
+                    retestcampaigns_ws.cell(row=line, column=5).value = len(retestcampaign.get_not_applicable_hits())
+                    retestcampaigns_ws.cell(row=line, column=6).value = len(retestcampaign.get_not_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=7).value = len(retestcampaign.get_partially_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=8).value = len(retestcampaign.get_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=4).style = columnRetestCampaignNTStyle
+                    retestcampaigns_ws.cell(row=line, column=5).style = columnRetestCampaignNAStyle
+                    retestcampaigns_ws.cell(row=line, column=6).style = columnRetestCampaignNFStyle
+                    retestcampaigns_ws.cell(row=line, column=7).style = columnRetestCampaignPFStyle
+                    retestcampaigns_ws.cell(row=line, column=8).style = columnRetestCampaignFtyle
                     line = line + 1
-
+    
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
             response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
