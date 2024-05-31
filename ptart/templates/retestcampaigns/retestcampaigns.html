@@ -87,7 +87,7 @@
             hitsToAssign = 0;
             hitsAssigned = 0
             waitingDialog.hide();
-            success($("#messages"), "Campaign was created!, you will be redirected to the project page in 3s");
+            success($("#messages"), "Campaign was created!, you will be redirected to the campaign page in 3s");
             setTimeout(function(){
                 window.location.href = '/retestcampaign/' +  createdRetestCampaignId + '/summary';
             }, 3000);
@@ -120,6 +120,9 @@
                 ajaxCreateRetestHit(hitAssignmentSuccess, hitAssignmentFailure, "", "NT", $(this).attr('hit_id'), createdRetestCampaignId);
             }
         });
+        if(hitsToAssign == 0){
+            checkAssignBatchStatus();
+        }
     }
 
     /**
