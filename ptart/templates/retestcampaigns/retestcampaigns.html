@@ -34,6 +34,18 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Hits to retest &nbsp; <button id="selectAllHitBtn" class="btn btn-sm btn-outline-success">Select All</button></label>
+                    {% for hit in project.hits %}
+                        <div class="form-check">
+                            <input class="form-check-input retesthit" type="checkbox" value="" hit_id="{{ hit.id }}" id="unassigne_hit{{ hit.id }}">
+                            <label class="form-check-label" for="unassigne_hit{{ hit.id }}">
+                                {{ hit.get_unique_id }} - {{ hit.title }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
                     <label>Introduction</label>
                     <textarea id="introduction" class="form-control" rows="10" style="resize:vertical"></textarea>
                 </div>
@@ -60,17 +72,62 @@
 
     $('.datepicker').datepicker({});
 
-    function campaignCreationSuccess(data) {
-        $("#name").val("");
-        introductionSimpleMDE.value("");
-        conclusionSimpleMDE.value("");
+    var hitsToAssign = 0;
+    var hitsAssigned = 0;
+    var createdRetestCampaignId = 0;
 
-        success($("#messages"), "Campaign was created!, you will be redirected to the project page in 3s");
-        setTimeout(function(){
-            window.location.href = '/project/' +  {{ project.id }} + '/summary';
-         }, 3000);
+    /**
+     * Check if all hits has been assigned.
+     */
+    function checkAssignBatchStatus() {
+        if (hitsToAssign == hitsAssigned) {
+            $("#name").val("");
+            introductionSimpleMDE.value("");
+            conclusionSimpleMDE.value("");
+            hitsToAssign = 0;
+            hitsAssigned = 0
+            waitingDialog.hide();
+            success($("#messages"), "Campaign was created!, you will be redirected to the campaign page in 3s");
+            setTimeout(function(){
+                window.location.href = '/retestcampaign/' +  createdRetestCampaignId + '/summary';
+            }, 3000);
+        }
     }
 
+    /**
+     * Hit assignement success callback.
+     */
+     function hitAssignmentSuccess(data) {
+        success($("#messages"), "Hit assigned with success!");
+        ++hitsAssigned;
+        checkAssignBatchStatus();
+    }
+
+    /**
+     * Hit assignement failure callback.
+     */
+    function hitAssignmentFailure(data) {
+        error($("#messages"), "Hit was not assigned!");
+        ++hitsAssigned;
+        checkAssignBatchStatus();
+    }
+
+    function campaignCreationSuccess(data) {
+        createdRetestCampaignId = data.id;
+        $('.retesthit').each(function() {
+            if($(this).is(':checked')){
+                ++hitsToAssign;
+                ajaxCreateRetestHit(hitAssignmentSuccess, hitAssignmentFailure, "", "NT", $(this).attr('hit_id'), createdRetestCampaignId);
+            }
+        });
+        if(hitsToAssign == 0){
+            checkAssignBatchStatus();
+        }
+    }
+
+    /**
+     * Manage date format.
+     */
     function manageDate(val){
         result = null;
         if(val){
@@ -80,9 +137,27 @@
         return result;
     }
 
+    /**
+     * Create retest campaign button click event.
+     */
     $('#createBtn').on('click', function () {
+        waitingDialog.show();
+        setTimeout(createRetestCampaign, 500);
+    });
+
+    /**
+     * Create retest campaign.
+     */
+    function createRetestCampaign() {
         cleanMessagesContainer($("#messages"));
         ajaxCreateRetestCampaign(campaignCreationSuccess, commonFailure, $("#name").val(), $("#introduction").val(), $("#conclusion").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#projectId").val());
+    }
+
+    /**
+     * Select all hits.
+     */
+     $('#selectAllHitBtn').on('click', function () {
+        $('.retesthit').prop('checked', true);
     });
 </script>
 {% endblock %}

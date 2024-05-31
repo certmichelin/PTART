@@ -180,6 +180,13 @@ class Project(models.Model):
         for assessment in self.assessment_set.all() :
             hits.extend(assessment.hits_by_severity(severity))
         return hits
+    
+    def hits(self):
+        """Return all hits for the project."""
+        hits = []
+        for assessment in self.assessment_set.all() :
+            hits.extend(assessment.hit_set.all())
+        return hits
 
     def labels_statistics(self):
         """Compute statistics on labels"""
@@ -872,9 +879,87 @@ class RetestCampaign(models.Model):
 
     def __str__(self):  
         return self.name
+    
+    def get_unassigned_hits(self):
+        """Return all unassigned hits for the retest campaign."""
+        assigned_hits = self.get_assigned_hits()
+        return filter(lambda hit: (hit not in assigned_hits) ,self.project.hits())
 
+    def get_assigned_hits(self):
+        """Return all assigned hits for the retest campaign."""
+        hits = []
+        for retesthit in self.retesthit_set.all() :
+            hits.append(retesthit.hit)
+        return hits
+    
+    def get_retest_hits_by_status(self, status):
+        """Filter retest hits by status for the campaign."""
+        return self.retesthit_set.filter(status = status)
+    
+    def get_not_tested_hits(self):
+        """Return all not tested hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NT') 
+    
+    def get_not_applicable_hits(self):
+        """Return all not applicable hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NA') 
+    
+    def get_not_fixed_hits(self):
+        """Return all not fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NF') 
+    
+    def get_partially_fixed_hits(self):
+        """Return all partially fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('PF') 
+    
+    def get_fixed_hits(self):
+        """Return all fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('F') 
+    
     class Meta:
         ordering = ('start_date','name',)
+
+"""Retest hit model."""
+class RetestHit(models.Model):
+
+    FIX_STATUS = (
+        ('F', 'Fixed'),
+        ('NF', 'Not Fixed'),
+        ('PF', 'Partially Fixed'),
+        ('NA', 'Not Applicable'),
+        ('NT', 'Not Tested')
+    )
+
+    retest_campaign = models.ForeignKey(RetestCampaign, null=True, on_delete=models.CASCADE)
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    status = models.CharField(max_length=2,choices=FIX_STATUS)
+    body = models.TextField(blank=True, default="")
+            
+    def get_viewable(user):
+        """Returns all viewable retest campaign hits"""
+        return RetestHit.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this retest hit"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this retest hit"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this retest hits"""
+        return (self.retest_campaign.project.id == self.hit.assessment.project.id) and self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.id
+
+    class Meta:
+        ordering = ('hit',)
+        constraints = [
+            models.UniqueConstraint(fields=['retest_campaign', 'hit'], name='unique hitretest')
+        ]
+
 
 #-----------------------------------------------------------------------------#
 # ASSET MANAGEMENT                                                            #

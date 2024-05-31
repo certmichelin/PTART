@@ -33,11 +33,11 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, RetestHitSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -254,6 +254,18 @@ def retestcampaign(request, pk):
 @api_view(['GET', 'POST'])
 def retestcampaigns(request):
     return items(request, RetestCampaign, RetestCampaignSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def retesthit(request, pk):
+    return item(request, pk, RetestHit, RetestHitSerializer)
+
+@csrf_exempt  
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def retesthits(request):
+    return items(request, RetestHit, RetestHitSerializer)
 
 @csrf_exempt
 @ptart_authentication
@@ -785,25 +797,212 @@ def project_xlsx(request, pk):
                 retestcampaigns_ws.column_dimensions['A'].width = 40
                 retestcampaigns_ws.column_dimensions['B'].width = 15
                 retestcampaigns_ws.column_dimensions['C'].width = 15
+                retestcampaigns_ws.column_dimensions['D'].width = 7
+                retestcampaigns_ws.column_dimensions['E'].width = 7
+                retestcampaigns_ws.column_dimensions['F'].width = 7
+                retestcampaigns_ws.column_dimensions['G'].width = 7
+                retestcampaigns_ws.column_dimensions['H'].width = 7
 
-                retestcampaigns_ws['A1'].style = columnHeaderStyle
-                retestcampaigns_ws['B1'].style = columnHeaderStyle
-                retestcampaigns_ws['C1'].style = columnHeaderStyle
+                #Define column style
+                columnRetestCampaignNTStyle = styles.NamedStyle(name = 'column_retestcampaignnt_style')
+                columnRetestCampaignNTStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNTStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNTStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '36A2EB')
+                columnRetestCampaignNAStyle = styles.NamedStyle(name = 'column_retestcampaignna_style')
+                columnRetestCampaignNAStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNAStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNAStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'E0E0E0')
+                columnRetestCampaignNFStyle = styles.NamedStyle(name = 'column_retestcampaignnf_style')
+                columnRetestCampaignNFStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FF3333')
+                columnRetestCampaignPFStyle = styles.NamedStyle(name = 'column_retestcampaignpf_style')
+                columnRetestCampaignPFStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignPFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignPFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FFB266')
+                columnRetestCampaignFtyle = styles.NamedStyle(name = 'column_retestcampaignf_style')
+                columnRetestCampaignFtyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignFtyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignFtyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '33FF33')
 
-                #Add column header.
-                retestcampaigns_ws['A1'] = "Name"
-                retestcampaigns_ws['B1'] = "Start Date"
-                retestcampaigns_ws['C1'] = "End Date"
+                #Add legend data.
+                retestcampaigns_ws['A1'] = "Retest Campaign Summary"
+                retestcampaigns_ws['A2'] = "NT: Not Tested, NA: Not Applicable, NF: Not Fixed, PF: Partially Fixed, F: Fixed"
+                
+                #Beautify legend data 
+                retestcampaigns_ws.merge_cells('A1:H1')
+                retestcampaigns_ws.merge_cells('A2:H2')
 
-                line = 2
+                retestcampaigns_ws['A1'].style = projectHeaderStyle
+                retestcampaigns_ws['A2'].style = projectValueStyle
+            
+                #Add column headers.
+                retestcampaigns_ws['A4'] = "Name"
+                retestcampaigns_ws['B4'] = "Start Date"
+                retestcampaigns_ws['C4'] = "End Date"
+                retestcampaigns_ws['D4'] = "# NT"
+                retestcampaigns_ws['E4'] = "# NA"
+                retestcampaigns_ws['F4'] = "# NF"
+                retestcampaigns_ws['G4'] = "# PF"
+                retestcampaigns_ws['H4'] = "# F"
+
+                #Beautify column headers.
+                retestcampaigns_ws['A4'].style = columnHeaderStyle
+                retestcampaigns_ws['B4'].style = columnHeaderStyle
+                retestcampaigns_ws['C4'].style = columnHeaderStyle
+                retestcampaigns_ws['D4'].style = columnHeaderStyle
+                retestcampaigns_ws['E4'].style = columnHeaderStyle
+                retestcampaigns_ws['F4'].style = columnHeaderStyle
+                retestcampaigns_ws['G4'].style = columnHeaderStyle
+                retestcampaigns_ws['H4'].style = columnHeaderStyle
+                
+                #Insert data as retest campaign summary.
+                line = 5
                 for retestcampaign in project.retestcampaign_set.all():        
                     retestcampaigns_ws.cell(row=line, column=1).value = retestcampaign.name
                     retestcampaigns_ws.cell(row=line, column=2).value = retestcampaign.start_date
                     retestcampaigns_ws.cell(row=line, column=3).value = retestcampaign.end_date
-
-                    retestcampaigns_ws.cell(row=line, column=2).number_format = 'YYYY MMM DD'
-                    retestcampaigns_ws.cell(row=line, column=3).number_format = 'YYYY MMM DD'
+                    retestcampaigns_ws.cell(row=line, column=4).value = len(retestcampaign.get_not_tested_hits())
+                    retestcampaigns_ws.cell(row=line, column=5).value = len(retestcampaign.get_not_applicable_hits())
+                    retestcampaigns_ws.cell(row=line, column=6).value = len(retestcampaign.get_not_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=7).value = len(retestcampaign.get_partially_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=8).value = len(retestcampaign.get_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=4).style = columnRetestCampaignNTStyle
+                    retestcampaigns_ws.cell(row=line, column=5).style = columnRetestCampaignNAStyle
+                    retestcampaigns_ws.cell(row=line, column=6).style = columnRetestCampaignNFStyle
+                    retestcampaigns_ws.cell(row=line, column=7).style = columnRetestCampaignPFStyle
+                    retestcampaigns_ws.cell(row=line, column=8).style = columnRetestCampaignFtyle
                     line = line + 1
+    
+                # --------------------------------------------------------------------------
+                # Create a specific sheet for each retest campaign.
+                # --------------------------------------------------------------------------
+                for retestcampaign in project.retestcampaign_set.all():
+                    retestcampaign_ws = wb.create_sheet()
+                    retestcampaign_ws.title = retestcampaign.name
+
+                    #Define column size
+                    retestcampaign_ws.column_dimensions['A'].width = 28
+                    retestcampaign_ws.column_dimensions['B'].width = 10
+                    retestcampaign_ws.column_dimensions['C'].width = 10
+                    retestcampaign_ws.column_dimensions['D'].width = 17
+                    retestcampaign_ws.column_dimensions['E'].width = 50
+                    retestcampaign_ws.column_dimensions['F'].width = 30
+                    retestcampaign_ws.column_dimensions['G'].width = 12
+                    retestcampaign_ws.column_dimensions['H'].width = 17
+                    retestcampaign_ws.column_dimensions['I'].width = 50
+
+                    #Add project data.
+                    retestcampaign_ws['A1'] = "Campaign Name:"
+                    retestcampaign_ws['A2'] = "Date:"
+                    retestcampaign_ws['B1'] = retestcampaign.name
+                    if retestcampaign.start_date is not None and retestcampaign.end_date is not None :
+                        retestcampaign_ws['B2'] = "From " + str(retestcampaign.start_date) + " To " + str(retestcampaign.end_date)
+                    else :
+                        retestcampaign_ws['B2'] = "Not Defined"
+
+                
+                    #Beautify project data 
+                    retestcampaign_ws.merge_cells('B1:I1')
+                    retestcampaign_ws.merge_cells('B2:I2')
+
+                    retestcampaign_ws['A1'].style = projectHeaderStyle
+                    retestcampaign_ws['A2'].style = projectHeaderStyle
+                    retestcampaign_ws['B1'].style = projectValueStyle
+                    retestcampaign_ws['B2'].style = projectValueStyle
+
+                    #Add column headers.
+                    retestcampaign_ws['A4'] = "Assessment"
+                    retestcampaign_ws['B4'] = "Sev"
+                    retestcampaign_ws['C4'] = "CVSSv3" if project.cvss_type == 3 else "CVSSv4"
+                    retestcampaign_ws['D4'] = "ID"
+                    retestcampaign_ws['E4'] = "Title"
+                    retestcampaign_ws['F4'] = "Asset"
+                    retestcampaign_ws['G4'] = "Fix Compl."
+                    retestcampaign_ws['H4'] = "Status"
+                    retestcampaign_ws['I4'] = "Labels"
+
+                    #Beautify column headers.
+                    retestcampaign_ws['A4'].style = columnHeaderStyle
+                    retestcampaign_ws['B4'].style = columnHeaderStyle
+                    retestcampaign_ws['C4'].style = columnHeaderStyle
+                    retestcampaign_ws['D4'].style = columnHeaderStyle
+                    retestcampaign_ws['E4'].style = columnHeaderStyle
+                    retestcampaign_ws['F4'].style = columnHeaderStyle
+                    retestcampaign_ws['G4'].style = columnHeaderStyle
+                    retestcampaign_ws['H4'].style = columnHeaderStyle
+                    retestcampaign_ws['I4'].style = columnHeaderStyle
+
+                    line = 5
+                    for retest_hit in retestcampaign.retesthit_set.all():        
+                        retestcampaign_ws.cell(row=line, column=1).value = retest_hit.hit.assessment.name
+                        retestcampaign_ws.cell(row=line, column=2).value = "P{}".format(retest_hit.hit.severity)
+                        retestcampaign_ws.cell(row=line, column=3).value = retest_hit.hit.get_cvss_value()
+                        retestcampaign_ws.cell(row=line, column=4).value = retest_hit.hit.get_unique_id()
+                        retestcampaign_ws.cell(row=line, column=5).value = retest_hit.hit.title
+                        retestcampaign_ws.cell(row=line, column=6).value = retest_hit.hit.asset
+                        retestcampaign_ws.cell(row=line, column=7).value = retest_hit.hit.get_fix_complexity_str()
+                        retestcampaign_ws.cell(row=line, column=8).value = retest_hit.get_status_display()
+                        
+                        label_str = ""
+                        previous = ""
+                        for label in retest_hit.hit.labels.all():
+                            label_str = "{}{}{}".format(label_str, previous, label.title)
+                            previous = ", "
+                        retestcampaign_ws.cell(row=line, column=9).value = label_str
+
+                        #Apply style from value.
+                        if retest_hit.hit.severity == 1:
+                            retestcampaign_ws.cell(row=line, column=2).style = criticalStyle
+                        elif retest_hit.hit.severity == 2:
+                            retestcampaign_ws.cell(row=line, column=2).style = highStyle
+                        elif retest_hit.hit.severity == 3:
+                            retestcampaign_ws.cell(row=line, column=2).style = mediumStyle
+                        elif retest_hit.hit.severity == 4:
+                            retestcampaign_ws.cell(row=line, column=2).style = lowStyle
+                        elif retest_hit.hit.severity == 5:
+                            retestcampaign_ws.cell(row=line, column=2).style = infoStyle
+
+                        if retest_hit.hit.fix_complexity == 1:
+                            retestcampaign_ws.cell(row=line, column=7).style = highStyle
+                        elif retest_hit.hit.fix_complexity == 2:
+                            retestcampaign_ws.cell(row=line, column=7).style = mediumStyle
+                        elif retest_hit.hit.fix_complexity == 3:
+                            retestcampaign_ws.cell(row=line, column=7).style = lowStyle
+                        else :
+                            retestcampaign_ws.cell(row=line, column=7).style = infoStyle
+
+                        if retest_hit.status == "NT":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignNTStyle
+                        elif retest_hit.status == "NA":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignNAStyle
+                        elif retest_hit.status == "NF":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignNFStyle
+                        elif retest_hit.status == "PF":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignPFStyle
+                        else :
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignFtyle
+
+
+                        #For the moment, CVSS3 and CVSS4 share the same classification values.
+                        try:
+                            if float(retest_hit.hit.get_cvss_value()) < 0.1:
+                                retestcampaign_ws.cell(row=line, column=3).style = infoStyle
+                            elif float(retest_hit.hit.get_cvss_value()) < 4.0:
+                                retestcampaign_ws.cell(row=line, column=3).style = lowStyle
+                            elif float(retest_hit.hit.get_cvss_value()) < 7.0:
+                                retestcampaign_ws.cell(row=line, column=3).style = mediumStyle
+                            elif float(retest_hit.hit.get_cvss_value()) < 9.0:
+                                retestcampaign_ws.cell(row=line, column=3).style = highStyle
+                            else :
+                                retestcampaign_ws.cell(row=line, column=3).style = criticalStyle
+                        except ValueError:
+                            retestcampaign_ws.cell(row=line, column=3).style = infoStyle
+
+                        line = line + 1
+                    
+                    retestcampaign_ws.auto_filter.ref = "A4:H{}".format(line)
+
 
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
