@@ -16,7 +16,7 @@ A Pentest organizer tool for Manual Security Testers
 NAME = "PTART"
 DESCRIPTION = "PTART is a assessment organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise."
 
-VERSION = 1.2
+VERSION = 3.0
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
