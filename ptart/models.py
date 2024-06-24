@@ -300,7 +300,13 @@ class Assessment(models.Model):
         return self.name
 
     def displayable_hits(self):
+        """Return all displayable hits for the assessment."""
         return self.hit_set.filter(displayable = True)
+    
+    def has_displayable_hits(self):
+        """Verify if the assessment has displayable hits."""
+        test = self.displayable_hits()
+        return len(self.displayable_hits()) > 0
 
     def p1_hits(self):
         """Return all P1 hits for the assessment."""

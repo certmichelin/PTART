@@ -75,7 +75,7 @@
             <!-- Synthesis -->
             <section>
                 {% for assessment in project.assessment_set.all %}
-                    {% if assessment.displayable_hits %}
+                    {% if assessment.has_displayable_hits %}
                         <section>
                             <h3>{{ assessment.name }} Synthesis</h3>
                             <table>
@@ -107,7 +107,7 @@
 
             <!-- Hits page -->
             {% for assessment in project.assessment_set.all %}
-                {% if assessment.displayable_hits %}
+                {% if assessment.has_displayable_hits %}
                     <section>
                         <h1>{{ assessment.name }}</h1>
                     </section>

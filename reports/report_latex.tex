@@ -380,7 +380,7 @@
 \BLOCK{ if project.p1_hits()|length > 0 or project.p2_hits()|length or project.p3_hits()|length or project.p4_hits()|length or project.p5_hits()|length }
 	\section{Observations}
 	\BLOCK{ for assessment in project.assessment_set.all() }
-		\BLOCK{ if assessment.displayable_hits }
+		\BLOCK{ if assessment.has_displayable_hits() }
 			\paragraph{\VAR{assessment.name | escape }}
 
 			\begin{table}[H]
@@ -473,7 +473,7 @@
 	\section{Technical Findings}
 
 	\BLOCK{ for assessment in project.assessment_set.all() }
-		\BLOCK{ if assessment.displayable_hits }
+		\BLOCK{ if assessment.has_displayable_hits() }
 			\subsection{\VAR{assessment.name | escape }}
 			\BLOCK{ for hit in assessment.displayable_hits() }
 				\subsubsection{\VAR{ hit.get_unique_id()} - \VAR{hit.title | escape }}
