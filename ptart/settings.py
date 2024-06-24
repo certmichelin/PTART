@@ -1,5 +1,7 @@
 import os
 
+from dotenv import load_dotenv
+
 BANNER = """
 ######  #######    #    ######  ####### 
 #     #    #      # #   #     #    #    
@@ -18,6 +20,9 @@ DESCRIPTION = "PTART is a assessment organizer tool developed for pentesters, bu
 
 VERSION = 3.0
 
+# Load environment variables from .env file
+load_dotenv()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,7 +31,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f6l3gz5xxeg($j*15%_q8nvx0mvp*9h$$^^!4a_q3-dw*2n(&%'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # Set if production (for static files)
 LIVE = False
@@ -151,4 +156,4 @@ REST_FRAMEWORK = {
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-CHATGPT_API_KEY = "NotConfigured"
+CHATGPT_API_KEY = str(os.getenv('CHATGPT_API_KEY'))
