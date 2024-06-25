@@ -305,7 +305,6 @@ class Assessment(models.Model):
     
     def has_displayable_hits(self):
         """Verify if the assessment has displayable hits."""
-        test = self.displayable_hits()
         return len(self.displayable_hits()) > 0
 
     def p1_hits(self):
