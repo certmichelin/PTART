@@ -658,6 +658,7 @@ class Screenshot(models.Model):
     hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
     screenshot = models.ImageField(upload_to=upload_folder)
     caption = models.CharField(blank=True, max_length=256, default="")
+    order = models.IntegerField(default=-1)
     
     def get_data(self):
         """Get screenshot data in Base64"""
@@ -715,6 +716,9 @@ class Screenshot(models.Model):
 
     def __str__(self):  
         return self.screenshot
+    
+    class Meta:
+        ordering = ('order',)
 
 
 """Attachment model."""
