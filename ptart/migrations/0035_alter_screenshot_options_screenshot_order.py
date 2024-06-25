@@ -3,9 +3,7 @@
 from django.db import migrations, models
 
 def init_screenshot_order(apps, schema_editor):
-    # Example: For each PTART hit, do something
     Hit = apps.get_model('ptart', 'Hit')
-    Screenshots = apps.get_model('ptart', 'Screenshot')
     for hit in Hit.objects.all():
         screenshot_order = 0
         for screenshot in hit.screenshot_set.all().order_by('id'):
