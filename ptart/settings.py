@@ -34,10 +34,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # Set if production (for static files)
-LIVE = False
+LIVE = str(os.getenv('LIVE'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str(os.getenv('DEBUG'))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -152,4 +152,5 @@ REST_FRAMEWORK = {
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
+#API Key for ChatGPT
 CHATGPT_API_KEY = str(os.getenv('CHATGPT_API_KEY'))
