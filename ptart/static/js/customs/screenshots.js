@@ -71,6 +71,58 @@
     });
 })(jQuery);
 
+/**
+ * Enable Bootstrap menu for screenshots.
+ */
+function activeBootstapMenuForScreenshots() {
+    $('.screenshot').each(function() {
+        var screenshotId = $(this).attr('id');
+        var order = $(this).attr('data-order');
+        var count = $('.screenshot').length;
+        $(function(){
+            $.contextMenu({
+                selector: '#' + screenshotId, 
+                callback: function(key, options) {
+                    var m = "clicked: " + key;
+                    window.console && console.log(m) || alert(m); 
+                },
+                items: {
+                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (order == 0), callback: function(key, options) {
+                        alert("Move Up");
+                    }},
+                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
+                        alert("Move Down");
+                    }}
+                }
+            });
+        });
+    });
+}
+
+/* ---------------------------------------------------------------------------------------------------- */
+/* -------------------------------------- Drag and Drop Screenshot ------------------------------------ */
+/* ---------------------------------------------------------------------------------------------------- */
+//Standard AllowDrop function.
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+//Screenshot drag start function.
+function dragScreenshotStart(ev) {
+    ev.dataTransfer.setData("text/plain", ev.target.id.replace("screenshot_link_", "").replace("screenshot_", ""));
+    $('#deleteZone').text("Drop here to delete")
+    $("#deleteZone").attr('class', 'btn btn-success mb-4');
+}
+
+//Delete screenshot drag stop function.
+function dragScreenshotStop(ev) {
+    $('#deleteZone').text("Delete Screenshot Zone")
+    $("#deleteZone").attr('class', 'btn btn-outline-danger mb-4');
+}
+
+/* --------------------------------------------------------------------------------------------------- */
+/* ------------------------------- Default behavior for create screenshot ---------------------------- */
+/* --------------------------------------------------------------------------------------------------- */
 //Rendering for paste image operation.
 $("html").pasteImageReader(function (results) {
     var dataURL = results.dataURL;
@@ -105,33 +157,17 @@ function addScreenshot() {
     }
 }
 
-//Create screenshot in the screenshot cointainer.
+//Create screenshot in the screenshot container.
 function createScreenshot(id, dataURL, caption) {
     $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragStart(event)", ondragend: "dragStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
     $("#screenshot_link_" + id).tooltip();
 }
 
-
-//Delete screenshot allow drop function.
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-//Delete screenshot drag start function.
-function dragStart(ev) {
-    ev.dataTransfer.setData("text/plain", ev.target.id.replace("screenshot_link_", "").replace("screenshot_", ""));
-    $('#deleteZone').text("Drop here to delete")
-    $("#deleteZone").attr('class', 'btn btn-success mb-4');
-}
-
-//Delete screenshot drag stop function.
-function dragStop(ev) {
-    $('#deleteZone').text("Delete Screenshot Zone")
-    $("#deleteZone").attr('class', 'btn btn-outline-danger mb-4');
-}
-
-//Delete screenshot drag stop function.
-function drop(ev) {
+/* --------------------------------------------------------------------------------------------------- */
+/* ------------------------------- Default behavior for delete screenshot ---------------------------- */
+/* --------------------------------------------------------------------------------------------------- */
+//Delete screenshot drop function.
+function dropDeleteScreenshot(ev) {
     ev.preventDefault();
     id = ev.dataTransfer.getData("text/plain");
     removeScreenshot(id);
@@ -143,3 +179,12 @@ function drop(ev) {
 function removeScreenshot(id) {
     $("#screenshot_link_" + id).remove();
 }
+
+/* --------------------------------------------------------------------------------------------------- */
+/* ------------------------------- Default behavior for screenshot reorder --------------------------- */
+/* --------------------------------------------------------------------------------------------------- */
+//Reorder screenshot drop function.
+function dropReorderScreenshot(ev, newOrder) {
+    alert(newOrder);
+}
+
