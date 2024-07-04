@@ -420,6 +420,24 @@ function ajaxDeleteScreenshot(successFunction, errorFunction, id) {
 }
 
 /**
+ * Reorder a screenshot.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} screenshot_id ID of the screenshot.
+ * @param {*} order Screenshot new order.
+ */
+function ajaxReorderScreenshot(successFunction, errorFunction, screenshot_id, order) {
+    $.ajax({
+        url: "/api/screenshot/" + screenshot_id + "/order/" + order + "/",
+        data: '{}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Upload an attachment for a hit.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
