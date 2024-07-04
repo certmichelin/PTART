@@ -24,6 +24,7 @@ urlpatterns = [
     re_path(r'^comment/(?P<pk>[0-9]+)/$', views.comment),
     re_path(r'^hitreference/(?P<pk>[0-9]+)/$', views.hit_reference),
     re_path(r'^screenshot/(?P<pk>[0-9]+)/$', views.screenshot),
+    re_path(r'^screenshot/(?P<pk>[0-9]+)/order/(?P<order>[0-9]+)/$', views.screenshot_order),
     re_path(r'^screenshot/png/(?P<pk>[0-9]+)/$', views.screenshot_raw),
     re_path(r'^screenshots/$', views.screenshots),
     re_path(r'^attachment/(?P<pk>[0-9]+)/$', views.attachment),

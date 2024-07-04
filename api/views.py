@@ -6,6 +6,8 @@ from django.contrib.auth.password_validation import validate_password
 
 from django.core.exceptions import ValidationError
 
+from django.db.models import Q
+
 from django.http import HttpResponse
 
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +27,6 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 
 import jinja2
-import json
 import os
 import pypandoc
 import random
@@ -289,6 +290,38 @@ def load_module(request, pk, assessmentId):
     except Module.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     except Assessment.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['PUT'])
+def screenshot_order(request, pk, order) :
+    response = None
+    try:
+        item = Screenshot.objects.get(pk=pk)
+        if item.is_user_can_edit(request.user) :
+            order = int(order)
+            if item.order == order :
+                response = Response(status=status.HTTP_400_BAD_REQUEST)
+            else :
+                #Reorder all the screenshot of the hit.
+                if item.order < order :
+                    for screenshot in item.hit.screenshot_set.filter(Q(order__lte=order) & Q(order__gt=item.order)):
+                        screenshot.order = screenshot.order - 1
+                        screenshot.save(update_fields=['order'])
+                else :
+                    for screenshot in item.hit.screenshot_set.filter(Q(order__gte=order) & Q(order__lt=item.order)):
+                        screenshot.order = screenshot.order + 1
+                        screenshot.save(update_fields=['order'])
+
+                #Save the new order of the screenshot.
+                item.order = order
+                item.save(update_fields=['order'])
+                response = Response(ScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)     
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Screenshot.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
@@ -558,7 +591,7 @@ def project_burp_configuration(request, pk):
                     target = target.replace("/" + file, "")
 
                 #Manage Target
-                target = target.replace(".", "\.")
+                target = target.replace(".", "\\.")
                 target = target.replace("*", ".*")
                 burp_target["host"] = "^" + target + "$"
 
@@ -1065,11 +1098,11 @@ def project_latex(request, pk):
             #Custom environment is used to avoid syntax conflict between Jinja & LaTex
             with open('reports/report_latex.tex') as file_:
                 env = jinja2.Environment(
-                    block_start_string = '\BLOCK{',
+                    block_start_string = '\\BLOCK{',
                     block_end_string = '}',
-                    variable_start_string = '\VAR{',
+                    variable_start_string = '\\VAR{',
                     variable_end_string = '}',
-                    comment_start_string = '\#{',
+                    comment_start_string = '\\#{',
                     comment_end_string = '}',
                     line_statement_prefix = '%%',
                     line_comment_prefix = '%#',
