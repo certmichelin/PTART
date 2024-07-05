@@ -218,7 +218,7 @@ class ScreenshotSerializer(serializers.ModelSerializer):
         screenshot=validated_data.pop('screenshot')
         hit=validated_data.pop('hit')
         caption=validated_data.pop('caption')
-        return Screenshot.objects.create(screenshot=screenshot,caption=caption,hit=hit)
+        return Screenshot.objects.create(screenshot=screenshot,caption=caption,hit=hit, order=hit.screenshot_set.count())
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
