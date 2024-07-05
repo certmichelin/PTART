@@ -696,6 +696,12 @@ class Screenshot(models.Model):
             os.remove(url)
         except FileNotFoundError:
             pass
+
+        #Reorder screenshots after deletion.
+        for screenshot in self.hit.screenshot_set.filter(order__gt=self.order):
+            screenshot.order = screenshot.order - 1
+            screenshot.save(update_fields=['order'])
+            
         super(Screenshot, self).delete()
     
     def get_viewable(user):

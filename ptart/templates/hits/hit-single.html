@@ -399,6 +399,22 @@
      */
     function screenshotDeletionSuccess(data) {
         removeScreenshot(data.id);
+        //Apply reordering on UI.
+        var count = $('.screenshot').length;
+
+        $(".screenshot").each(function() {
+            var order = parseInt($(this).attr('data-screenshot-order'),10)
+            if ( order > data.order) {
+                var newOrder = order - 1;
+                $(this).attr('data-screenshot-order', newOrder);
+
+                //Rebuild context menu.
+                $(this).contextMenu('destroy');
+                buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),newOrder,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+            } else if (order == (data.order - 1)) {
+                buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),order,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+            }
+        });
     }
 
     /**
@@ -421,35 +437,8 @@
         previousBlock.contextMenu('destroy');
 
         var count = $('.screenshot').length;
-        var currentBlockOrder = parseInt(currentBlock.attr('data-screenshot-order'), 10);
-        var previousBlockOrder = parseInt(previousBlock.attr('data-screenshot-order'), 10);
-        $(function(){
-            $.contextMenu({
-                selector: '#' + currentBlock.attr('id'),
-                items: {
-                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (currentBlockOrder == 0), callback: function(key, options) {       
-                        screenshotMoveUpCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder - 1);
-                    }},
-                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (currentBlockOrder == count - 1), callback: function(key, options) {
-                        screenshotMoveDownCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder + 1);
-                    }}
-                }
-            });
-        }); 
-
-        $(function(){
-            $.contextMenu({
-                selector: '#' + previousBlock.attr('id'),
-                items: {
-                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (previousBlockOrder == 0), callback: function(key, options) {       
-                        screenshotMoveUpCallback(previousBlock.attr('id'), previousBlock.attr('data-screenshot-id'), previousBlockOrder - 1);
-                    }},
-                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (previousBlockOrder == count - 1), callback: function(key, options) {
-                        screenshotMoveDownCallback(previousBlock.attr('id'), previousBlock.attr('data-screenshot-id'), previousBlockOrder + 1);
-                    }}
-                }
-            });
-        });
+        buildContextMenuForScreenshots(currentBlock.attr('id'),currentBlock.attr('data-screenshot-id'),parseInt(currentBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+        buildContextMenuForScreenshots(previousBlock.attr('id'),previousBlock.attr('data-screenshot-id'),parseInt(previousBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
     }
 
     /**
@@ -472,35 +461,8 @@
         nextBlock.contextMenu('destroy');
 
         var count = $('.screenshot').length;
-        var currentBlockOrder = parseInt(currentBlock.attr('data-screenshot-order'), 10);
-        var nextBlockOrder = parseInt(nextBlock.attr('data-screenshot-order'), 10);
-        $(function(){
-            $.contextMenu({
-                selector: '#' + currentBlock.attr('id'),
-                items: {
-                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (currentBlockOrder == 0), callback: function(key, options) {       
-                        screenshotMoveUpCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder - 1);
-                    }},
-                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (currentBlockOrder == count - 1), callback: function(key, options) {
-                        screenshotMoveDownCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder + 1);
-                    }}
-                }
-            });
-        }); 
-
-        $(function(){
-            $.contextMenu({
-                selector: '#' + nextBlock.attr('id'),
-                items: {
-                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (nextBlockOrder == 0), callback: function(key, options) {       
-                        screenshotMoveUpCallback(nextBlock.attr('id'), nextBlock.attr('data-screenshot-id'), nextBlockOrder - 1);
-                    }},
-                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (nextBlockOrder == count - 1), callback: function(key, options) {
-                        screenshotMoveDownCallback(nextBlock.attr('id'), nextBlock.attr('data-screenshot-id'), nextBlockOrder + 1);
-                    }}
-                }
-            });
-        });
+        buildContextMenuForScreenshots(currentBlock.attr('id'),currentBlock.attr('data-screenshot-id'),parseInt(currentBlock.attr('data-screenshot-order'), 10),count, screenshotMoveUpCallback,screenshotMoveDownCallback);
+        buildContextMenuForScreenshots(nextBlock.attr('id'),nextBlock.attr('data-screenshot-id'),parseInt(nextBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
     }
 
     function screenshotMoveUpCallback(screenshotBlockId, screenshotId, order) {

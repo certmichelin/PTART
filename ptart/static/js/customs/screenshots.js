@@ -155,6 +155,22 @@ function removeScreenshot(id) {
 /* --------------------------------------------------------------------------------------------------- */
 /* ------------------------------- Default behavior for screenshot reorder --------------------------- */
 /* --------------------------------------------------------------------------------------------------- */
+function buildContextMenuForScreenshots(screenshotBlockId, screenshotId, order, count, moveUpCallback, moveDownCallback) {
+    $(function(){
+        $.contextMenu({
+            selector: '#' + screenshotBlockId,
+            items: {
+                "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (order == 0), callback: function(key, options) {       
+                    moveUpCallback(screenshotBlockId, screenshotId, order - 1);
+                }},
+                "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
+                    moveDownCallback(screenshotBlockId, screenshotId, order + 1);
+                }}
+            }
+        });
+    }); 
+}
+
 function moveUpScreenshot(blockId) {
     var currentBlock = $("#" + blockId);
     var previousBlock = currentBlock.prev('.screenshot');
@@ -176,23 +192,7 @@ function moveDownScreenshot(blockId) {
  */
 function activeBootstapMenuForScreenshots(moveUpCallback, moveDownCallback) {
     $('.screenshot').each(function() {
-        var screenshotBlockId = $(this).attr('id');
-        var screenshotId = $(this).attr('data-screenshot-id');
-        var order = parseInt($(this).attr('data-screenshot-order'), 10);
-        var count = $('.screenshot').length;
-        $(function(){
-            $.contextMenu({
-                selector: '#' + screenshotBlockId,
-                items: {
-                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (order == 0), callback: function(key, options) {       
-                        moveUpCallback(screenshotBlockId, screenshotId, order - 1);
-                    }},
-                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
-                        moveDownCallback(screenshotBlockId, screenshotId, order + 1);
-                    }}
-                }
-            });
-        }); 
+        buildContextMenuForScreenshots($(this).attr('id'), $(this).attr('data-screenshot-id'), parseInt($(this).attr('data-screenshot-order'), 10), $('.screenshot').length, moveUpCallback, moveDownCallback);
     });
 }
 

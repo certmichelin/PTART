@@ -213,6 +213,7 @@ class ScreenshotSerializer(serializers.ModelSerializer):
         model = Screenshot
         fields = ('id', 'screenshot', 'caption', 'order', 'hit')
 
+    @transaction.atomic
     def create(self, validated_data):
         screenshot=validated_data.pop('screenshot')
         hit=validated_data.pop('hit')
