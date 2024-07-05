@@ -6,8 +6,6 @@ from django.contrib.auth.password_validation import validate_password
 
 from django.core.exceptions import ValidationError
 
-from django.db.models import Q
-
 from django.http import HttpResponse
 
 from django.views.decorators.csrf import csrf_exempt
@@ -307,13 +305,17 @@ def screenshot_order(request, pk, order) :
             else :
                 #Reorder all the screenshot of the hit.
                 if item.order < order :
-                    for screenshot in item.hit.screenshot_set.filter(Q(order__lte=order) & Q(order__gt=item.order)):
-                        screenshot.order = screenshot.order - 1
-                        screenshot.save(update_fields=['order'])
+                    #Move the screenshot down.
+                    for screenshot in item.hit.screenshot_set.all():
+                        if(screenshot.order > item.order and screenshot.order <= order) :
+                            screenshot.order = screenshot.order - 1
+                            screenshot.save(update_fields=['order'])
                 else :
-                    for screenshot in item.hit.screenshot_set.filter(Q(order__gte=order) & Q(order__lt=item.order)):
-                        screenshot.order = screenshot.order + 1
-                        screenshot.save(update_fields=['order'])
+                    #Move the screenshot up.
+                    for screenshot in item.hit.screenshot_set.all():
+                        if(screenshot.order < item.order and screenshot.order >= order) :
+                            screenshot.order = screenshot.order + 1
+                            screenshot.save(update_fields=['order'])
 
                 #Save the new order of the screenshot.
                 item.order = order

@@ -211,7 +211,7 @@ class ScreenshotSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Screenshot
-        fields = ('id', 'screenshot', 'caption', 'hit')
+        fields = ('id', 'screenshot', 'caption', 'order', 'hit')
 
     def create(self, validated_data):
         screenshot=validated_data.pop('screenshot')

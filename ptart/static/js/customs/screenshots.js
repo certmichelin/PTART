@@ -71,34 +71,6 @@
     });
 })(jQuery);
 
-/**
- * Enable Bootstrap menu for screenshots.
- */
-function activeBootstapMenuForScreenshots() {
-    $('.screenshot').each(function() {
-        var screenshotId = $(this).attr('id');
-        var order = $(this).attr('data-order');
-        var count = $('.screenshot').length;
-        $(function(){
-            $.contextMenu({
-                selector: '#' + screenshotId, 
-                callback: function(key, options) {
-                    var m = "clicked: " + key;
-                    window.console && console.log(m) || alert(m); 
-                },
-                items: {
-                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (order == 0), callback: function(key, options) {
-                        alert("Move Up");
-                    }},
-                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
-                        alert("Move Down");
-                    }}
-                }
-            });
-        });
-    });
-}
-
 /* ---------------------------------------------------------------------------------------------------- */
 /* -------------------------------------- Drag and Drop Screenshot ------------------------------------ */
 /* ---------------------------------------------------------------------------------------------------- */
@@ -183,8 +155,44 @@ function removeScreenshot(id) {
 /* --------------------------------------------------------------------------------------------------- */
 /* ------------------------------- Default behavior for screenshot reorder --------------------------- */
 /* --------------------------------------------------------------------------------------------------- */
-//Reorder screenshot drop function.
-function dropReorderScreenshot(ev, newOrder) {
-    alert(newOrder);
+function moveUpScreenshot(blockId) {
+    var currentBlock = $("#" + blockId);
+    var previousBlock = currentBlock.prev('.screenshot');
+    if (previousBlock.length) {
+        currentBlock.insertBefore(previousBlock);
+    }
+}
+
+function moveDownScreenshot(blockId) {
+    var currentBlock = $("#" + blockId);
+    var nextBlock = currentBlock.next('.screenshot');
+    if (nextBlock.length) {
+        currentBlock.insertAfter(nextBlock);
+    }
+}
+
+/**
+ * Enable Bootstrap menu for screenshots.
+ */
+function activeBootstapMenuForScreenshots(moveUpCallback, moveDownCallback) {
+    $('.screenshot').each(function() {
+        var screenshotBlockId = $(this).attr('id');
+        var screenshotId = $(this).attr('data-screenshot-id');
+        var order = parseInt($(this).attr('data-screenshot-order'), 10);
+        var count = $('.screenshot').length;
+        $(function(){
+            $.contextMenu({
+                selector: '#' + screenshotBlockId,
+                items: {
+                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (order == 0), callback: function(key, options) {       
+                        moveUpCallback(screenshotBlockId, screenshotId, order - 1);
+                    }},
+                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
+                        moveDownCallback(screenshotBlockId, screenshotId, order + 1);
+                    }}
+                }
+            });
+        }); 
+    });
 }
 

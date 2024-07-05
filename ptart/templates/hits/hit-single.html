@@ -191,6 +191,9 @@
 {% include '_include/js/deleteItem.html' with item='Hit' ajax_function='ajaxDeleteHit' %}
 <script type="text/javascript">
 
+    /* --------------------------------------------------------------------------------------------------- */
+    /* ------------------------------------------ Init Page ---------------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
     /* Select the current severity and fix complexity */$
     $('#severity option[value={{hit.severity}}]').attr('selected', 'selected');
     $('#fix_complexity option[value={{hit.fix_complexity}}]').attr('selected', 'selected');
@@ -225,22 +228,17 @@
         }
     }).val(selectedLabels).trigger("change");
 
+    activeBootstapMenuForScreenshots(screenshotMoveUpCallback,screenshotMoveDownCallback);
+
+    /* --------------------------------------------------------------------------------------------------- */
+    /* ------------------------------------------ Hit Update --------------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
+    
     /**
      * Hit updation success callback.
      */
     function hitUpdationSuccess(data) {
         success($("#messages"), "Hit was Updated!");
-    }
-
-    /**
-     * Hit CVSS deletion callback
-     */
-    function cvssDeletionSuccess(data) {
-        {% if cvss_type == 3 %}
-        addCVSSv31ToHit($("#id").val());
-        {% else %}
-        addCVSSv4ToHit($("#id").val());
-        {% endif %}
     }
 
     /**
@@ -255,6 +253,25 @@
         ajaxRemoveCVSSv4(cvssDeletionSuccess, commonFailure, $("#id").val());
         {% endif %}
     });
+
+    /* --------------------------------------------------------------------------------------------------- */
+    /* ----------------------------------------- CVSS Actions -------------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Hit CVSS deletion callback
+     */
+     function cvssDeletionSuccess(data) {
+        {% if cvss_type == 3 %}
+        addCVSSv31ToHit($("#id").val());
+        {% else %}
+        addCVSSv4ToHit($("#id").val());
+        {% endif %}
+    }
+
+    /* --------------------------------------------------------------------------------------------------- */
+    /* ----------------------------------------Reference Actions ----------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
 
     /**
      * Add a reference.
@@ -281,55 +298,6 @@
     }
 
     /**
-     * Add a comment.
-     */
-    function addComment(){
-        var commentText = $("#commentText").val();
-        if (commentText !== "") {
-            ajaxCreateComment(commentCreationSuccess, commonFailure, commentText, $("#id").val());
-        } else {
-            bootbox.alert("Comment is empty!")
-        }
-    }
-
-    /**
-     * Delete a comment
-     */
-    function deleteComment(id){
-        ajaxDeleteComment(commentDeletionSuccess, commonFailure, id);
-    }
-
-    /**
-     * Override addScreenshot from screenshot.js in order to upload the file on the fly.
-     */
-    function addScreenshot() {
-        var dataURL = $("#screenshotData").val()
-        var caption = $("#screenshotCaption").val()
-        if (dataURL !== "") {
-            ajaxUploadScreenshot(screenshotCreationSuccess, commonFailure, dataURL, caption, $("#id").val());
-        } else {
-            bootbox.alert("No screenshot is pasted!")
-        }
-    }
-
-    /**
-     * Override drop from screenshot.js in order to delete the file on the fly.
-     */
-    function drop(ev) {
-        ev.preventDefault();
-        id = ev.dataTransfer.getData("text");
-        ajaxDeleteScreenshot(screenshotDeletionSuccess, commonFailure, id);
-    }
-
-    /**
-     * Screenshot creation success callback.
-     */
-    function screenshotCreationSuccess(data) {
-        createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/", data.caption)
-        resetScreenshotModal();
-    }
-
-    /**
      * Reference creation success callback.
      */
      function referenceCreationSuccess(data) {
@@ -347,6 +315,29 @@
      */
      function referenceDeletionSuccess(data) {
         $("#reference_" + data.id).remove();
+    }
+
+    /* --------------------------------------------------------------------------------------------------- */
+    /* ---------------------------------------- Comments Actions ----------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Add a comment.
+     */
+    function addComment(){
+        var commentText = $("#commentText").val();
+        if (commentText !== "") {
+            ajaxCreateComment(commentCreationSuccess, commonFailure, commentText, $("#id").val());
+        } else {
+            bootbox.alert("Comment is empty!")
+        }
+    }
+
+    /**
+     * Delete a comment
+     */
+    function deleteComment(id){
+        ajaxDeleteComment(commentDeletionSuccess, commonFailure, id);
     }
 
     /**
@@ -369,12 +360,160 @@
         $("#comment_" + data.id).remove();
     }
 
+    /* --------------------------------------------------------------------------------------------------- */
+    /* --------------------------------------- Screenshots Actions --------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Override addScreenshot from screenshot.js in order to upload the file on the fly.
+     */
+    function addScreenshot() {
+        var dataURL = $("#screenshotData").val()
+        var caption = $("#screenshotCaption").val()
+        if (dataURL !== "") {
+            ajaxUploadScreenshot(screenshotCreationSuccess, commonFailure, dataURL, caption, $("#id").val());
+        } else {
+            bootbox.alert("No screenshot is pasted!")
+        }
+    }
+
+    /**
+     * Override dropDeleteScreenshot from screenshot.js in order to delete the file on the fly.
+     */
+    function dropDeleteScreenshot(ev) {
+        ev.preventDefault();
+        id = ev.dataTransfer.getData("text");
+        ajaxDeleteScreenshot(screenshotDeletionSuccess, commonFailure, id);
+    }
+
+    /**
+     * Screenshot creation success callback.
+     */
+    function screenshotCreationSuccess(data) {
+        createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/", data.caption)
+        resetScreenshotModal();
+    }
+
     /**
      * Screenshot deletion success callback.
      */
     function screenshotDeletionSuccess(data) {
         removeScreenshot(data.id);
     }
+
+    /**
+     * Callback to take in account reordering of screenshots.
+     */
+    function screenshotMoveUpSuccess(data) {
+        var currentBlockId = "screenshot_link_" + data.id;
+        var currentBlock = $("#" + currentBlockId);
+        var previousBlock = currentBlock.prev('.screenshot');
+
+        //Change data-order attribute for both elements.
+        currentBlock.attr('data-screenshot-order', data.order);
+        previousBlock.attr('data-screenshot-order', data.order + 1);
+
+        //Change the order in the DOM.
+        moveUpScreenshot(currentBlockId);
+       
+        //Update Context menu.
+        currentBlock.contextMenu('destroy');
+        previousBlock.contextMenu('destroy');
+
+        var count = $('.screenshot').length;
+        var currentBlockOrder = parseInt(currentBlock.attr('data-screenshot-order'), 10);
+        var previousBlockOrder = parseInt(previousBlock.attr('data-screenshot-order'), 10);
+        $(function(){
+            $.contextMenu({
+                selector: '#' + currentBlock.attr('id'),
+                items: {
+                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (currentBlockOrder == 0), callback: function(key, options) {       
+                        screenshotMoveUpCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder - 1);
+                    }},
+                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (currentBlockOrder == count - 1), callback: function(key, options) {
+                        screenshotMoveDownCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder + 1);
+                    }}
+                }
+            });
+        }); 
+
+        $(function(){
+            $.contextMenu({
+                selector: '#' + previousBlock.attr('id'),
+                items: {
+                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (previousBlockOrder == 0), callback: function(key, options) {       
+                        screenshotMoveUpCallback(previousBlock.attr('id'), previousBlock.attr('data-screenshot-id'), previousBlockOrder - 1);
+                    }},
+                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (previousBlockOrder == count - 1), callback: function(key, options) {
+                        screenshotMoveDownCallback(previousBlock.attr('id'), previousBlock.attr('data-screenshot-id'), previousBlockOrder + 1);
+                    }}
+                }
+            });
+        });
+    }
+
+    /**
+     * Callback to take in account reordering of screenshots.
+     */
+     function screenshotMoveDownSuccess(data) {
+        var currentBlockId = "screenshot_link_" + data.id;
+        var currentBlock = $("#" + currentBlockId);
+        var nextBlock = currentBlock.next('.screenshot');
+
+        //Change data-order attribute for both elements.
+        currentBlock.attr('data-screenshot-order', data.order);
+        nextBlock.attr('data-screenshot-order', data.order - 1);
+
+        //Change the order in the DOM.
+        moveDownScreenshot(currentBlockId);
+       
+        //Update Context menu.
+        currentBlock.contextMenu('destroy');
+        nextBlock.contextMenu('destroy');
+
+        var count = $('.screenshot').length;
+        var currentBlockOrder = parseInt(currentBlock.attr('data-screenshot-order'), 10);
+        var nextBlockOrder = parseInt(nextBlock.attr('data-screenshot-order'), 10);
+        $(function(){
+            $.contextMenu({
+                selector: '#' + currentBlock.attr('id'),
+                items: {
+                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (currentBlockOrder == 0), callback: function(key, options) {       
+                        screenshotMoveUpCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder - 1);
+                    }},
+                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (currentBlockOrder == count - 1), callback: function(key, options) {
+                        screenshotMoveDownCallback(currentBlock.attr('id'), currentBlock.attr('data-screenshot-id'), currentBlockOrder + 1);
+                    }}
+                }
+            });
+        }); 
+
+        $(function(){
+            $.contextMenu({
+                selector: '#' + nextBlock.attr('id'),
+                items: {
+                    "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (nextBlockOrder == 0), callback: function(key, options) {       
+                        screenshotMoveUpCallback(nextBlock.attr('id'), nextBlock.attr('data-screenshot-id'), nextBlockOrder - 1);
+                    }},
+                    "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (nextBlockOrder == count - 1), callback: function(key, options) {
+                        screenshotMoveDownCallback(nextBlock.attr('id'), nextBlock.attr('data-screenshot-id'), nextBlockOrder + 1);
+                    }}
+                }
+            });
+        });
+    }
+
+    function screenshotMoveUpCallback(screenshotBlockId, screenshotId, order) {
+        ajaxReorderScreenshot(screenshotMoveUpSuccess, commonFailure, screenshotId, order);
+    }
+
+    function screenshotMoveDownCallback(screenshotBlockId, screenshotId, order) {
+        ajaxReorderScreenshot(screenshotMoveDownSuccess, commonFailure, screenshotId, order);
+    }
+
+    /* --------------------------------------------------------------------------------------------------- */
+    /* --------------------------------------- Attachments Actions --------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
 
     /**
      * Override openAttachment from attachment.js in order to upload the file on the fly.
