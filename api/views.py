@@ -300,7 +300,7 @@ def screenshot_order(request, pk, order) :
         item = Screenshot.objects.get(pk=pk)
         if item.is_user_can_edit(request.user) :
             order = int(order)
-            if item.order == order :
+            if item.order == order or order < 0 or order >= item.hit.screenshot_set.count():
                 response = Response(status=status.HTTP_400_BAD_REQUEST)
             else :
                 #Reorder all the screenshot of the hit.
