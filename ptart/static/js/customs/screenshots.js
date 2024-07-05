@@ -122,7 +122,7 @@ function addScreenshot() {
         $('#screenshotMaxId').val(parseInt(id) + 1);
 
         //add screenshot to gallery
-        createScreenshot(id, dataURL, caption);
+        createScreenshot(id, dataURL, caption, $('.screenshot').length);
         resetScreenshotModal();
     } else {
         bootbox.alert("No screenshot is pasted!")
@@ -130,8 +130,8 @@ function addScreenshot() {
 }
 
 //Create screenshot in the screenshot container.
-function createScreenshot(id, dataURL, caption) {
-    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragStart(event)", ondragend: "dragStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
+function createScreenshot(id, dataURL, caption, order) {
+    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragStart(event)", ondragend: "dragStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
     $("#screenshot_link_" + id).tooltip();
 }
 
