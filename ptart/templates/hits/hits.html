@@ -224,10 +224,14 @@
         if (screenshotsToUpload == 0 && attachmentsToUpload == 0 && referencesToCreate == 0) {
             checkUploadBatchStatus()
         } else {
-            $($('.screenshot_gallery').get().reverse()).each(function () {
-                ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), $(this).attr("caption"), data.id);
+            var screenshots = $('.screenshot').detach().toArray().sort(function(a, b) {
+                    return parseInt($(a).attr('data-screenshot-order'), 10) - parseInt($(b).attr('data-screenshot-order'),10);
+                });
+            screenshots.forEach(function (screenshot) {
+                ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(screenshot).children().first().attr("src"), $(screenshot).children().first().attr("caption"), data.id);
+                sleep(1000); //THis sleep is required for the server to process the screenshot (LockDB issue)
             });
-
+                
             $($('.attachment_gallery').get().reverse()).each(function () {
                 ajaxUploadAttachment(attachmentCreationSuccess, attachmentCreationFailure, $(this).attr("href"), $(this).attr("filename"), data.id);
             });
@@ -238,6 +242,18 @@
 
         }
         success($("#messages"), "Hit was created!");
+    }
+
+    /**
+     * Sleep function.
+     */
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+            break;
+            }
+        }
     }
 
     /**

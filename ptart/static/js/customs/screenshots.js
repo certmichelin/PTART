@@ -123,6 +123,16 @@ function addScreenshot() {
 
         //add screenshot to gallery
         createScreenshot(id, dataURL, caption, $('.screenshot').length);
+
+        //Build context menu for screenshots.
+        buildContextMenuForScreenshots("screenshot_link_" + id, id, $('.screenshot').length - 1, $('.screenshot').length, screenshotMoveUpCallback, screenshotMoveDownCallback);
+        var previousBlock = $("#screenshot_link_" + id).prev('.screenshot');
+        if(previousBlock.length) {
+            previousBlock.contextMenu('destroy');
+            buildContextMenuForScreenshots(previousBlock.attr('id'),previousBlock.attr('data-screenshot-id'),parseInt(previousBlock.attr('data-screenshot-order'), 10), $('.screenshot').length ,screenshotMoveUpCallback,screenshotMoveDownCallback);
+        }
+
+        //Reset modal
         resetScreenshotModal();
     } else {
         bootbox.alert("No screenshot is pasted!")
@@ -131,7 +141,7 @@ function addScreenshot() {
 
 //Create screenshot in the screenshot container.
 function createScreenshot(id, dataURL, caption, order) {
-    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragStart(event)", ondragend: "dragStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
+    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragScreenshotStart(event)", ondragend: "dragScreenshotStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
     $("#screenshot_link_" + id).tooltip();
 }
 
@@ -142,8 +152,24 @@ function createScreenshot(id, dataURL, caption, order) {
 function dropDeleteScreenshot(ev) {
     ev.preventDefault();
     id = ev.dataTransfer.getData("text/plain");
+    currentBlock = $("#screenshot_link_" + id);
+    var count = $('.screenshot').length - 1;
+    $(".screenshot").each(function() {
+        var order = parseInt($(this).attr('data-screenshot-order'),10)
+        if ( order > parseInt(currentBlock.attr('data-screenshot-order'),10)) {
+            var newOrder = order - 1;
+            $(this).attr('data-screenshot-order', newOrder);
+
+            //Rebuild context menu.
+            $(this).contextMenu('destroy');
+            buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),newOrder,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+        } else if (order == (parseInt(currentBlock.attr('data-screenshot-order'),10) - 1)) {
+            $(this).contextMenu('destroy');
+            buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),order,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+        }
+    });
     removeScreenshot(id);
-    $('#deleteZone').text("Delete Screenshot Zone")
+    $('#deleteZone').text("Delete Screenshot Zone");
     $("#deleteZone").attr('class', 'btn btn-outline-danger mb-4');
 }
 
@@ -169,6 +195,46 @@ function buildContextMenuForScreenshots(screenshotBlockId, screenshotId, order, 
             }
         });
     }); 
+}
+
+function screenshotMoveUpCallback(screenshotBlockId, screenshotId, order) {
+    var currentBlock = $("#" + screenshotBlockId);
+    var previousBlock = currentBlock.prev('.screenshot');
+
+    //Change data-order attribute for both elements.
+    currentBlock.attr('data-screenshot-order', order);
+    previousBlock.attr('data-screenshot-order', order + 1);
+
+    //Change the order in the DOM.
+    moveUpScreenshot(screenshotBlockId);
+    
+    //Update Context menu.
+    currentBlock.contextMenu('destroy');
+    previousBlock.contextMenu('destroy');
+
+    var count = $('.screenshot').length;
+    buildContextMenuForScreenshots(currentBlock.attr('id'),currentBlock.attr('data-screenshot-id'),parseInt(currentBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+    buildContextMenuForScreenshots(previousBlock.attr('id'),previousBlock.attr('data-screenshot-id'),parseInt(previousBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+}
+
+function screenshotMoveDownCallback(screenshotBlockId, screenshotId, order) {
+    var currentBlock = $("#" + screenshotBlockId);
+    var nextBlock = currentBlock.next('.screenshot');
+
+    //Change data-order attribute for both elements.
+    currentBlock.attr('data-screenshot-order', order);
+    nextBlock.attr('data-screenshot-order', order - 1);
+
+    //Change the order in the DOM.
+    moveDownScreenshot(screenshotBlockId);
+    
+    //Update Context menu.
+    currentBlock.contextMenu('destroy');
+    nextBlock.contextMenu('destroy');
+
+    var count = $('.screenshot').length;
+    buildContextMenuForScreenshots(currentBlock.attr('id'),currentBlock.attr('data-screenshot-id'),parseInt(currentBlock.attr('data-screenshot-order'), 10),count, screenshotMoveUpCallback,screenshotMoveDownCallback);
+    buildContextMenuForScreenshots(nextBlock.attr('id'),nextBlock.attr('data-screenshot-id'),parseInt(nextBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
 }
 
 function moveUpScreenshot(blockId) {
