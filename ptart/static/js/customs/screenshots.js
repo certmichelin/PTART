@@ -79,9 +79,19 @@ function allowDrop(ev) {
     ev.preventDefault();
 }
 
+function convertIdToMarkdown(id) {
+    rootUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}`;
+    return "![ptart_screenshot](" + rootUrl + "/api/screenshot/png/" + id.replace("screenshot_link_", "").replace("screenshot_", "") + "/)";
+}
+
+function convertMarkdownToId(md){
+    rootUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}`;
+    return md.replace("![ptart_screenshot](" + rootUrl + "/api/screenshot/png/","").replace("/)", "");
+}
+
 //Screenshot drag start function.
 function dragScreenshotStart(ev) {
-    ev.dataTransfer.setData("text/plain", ev.target.id.replace("screenshot_link_", "").replace("screenshot_", ""));
+    ev.dataTransfer.setData("text/plain", convertIdToMarkdown(ev.target.id));
     $('#deleteZone').text("Drop here to delete")
     $("#deleteZone").attr('class', 'btn btn-success mb-4');
 }
@@ -151,7 +161,7 @@ function createScreenshot(id, dataURL, caption, order) {
 //Delete screenshot drop function.
 function dropDeleteScreenshot(ev) {
     ev.preventDefault();
-    id = ev.dataTransfer.getData("text/plain");
+    id = convertMarkdownToId(ev.dataTransfer.getData("text/plain"));
     currentBlock = $("#screenshot_link_" + id);
     var count = $('.screenshot').length - 1;
     $(".screenshot").each(function() {

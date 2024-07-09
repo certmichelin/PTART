@@ -382,7 +382,7 @@
      */
     function dropDeleteScreenshot(ev) {
         ev.preventDefault();
-        id = ev.dataTransfer.getData("text");
+        id = convertMarkdownToId(ev.dataTransfer.getData("text"));
         ajaxDeleteScreenshot(screenshotDeletionSuccess, commonFailure, id);
     }
 
