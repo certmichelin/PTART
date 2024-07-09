@@ -1125,12 +1125,29 @@ def project_latex(request, pk):
                         '\\': r'\textbackslash{}'
                     }
                 tex_regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key = lambda item: - len(item))))
+                screenshot_pattern = re.compile(r"(\\pandocbounded\{.*?\}\})")
                 
                 def tex_escape(text):
                     return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
-
+                
                 def markdown_to_latex(md) :
-                    return pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                    latex = pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                    matches = screenshot_pattern.findall(latex)
+                    for match in matches :
+                        print(match)
+                        
+                        item = Screenshot.objects.get(pk=match.split("/")[-2])
+                        if item.is_user_can_view(request.user) :
+                            graphic = """
+                            \\begin{{figure}}[H]
+                            \\centering
+                            \\includegraphics[max width=\\textwidth]{{./screenshots/{}.png}}
+                            \\caption{{{}}}
+                            \\end{{figure}}
+                            """.format(item.id, tex_escape(item.caption))
+                            latex = latex.replace(match, graphic)
+                    return latex
+
                 #End of filters.
 
                 env.filters["mdtolatex"] = markdown_to_latex
