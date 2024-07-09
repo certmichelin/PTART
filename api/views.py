@@ -1133,9 +1133,7 @@ def project_latex(request, pk):
                 def markdown_to_latex(md) :
                     latex = pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
                     matches = screenshot_pattern.findall(latex)
-                    for match in matches :
-                        print(match)
-                        
+                    for match in matches :                        
                         item = Screenshot.objects.get(pk=match.split("/")[-2])
                         if item.is_user_can_view(request.user) :
                             graphic = """
@@ -1313,10 +1311,8 @@ def audit(request):
             
             ws.auto_filter.ref = "A5:J{}".format(line)
 
-            print("coucouou")
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
-            print("coucouou")
             response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             response['Content-Disposition'] = 'attachment; filename="audit.xlsx"'
             response.accepted_renderer = BinaryRenderer()

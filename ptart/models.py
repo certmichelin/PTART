@@ -565,6 +565,11 @@ class Hit(models.Model):
                     return "---"
                 else : 
                     return self.cvss4.decimal_value
+    
+    def get_not_injected_screenshots(self):
+        """Return all screenshots that are not injected in the body nor remediation"""
+        
+        return ""
 
     def get_cvss_string(self):
         """Return the string value of the cvss"""
