@@ -532,7 +532,7 @@
 
 				\VAR{ hit.body | mdtolatex }
 			
-				\BLOCK{ for screenshot in hit.screenshot_set.all() }
+				\BLOCK{ for screenshot in hit.get_not_injected_screenshots() }
 					\begin{figure}[H]
 						\centering
 						\includegraphics[max width=\textwidth]{./screenshots/\VAR{screenshot.pk}.png}

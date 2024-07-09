@@ -1,5 +1,6 @@
 import base64
 import os
+import re
 
 from cvss import CVSS3, CVSS4
 from datetime import datetime
@@ -7,6 +8,10 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
+
+#-----------------------------------------------------------------------------#
+screenshot_pattern = re.compile(r'!\[ptart_screenshot\]\((.*?)\)')
+#-----------------------------------------------------------------------------#
 
 """Tool model."""
 class Tool(models.Model):
@@ -568,8 +573,16 @@ class Hit(models.Model):
     
     def get_not_injected_screenshots(self):
         """Return all screenshots that are not injected in the body nor remediation"""
+        screenshot_added = []
+        matches = screenshot_pattern.findall(self.body)
+        for match in matches :                        
+            screenshot_added.append(match.split("/")[-2])
+
+        matches = screenshot_pattern.findall(self.remediation)
+        for match in matches :                        
+            screenshot_added.append(match.split("/")[-2])
         
-        return ""
+        return self.screenshot_set.exclude(id__in=screenshot_added)
 
     def get_cvss_string(self):
         """Return the string value of the cvss"""
