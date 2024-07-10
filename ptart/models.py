@@ -570,6 +570,18 @@ class Hit(models.Model):
                     return "---"
                 else : 
                     return self.cvss4.decimal_value
+                
+    def get_body_without_screenshots(self):
+        """Return the body without the screenshots"""
+        return Hit.prune_images(self.body)
+    
+    def get_remediation_without_screenshots(self):
+        """Return the remediation without the screenshots"""
+        return Hit.prune_images(self.remediation)
+                
+    def prune_images(md):
+        """Prune images from the markdown"""
+        return re.sub(screenshot_pattern, '', md)
     
     def get_not_injected_screenshots(self):
         """Return all screenshots that are not injected in the body nor remediation"""

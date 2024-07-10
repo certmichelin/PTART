@@ -134,7 +134,7 @@
                             </section>
                             <section>
                                 <div data-markdown>
-                                    {{ hit.body }}
+                                    {{ hit.get_body_without_screenshots }}
                                 </div>
                             </section>
 
@@ -149,7 +149,7 @@
                                 <section>
                                     <h5>Remediation :</h5>
                                     <div data-markdown>
-                                        {{ hit.remediation }}
+                                        {{ hit.get_remediation_without_screenshots }}
                                     </div>
                                 </section>
                             {% endif %}
