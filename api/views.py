@@ -1133,17 +1133,21 @@ def project_latex(request, pk):
                 def markdown_to_latex(md) :
                     latex = pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
                     matches = screenshot_pattern.findall(latex)
-                    for match in matches :                        
-                        item = Screenshot.objects.get(pk=match.split("/")[-2])
-                        if item.is_user_can_view(request.user) :
-                            graphic = """
-                            \\begin{{figure}}[H]
-                            \\centering
-                            \\includegraphics[max width=\\textwidth]{{./screenshots/{}.png}}
-                            \\caption{{{}}}
-                            \\end{{figure}}
-                            """.format(item.id, tex_escape(item.caption))
-                            latex = latex.replace(match, graphic)
+                    for match in matches :
+                        try :                        
+                            item = Screenshot.objects.get(pk=match.split("/")[-2])
+                            if item.is_user_can_view(request.user) :
+                                graphic = """
+                                \\begin{{figure}}[H]
+                                \\centering
+                                \\includegraphics[max width=\\textwidth]{{./screenshots/{}.png}}
+                                \\caption{{{}}}
+                                \\end{{figure}}
+                                """.format(item.id, tex_escape(item.caption))
+                                latex = latex.replace(match, graphic)
+                        except Screenshot.DoesNotExist:
+                            pass
+
                     return latex
 
                 #End of filters.
