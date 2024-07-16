@@ -34,12 +34,14 @@
                                 {% if project.assessment_set.all|length == 0 %}
                                     {{ project.name }}
                                     <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
+                                    <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset Management</a>
                                     <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}" role="button">Create Assessment</a>
                                     <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
                                 {% else %}
                                     <div style="position: absolute; top: 0; left: 10;">{{ project.name }}</div>
                                     <div class="text-center" style="position: relative; top: 0;">
                                         <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
+                                        <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset Management</a>
                                         <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}" role="button">Create Assessment</a>
                                         <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
                                         <br/>
