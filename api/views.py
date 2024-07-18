@@ -1134,7 +1134,7 @@ def project_latex(request, pk):
                     latex = pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
                     matches = screenshot_pattern.findall(latex)
                     for match in matches :
-                        try :                        
+                        try :                      
                             item = Screenshot.objects.get(pk=match.split("/")[-2])
                             if item.is_user_can_view(request.user) :
                                 graphic = """
@@ -1145,9 +1145,10 @@ def project_latex(request, pk):
                                 \\end{{figure}}
                                 """.format(item.id, tex_escape(item.caption))
                                 latex = latex.replace(match, graphic)
-                        except Screenshot.DoesNotExist:
-                            pass
-
+                            else :
+                                latex = latex.replace(match, "")
+                        except Screenshot.DoesNotExist as e:
+                            latex = latex.replace(match, "")
                     return latex
 
                 #End of filters.
