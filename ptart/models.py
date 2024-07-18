@@ -204,16 +204,6 @@ class Project(models.Model):
                     else:
                         statistics[label.title] = statistics[label.title] + 1
         return statistics
-    
-    def get_creation_event(self):
-        """Create the project creation event"""
-        return Event.objects.create(
-            type='PC',
-            title='Project created',
-            date=self.added,
-            project=self,
-            related_id=self.id
-        )
 
     def get_viewable(user):
         """Returns all viewable & non-archived projects"""
@@ -304,47 +294,6 @@ class Recommendation(models.Model):
     class Meta:
         ordering = ('name',)
 
-"""Event model."""
-class Event(models.Model):
-    EVENT_TYPES = (
-        ('PC', 'Project Creation'),
-        ('AC', 'Assessment Creation'),
-        ('HC', 'Hit Creation'),
-        ('SC', 'Attack Scenario Creation'),
-        ('RC', 'Recommendation Creation'),
-        ('CC', 'Retest Campaign Creation'),
-        ('TU', 'Retest Hit Update'),
-        ('CE', 'Custom Event')
-    )
-
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    type = models.CharField(max_length=2,choices=EVENT_TYPES)
-    title = models.CharField(max_length=200)
-    date = models.DateTimeField(default=datetime.now)
-    related_id = models.IntegerField(default=-1)
-
-    def __str__(self):  
-        return self.title
-    
-    def get_viewable(user):
-        """Returns all viewable events"""
-        return Event.objects.filter(project__in=Project.get_viewable(user))
-
-    def is_user_can_view(self, user):
-        """Verify if the user have read access for this event"""
-        return self.project.is_user_can_view(user)
-
-    def is_user_can_edit(self, user):
-        """Verify if the user have write access for this event"""
-        return self.project.is_user_can_edit(user)
-
-    def is_user_can_create(self, user):
-        """Verify if the user can create this event"""
-        return self.project.is_user_can_edit(user)
-    
-    class Meta:
-        ordering = ('date',)
-
 
 """Assesment model."""
 class Assessment(models.Model):
@@ -356,16 +305,6 @@ class Assessment(models.Model):
     def __str__(self):  
         return self.name
     
-    def get_creation_event(self):
-        """Create the assessment creation event"""
-        return Event.objects.create(
-            type='AC',
-            title='Assessment ' + self.name + ' created',
-            date=self.added,
-            project=self.project,
-            related_id=self.id
-        )
-
     def displayable_hits(self):
         """Return all displayable hits for the assessment."""
         return self.hit_set.filter(displayable = True)
@@ -588,16 +527,6 @@ class Hit(models.Model):
 
     def __str__(self):  
         return self.title
-    
-    def get_creation_event(self):
-        """Create the hit creation event"""
-        return Event.objects.create(
-            type='HC',
-            title='Hit ' + self.get_unique_id() + ' created',
-            date=self.added,
-            project=self.assessment.project,
-            related_id=self.id
-        )
 
     def get_viewable(user):
         """Returns all viewable hits"""
