@@ -8,10 +8,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
+from ptart.tools.screenshots import delete_screenshot_file, get_screenshot_raw_data, extract_images_from_markdown, prune_images_from_markdown
 
-#-----------------------------------------------------------------------------#
-screenshot_pattern = re.compile(r'!\[ptart_screenshot\]\((.*?)\)')
-#-----------------------------------------------------------------------------#
 
 """Tool model."""
 class Tool(models.Model):
@@ -574,28 +572,15 @@ class Hit(models.Model):
                 
     def get_body_without_screenshots(self):
         """Return the body without the screenshots"""
-        return Hit.prune_images(self.body)
+        return prune_images_from_markdown(self.body)
     
     def get_remediation_without_screenshots(self):
         """Return the remediation without the screenshots"""
-        return Hit.prune_images(self.remediation)
-                
-    def prune_images(md):
-        """Prune images from the markdown"""
-        return re.sub(screenshot_pattern, '', md)
-    
+        return prune_images_from_markdown(self.remediation)
+                    
     def get_not_injected_screenshots(self):
         """Return all screenshots that are not injected in the body nor remediation"""
-        screenshot_added = []
-        matches = screenshot_pattern.findall(self.body)
-        for match in matches :                        
-            screenshot_added.append(match.split("/")[-2])
-
-        matches = screenshot_pattern.findall(self.remediation)
-        for match in matches :                        
-            screenshot_added.append(match.split("/")[-2])
-        
-        return self.screenshot_set.exclude(id__in=screenshot_added)
+        return self.screenshot_set.exclude(id__in=extract_images_from_markdown([self.body, self.remediation]))
 
     def get_cvss_string(self):
         """Return the string value of the cvss"""
@@ -693,40 +678,14 @@ class Screenshot(models.Model):
     
     def get_data(self):
         """Get screenshot data in Base64"""
-        encoded_string = ''
-        extension = os.path.splitext(self.screenshot.url)[1]
-        url = self.screenshot.url
-        if url.startswith('.') is False :
-            url = "." + url
-        with open(url, 'rb') as img_f:
-            encoded_string = base64.b64encode(img_f.read())
-        return 'data:image/%s;base64,%s' % (extension,encoded_string.decode("utf-8"))
+        return 'data:image/%s;base64,%s' % (os.path.splitext(self.screenshot.url)[1], base64.b64encode(get_screenshot_raw_data(self.screenshot)).decode("utf-8"))
 
     def get_raw_data(self):
         """Get screenshot data in binary format"""
-        result = ''
-        url = self.screenshot.url
-        if url.startswith('.') is False :
-            url = "." + url
-            try:
-                with open(url, 'rb') as img_f:
-                    result = img_f.read()
-            except FileNotFoundError:
-                result = None
-            return result
-        with open(url, 'rb') as img_f:
-            result = img_f.read()
-        return result
+        return get_screenshot_raw_data(self.screenshot)
 
     def delete(self):
-        """Delete file related to the screenshot"""
-        url = self.screenshot.url
-        if url.startswith('.') is False :
-            url = "." + url
-        try:
-            os.remove(url)
-        except FileNotFoundError:
-            pass
+        delete_screenshot_file(self.screenshot)
 
         #Reorder screenshots after deletion.
         for screenshot in self.hit.screenshot_set.filter(order__gt=self.order):
