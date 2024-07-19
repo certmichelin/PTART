@@ -32,11 +32,11 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, RetestHitSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, RetestHitSerializer, RetestScreenshotSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -268,6 +268,18 @@ def retesthits(request):
 
 @csrf_exempt
 @ptart_authentication
+@api_view(['DELETE'])
+def retestscreenshot(request, pk):
+    return item(request, pk, RetestScreenshot, RetestScreenshotSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def retestscreenshots(request):
+    return items(request, RetestScreenshot, RetestScreenshotSerializer)
+
+@csrf_exempt
+@ptart_authentication
 @api_view(['POST'])
 def load_module(request, pk, assessmentId):
     response = None
@@ -349,6 +361,67 @@ def screenshot_raw(request, pk) :
     response.accepted_media_type = 'image/png'
     response.renderer_context = {}
     return response
+
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['PUT'])
+def retestscreenshot_order(request, pk, order) :
+    response = None
+    try:
+        item = RetestScreenshot.objects.get(pk=pk)
+        if item.is_user_can_edit(request.user) :
+            order = int(order)
+            if item.order == order or order < 0 or order >= item.retest_hit.retestscreenshot_set.count():
+                response = Response(status=status.HTTP_400_BAD_REQUEST)
+            else :
+                #Reorder all the screenshot of the retest hit.
+                if item.order < order :
+                    #Move the screenshot down.
+                    for screenshot in item.retest_hit.retestscreenshot_set.all():
+                        if(screenshot.order > item.order and screenshot.order <= order) :
+                            screenshot.order = screenshot.order - 1
+                            screenshot.save(update_fields=['order'])
+                else :
+                    #Move the screenshot up.
+                    for screenshot in item.retest_hit.retestscreenshot_set.all():
+                        if(screenshot.order < item.order and screenshot.order >= order) :
+                            screenshot.order = screenshot.order + 1
+                            screenshot.save(update_fields=['order'])
+
+                #Save the new order of the screenshot.
+                item.order = order
+                item.save(update_fields=['order'])
+                response = Response(RetestScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)     
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except RetestScreenshot.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@action(methods=['GET'], detail=True)
+def retestscreenshot_raw(request, pk) :
+    response = None
+    try:
+        item = RetestScreenshot.objects.get(pk=pk)
+        if item.is_user_can_view(request.user) :
+            raw_data = item.get_raw_data()
+            if raw_data is not None :
+                response = Response(raw_data)
+            else :
+                response = Response(status=status.HTTP_404_NOT_FOUND)     
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except RetestScreenshot.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+        
+    response.accepted_renderer = ImageRenderer()
+    response.accepted_media_type = 'image/png'
+    response.renderer_context = {}
+    return response
+
 
 @csrf_exempt
 @ptart_authentication

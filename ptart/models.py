@@ -966,6 +966,58 @@ class RetestHit(models.Model):
         ]
 
 
+"""Retest Screenshot model."""
+class RetestScreenshot(models.Model):
+
+    upload_folder = 'screenshots_retest'
+
+    retest_hit = models.ForeignKey(RetestHit, null=True, on_delete=models.CASCADE)
+    screenshot = models.ImageField(upload_to=upload_folder)
+    caption = models.CharField(blank=True, max_length=256, default="")
+    order = models.IntegerField(default=-1)
+    
+    def get_data(self):
+        """Get screenshot data in Base64"""
+        return 'data:image/%s;base64,%s' % (os.path.splitext(self.screenshot.url)[1], base64.b64encode(get_screenshot_raw_data(self.screenshot)).decode("utf-8"))
+
+    def get_raw_data(self):
+        """Get screenshot data in binary format"""
+        return get_screenshot_raw_data(self.screenshot)
+
+    def delete(self):
+        delete_screenshot_file(self.screenshot)
+
+        #Reorder screenshots after deletion.
+        for screenshot in self.retest_hit.restestscreenshot_set.filter(order__gt=self.order):
+            screenshot.order = screenshot.order - 1
+            screenshot.save(update_fields=['order'])
+            
+        super(RetestScreenshot, self).delete()
+    
+    def get_viewable(user):
+        """Returns all viewable screenshots"""
+        return RetestScreenshot.objects.filter(retest_hit__in=RetestHit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this screenshot"""
+        return self.retest_hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this screenshot"""
+        return self.retest_hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this screenshot"""
+        return self.retest_hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.screenshot
+    
+    class Meta:
+        ordering = ('order',)
+
+
+
 #-----------------------------------------------------------------------------#
 # ASSET MANAGEMENT                                                            #
 #-----------------------------------------------------------------------------#

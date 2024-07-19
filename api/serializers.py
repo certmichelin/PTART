@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
 from .tools import FileField
 
 
@@ -219,6 +219,21 @@ class ScreenshotSerializer(serializers.ModelSerializer):
         hit=validated_data.pop('hit')
         caption=validated_data.pop('caption')
         return Screenshot.objects.create(screenshot=screenshot,caption=caption,hit=hit, order=hit.screenshot_set.count())
+
+    
+class RetestScreenshotSerializer(serializers.ModelSerializer):
+    screenshot = Base64ImageField()
+    
+    class Meta:
+        model = RetestScreenshot
+        fields = ('id', 'screenshot', 'caption', 'order', 'retest_hit')
+
+    @transaction.atomic
+    def create(self, validated_data):
+        screenshot=validated_data.pop('screenshot')
+        retest_hit=validated_data.pop('retest_hit')
+        caption=validated_data.pop('caption')
+        return RetestScreenshot.objects.create(screenshot=screenshot,caption=caption, retest_hit=retest_hit, order=retest_hit.retest_screenshot_set.count())
 
 
 class AttachmentSerializer(serializers.ModelSerializer):

@@ -60,6 +60,10 @@ urlpatterns = [
     re_path(r'^retestcampaigns',views.retestcampaigns),
     re_path(r'^retesthit/(?P<pk>[0-9]+)/$', views.retesthit),
     re_path(r'^retesthits/$', views.retesthits),
+    re_path(r'^retestscreenshot/(?P<pk>[0-9]+)/$', views.retestscreenshot),
+    re_path(r'^retestscreenshot/(?P<pk>[0-9]+)/order/(?P<order>[0-9]+)/$', views.retestscreenshot_order),
+    re_path(r'^retestscreenshot/png/(?P<pk>[0-9]+)/$', views.retestscreenshot_raw),
+    re_path(r'^retestscreenshots/$', views.retestscreenshots),
 
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
