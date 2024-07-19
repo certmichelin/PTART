@@ -233,7 +233,7 @@ class RetestScreenshotSerializer(serializers.ModelSerializer):
         screenshot=validated_data.pop('screenshot')
         retest_hit=validated_data.pop('retest_hit')
         caption=validated_data.pop('caption')
-        return RetestScreenshot.objects.create(screenshot=screenshot,caption=caption, retest_hit=retest_hit, order=retest_hit.retest_screenshot_set.count())
+        return RetestScreenshot.objects.create(screenshot=screenshot,caption=caption, retest_hit=retest_hit, order=retest_hit.retestscreenshot_set.count())
 
 
 class AttachmentSerializer(serializers.ModelSerializer):

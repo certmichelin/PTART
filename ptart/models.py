@@ -988,7 +988,7 @@ class RetestScreenshot(models.Model):
         delete_screenshot_file(self.screenshot)
 
         #Reorder screenshots after deletion.
-        for screenshot in self.retest_hit.restestscreenshot_set.filter(order__gt=self.order):
+        for screenshot in self.retest_hit.retestscreenshot_set.filter(order__gt=self.order):
             screenshot.order = screenshot.order - 1
             screenshot.save(update_fields=['order'])
             
