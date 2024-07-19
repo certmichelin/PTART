@@ -1150,6 +1150,19 @@ def project_latex(request, pk):
                             with open('reports/resources/default_image.png', 'rb') as file:
                                 default_image_data = file.read()
                                 zf.writestr("screenshots/{}.png".format(screenshot.id), default_image_data)
+
+            #Retrieve Screenshots for retest campaignes.
+            for retestcampaign in project.retestcampaign_set.all():
+                for retest_hit in retestcampaign.retesthit_set.all():        
+                    for screenshot in retest_hit.retestscreenshot_set.all():
+                            ##Screenshots are stored in the zip file.
+                            raw_data = screenshot.get_raw_data()
+                            if raw_data is not None :
+                                zf.writestr("screenshots_retest/{}.png".format(screenshot.id), raw_data)
+                            else :
+                                with open('reports/resources/default_image.png', 'rb') as file:
+                                    default_image_data = file.read()
+                                    zf.writestr("screenshots_retest/{}.png".format(screenshot.id), default_image_data)   
             
             #Retrieve AttackScenarios.
             for attackscenario in project.attackscenario_set.all():
@@ -1203,30 +1216,45 @@ def project_latex(request, pk):
                 def tex_escape(text):
                     return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
                 
-                def markdown_to_latex(md) :
+                def markdown_to_latex_common(md, folder, screenshot_class) :
                     latex = pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
-                    matches = screenshot_pattern.findall(latex)
-                    for match in matches :
-                        try :                      
-                            item = Screenshot.objects.get(pk=match.split("/")[-2])
-                            if item.is_user_can_view(request.user) :
-                                graphic = """
-                                \\begin{{figure}}[H]
-                                \\centering
-                                \\includegraphics[max width=\\textwidth]{{./screenshots/{}.png}}
-                                \\caption{{{}}}
-                                \\end{{figure}}
-                                """.format(item.id, tex_escape(item.caption))
-                                latex = latex.replace(match, graphic)
-                            else :
-                                latex = latex.replace(match, "")
-                        except Screenshot.DoesNotExist as e:
-                            latex = latex.replace(match, "")
+                    if folder is not None :
+                        matches = screenshot_pattern.findall(latex)
+                        if matches is not None and len(matches) > 0 :
+                            #Clean the markdown from the screenshots.
+                            latex = latex.replace("\n\\begin{figure}\n\\centering","")
+                            latex = latex.replace("\\caption{ptart\\_screenshot}\n\\end{figure}\n","")
+                            for match in matches :
+                                try :                      
+                                    item = screenshot_class.objects.get(pk=match.split("/")[-2])
+                                    if item.is_user_can_view(request.user) :
+                                        graphic = """
+                                        \\begin{{figure}}[H]
+                                        \\centering
+                                        \\includegraphics[max width=\\textwidth]{{./{}/{}.png}}
+                                        \\caption{{{}}}
+                                        \\end{{figure}}
+                                        """.format(folder, item.id, tex_escape(item.caption))
+                                        latex = latex.replace(match, graphic)
+                                    else :
+                                        latex = latex.replace(match, "")
+                                except Screenshot.DoesNotExist as e:
+                                    latex = latex.replace(match, "")
                     return latex
+                
+                def markdown_to_latex(md) :
+                    return markdown_to_latex_common(md, None, None)
+                
+                def markdown_to_latex_hit(md) :
+                    return markdown_to_latex_common(md, "screenshots", Screenshot)
+
+                def markdown_to_latex_retesthit(md) :
+                    return markdown_to_latex_common(md, "screenshots_retest", RetestScreenshot)
 
                 #End of filters.
-
                 env.filters["mdtolatex"] = markdown_to_latex
+                env.filters["mdtolatexhit"] = markdown_to_latex_hit
+                env.filters["mdtolatexretesthit"] = markdown_to_latex_retesthit
                 env.filters["escape"] = tex_escape
                 template = env.from_string(file_.read())
                 zf.writestr("{}.tex".format(project.name).replace(" ","_"), template.render(project=project, labels=Label.get_viewable(request.user)))     

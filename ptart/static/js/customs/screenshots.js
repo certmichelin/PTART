@@ -74,6 +74,8 @@
 /* ---------------------------------------------------------------------------------------------------- */
 /* -------------------------------------- Drag and Drop Screenshot ------------------------------------ */
 /* ---------------------------------------------------------------------------------------------------- */
+var apiRoute = "/api/screenshot/png/";
+
 //Standard AllowDrop function.
 function allowDrop(ev) {
     ev.preventDefault();
@@ -81,12 +83,12 @@ function allowDrop(ev) {
 
 function convertIdToMarkdown(id) {
     rootUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}`;
-    return "![ptart_screenshot](" + rootUrl + "/api/screenshot/png/" + id.replace("screenshot_link_", "").replace("screenshot_", "") + "/)";
+    return "![ptart_screenshot](" + rootUrl + apiRoute + id.replace("screenshot_link_", "").replace("screenshot_", "") + "/)";
 }
 
 function convertMarkdownToId(md){
     rootUrl = `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}`;
-    return md.replace("![ptart_screenshot](" + rootUrl + "/api/screenshot/png/","").replace("/)", "");
+    return md.replace("![ptart_screenshot](" + rootUrl + apiRoute,"").replace("/)", "");
 }
 
 //Screenshot drag start function.

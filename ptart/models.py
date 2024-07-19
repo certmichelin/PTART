@@ -939,6 +939,10 @@ class RetestHit(models.Model):
     hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
     status = models.CharField(max_length=2,choices=FIX_STATUS)
     body = models.TextField(blank=True, default="")
+        
+    def get_not_injected_screenshots(self):
+        """Return all screenshots that are not injected in the body"""
+        return self.retestscreenshot_set.exclude(id__in=extract_images_from_markdown([self.body]))
             
     def get_viewable(user):
         """Returns all viewable retest campaign hits"""

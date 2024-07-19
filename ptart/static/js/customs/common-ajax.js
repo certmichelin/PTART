@@ -463,7 +463,7 @@ function ajaxUploadRetestScreenshot(successFunction, errorFunction, data, captio
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Screenshot id.
  */
-function ajaxDeleteScreenshot(successFunction, errorFunction, id) {
+function ajaxDeleteRetestScreenshot(successFunction, errorFunction, id) {
     $.ajax({
         url: "/api/retestscreenshot/" + id + "/",
         type: 'DELETE',
@@ -480,7 +480,7 @@ function ajaxDeleteScreenshot(successFunction, errorFunction, id) {
  * @param {*} id ID of the retest hit screenshot.
  * @param {*} order Screenshot new order.
  */
-function ajaxReorderScreenshot(successFunction, errorFunction, id, order) {
+function ajaxReorderRetestScreenshot(successFunction, errorFunction, id, order) {
     $.ajax({
         url: "/api/retestscreenshot/" + id + "/order/" + order + "/",
         data: '{}',

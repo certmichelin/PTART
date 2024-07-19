@@ -530,7 +530,7 @@
 					\end{tabular}}
 				\end{table}
 
-				\VAR{ hit.body | mdtolatex }
+				\VAR{ hit.body | mdtolatexhit }
 			
 				\BLOCK{ for screenshot in hit.get_not_injected_screenshots() }
 					\begin{figure}[H]
@@ -542,7 +542,7 @@
 
 				\BLOCK{ if hit.remediation }
 					\paragraph{Remediation}
-					\VAR{ hit.remediation | mdtolatex }
+					\VAR{ hit.remediation | mdtolatexhit }
 				\BLOCK{ endif }
 			\BLOCK{ endfor }
 			\newpage
@@ -699,7 +699,15 @@
 					\end{tabular}}
 				\end{table}
 
-				\VAR{ retest_hit.body | mdtolatex }
+				\VAR{ retest_hit.body | mdtolatexretesthit }
+
+				\BLOCK{ for screenshot in retest_hit.get_not_injected_screenshots() }
+					\begin{figure}[H]
+						\centering
+						\includegraphics[max width=\textwidth]{./screenshots_retest/\VAR{screenshot.pk}.png}
+						\caption{\VAR{screenshot.caption | escape }}
+					\end{figure}
+				\BLOCK{ endfor }
 		\BLOCK{ endfor }
 		
 		\subsubsection{Conclusion}
