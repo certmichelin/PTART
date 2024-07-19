@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %} {{ retesthit.retest_campaign.name }} | PTART{% endblock %}
+{% load addstr %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:retesthit.retest_campaign.project.pk|addstr:"/summary" sub_text=retesthit.retest_campaign.project third_icon='fa fa-flask' third_url="/retestcampaign/"|addstr:retesthit.retest_campaign.pk|addstr:"/summary" third_text=retesthit.retest_campaign active_icon='' active_text=retesthit.hit.title %}
+        {% include "_include/html/messages.html" %}
+
+        <div class="row">
+            <iframe class="col-lg-6" src="/hit/{{ retesthit.hit.id }}?embedded=True" style="border: none;"></iframe>
+            <div class="col-lg-6">
+                <h5>Retest</h5>            
+                
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="status" class="form-control">
+                        <option value="NT">Not Tested</option>
+                        <option value="NA">Not Applicable</option>
+                        <option value="NF">Not Fixed</option>
+                        <option value="PF">Partially Fixed</option>
+                        <option value="F">Fixed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Body</label>
+                    <textarea class="form-control" rows="5" id="body" style="resize:vertical">{{ retesthit.body }}</textarea>
+                </div>
+                                
+                <input id="id" type="hidden" value="{{ retesthit.id }}" />
+                <input id="campaignId" type="hidden" value="{{ retesthit.retest_campaign.id }}" />
+                <input id="hitId" type="hidden" value="{{ retesthit.hit.id }}" />
+
+                {% if editable == True %}
+                <button id="updateBtn" class="btn btn-outline-primary mb-3">Update</button>
+                <button id="delBtn" class="btn btn-outline-danger mb-3">Delete</button>
+                {% endif %}
+                
+                {% include "_include/html/screenshots.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+{% include '_include/js/deleteItem.html' with item='RetestHit' ajax_function='ajaxDeleteRetestHit' redirect="/retestcampaign/"|addstr:retesthit.retest_campaign.id|addstr:"/summary" %}
+<script>
+    activeMarkdown("body");
+    $('#status option[value={{retesthit.status}}]').attr('selected', 'selected');
+   
+    /**
+     * Retest Hit updation success callback.
+     */
+     function retestHitUpdationSuccess(data) {
+        success($("#messages"), "Retest Hit was Updated!");
+    }
+
+    /**
+     * Update item.
+     */
+    $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateRetestHit(retestHitUpdationSuccess, commonFailure, $("#id").val(), $("#body").val(), $("#status").val(), $("#hitId").val(), $('#campaignId').val());
+    });
+
+    activeBootstapMenuForScreenshots(screenshotMoveUpCallback,screenshotMoveDownCallback);
+
+    /* --------------------------------------------------------------------------------------------------- */
+    /* --------------------------------------- Screenshots Actions --------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
+    apiRoute = "/api/retestscreenshot/png/";
+
+    /**
+     * Override addScreenshot from screenshot.js in order to upload the file on the fly.
+     */
+     function addScreenshot() {
+        var dataURL = $("#screenshotData").val()
+        var caption = $("#screenshotCaption").val()
+        if (dataURL !== "") {
+            ajaxUploadRetestScreenshot(screenshotCreationSuccess, commonFailure, dataURL, caption, $("#id").val());
+        } else {
+            bootbox.alert("No screenshot is pasted!")
+        }
+    }
+
+    /**
+     * Override dropDeleteScreenshot from screenshot.js in order to delete the file on the fly.
+     */
+    function dropDeleteScreenshot(ev) {
+        ev.preventDefault();
+        id = convertMarkdownToId(ev.dataTransfer.getData("text"));
+        ajaxDeleteRetestScreenshot(screenshotDeletionSuccess, commonFailure, id);
+    }
+
+    /**
+     * Screenshot creation success callback.
+     */
+    function screenshotCreationSuccess(data) {
+        createScreenshot(data.id, "/api/retestscreenshot/png/" + data.id + "/", data.caption, data.order);
+        buildContextMenuForScreenshots("screenshot_link_" + data.id, data.id, data.order, $('.screenshot').length, screenshotMoveUpCallback,screenshotMoveDownCallback);
+        var previousBlock = $("#screenshot_link_" + data.id).prev('.screenshot');
+        if (previousBlock.length) {
+            previousBlock.contextMenu('destroy');
+            buildContextMenuForScreenshots(previousBlock.attr('id'),previousBlock.attr('data-screenshot-id'),parseInt(previousBlock.attr('data-screenshot-order'), 10), $('.screenshot').length ,screenshotMoveUpCallback,screenshotMoveDownCallback);
+        }
+        resetScreenshotModal();
+    }
+
+    /**
+     * Screenshot deletion success callback.
+     */
+    function screenshotDeletionSuccess(data) {
+        removeScreenshot(data.id);
+        //Apply reordering on UI.
+        var count = $('.screenshot').length;
+
+        $(".screenshot").each(function() {
+            var order = parseInt($(this).attr('data-screenshot-order'),10)
+            if ( order > data.order) {
+                var newOrder = order - 1;
+                $(this).attr('data-screenshot-order', newOrder);
+
+                //Rebuild context menu.
+                $(this).contextMenu('destroy');
+                buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),newOrder,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+            } else if (order == (data.order - 1)) {
+                $(this).contextMenu('destroy');
+                buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),order,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+            }
+        });
+    }
+
+    /**
+     * Callback to take in account reordering of screenshots.
+     */
+    function screenshotMoveUpSuccess(data) {
+        var currentBlockId = "screenshot_link_" + data.id;
+        var currentBlock = $("#" + currentBlockId);
+        var previousBlock = currentBlock.prev('.screenshot');
+
+        //Change data-order attribute for both elements.
+        currentBlock.attr('data-screenshot-order', data.order);
+        previousBlock.attr('data-screenshot-order', data.order + 1);
+
+        //Change the order in the DOM.
+        moveUpScreenshot(currentBlockId);
+       
+        //Update Context menu.
+        currentBlock.contextMenu('destroy');
+        previousBlock.contextMenu('destroy');
+
+        var count = $('.screenshot').length;
+        buildContextMenuForScreenshots(currentBlock.attr('id'),currentBlock.attr('data-screenshot-id'),parseInt(currentBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+        buildContextMenuForScreenshots(previousBlock.attr('id'),previousBlock.attr('data-screenshot-id'),parseInt(previousBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+    }
+
+    /**
+     * Callback to take in account reordering of screenshots.
+     */
+     function screenshotMoveDownSuccess(data) {
+        var currentBlockId = "screenshot_link_" + data.id;
+        var currentBlock = $("#" + currentBlockId);
+        var nextBlock = currentBlock.next('.screenshot');
+
+        //Change data-order attribute for both elements.
+        currentBlock.attr('data-screenshot-order', data.order);
+        nextBlock.attr('data-screenshot-order', data.order - 1);
+
+        //Change the order in the DOM.
+        moveDownScreenshot(currentBlockId);
+       
+        //Update Context menu.
+        currentBlock.contextMenu('destroy');
+        nextBlock.contextMenu('destroy');
+
+        var count = $('.screenshot').length;
+        buildContextMenuForScreenshots(currentBlock.attr('id'),currentBlock.attr('data-screenshot-id'),parseInt(currentBlock.attr('data-screenshot-order'), 10),count, screenshotMoveUpCallback,screenshotMoveDownCallback);
+        buildContextMenuForScreenshots(nextBlock.attr('id'),nextBlock.attr('data-screenshot-id'),parseInt(nextBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
+    }
+
+    function screenshotMoveUpCallback(screenshotBlockId, screenshotId, order) {
+        ajaxReorderRetestScreenshot(screenshotMoveUpSuccess, commonFailure, screenshotId, order);
+    }
+
+    function screenshotMoveDownCallback(screenshotBlockId, screenshotId, order) {
+        ajaxReorderRetestScreenshot(screenshotMoveDownSuccess, commonFailure, screenshotId, order);
+    }
+</script>
+{% endblock %}

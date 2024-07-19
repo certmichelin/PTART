@@ -82,11 +82,11 @@ In order to enable, the `Chat GPT` console, you just need to enter your api key 
 
 **Preparing PTART environment :**
 
-Python requires Python 3.11 and a few more packages. The simplest way to set up PTART is using [venv](https://docs.python.org/3/library/venv.html). 
+Python requires Python 3.12 and a few more packages. The simplest way to set up PTART is using [venv](https://docs.python.org/3/library/venv.html). 
 
 1. Clone the project and go to the new directory.
-2. Create a new virtual environment and installing dependencies: `python3.11 -m venv venv`. 
-3. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 and pandoc failed to be installed, try `sudo apt-get install libpq-dev` or `brew install postgresql`, `brew install pandoc`)
+2. Create a new virtual environment and installing dependencies: `python3.12 -m venv venv`. 
+3. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 and pandoc failed to be installed, try `sudo apt get install libpq-dev` or `brew install postgresql`, `brew install pandoc`, if rlPyCairo failed to be install, try `sudo apt install libcairo2-dev` or `brew install cairo pkg-config`)
 4. Create the database: `python manage.py migrate`
 5. Create the super user: `python manage.py createsuperuser`
 6. (Optional) Initiate PTART with integrated loaders.
