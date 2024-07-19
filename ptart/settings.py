@@ -1,5 +1,7 @@
 import os
 
+from dotenv import load_dotenv
+
 BANNER = """
 ######  #######    #    ######  ####### 
 #     #    #      # #   #     #    #    
@@ -16,7 +18,10 @@ A Pentest organizer tool for Manual Security Testers
 NAME = "PTART"
 DESCRIPTION = "PTART is a assessment organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise."
 
-VERSION = 1.2
+VERSION = 3.0
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,13 +31,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'f6l3gz5xxeg($j*15%_q8nvx0mvp*9h$$^^!4a_q3-dw*2n(&%'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # Set if production (for static files)
-LIVE = False
+LIVE = str(os.getenv('LIVE'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str(os.getenv('DEBUG'))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -129,12 +134,8 @@ OTP_TOTP_ISSUER = 'PTART'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'ptart/static'),
-)
+STATIC_URL = 'static/'
+STATIC_ROOT = str(os.getenv('STATIC_ROOT'))
 
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
@@ -149,4 +150,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-CHATGPT_API_KEY = "NotConfigured"
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+#API Key for ChatGPT
+CHATGPT_API_KEY = str(os.getenv('CHATGPT_API_KEY'))

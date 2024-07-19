@@ -10,9 +10,10 @@
 
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="/static/css/plugins/font-awesome/all.min.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel=" stylesheet">
-    <link href="/static/css/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel=" stylesheet">
-    <link href="/static/css/plugins/bootstrap-toggle/bootstrap-toggle.min.css" rel=" stylesheet">
+    <link href="/static/css/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link href="/static/css/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="/static/css/plugins/bootstrap-toggle/bootstrap-toggle.min.css" rel="stylesheet">
+    <link href="/static/css/plugins/jquery-contextmenu/jquery-contextmenu.min.css" rel="stylesheet">
     <link href="/static/css/plugins/fancybox/jquery.fancybox.min.css" rel=" stylesheet">
     <link href="/static/css/plugins/select2/select2.min.css" rel="stylesheet">
     <link href="/static/css/plugins/simplemde/simplemde.min.css" rel="stylesheet">
@@ -24,88 +25,90 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    {% if not embedded %}
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
 
-        <a class="navbar-brand" href="/">
-            <img src="/static/img/logo_banner.png" height="25" />
-        </a>
+            <a class="navbar-brand" href="/">
+                <img src="/static/img/logo_banner.png" height="25" />
+            </a>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item dropdown {% if '/project' in request.path %}active{% endif %}">
-                    <a class="nav-link dropdown-toggle"  href="#" id="navbarProjectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-cubes"></i> Projects
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarProjectDropdown">
-                        <a class="dropdown-item" href="/projects/">All</a>
-                        <div class="dropdown-divider"></div>
-                        {% for project in menu_projects %}
-                            <a class="dropdown-item" href="/project/{{ project.id }}/summary">{{ project.name }}</a>
-                        {% endfor %}
-                    </div>
-                </li>
-                
-                <li class="nav-item {% if '/todo' in request.path %}active{% endif %}">
-                    <a class="nav-link" href="/todo"><i class="fa fa-list-ul"></i > My ToDo</a>
-                </li>
-                
-                <li class="nav-item {% if '/hit' in request.path %}active{% endif %}">
-                    <a class="nav-link" href="/hits"><i class="fa fa-bullseye"></i> Hits</a>
-                </li>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown {% if '/project' in request.path %}active{% endif %}">
+                        <a class="nav-link dropdown-toggle"  href="#" id="navbarProjectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-cubes"></i> Projects
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarProjectDropdown">
+                            <a class="dropdown-item" href="/projects/">All</a>
+                            <div class="dropdown-divider"></div>
+                            {% for project in menu_projects %}
+                                <a class="dropdown-item" href="/project/{{ project.id }}/summary">{{ project.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </li>
+                    
+                    <li class="nav-item {% if '/todo' in request.path %}active{% endif %}">
+                        <a class="nav-link" href="/todo"><i class="fa fa-list-ul"></i > My ToDo</a>
+                    </li>
+                    
+                    <li class="nav-item {% if '/hit' in request.path %}active{% endif %}">
+                        <a class="nav-link" href="/hits"><i class="fa fa-bullseye"></i> Hits</a>
+                    </li>
 
-                <li class="nav-item {% if '/archives' in request.path %}active{% endif %}">
-                    <a class="nav-link" href="/archives"><i class="fa fa-university"></i> Archives</a>
-                </li>
+                    <li class="nav-item {% if '/archives' in request.path %}active{% endif %}">
+                        <a class="nav-link" href="/archives"><i class="fa fa-university"></i> Archives</a>
+                    </li>
 
-                <li class="nav-item {% if '/templates' in request.path %}active{% endif %}">
-                    <a class="nav-link" href="/templates"><i class="fa fa-file-code"></i> Templates</a>
-                </li>
+                    <li class="nav-item {% if '/templates' in request.path %}active{% endif %}">
+                        <a class="nav-link" href="/templates"><i class="fa fa-file-code"></i> Templates</a>
+                    </li>
 
-                {% if user.is_staff %}
-                <li class="nav-item {% if '/token' in request.path %}active{% endif %}">
-                    <a class="nav-link" href="/token"><i class="fa fa-user"></i> Token</a>
-                </li>
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-cogs"></i> Administration
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/admin/">Users</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/labels/">Labels</a>
-                        <a class="dropdown-item" href="/tools/">Tools</a>
-                        <a class="dropdown-item" href="/methodologies/">Methodologies</a>
-                        <a class="dropdown-item" href="/modules/">Modules</a>
-                        <a class="dropdown-item" href="/cases/">Cases</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/api/audit">Audit</a>
-                    </div>
-                </li>
-                {% else %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-user"></i> Account
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/account/password/"></i> Change Password</a>
-                        <a class="dropdown-item" href="/token"></i> Token</a>
-                    </div>
-                </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item {% if '/token' in request.path %}active{% endif %}">
+                        <a class="nav-link" href="/token"><i class="fa fa-user"></i> Token</a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-cogs"></i> Administration
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/admin/">Users</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/labels/">Labels</a>
+                            <a class="dropdown-item" href="/tools/">Tools</a>
+                            <a class="dropdown-item" href="/methodologies/">Methodologies</a>
+                            <a class="dropdown-item" href="/modules/">Modules</a>
+                            <a class="dropdown-item" href="/cases/">Cases</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/api/audit">Audit</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user"></i> Account
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/account/password/"></i> Change Password</a>
+                            <a class="dropdown-item" href="/token"></i> Token</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% load getsetting %}
+                {% if "CHATGPT_API_KEY"|getsetting != "" and "CHATGPT_API_KEY"|getsetting != "NotConfigured"  %}
+                    <a href="#chatgptModal" class="btn btn-outline-light" data-backdrop="false" data-toggle="modal">Chat GPT</a>&nbsp;&nbsp;
                 {% endif %}
-            </ul>
-            {% load getsetting %}
-            {% if "CHATGPT_API_KEY"|getsetting != "" and "CHATGPT_API_KEY"|getsetting != "NotConfigured"  %}
-                <a href="#chatgptModal" class="btn btn-outline-light" data-backdrop="false" data-toggle="modal">Chat GPT</a>&nbsp;&nbsp;
-            {% endif %}
-            <a href="/accounts/logout/" class="btn btn-outline-success"><i class="fa fa-power-off"></i> Log Out</a>
-        </div>
-    </nav>
+                <a href="/accounts/logout/" class="btn btn-outline-success"><i class="fa fa-power-off"></i> Log Out</a>
+            </div>
+        </nav>
 
-    {% include "_include/html/chatgpt.html" %}
+        {% include "_include/html/chatgpt.html" %}
+    {% endif %}
     {% block page %}{% endblock %}
 
     <script src="/static/js/jquery-3.4.0.min.js"></script>
@@ -117,6 +120,9 @@
     <script src="/static/js/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.js"></script>
     <script src="/static/js/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
     <script src="/static/js/plugins/bootstrap-toggle/bootstrap-toggle.min.js"></script>
+    <script src="/static/js/plugins/chartjs/chart.js"></script>
+    <script src="/static/js/plugins/contextmenu/jquery.contextMenu.min.js"></script>
+    <script src="/static/js/plugins/contextmenu/jquery.ui.position.js"></script>
     <script src="/static/js/plugins/cookie/jquery.cookie.js"></script>
     <script src="/static/js/plugins/fancybox/jquery.fancybox.min.js"></script>
     <script src="/static/js/plugins/marked/marked.min.js"></script>

@@ -420,6 +420,77 @@ function ajaxDeleteScreenshot(successFunction, errorFunction, id) {
 }
 
 /**
+ * Reorder a screenshot.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} screenshot_id ID of the screenshot.
+ * @param {*} order Screenshot new order.
+ */
+function ajaxReorderScreenshot(successFunction, errorFunction, screenshot_id, order) {
+    $.ajax({
+        url: "/api/screenshot/" + screenshot_id + "/order/" + order + "/",
+        data: '{}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Upload a screenshot for a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} data Base64 image to upload.
+ * @param {*} caption Image caption.
+ * @param {*} retestHitId Hit id.
+ */
+function ajaxUploadRetestScreenshot(successFunction, errorFunction, data, caption, retestHitId) {
+    $.ajax({
+        url: "/api/retestscreenshots/",
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "retest_hit": ' + JSON.stringify(retestHitId) + ' }',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a retest hit screenshot.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Screenshot id.
+ */
+function ajaxDeleteRetestScreenshot(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/retestscreenshot/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Reorder a retest hit screenshot.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id ID of the retest hit screenshot.
+ * @param {*} order Screenshot new order.
+ */
+function ajaxReorderRetestScreenshot(successFunction, errorFunction, id, order) {
+    $.ajax({
+        url: "/api/retestscreenshot/" + id + "/order/" + order + "/",
+        data: '{}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Upload an attachment for a hit.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
@@ -1152,6 +1223,124 @@ function ajaxUpdateRecommendation(successFunction, errorFunction, id, name, body
 function ajaxDeleteRecommendation(successFunction, errorFunction, id) {
     $.ajax({
         url: "/api/recommendation/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Create a retest campaign.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} name Retest campaign name.
+ * @param {*} introduction Retest campaign introduction.
+ * @param {*} conclusion Retest campaign conclusion.
+ * @param {*} start_date Retest campaign start date.
+ * @param {*} end_date Retest campaign end date.
+ * @param {*} project Retest campaign project.
+ */
+function ajaxCreateRetestCampaign(successFunction, errorFunction, name, introduction, conclusion, start_date, end_date, project) {
+    $.ajax({
+        url: "/api/retestcampaigns/",
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a retest campaign.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest campaign id. 
+ * @param {*} name Retest campaign name.
+ * @param {*} introduction Retest campaign introduction.
+ * @param {*} conclusion Retest campaign conclusion.
+ * @param {*} start_date Retest campaign start date.
+ * @param {*} end_date Retest campaign end date.
+ * @param {*} project Retest campaign project.
+ */
+function ajaxUpdateRetestCampaign(successFunction, errorFunction, id, name, introduction, conclusion, start_date, end_date, project) {
+    $.ajax({
+        url: "/api/retestcampaign/" + id + "/",
+        data: '{"name":' + JSON.stringify(name) + ',"introduction":' + JSON.stringify(introduction) + ',"conclusion":' + JSON.stringify(conclusion)+ ',"start_date":' + JSON.stringify(start_date)+ ',"end_date":' + JSON.stringify(end_date) + ',"project":' + JSON.stringify(project) + '}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a retest campaign.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest campaign id.
+ */
+function ajaxDeleteRetestCampaign(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/retestcampaign/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Create a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} body Retest hit body.
+ * @param {*} status Retest hit status.
+ * @param {*} hit Retest hit hit.
+ * @param {*} retestcampaign Retest hit campaign.
+ */
+function ajaxCreateRetestHit(successFunction, errorFunction, body, status, hit, retestcampaign) {
+    $.ajax({
+        url: "/api/retesthits/",
+        data: '{"body":' + JSON.stringify(body) + ',"status":' + JSON.stringify(status) + ',"hit":' + JSON.stringify(hit) + ',"retest_campaign":' + JSON.stringify(retestcampaign) + '}',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest hit id. 
+ * @param {*} body Retest hit body.
+ * @param {*} status Retest hit status.
+ * @param {*} hit Retest hit hit.
+ * @param {*} retestcampaign Retest hit campaign.
+ */
+function ajaxUpdateRetestHit(successFunction, errorFunction, id, body, status, hit, retestcampaign) {
+    $.ajax({
+        url: "/api/retesthit/" + id + "/",
+        data: '{"body":' + JSON.stringify(body) + ',"status":' + JSON.stringify(status) + ',"hit":' + JSON.stringify(hit) + ',"retest_campaign":' + JSON.stringify(retestcampaign) + '}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest hit id.
+ */
+function ajaxDeleteRetestHit(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/retesthit/" + id + "/",
         type: 'DELETE',
         success: successFunction,
         error: errorFunction

@@ -11,15 +11,24 @@
 
         <div id="screenshots">
             {% for screenshot in hit.screenshot_set.all %}
-                <a id="screenshot_link_{{screenshot.id}}" data-fancybox="gallery" href="/api/screenshot/png/{{screenshot.pk}}/" class="screenshot" ondragstart="dragStart(event)" ondragend="dragStop(event)" data-toggle="tooltip" data-placement="left" title="{{screenshot.caption}}">
-                    <img id="screenshot_{{screenshot.id}}" class="screenshot_data screenshot_gallery" src="/api/screenshot/png/{{screenshot.pk}}/" />
+                <a id="screenshot_link_{{screenshot.id}}" href="/api/screenshot/png/{{screenshot.pk}}/" class="screenshot" 
+                ondragstart="dragScreenshotStart(event)" ondragend="dragScreenshotStop(event)" 
+                data-toggle="tooltip" data-placement="left" title="{{screenshot.caption}}" data-fancybox="gallery" data-screenshot-id="{{screenshot.id}}" data-screenshot-order="{{screenshot.order}}">
+                    <img id="screenshot_{{screenshot.id}}" alt="Screenshot not found" class="screenshot_data screenshot_gallery" src="/api/screenshot/png/{{screenshot.pk}}/" />
+                </a>
+            {% endfor %}
+            {% for screenshot in retesthit.retestscreenshot_set.all %}
+                <a id="screenshot_link_{{screenshot.id}}" href="/api/retestscreenshot/png/{{screenshot.pk}}/" class="screenshot" 
+                ondragstart="dragScreenshotStart(event)" ondragend="dragScreenshotStop(event)" 
+                data-toggle="tooltip" data-placement="left" title="{{screenshot.caption}}" data-fancybox="gallery" data-screenshot-id="{{screenshot.id}}" data-screenshot-order="{{screenshot.order}}">
+                    <img id="screenshot_{{screenshot.id}}" alt="Screenshot not found" class="screenshot_data screenshot_gallery" src="/api/retestscreenshot/png/{{screenshot.pk}}/" />
                 </a>
             {% endfor %}
         </div>
 
         {% if editable == True %}
         <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
-        <button id="deleteZone" type="button" class="btn btn-outline-danger mb-4" ondrop="drop(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
+        <button id="deleteZone" type="button" class="btn btn-outline-danger mb-4" ondrop="dropDeleteScreenshot(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
         
 
         <!-- Push screenshot modal -->

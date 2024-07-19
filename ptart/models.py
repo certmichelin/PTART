@@ -1,7 +1,6 @@
 import base64
-import math
 import os
-import pathlib
+import re
 
 from cvss import CVSS3, CVSS4
 from datetime import datetime
@@ -9,6 +8,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
+from ptart.tools.screenshots import delete_screenshot_file, get_screenshot_raw_data, extract_images_from_markdown, prune_images_from_markdown
+
 
 """Tool model."""
 class Tool(models.Model):
@@ -182,6 +183,13 @@ class Project(models.Model):
         for assessment in self.assessment_set.all() :
             hits.extend(assessment.hits_by_severity(severity))
         return hits
+    
+    def hits(self):
+        """Return all hits for the project."""
+        hits = []
+        for assessment in self.assessment_set.all() :
+            hits.extend(assessment.hit_set.all())
+        return hits
 
     def labels_statistics(self):
         """Compute statistics on labels"""
@@ -284,6 +292,7 @@ class Recommendation(models.Model):
     class Meta:
         ordering = ('name',)
 
+
 """Assesment model."""
 class Assessment(models.Model):
 
@@ -293,9 +302,14 @@ class Assessment(models.Model):
 
     def __str__(self):  
         return self.name
-
+    
     def displayable_hits(self):
+        """Return all displayable hits for the assessment."""
         return self.hit_set.filter(displayable = True)
+    
+    def has_displayable_hits(self):
+        """Verify if the assessment has displayable hits."""
+        return len(self.displayable_hits()) > 0
 
     def p1_hits(self):
         """Return all P1 hits for the assessment."""
@@ -555,6 +569,18 @@ class Hit(models.Model):
                     return "---"
                 else : 
                     return self.cvss4.decimal_value
+                
+    def get_body_without_screenshots(self):
+        """Return the body without the screenshots"""
+        return prune_images_from_markdown(self.body)
+    
+    def get_remediation_without_screenshots(self):
+        """Return the remediation without the screenshots"""
+        return prune_images_from_markdown(self.remediation)
+                    
+    def get_not_injected_screenshots(self):
+        """Return all screenshots that are not injected in the body nor remediation"""
+        return self.screenshot_set.exclude(id__in=extract_images_from_markdown([self.body, self.remediation]))
 
     def get_cvss_string(self):
         """Return the string value of the cvss"""
@@ -648,34 +674,24 @@ class Screenshot(models.Model):
     hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
     screenshot = models.ImageField(upload_to=upload_folder)
     caption = models.CharField(blank=True, max_length=256, default="")
+    order = models.IntegerField(default=-1)
     
     def get_data(self):
         """Get screenshot data in Base64"""
-        encoded_string = ''
-        extension = os.path.splitext(self.screenshot.url)[1]
-        url = self.screenshot.url
-        if url.startswith('.') is False :
-            url = "." + url
-        with open(url, 'rb') as img_f:
-            encoded_string = base64.b64encode(img_f.read())
-        return 'data:image/%s;base64,%s' % (extension,encoded_string.decode("utf-8"))
+        return 'data:image/%s;base64,%s' % (os.path.splitext(self.screenshot.url)[1], base64.b64encode(get_screenshot_raw_data(self.screenshot)).decode("utf-8"))
 
     def get_raw_data(self):
         """Get screenshot data in binary format"""
-        result = ''
-        url = self.screenshot.url
-        if url.startswith('.') is False :
-            url = "." + url
-        with open(url, 'rb') as img_f:
-            result = img_f.read()
-        return result
+        return get_screenshot_raw_data(self.screenshot)
 
     def delete(self):
-        """Delete file related to the screenshot"""
-        url = self.screenshot.url
-        if url.startswith('.') is False :
-            url = "." + url
-        os.remove(url)
+        delete_screenshot_file(self.screenshot)
+
+        #Reorder screenshots after deletion.
+        for screenshot in self.hit.screenshot_set.filter(order__gt=self.order):
+            screenshot.order = screenshot.order - 1
+            screenshot.save(update_fields=['order'])
+            
         super(Screenshot, self).delete()
     
     def get_viewable(user):
@@ -696,6 +712,9 @@ class Screenshot(models.Model):
 
     def __str__(self):  
         return self.screenshot
+    
+    class Meta:
+        ordering = ('order',)
 
 
 """Attachment model."""
@@ -835,7 +854,176 @@ class Severity():
     values = [1,2,3,4,5]
 
 #-----------------------------------------------------------------------------#
-# ASSET MANAGEMENT                                                           #
+# RETEST CAMPAIGN                                                             #
+#-----------------------------------------------------------------------------#
+"""Retest campaign model."""
+class RetestCampaign(models.Model):
+
+    project = models.ForeignKey(Project, null=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    introduction = models.TextField(blank=True, default="")
+    conclusion = models.TextField(blank=True, default="")
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    
+    def get_viewable(user):
+        """Returns all viewable retest campaigns"""
+        return RetestCampaign.objects.filter(project__in=Project.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this retest campaign"""
+        return self.project.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this retest campaign"""
+        return self.project.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this retest campaign"""
+        return self.project.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.name
+    
+    def get_unassigned_hits(self):
+        """Return all unassigned hits for the retest campaign."""
+        assigned_hits = self.get_assigned_hits()
+        return filter(lambda hit: (hit not in assigned_hits) ,self.project.hits())
+
+    def get_assigned_hits(self):
+        """Return all assigned hits for the retest campaign."""
+        hits = []
+        for retesthit in self.retesthit_set.all() :
+            hits.append(retesthit.hit)
+        return hits
+    
+    def get_retest_hits_by_status(self, status):
+        """Filter retest hits by status for the campaign."""
+        return self.retesthit_set.filter(status = status)
+    
+    def get_not_tested_hits(self):
+        """Return all not tested hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NT') 
+    
+    def get_not_applicable_hits(self):
+        """Return all not applicable hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NA') 
+    
+    def get_not_fixed_hits(self):
+        """Return all not fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('NF') 
+    
+    def get_partially_fixed_hits(self):
+        """Return all partially fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('PF') 
+    
+    def get_fixed_hits(self):
+        """Return all fixed hits for the retest campaign."""
+        return self.get_retest_hits_by_status('F') 
+    
+    class Meta:
+        ordering = ('start_date','name',)
+
+"""Retest hit model."""
+class RetestHit(models.Model):
+
+    FIX_STATUS = (
+        ('F', 'Fixed'),
+        ('NF', 'Not Fixed'),
+        ('PF', 'Partially Fixed'),
+        ('NA', 'Not Applicable'),
+        ('NT', 'Not Tested')
+    )
+
+    retest_campaign = models.ForeignKey(RetestCampaign, null=True, on_delete=models.CASCADE)
+    hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
+    status = models.CharField(max_length=2,choices=FIX_STATUS)
+    body = models.TextField(blank=True, default="")
+        
+    def get_not_injected_screenshots(self):
+        """Return all screenshots that are not injected in the body"""
+        return self.retestscreenshot_set.exclude(id__in=extract_images_from_markdown([self.body]))
+            
+    def get_viewable(user):
+        """Returns all viewable retest campaign hits"""
+        return RetestHit.objects.filter(hit__in=Hit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this retest hit"""
+        return self.hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this retest hit"""
+        return self.hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this retest hits"""
+        return (self.retest_campaign.project.id == self.hit.assessment.project.id) and self.hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.id
+
+    class Meta:
+        ordering = ('hit',)
+        constraints = [
+            models.UniqueConstraint(fields=['retest_campaign', 'hit'], name='unique hitretest')
+        ]
+
+
+"""Retest Screenshot model."""
+class RetestScreenshot(models.Model):
+
+    upload_folder = 'screenshots_retest'
+
+    retest_hit = models.ForeignKey(RetestHit, null=True, on_delete=models.CASCADE)
+    screenshot = models.ImageField(upload_to=upload_folder)
+    caption = models.CharField(blank=True, max_length=256, default="")
+    order = models.IntegerField(default=-1)
+    
+    def get_data(self):
+        """Get screenshot data in Base64"""
+        return 'data:image/%s;base64,%s' % (os.path.splitext(self.screenshot.url)[1], base64.b64encode(get_screenshot_raw_data(self.screenshot)).decode("utf-8"))
+
+    def get_raw_data(self):
+        """Get screenshot data in binary format"""
+        return get_screenshot_raw_data(self.screenshot)
+
+    def delete(self):
+        delete_screenshot_file(self.screenshot)
+
+        #Reorder screenshots after deletion.
+        for screenshot in self.retest_hit.retestscreenshot_set.filter(order__gt=self.order):
+            screenshot.order = screenshot.order - 1
+            screenshot.save(update_fields=['order'])
+            
+        super(RetestScreenshot, self).delete()
+    
+    def get_viewable(user):
+        """Returns all viewable screenshots"""
+        return RetestScreenshot.objects.filter(retest_hit__in=RetestHit.get_viewable(user))
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this screenshot"""
+        return self.retest_hit.is_user_can_view(user)
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this screenshot"""
+        return self.retest_hit.is_user_can_edit(user)
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this screenshot"""
+        return self.retest_hit.is_user_can_edit(user)
+
+    def __str__(self):  
+        return self.screenshot
+    
+    class Meta:
+        ordering = ('order',)
+
+
+
+#-----------------------------------------------------------------------------#
+# ASSET MANAGEMENT                                                            #
 #-----------------------------------------------------------------------------#
 
 """Host model."""

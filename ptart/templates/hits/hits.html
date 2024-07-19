@@ -7,6 +7,7 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
+        {% include '_include/html/header.html' with active_icon='fa fa-bullseye' active_text='Hits' %}
         {% include "_include/html/messages.html" %}
 
         <!-- Hit creation form -->
@@ -178,6 +179,8 @@
     var attachmentsUploaded = 0;
     var referencesToCreate = 0;
     var referencesCreated = 0;
+    var hitId = 1;
+    var screenshotIdsMap = new Map();
 
     $('#template').change(function () {
         var template_id = $(this).val();
@@ -207,8 +210,9 @@
      * Hit creation success callback.
      */
     function hitCreationSuccess(data) {
-        //Assign CVSS.
+        hitId = data.id;
 
+        //Assign CVSS.
         {% if cvss_type == 3 %}
         addCVSSv31ToHit(data.id);
         {% else %}
@@ -223,10 +227,16 @@
         if (screenshotsToUpload == 0 && attachmentsToUpload == 0 && referencesToCreate == 0) {
             checkUploadBatchStatus()
         } else {
-            $($('.screenshot_gallery').get().reverse()).each(function () {
-                ajaxUploadScreenshot(screenshotCreationSuccess, screenshotCreationFailure, $(this).attr("src"), $(this).attr("caption"), data.id);
+            var screenshots = $('.screenshot').detach().toArray().sort(function(a, b) {
+                    return parseInt($(a).attr('data-screenshot-order'), 10) - parseInt($(b).attr('data-screenshot-order'),10);
+                });
+            screenshots.forEach(function (screenshot) {
+                ajaxUploadScreenshot(function(response) {
+                    screenshotCreationSuccess(response, screenshot);
+                }, screenshotCreationFailure, $(screenshot).children().first().attr("src"), $(screenshot).children().first().attr("caption"), data.id);
+                sleep(1000); //THis sleep is required for the server to process the screenshot (LockDB issue)
             });
-
+                
             $($('.attachment_gallery').get().reverse()).each(function () {
                 ajaxUploadAttachment(attachmentCreationSuccess, attachmentCreationFailure, $(this).attr("href"), $(this).attr("filename"), data.id);
             });
@@ -237,6 +247,18 @@
 
         }
         success($("#messages"), "Hit was created!");
+    }
+
+    /**
+     * Sleep function.
+     */
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds){
+            break;
+            }
+        }
     }
 
     /**
@@ -254,8 +276,9 @@
     /**
      * Screenshot creation success callback.
      */
-    function screenshotCreationSuccess(data) {
+    function screenshotCreationSuccess(data, screenshot) {
         success($("#messages"), "Screenshot uploaded!");
+        screenshotIdsMap.set($(screenshot).children().first().attr("id").replace("screenshot_",""), data.id);
         ++screenshotsUploaded
         checkUploadBatchStatus();
     }
@@ -310,24 +333,38 @@
      */
     function checkUploadBatchStatus() {
         if (screenshotsUploaded == screenshotsToUpload && attachmentsUploaded == attachmentsToUpload && referencesCreated == referencesToCreate) {
-            $("#title").val("");
-            $("#asset").val("");
-            $("#displayable").prop("checked", true);
-            mdBody.value("");
-            mdRemediation.value("");
-            clearCVSS3();
-            $("#screenshots").empty();
-            $("#attachments").empty();
-            $("#references").empty();
-            $('#labels').val(null).trigger('change');
-            screenshotsToUpload = 0;
-            screenshotsUploaded = 0;
-            attachmentsToUpload = 0;
-            attachmentsUploaded = 0;
-            referencesToCreate = 0;
-            referencesCreated = 0;
-            waitingDialog.hide();
+            screenshotIdsMap.forEach((value, key) => {
+                //Replace id of uploaded screenshot in the body and remediation.
+                mdBody.value(mdBody.value().replaceAll(convertIdToMarkdown(String(key)), convertIdToMarkdown(String(value))));
+                mdRemediation.value(mdRemediation.value().replaceAll(convertIdToMarkdown(String(key)), convertIdToMarkdown(String(value))));
+            });
+            //Update hit with new body and remediation.
+            ajaxUpdateHit(cleanFields, commonFailure, hitId, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#displayable").prop("checked"), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
         }
+    }
+
+    /**
+     * Clean all fields.
+     */
+    function cleanFields(data){
+        hitId = -1;
+        $("#title").val("");
+        $("#asset").val("");
+        $("#displayable").prop("checked", true);
+        mdBody.value("");
+        mdRemediation.value("");
+        clearCVSS3();
+        $("#screenshots").empty();
+        $("#attachments").empty();
+        $("#references").empty();
+        $('#labels').val(null).trigger('change');
+        screenshotsToUpload = 0;
+        screenshotsUploaded = 0;
+        attachmentsToUpload = 0;
+        attachmentsUploaded = 0;
+        referencesToCreate = 0;
+        referencesCreated = 0;
+        waitingDialog.hide();
     }
 
     /**

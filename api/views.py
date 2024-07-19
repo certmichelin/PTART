@@ -25,7 +25,6 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 
 import jinja2
-import json
 import os
 import pypandoc
 import random
@@ -33,11 +32,11 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, RetestHitSerializer, RetestScreenshotSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -245,6 +244,42 @@ def methodologies(request):
 
 @csrf_exempt
 @ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def retestcampaign(request, pk):
+    return item(request, pk, RetestCampaign, RetestCampaignSerializer)
+
+@csrf_exempt  
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def retestcampaigns(request):
+    return items(request, RetestCampaign, RetestCampaignSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+def retesthit(request, pk):
+    return item(request, pk, RetestHit, RetestHitSerializer)
+
+@csrf_exempt  
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def retesthits(request):
+    return items(request, RetestHit, RetestHitSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['DELETE'])
+def retestscreenshot(request, pk):
+    return item(request, pk, RetestScreenshot, RetestScreenshotSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'POST'])
+def retestscreenshots(request):
+    return items(request, RetestScreenshot, RetestScreenshotSerializer)
+
+@csrf_exempt
+@ptart_authentication
 @api_view(['POST'])
 def load_module(request, pk, assessmentId):
     response = None
@@ -270,13 +305,53 @@ def load_module(request, pk, assessmentId):
 
 @csrf_exempt
 @ptart_authentication
+@api_view(['PUT'])
+def screenshot_order(request, pk, order) :
+    response = None
+    try:
+        item = Screenshot.objects.get(pk=pk)
+        if item.is_user_can_edit(request.user) :
+            order = int(order)
+            if item.order == order or order < 0 or order >= item.hit.screenshot_set.count():
+                response = Response(status=status.HTTP_400_BAD_REQUEST)
+            else :
+                #Reorder all the screenshot of the hit.
+                if item.order < order :
+                    #Move the screenshot down.
+                    for screenshot in item.hit.screenshot_set.all():
+                        if(screenshot.order > item.order and screenshot.order <= order) :
+                            screenshot.order = screenshot.order - 1
+                            screenshot.save(update_fields=['order'])
+                else :
+                    #Move the screenshot up.
+                    for screenshot in item.hit.screenshot_set.all():
+                        if(screenshot.order < item.order and screenshot.order >= order) :
+                            screenshot.order = screenshot.order + 1
+                            screenshot.save(update_fields=['order'])
+
+                #Save the new order of the screenshot.
+                item.order = order
+                item.save(update_fields=['order'])
+                response = Response(ScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)     
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Screenshot.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
 @action(methods=['GET'], detail=True)
 def screenshot_raw(request, pk) :
     response = None
     try:
         item = Screenshot.objects.get(pk=pk)
         if item.is_user_can_view(request.user) :
-            response = Response(item.get_raw_data())        
+            raw_data = item.get_raw_data()
+            if raw_data is not None :
+                response = Response(raw_data)
+            else :
+                response = Response(status=status.HTTP_404_NOT_FOUND)     
         else :
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Screenshot.DoesNotExist:
@@ -286,6 +361,67 @@ def screenshot_raw(request, pk) :
     response.accepted_media_type = 'image/png'
     response.renderer_context = {}
     return response
+
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['PUT'])
+def retestscreenshot_order(request, pk, order) :
+    response = None
+    try:
+        item = RetestScreenshot.objects.get(pk=pk)
+        if item.is_user_can_edit(request.user) :
+            order = int(order)
+            if item.order == order or order < 0 or order >= item.retest_hit.retestscreenshot_set.count():
+                response = Response(status=status.HTTP_400_BAD_REQUEST)
+            else :
+                #Reorder all the screenshot of the retest hit.
+                if item.order < order :
+                    #Move the screenshot down.
+                    for screenshot in item.retest_hit.retestscreenshot_set.all():
+                        if(screenshot.order > item.order and screenshot.order <= order) :
+                            screenshot.order = screenshot.order - 1
+                            screenshot.save(update_fields=['order'])
+                else :
+                    #Move the screenshot up.
+                    for screenshot in item.retest_hit.retestscreenshot_set.all():
+                        if(screenshot.order < item.order and screenshot.order >= order) :
+                            screenshot.order = screenshot.order + 1
+                            screenshot.save(update_fields=['order'])
+
+                #Save the new order of the screenshot.
+                item.order = order
+                item.save(update_fields=['order'])
+                response = Response(RetestScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)     
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except RetestScreenshot.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@action(methods=['GET'], detail=True)
+def retestscreenshot_raw(request, pk) :
+    response = None
+    try:
+        item = RetestScreenshot.objects.get(pk=pk)
+        if item.is_user_can_view(request.user) :
+            raw_data = item.get_raw_data()
+            if raw_data is not None :
+                response = Response(raw_data)
+            else :
+                response = Response(status=status.HTTP_404_NOT_FOUND)     
+        else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except RetestScreenshot.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+        
+    response.accepted_renderer = ImageRenderer()
+    response.accepted_media_type = 'image/png'
+    response.renderer_context = {}
+    return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -530,7 +666,7 @@ def project_burp_configuration(request, pk):
                     target = target.replace("/" + file, "")
 
                 #Manage Target
-                target = target.replace(".", "\.")
+                target = target.replace(".", "\\.")
                 target = target.replace("*", ".*")
                 burp_target["host"] = "^" + target + "$"
 
@@ -555,7 +691,11 @@ def project_xlsx(request, pk):
     try:
         project = Project.objects.get(pk=pk)
         if project.is_user_can_view(request.user):
-                        
+
+            # --------------------------------------------------------------------------
+            # Main sheet.
+            # --------------------------------------------------------------------------
+                    
             wb = Workbook()
             ws = wb.active
             ws.title = "Synthesis"
@@ -727,6 +867,10 @@ def project_xlsx(request, pk):
             
             ws.auto_filter.ref = "A6:H{}".format(line)
 
+            # --------------------------------------------------------------------------
+            # Recommendations
+            # --------------------------------------------------------------------------
+
             if project.recommendation_set.all() :
                 recommendations_ws = wb.create_sheet()
                 recommendations_ws.title = "Recommendations"
@@ -749,6 +893,224 @@ def project_xlsx(request, pk):
                     recommendations_ws.cell(row=line, column=1).alignment = Alignment(horizontal='left', vertical='top')
                     recommendations_ws.cell(row=line, column=2).alignment = Alignment(wrap_text=True)
                     line = line + 1
+
+            # --------------------------------------------------------------------------
+            # Restest Campaigns
+            # --------------------------------------------------------------------------
+            if project.retestcampaign_set.all() :
+                retestcampaigns_ws = wb.create_sheet()
+                retestcampaigns_ws.title = "Retest Campaigns"
+
+                #Define column size
+                retestcampaigns_ws.column_dimensions['A'].width = 40
+                retestcampaigns_ws.column_dimensions['B'].width = 15
+                retestcampaigns_ws.column_dimensions['C'].width = 15
+                retestcampaigns_ws.column_dimensions['D'].width = 7
+                retestcampaigns_ws.column_dimensions['E'].width = 7
+                retestcampaigns_ws.column_dimensions['F'].width = 7
+                retestcampaigns_ws.column_dimensions['G'].width = 7
+                retestcampaigns_ws.column_dimensions['H'].width = 7
+
+                #Define column style
+                columnRetestCampaignNTStyle = styles.NamedStyle(name = 'column_retestcampaignnt_style')
+                columnRetestCampaignNTStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNTStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNTStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '36A2EB')
+                columnRetestCampaignNAStyle = styles.NamedStyle(name = 'column_retestcampaignna_style')
+                columnRetestCampaignNAStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNAStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNAStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'E0E0E0')
+                columnRetestCampaignNFStyle = styles.NamedStyle(name = 'column_retestcampaignnf_style')
+                columnRetestCampaignNFStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignNFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignNFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FF3333')
+                columnRetestCampaignPFStyle = styles.NamedStyle(name = 'column_retestcampaignpf_style')
+                columnRetestCampaignPFStyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignPFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignPFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FFB266')
+                columnRetestCampaignFtyle = styles.NamedStyle(name = 'column_retestcampaignf_style')
+                columnRetestCampaignFtyle.alignment = styles.Alignment(horizontal= 'center')
+                columnRetestCampaignFtyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
+                columnRetestCampaignFtyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '33FF33')
+
+                #Add legend data.
+                retestcampaigns_ws['A1'] = "Retest Campaign Summary"
+                retestcampaigns_ws['A2'] = "NT: Not Tested, NA: Not Applicable, NF: Not Fixed, PF: Partially Fixed, F: Fixed"
+                
+                #Beautify legend data 
+                retestcampaigns_ws.merge_cells('A1:H1')
+                retestcampaigns_ws.merge_cells('A2:H2')
+
+                retestcampaigns_ws['A1'].style = projectHeaderStyle
+                retestcampaigns_ws['A2'].style = projectValueStyle
+            
+                #Add column headers.
+                retestcampaigns_ws['A4'] = "Name"
+                retestcampaigns_ws['B4'] = "Start Date"
+                retestcampaigns_ws['C4'] = "End Date"
+                retestcampaigns_ws['D4'] = "# NT"
+                retestcampaigns_ws['E4'] = "# NA"
+                retestcampaigns_ws['F4'] = "# NF"
+                retestcampaigns_ws['G4'] = "# PF"
+                retestcampaigns_ws['H4'] = "# F"
+
+                #Beautify column headers.
+                retestcampaigns_ws['A4'].style = columnHeaderStyle
+                retestcampaigns_ws['B4'].style = columnHeaderStyle
+                retestcampaigns_ws['C4'].style = columnHeaderStyle
+                retestcampaigns_ws['D4'].style = columnHeaderStyle
+                retestcampaigns_ws['E4'].style = columnHeaderStyle
+                retestcampaigns_ws['F4'].style = columnHeaderStyle
+                retestcampaigns_ws['G4'].style = columnHeaderStyle
+                retestcampaigns_ws['H4'].style = columnHeaderStyle
+                
+                #Insert data as retest campaign summary.
+                line = 5
+                for retestcampaign in project.retestcampaign_set.all():        
+                    retestcampaigns_ws.cell(row=line, column=1).value = retestcampaign.name
+                    retestcampaigns_ws.cell(row=line, column=2).value = retestcampaign.start_date
+                    retestcampaigns_ws.cell(row=line, column=3).value = retestcampaign.end_date
+                    retestcampaigns_ws.cell(row=line, column=4).value = len(retestcampaign.get_not_tested_hits())
+                    retestcampaigns_ws.cell(row=line, column=5).value = len(retestcampaign.get_not_applicable_hits())
+                    retestcampaigns_ws.cell(row=line, column=6).value = len(retestcampaign.get_not_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=7).value = len(retestcampaign.get_partially_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=8).value = len(retestcampaign.get_fixed_hits())
+                    retestcampaigns_ws.cell(row=line, column=4).style = columnRetestCampaignNTStyle
+                    retestcampaigns_ws.cell(row=line, column=5).style = columnRetestCampaignNAStyle
+                    retestcampaigns_ws.cell(row=line, column=6).style = columnRetestCampaignNFStyle
+                    retestcampaigns_ws.cell(row=line, column=7).style = columnRetestCampaignPFStyle
+                    retestcampaigns_ws.cell(row=line, column=8).style = columnRetestCampaignFtyle
+                    line = line + 1
+    
+                # --------------------------------------------------------------------------
+                # Create a specific sheet for each retest campaign.
+                # --------------------------------------------------------------------------
+                for retestcampaign in project.retestcampaign_set.all():
+                    retestcampaign_ws = wb.create_sheet()
+                    retestcampaign_ws.title = retestcampaign.name
+
+                    #Define column size
+                    retestcampaign_ws.column_dimensions['A'].width = 28
+                    retestcampaign_ws.column_dimensions['B'].width = 10
+                    retestcampaign_ws.column_dimensions['C'].width = 10
+                    retestcampaign_ws.column_dimensions['D'].width = 17
+                    retestcampaign_ws.column_dimensions['E'].width = 50
+                    retestcampaign_ws.column_dimensions['F'].width = 30
+                    retestcampaign_ws.column_dimensions['G'].width = 12
+                    retestcampaign_ws.column_dimensions['H'].width = 17
+                    retestcampaign_ws.column_dimensions['I'].width = 50
+
+                    #Add project data.
+                    retestcampaign_ws['A1'] = "Campaign Name:"
+                    retestcampaign_ws['A2'] = "Date:"
+                    retestcampaign_ws['B1'] = retestcampaign.name
+                    if retestcampaign.start_date is not None and retestcampaign.end_date is not None :
+                        retestcampaign_ws['B2'] = "From " + str(retestcampaign.start_date) + " To " + str(retestcampaign.end_date)
+                    else :
+                        retestcampaign_ws['B2'] = "Not Defined"
+
+                
+                    #Beautify project data 
+                    retestcampaign_ws.merge_cells('B1:I1')
+                    retestcampaign_ws.merge_cells('B2:I2')
+
+                    retestcampaign_ws['A1'].style = projectHeaderStyle
+                    retestcampaign_ws['A2'].style = projectHeaderStyle
+                    retestcampaign_ws['B1'].style = projectValueStyle
+                    retestcampaign_ws['B2'].style = projectValueStyle
+
+                    #Add column headers.
+                    retestcampaign_ws['A4'] = "Assessment"
+                    retestcampaign_ws['B4'] = "Sev"
+                    retestcampaign_ws['C4'] = "CVSSv3" if project.cvss_type == 3 else "CVSSv4"
+                    retestcampaign_ws['D4'] = "ID"
+                    retestcampaign_ws['E4'] = "Title"
+                    retestcampaign_ws['F4'] = "Asset"
+                    retestcampaign_ws['G4'] = "Fix Compl."
+                    retestcampaign_ws['H4'] = "Status"
+                    retestcampaign_ws['I4'] = "Labels"
+
+                    #Beautify column headers.
+                    retestcampaign_ws['A4'].style = columnHeaderStyle
+                    retestcampaign_ws['B4'].style = columnHeaderStyle
+                    retestcampaign_ws['C4'].style = columnHeaderStyle
+                    retestcampaign_ws['D4'].style = columnHeaderStyle
+                    retestcampaign_ws['E4'].style = columnHeaderStyle
+                    retestcampaign_ws['F4'].style = columnHeaderStyle
+                    retestcampaign_ws['G4'].style = columnHeaderStyle
+                    retestcampaign_ws['H4'].style = columnHeaderStyle
+                    retestcampaign_ws['I4'].style = columnHeaderStyle
+
+                    line = 5
+                    for retest_hit in retestcampaign.retesthit_set.all():        
+                        retestcampaign_ws.cell(row=line, column=1).value = retest_hit.hit.assessment.name
+                        retestcampaign_ws.cell(row=line, column=2).value = "P{}".format(retest_hit.hit.severity)
+                        retestcampaign_ws.cell(row=line, column=3).value = retest_hit.hit.get_cvss_value()
+                        retestcampaign_ws.cell(row=line, column=4).value = retest_hit.hit.get_unique_id()
+                        retestcampaign_ws.cell(row=line, column=5).value = retest_hit.hit.title
+                        retestcampaign_ws.cell(row=line, column=6).value = retest_hit.hit.asset
+                        retestcampaign_ws.cell(row=line, column=7).value = retest_hit.hit.get_fix_complexity_str()
+                        retestcampaign_ws.cell(row=line, column=8).value = retest_hit.get_status_display()
+                        
+                        label_str = ""
+                        previous = ""
+                        for label in retest_hit.hit.labels.all():
+                            label_str = "{}{}{}".format(label_str, previous, label.title)
+                            previous = ", "
+                        retestcampaign_ws.cell(row=line, column=9).value = label_str
+
+                        #Apply style from value.
+                        if retest_hit.hit.severity == 1:
+                            retestcampaign_ws.cell(row=line, column=2).style = criticalStyle
+                        elif retest_hit.hit.severity == 2:
+                            retestcampaign_ws.cell(row=line, column=2).style = highStyle
+                        elif retest_hit.hit.severity == 3:
+                            retestcampaign_ws.cell(row=line, column=2).style = mediumStyle
+                        elif retest_hit.hit.severity == 4:
+                            retestcampaign_ws.cell(row=line, column=2).style = lowStyle
+                        elif retest_hit.hit.severity == 5:
+                            retestcampaign_ws.cell(row=line, column=2).style = infoStyle
+
+                        if retest_hit.hit.fix_complexity == 1:
+                            retestcampaign_ws.cell(row=line, column=7).style = highStyle
+                        elif retest_hit.hit.fix_complexity == 2:
+                            retestcampaign_ws.cell(row=line, column=7).style = mediumStyle
+                        elif retest_hit.hit.fix_complexity == 3:
+                            retestcampaign_ws.cell(row=line, column=7).style = lowStyle
+                        else :
+                            retestcampaign_ws.cell(row=line, column=7).style = infoStyle
+
+                        if retest_hit.status == "NT":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignNTStyle
+                        elif retest_hit.status == "NA":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignNAStyle
+                        elif retest_hit.status == "NF":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignNFStyle
+                        elif retest_hit.status == "PF":
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignPFStyle
+                        else :
+                            retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignFtyle
+
+
+                        #For the moment, CVSS3 and CVSS4 share the same classification values.
+                        try:
+                            if float(retest_hit.hit.get_cvss_value()) < 0.1:
+                                retestcampaign_ws.cell(row=line, column=3).style = infoStyle
+                            elif float(retest_hit.hit.get_cvss_value()) < 4.0:
+                                retestcampaign_ws.cell(row=line, column=3).style = lowStyle
+                            elif float(retest_hit.hit.get_cvss_value()) < 7.0:
+                                retestcampaign_ws.cell(row=line, column=3).style = mediumStyle
+                            elif float(retest_hit.hit.get_cvss_value()) < 9.0:
+                                retestcampaign_ws.cell(row=line, column=3).style = highStyle
+                            else :
+                                retestcampaign_ws.cell(row=line, column=3).style = criticalStyle
+                        except ValueError:
+                            retestcampaign_ws.cell(row=line, column=3).style = infoStyle
+
+                        line = line + 1
+                    
+                    retestcampaign_ws.auto_filter.ref = "A4:H{}".format(line)
+
 
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
@@ -780,7 +1142,27 @@ def project_latex(request, pk):
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
                     for screenshot in hit.screenshot_set.all():
-                        zf.writestr("screenshots/{}.png".format(screenshot.id), screenshot.get_raw_data())
+                        ##Screenshots are stored in the zip file.
+                        raw_data = screenshot.get_raw_data()
+                        if raw_data is not None :
+                            zf.writestr("screenshots/{}.png".format(screenshot.id), raw_data)
+                        else :
+                            with open('reports/resources/default_image.png', 'rb') as file:
+                                default_image_data = file.read()
+                                zf.writestr("screenshots/{}.png".format(screenshot.id), default_image_data)
+
+            #Retrieve Screenshots for retest campaignes.
+            for retestcampaign in project.retestcampaign_set.all():
+                for retest_hit in retestcampaign.retesthit_set.all():        
+                    for screenshot in retest_hit.retestscreenshot_set.all():
+                            ##Screenshots are stored in the zip file.
+                            raw_data = screenshot.get_raw_data()
+                            if raw_data is not None :
+                                zf.writestr("screenshots_retest/{}.png".format(screenshot.id), raw_data)
+                            else :
+                                with open('reports/resources/default_image.png', 'rb') as file:
+                                    default_image_data = file.read()
+                                    zf.writestr("screenshots_retest/{}.png".format(screenshot.id), default_image_data)   
             
             #Retrieve AttackScenarios.
             for attackscenario in project.attackscenario_set.all():
@@ -804,11 +1186,11 @@ def project_latex(request, pk):
             #Custom environment is used to avoid syntax conflict between Jinja & LaTex
             with open('reports/report_latex.tex') as file_:
                 env = jinja2.Environment(
-                    block_start_string = '\BLOCK{',
+                    block_start_string = '\\BLOCK{',
                     block_end_string = '}',
-                    variable_start_string = '\VAR{',
+                    variable_start_string = '\\VAR{',
                     variable_end_string = '}',
-                    comment_start_string = '\#{',
+                    comment_start_string = '\\#{',
                     comment_end_string = '}',
                     line_statement_prefix = '%%',
                     line_comment_prefix = '%#',
@@ -829,15 +1211,50 @@ def project_latex(request, pk):
                         '\\': r'\textbackslash{}'
                     }
                 tex_regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key = lambda item: - len(item))))
+                screenshot_pattern = re.compile(r"(\\pandocbounded\{.*?\}\})")
                 
                 def tex_escape(text):
                     return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
-
+                
+                def markdown_to_latex_common(md, folder, screenshot_class) :
+                    latex = pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                    if folder is not None :
+                        matches = screenshot_pattern.findall(latex)
+                        if matches is not None and len(matches) > 0 :
+                            #Clean the markdown from the screenshots.
+                            latex = latex.replace("\n\\begin{figure}\n\\centering","")
+                            latex = latex.replace("\\caption{ptart\\_screenshot}\n\\end{figure}\n","")
+                            for match in matches :
+                                try :                      
+                                    item = screenshot_class.objects.get(pk=match.split("/")[-2])
+                                    if item.is_user_can_view(request.user) :
+                                        graphic = """
+                                        \\begin{{figure}}[H]
+                                        \\centering
+                                        \\includegraphics[max width=\\textwidth]{{./{}/{}.png}}
+                                        \\caption{{{}}}
+                                        \\end{{figure}}
+                                        """.format(folder, item.id, tex_escape(item.caption))
+                                        latex = latex.replace(match, graphic)
+                                    else :
+                                        latex = latex.replace(match, "")
+                                except Screenshot.DoesNotExist as e:
+                                    latex = latex.replace(match, "")
+                    return latex
+                
                 def markdown_to_latex(md) :
-                    return pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
-                #End of filters.
+                    return markdown_to_latex_common(md, None, None)
+                
+                def markdown_to_latex_hit(md) :
+                    return markdown_to_latex_common(md, "screenshots", Screenshot)
 
+                def markdown_to_latex_retesthit(md) :
+                    return markdown_to_latex_common(md, "screenshots_retest", RetestScreenshot)
+
+                #End of filters.
                 env.filters["mdtolatex"] = markdown_to_latex
+                env.filters["mdtolatexhit"] = markdown_to_latex_hit
+                env.filters["mdtolatexretesthit"] = markdown_to_latex_retesthit
                 env.filters["escape"] = tex_escape
                 template = env.from_string(file_.read())
                 zf.writestr("{}.tex".format(project.name).replace(" ","_"), template.render(project=project, labels=Label.get_viewable(request.user)))     
@@ -1000,10 +1417,8 @@ def audit(request):
             
             ws.auto_filter.ref = "A5:J{}".format(line)
 
-            print("coucouou")
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
-            print("coucouou")
             response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             response['Content-Disposition'] = 'attachment; filename="audit.xlsx"'
             response.accepted_renderer = BinaryRenderer()
