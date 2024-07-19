@@ -438,6 +438,59 @@ function ajaxReorderScreenshot(successFunction, errorFunction, screenshot_id, or
 }
 
 /**
+ * Upload a screenshot for a retest hit.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} data Base64 image to upload.
+ * @param {*} caption Image caption.
+ * @param {*} retestHitId Hit id.
+ */
+function ajaxUploadRetestScreenshot(successFunction, errorFunction, data, caption, retestHitId) {
+    $.ajax({
+        url: "/api/retestscreenshots/",
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "retest_hit": ' + JSON.stringify(retestHitId) + ' }',
+        type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Delete a retest hit screenshot.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Screenshot id.
+ */
+function ajaxDeleteScreenshot(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/retestscreenshot/" + id + "/",
+        type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Reorder a retest hit screenshot.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id ID of the retest hit screenshot.
+ * @param {*} order Screenshot new order.
+ */
+function ajaxReorderScreenshot(successFunction, errorFunction, id, order) {
+    $.ajax({
+        url: "/api/retestscreenshot/" + id + "/order/" + order + "/",
+        data: '{}',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Upload an attachment for a hit.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
