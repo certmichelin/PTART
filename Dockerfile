@@ -6,6 +6,7 @@ RUN mkdir /opt/ptart
 ADD . /opt/ptart
 WORKDIR /opt/ptart
 RUN pip install -r requirements.txt
+RUN cp .env.template .env
 
 #Configure PTART
 RUN python manage.py migrate
