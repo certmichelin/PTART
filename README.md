@@ -85,6 +85,16 @@ In order to enable, the `Chat GPT` console, you just need to enter your api key 
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/15.PNG)
 
+## Quick setup using Docker.
+
+You could easily instatiate a demo version by using our docker version.
+
+```
+docker run -p 8000:8000 -it deddobifu/ptart:3.0.0
+```
+
+Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser and use admin/admin to connect.
+
 ## Installation
 
 **Preparing PTART environment :**
