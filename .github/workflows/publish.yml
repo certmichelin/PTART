@@ -27,5 +27,5 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: deddobifu/PTART:latest
+        tags: deddobifu/ptart:latest
         platforms: linux/amd64,linux/arm64
