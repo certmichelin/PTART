@@ -14,6 +14,7 @@ PTART is a vulnerability organizer tool developed for pentesters, bug bounty hun
 - Generate automatically a nice HTML/PDF RevealJS report.
 - Generate automatically an Excel report to share status with your management.
 - Generate automatically a full report in LaTeX.
+- Plan retest campaigns based upon your initial project.
 - Customize yours labels for categorizing vulnerabilities.
 - Have discussions on a bug using the comment area.
 - Have a common and shared workspace within the team.
@@ -65,6 +66,10 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ##### Attack Scenario
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/10.PNG)
 
+##### Retest Campaign
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/14.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/16.PNG)
+
 ##### Syntax highlight
 ```java
 // Your First Program
@@ -78,6 +83,8 @@ class HelloWorld {
 
 In order to enable, the `Chat GPT` console, you just need to enter your api key in settings.py upon `CHATGPT_API_KEY` key.
 
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/15.PNG)
+
 ## Installation
 
 **Preparing PTART environment :**
@@ -85,11 +92,12 @@ In order to enable, the `Chat GPT` console, you just need to enter your api key 
 Python requires Python 3.12 and a few more packages. The simplest way to set up PTART is using [venv](https://docs.python.org/3/library/venv.html). 
 
 1. Clone the project and go to the new directory.
-2. Create a new virtual environment and installing dependencies: `python3.12 -m venv venv`. 
-3. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 and pandoc failed to be installed, try `sudo apt get install libpq-dev` or `brew install postgresql`, `brew install pandoc`, if rlPyCairo failed to be install, try `sudo apt install libcairo2-dev` or `brew install cairo pkg-config`)
-4. Create the database: `python manage.py migrate`
-5. Create the super user: `python manage.py createsuperuser`
-6. (Optional) Initiate PTART with integrated loaders.
+2. Create a new virtual environment and installing dependencies: `python3.12 -m venv venv`.
+3. Install pandoc (`brew install pandoc` or get the package from [Github](https://github.com/jgm/pandoc/releases)), PTARTv3 was tested with pandoc-3.2.X version, older versions are not supported.
+4. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 failed to be installed try `sudo apt get install libpq-dev` or `brew install postgresql`, if rlPyCairo failed to be install, try `sudo apt install libcairo2-dev` or `brew install cairo pkg-config`)
+5. Create the database: `python manage.py migrate`
+6. Create the super user: `python manage.py createsuperuser`
+7. (Optional) Initiate PTART with integrated loaders.
 
 That's all for the first time. Follow the next steps whenever you want to start PTART.
 
