@@ -67,8 +67,8 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/10.PNG)
 
 ##### Retest Campaign
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/14.PNG)
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/16.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/14.png)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/16.png)
 
 ##### Syntax highlight
 ```java
@@ -83,7 +83,7 @@ class HelloWorld {
 
 In order to enable, the `Chat GPT` console, you just need to enter your api key in settings.py upon `CHATGPT_API_KEY` key.
 
-![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/15.PNG)
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/15.png)
 
 ## Quick setup using Docker.
 
