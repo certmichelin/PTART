@@ -41,6 +41,13 @@ DEBUG = str(os.getenv('DEBUG'))
 
 ALLOWED_HOSTS = ["*"]
 
+CORS_ALLOWED_ORIGINS = [
+    str(os.getenv('PTART_ROOT_URL')),
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    str(os.getenv('PTART_ROOT_URL')),
+]
 
 # Application definition
 
