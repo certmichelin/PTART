@@ -18,7 +18,7 @@ A Pentest organizer tool for Manual Security Testers
 NAME = "PTART"
 DESCRIPTION = "PTART is a assessment organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise."
 
-VERSION = 3.1
+VERSION = 3.0.1
 
 # Load environment variables from .env file
 load_dotenv()
