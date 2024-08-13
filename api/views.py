@@ -787,13 +787,13 @@ def project_json(request, pk):
                             'order': screenshot.order,
                             'screenshot': {
                                 'filename': screenshot.screenshot.name,
-                                'data': screenshot.get_data()
+                                'data': screenshot.get_data().split(',')[1]
                             }
                         } for screenshot in hit.screenshot_set.all()],
                         'attachments': [{
                             'title': attachment.attachment_name.title,
                             'filename': attachment.attachment.name,
-                            'data': attachment.get_data()
+                            'data': attachment.get_data().split(',')[1]
                         } for attachment in hit.attachment_set.all()]
                     } for hit in assessment.displayable_hits()]
                 } for assessment in project.assessment_set.all()],
@@ -822,7 +822,7 @@ def project_json(request, pk):
                             'order': screenshot.order,
                             'screenshot': {
                                 'filename': screenshot.screenshot.name,
-                                'data': screenshot.get_data()
+                                'data': screenshot.get_data().split(',')[1]
                             }
                         } for screenshot in retesthit.retestscreenshot_set.all()]
                     } for retesthit in retestcampaign.retesthit_set.all()]
