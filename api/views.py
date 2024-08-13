@@ -1,40 +1,31 @@
-import base64
 import datetime
-from pprint import pprint
+import os
+import random
+import re
+import zipfile
 
+import jinja2
+import pypandoc
+import requests
 from django.conf import settings
-
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
-
 from django.core.exceptions import ValidationError
-
 from django.http import HttpResponse, JsonResponse
-
 from django.views.decorators.csrf import csrf_exempt
-
+from openpyxl import Workbook, styles
+from openpyxl.styles import Alignment
+from openpyxl.writer.excel import save_virtual_workbook
+from reportlab.graphics import renderPM
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view
 from rest_framework.renderers import BaseRenderer
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-
-from openpyxl import Workbook, styles
-from openpyxl.styles import Alignment
-from openpyxl.writer.excel import save_virtual_workbook
-
 from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
 
-import jinja2
-import os
-import pypandoc
-import random
-import re
-import requests
-import zipfile
-
+from api.decorators import ptart_authentication
 from ptart.models import (
     Flag,
     Hit,
@@ -60,9 +51,6 @@ from ptart.models import (
     RetestHit,
     RetestScreenshot,
 )
-
-from api.decorators import ptart_authentication
-
 from .serializers import (
     FlagSerializer,
     HitSerializer,
