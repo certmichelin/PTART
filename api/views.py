@@ -1,4 +1,7 @@
+import base64
 import datetime
+from pprint import pprint
+
 from django.conf import settings
 
 from django.contrib.auth import authenticate
@@ -6,7 +9,7 @@ from django.contrib.auth.password_validation import validate_password
 
 from django.core.exceptions import ValidationError
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -32,11 +35,18 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, \
+    Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign, \
+    RetestHit, RetestScreenshot
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, RetestHitSerializer, RetestScreenshotSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, \
+    HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, \
+    HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, \
+    LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, \
+    RetestHitSerializer, RetestScreenshotSerializer
+
 
 @csrf_exempt
 @ptart_authentication
@@ -44,11 +54,13 @@ from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, Pr
 def flag(request, pk):
     return item(request, pk, Flag, FlagSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def flags(request):
     return items(request, Flag, FlagSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -56,11 +68,13 @@ def flags(request):
 def hit(request, pk):
     return item(request, pk, Hit, HitSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def hits(request):
     return items(request, Hit, HitSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -68,11 +82,13 @@ def hits(request):
 def attackscenario(request, pk):
     return item(request, pk, AttackScenario, AttackScenarioSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def attackscenarios(request):
     return items(request, AttackScenario, AttackScenarioSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -80,11 +96,13 @@ def attackscenarios(request):
 def recommendation(request, pk):
     return item(request, pk, Recommendation, RecommendationSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def recommendations(request):
     return items(request, Recommendation, RecommendationSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -92,11 +110,13 @@ def recommendations(request):
 def label(request, pk):
     return item(request, pk, Label, LabelSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def labels(request):
     return items(request, Label, LabelSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -104,11 +124,13 @@ def labels(request):
 def tool(request, pk):
     return item(request, pk, Tool, ToolSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def tools(request):
     return items(request, Tool, ToolSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -116,11 +138,13 @@ def tools(request):
 def comment(request, pk):
     return item(request, pk, Comment, CommentSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'DELETE'])
 def hit_reference(request, pk):
     return item(request, pk, HitReference, HitReferenceSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -128,11 +152,13 @@ def hit_reference(request, pk):
 def screenshot(request, pk):
     return item(request, pk, Screenshot, ScreenshotSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def screenshots(request):
     return items(request, Screenshot, ScreenshotSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -140,11 +166,13 @@ def screenshots(request):
 def attachment(request, pk):
     return item(request, pk, Attachment, AttachmentSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def attachments(request):
     return items(request, Attachment, AttachmentSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -152,11 +180,13 @@ def attachments(request):
 def assessment(request, pk):
     return item(request, pk, Assessment, AssessmentSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def assessments(request):
     return items(request, Assessment, AssessmentSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -164,11 +194,13 @@ def assessments(request):
 def host(request, pk):
     return item(request, pk, Host, HostSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def hosts(request):
     return items(request, Host, HostSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -176,11 +208,13 @@ def hosts(request):
 def service(request, pk):
     return item(request, pk, Service, ServiceSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def services(request):
     return items(request, Service, ServiceSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -188,11 +222,13 @@ def services(request):
 def project(request, pk):
     return item(request, pk, Project, ProjectSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def projects(request):
     return items(request, Project, ProjectSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -200,11 +236,13 @@ def projects(request):
 def template(request, pk):
     return item(request, pk, Template, TemplateSerializer)
 
-@csrf_exempt  
+
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def templates(request):
     return items(request, Template, TemplateSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -212,11 +250,13 @@ def templates(request):
 def case(request, pk):
     return item(request, pk, Case, CaseSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def cases(request):
     return items(request, Case, CaseSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -224,11 +264,13 @@ def cases(request):
 def module(request, pk):
     return item(request, pk, Module, ModuleSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def modules(request):
     return items(request, Module, ModuleSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -236,11 +278,13 @@ def modules(request):
 def methodology(request, pk):
     return item(request, pk, Methodology, MethodologySerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -248,11 +292,13 @@ def methodologies(request):
 def retestcampaign(request, pk):
     return item(request, pk, RetestCampaign, RetestCampaignSerializer)
 
-@csrf_exempt  
+
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def retestcampaigns(request):
     return items(request, RetestCampaign, RetestCampaignSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -260,11 +306,13 @@ def retestcampaigns(request):
 def retesthit(request, pk):
     return item(request, pk, RetestHit, RetestHitSerializer)
 
-@csrf_exempt  
+
+@csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def retesthits(request):
     return items(request, RetestHit, RetestHitSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -272,11 +320,13 @@ def retesthits(request):
 def retestscreenshot(request, pk):
     return item(request, pk, RetestScreenshot, RetestScreenshotSerializer)
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['GET', 'POST'])
 def retestscreenshots(request):
     return items(request, RetestScreenshot, RetestScreenshotSerializer)
+
 
 @csrf_exempt
 @ptart_authentication
@@ -285,17 +335,17 @@ def load_module(request, pk, assessmentId):
     response = None
     try:
         assessment = Assessment.objects.get(pk=assessmentId)
-        if assessment.is_user_can_edit(request.user) :
+        if assessment.is_user_can_edit(request.user):
             module = Module.objects.get(pk=pk)
             cases = Case.objects.filter(module=module)
             flags = []
             for case in cases:
                 note = "Module: " + module.name + "\n\n" + case.description
-                flag = Flag(title=case.name, note=note, assessment=assessment, assignee = request.user)
+                flag = Flag(title=case.name, note=note, assessment=assessment, assignee=request.user)
                 flag.save()
                 flags.append(flag)
             response = Response(FlagSerializer(flags, many=True).data, status=status.HTTP_201_CREATED)
-        else :
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Module.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
@@ -303,60 +353,62 @@ def load_module(request, pk, assessmentId):
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['PUT'])
-def screenshot_order(request, pk, order) :
+def screenshot_order(request, pk, order):
     response = None
     try:
         item = Screenshot.objects.get(pk=pk)
-        if item.is_user_can_edit(request.user) :
+        if item.is_user_can_edit(request.user):
             order = int(order)
             if item.order == order or order < 0 or order >= item.hit.screenshot_set.count():
                 response = Response(status=status.HTTP_400_BAD_REQUEST)
-            else :
-                #Reorder all the screenshot of the hit.
-                if item.order < order :
-                    #Move the screenshot down.
+            else:
+                # Reorder all the screenshot of the hit.
+                if item.order < order:
+                    # Move the screenshot down.
                     for screenshot in item.hit.screenshot_set.all():
-                        if(screenshot.order > item.order and screenshot.order <= order) :
+                        if (screenshot.order > item.order and screenshot.order <= order):
                             screenshot.order = screenshot.order - 1
                             screenshot.save(update_fields=['order'])
-                else :
-                    #Move the screenshot up.
+                else:
+                    # Move the screenshot up.
                     for screenshot in item.hit.screenshot_set.all():
-                        if(screenshot.order < item.order and screenshot.order >= order) :
+                        if (screenshot.order < item.order and screenshot.order >= order):
                             screenshot.order = screenshot.order + 1
                             screenshot.save(update_fields=['order'])
 
-                #Save the new order of the screenshot.
+                # Save the new order of the screenshot.
                 item.order = order
                 item.save(update_fields=['order'])
-                response = Response(ScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)     
-        else :
+                response = Response(ScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Screenshot.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
 @action(methods=['GET'], detail=True)
-def screenshot_raw(request, pk) :
+def screenshot_raw(request, pk):
     response = None
     try:
         item = Screenshot.objects.get(pk=pk)
-        if item.is_user_can_view(request.user) :
+        if item.is_user_can_view(request.user):
             raw_data = item.get_raw_data()
-            if raw_data is not None :
+            if raw_data is not None:
                 response = Response(raw_data)
-            else :
-                response = Response(status=status.HTTP_404_NOT_FOUND)     
-        else :
+            else:
+                response = Response(status=status.HTTP_404_NOT_FOUND)
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Screenshot.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
-        
+
     response.accepted_renderer = ImageRenderer()
     response.accepted_media_type = 'image/png'
     response.renderer_context = {}
@@ -366,57 +418,58 @@ def screenshot_raw(request, pk) :
 @csrf_exempt
 @ptart_authentication
 @api_view(['PUT'])
-def retestscreenshot_order(request, pk, order) :
+def retestscreenshot_order(request, pk, order):
     response = None
     try:
         item = RetestScreenshot.objects.get(pk=pk)
-        if item.is_user_can_edit(request.user) :
+        if item.is_user_can_edit(request.user):
             order = int(order)
             if item.order == order or order < 0 or order >= item.retest_hit.retestscreenshot_set.count():
                 response = Response(status=status.HTTP_400_BAD_REQUEST)
-            else :
-                #Reorder all the screenshot of the retest hit.
-                if item.order < order :
-                    #Move the screenshot down.
+            else:
+                # Reorder all the screenshot of the retest hit.
+                if item.order < order:
+                    # Move the screenshot down.
                     for screenshot in item.retest_hit.retestscreenshot_set.all():
-                        if(screenshot.order > item.order and screenshot.order <= order) :
+                        if (screenshot.order > item.order and screenshot.order <= order):
                             screenshot.order = screenshot.order - 1
                             screenshot.save(update_fields=['order'])
-                else :
-                    #Move the screenshot up.
+                else:
+                    # Move the screenshot up.
                     for screenshot in item.retest_hit.retestscreenshot_set.all():
-                        if(screenshot.order < item.order and screenshot.order >= order) :
+                        if (screenshot.order < item.order and screenshot.order >= order):
                             screenshot.order = screenshot.order + 1
                             screenshot.save(update_fields=['order'])
 
-                #Save the new order of the screenshot.
+                # Save the new order of the screenshot.
                 item.order = order
                 item.save(update_fields=['order'])
-                response = Response(RetestScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)     
-        else :
+                response = Response(RetestScreenshotSerializer(item).data, status=status.HTTP_202_ACCEPTED)
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except RetestScreenshot.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
 @action(methods=['GET'], detail=True)
-def retestscreenshot_raw(request, pk) :
+def retestscreenshot_raw(request, pk):
     response = None
     try:
         item = RetestScreenshot.objects.get(pk=pk)
-        if item.is_user_can_view(request.user) :
+        if item.is_user_can_view(request.user):
             raw_data = item.get_raw_data()
-            if raw_data is not None :
+            if raw_data is not None:
                 response = Response(raw_data)
-            else :
-                response = Response(status=status.HTTP_404_NOT_FOUND)     
-        else :
+            else:
+                response = Response(status=status.HTTP_404_NOT_FOUND)
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except RetestScreenshot.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
-        
+
     response.accepted_renderer = ImageRenderer()
     response.accepted_media_type = 'image/png'
     response.renderer_context = {}
@@ -426,23 +479,24 @@ def retestscreenshot_raw(request, pk) :
 @csrf_exempt
 @ptart_authentication
 @action(methods=['GET'], detail=True)
-def attachment_raw(request, pk) :
+def attachment_raw(request, pk):
     response = None
     try:
         item = Attachment.objects.get(pk=pk)
-        if item.is_user_can_view(request.user) :
+        if item.is_user_can_view(request.user):
             response = Response(item.get_raw_data())
             response.content_type = "application/octet-stream"
             response['Content-Disposition'] = 'attachment; filename=' + item.attachment_name
-        else :
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Attachment.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
-        
+
     response.accepted_renderer = BinaryRenderer()
     response.accepted_media_type = 'application/octet-stream'
     response.renderer_context = {}
     return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -453,9 +507,10 @@ def cvss3(request):
         cvss = Cvss3(**serializer.validated_data)
         cvss.compute_cvss_value()
         response = Response(Cvss3Serializer(cvss).data, status=status.HTTP_201_CREATED)
-    else :
+    else:
         response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -466,91 +521,94 @@ def cvss4(request):
         cvss = Cvss4(**serializer.validated_data)
         cvss.compute_cvss_value()
         response = Response(Cvss4Serializer(cvss).data, status=status.HTTP_201_CREATED)
-    else :
+    else:
         response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
-@api_view(['POST','DELETE'])
+@api_view(['POST', 'DELETE'])
 def cvss3_hit(request, pk):
     response = None
     try:
         hit = Hit.objects.get(pk=pk)
         if hit.is_user_can_edit(request.user):
-            
+
             if request.method == 'DELETE':
-                #Delete the cvss attached to the hit.
-                if hit.cvss3 is not None :
+                # Delete the cvss attached to the hit.
+                if hit.cvss3 is not None:
                     Cvss3.objects.get(pk=hit.cvss3.id).delete()
                 response = Response(status=status.HTTP_200_OK)
 
-            else :
+            else:
                 serializer = Cvss3Serializer(data=request.data)
                 if serializer.is_valid():
-                    #Create the new CVSS.
+                    # Create the new CVSS.
                     serializer.save()
                     cvss = Cvss3.objects.get(pk=serializer.data["id"])
                     cvss.compute_cvss_value()
                     cvss.save(update_fields=['decimal_value'])
 
-                    #This condition prevent memory leak in DB.
-                    if hit.cvss3 is not None : 
+                    # This condition prevent memory leak in DB.
+                    if hit.cvss3 is not None:
                         Cvss3.objects.get(pk=hit.cvss3.id).delete()
 
                     hit.cvss3 = cvss
                     hit.save(update_fields=['cvss3'])
                     response = Response(status=status.HTTP_201_CREATED)
-                else :
-                    response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-        else :
+                else:
+                    response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Hit.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
-@api_view(['POST','DELETE'])
+@api_view(['POST', 'DELETE'])
 def cvss4_hit(request, pk):
     response = None
     try:
         hit = Hit.objects.get(pk=pk)
         if hit.is_user_can_edit(request.user):
-            
+
             if request.method == 'DELETE':
-                #Delete the cvss attached to the hit.
-                if hit.cvss4 is not None :
+                # Delete the cvss attached to the hit.
+                if hit.cvss4 is not None:
                     Cvss4.objects.get(pk=hit.cvss4.id).delete()
                 response = Response(status=status.HTTP_200_OK)
 
-            else :
+            else:
                 serializer = Cvss4Serializer(data=request.data)
                 if serializer.is_valid():
-                    #Create the new CVSS.
+                    # Create the new CVSS.
                     serializer.save()
                     cvss = Cvss4.objects.get(pk=serializer.data["id"])
                     cvss.compute_cvss_value()
                     cvss.save(update_fields=['decimal_value'])
 
-                    #This condition prevent memory leak in DB.
-                    if hit.cvss4 is not None : 
+                    # This condition prevent memory leak in DB.
+                    if hit.cvss4 is not None:
                         Cvss4.objects.get(pk=hit.cvss4.id).delete()
 
                     hit.cvss4 = cvss
                     hit.save(update_fields=['cvss4'])
                     response = Response(status=status.HTTP_201_CREATED)
-                else :
-                    response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-        else :
+                else:
+                    response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Hit.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
-@api_view(['POST','GET'])
+@api_view(['POST', 'GET'])
 def comments(request, pk):
     response = None
     try:
@@ -558,21 +616,21 @@ def comments(request, pk):
         if request.method == 'GET':
             if hit.is_user_can_view(request.user):
                 response = Response(CommentSerializer(hit.comment_set.all(), many=True).data)
-            else :
+            else:
                 response = Response(status=status.HTTP_403_FORBIDDEN)
-        else :
+        else:
             text = request.data["text"]
-            if text is not None and text.strip() :
+            if text is not None and text.strip():
                 try:
-                    comment = Comment(text=text, hit=hit, author = request.user)
+                    comment = Comment(text=text, hit=hit, author=request.user)
                     if comment.is_user_can_create(request.user):
                         comment.save()
                         response = Response(CommentSerializer(comment).data, status=status.HTTP_200_OK)
-                    else :
+                    else:
                         response = Response(status=status.HTTP_403_FORBIDDEN)
                 except Hit.DoesNotExist:
                     response = Response(status=status.HTTP_404_NOT_FOUND)
-            else :
+            else:
                 response = Response(status=status.HTTP_400_BAD_REQUEST)
     except Hit.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
@@ -581,7 +639,7 @@ def comments(request, pk):
 
 @csrf_exempt
 @ptart_authentication
-@api_view(['POST','GET'])
+@api_view(['POST', 'GET'])
 def hit_references(request, pk):
     response = None
     try:
@@ -589,31 +647,32 @@ def hit_references(request, pk):
         if request.method == 'GET':
             if hit.is_user_can_view(request.user):
                 response = Response(HitReferenceSerializer(hit.hitreference_set.all(), many=True).data)
-            else :
+            else:
                 response = Response(status=status.HTTP_403_FORBIDDEN)
-        else :
+        else:
             name = request.data["name"]
             url = request.data["url"]
-            if name is not None and name.strip() and url is not None and url.strip() and url.startswith("http") :
+            if name is not None and name.strip() and url is not None and url.strip() and url.startswith("http"):
                 try:
                     hitreference = HitReference(name=name, url=url, hit=hit)
                     if hitreference.is_user_can_create(request.user):
                         hitreference.save()
                         response = Response(HitReferenceSerializer(hitreference).data, status=status.HTTP_200_OK)
-                    else :
+                    else:
                         response = Response(status=status.HTTP_403_FORBIDDEN)
                 except Hit.DoesNotExist:
                     response = Response(status=status.HTTP_404_NOT_FOUND)
-            else :
+            else:
                 response = Response(status=status.HTTP_400_BAD_REQUEST)
     except Hit.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
 @api_view(['POST'])
-def markFlagAsDone(request, pk) :
+def markFlagAsDone(request, pk):
     response = None
     try:
         flag = Flag.objects.get(pk=pk)
@@ -621,11 +680,12 @@ def markFlagAsDone(request, pk) :
             flag.done = True
             flag.save()
             response = Response(FlagSerializer(flag).data, status=status.HTTP_200_OK)
-        else :
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -635,37 +695,37 @@ def project_burp_configuration(request, pk):
     try:
         project = Project.objects.get(pk=pk)
         if project.is_user_can_view(request.user):
-            configuration = {"target": { "scope": { "advanced_mode": "true"}}}
+            configuration = {"target": {"scope": {"advanced_mode": "true"}}}
             targets = []
-            for target in project.scope.splitlines() :
+            for target in project.scope.splitlines():
                 burp_target = {}
                 burp_target["enabled"] = True
 
-                #Manage protocol
+                # Manage protocol
                 protocol = "any"
-                if target.startswith("https://") :
+                if target.startswith("https://"):
                     protocol = "https"
                     target = target.replace("https://", "")
-                elif target.startswith("http://") :
+                elif target.startswith("http://"):
                     protocol = "http"
                     target = target.replace("http://", "")
                 burp_target["protocol"] = protocol
 
-                #Manage port
-                if ":" in target :
+                # Manage port
+                if ":" in target:
                     port = target.split(":")[1]
-                    if "/" in port :
+                    if "/" in port:
                         port = port.split("/")[0]
-                    burp_target["port"] = "^"+port + "$"
+                    burp_target["port"] = "^" + port + "$"
                     target = target.replace(":" + port, "")
 
-                #Manage file
-                if "/" in target :
+                # Manage file
+                if "/" in target:
                     file = target.partition("/")[2]
                     burp_target["file"] = "^" + file + "$"
                     target = target.replace("/" + file, "")
 
-                #Manage Target
+                # Manage Target
                 target = target.replace(".", "\\.")
                 target = target.replace("*", ".*")
                 burp_target["host"] = "^" + target + "$"
@@ -677,11 +737,110 @@ def project_burp_configuration(request, pk):
             response.accepted_media_type = 'application/json'
             response.renderer_context = {}
             response['Content-Disposition'] = 'attachment; filename=' + project.name + "_burp_configuration.json"
-        else :
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
+
+
+@csrf_exempt
+@ptart_authentication
+@action(methods=['GET'], detail=True)
+def project_json(request, pk):
+    response = None
+    try:
+        project = Project.objects.get(pk=pk)
+        if project.is_user_can_view(request.user):
+            data = {
+                'name': project.name,
+                'executive_summary': project.executive_summary,
+                'engagement_overview': project.engagement_overview,
+                'conclusion': project.conclusion,
+                'scope': project.scope,
+                'client': project.client,
+                'start_date': project.start_date,
+                'end_date': project.end_date,
+                'cvss_type': project.cvss_type,
+                'tools': [tool.name for tool in project.tools.all()],
+                'methodologies': [methodology.name for methodology in project.methodologies.all()],
+                'pentesters': [{
+                    'username': pentester.username,
+                    'first_name': pentester.first_name,
+                    'last_name': pentester.last_name
+                } for pentester in project.pentesters.all()],
+
+                'assessments': [{
+                    'title': assessment.name,
+                    'hits': [{
+                        'title': hit.title,
+                        'body': hit.body,
+                        'remediation': hit.remediation,
+                        'asset': hit.asset,
+                        'severity': hit.severity,
+                        'fix_complexity': hit.fix_complexity,
+                        'cvss_vector': hit.cvss3.get_cvss_string() if project.cvss_type == 3 else hit.cvss4.get_cvss_string(),
+                        'cvss_score': hit.cvss3.decimal_value if project.cvss_type == 3 else hit.cvss4.decimal_value,
+                        'labels': [label.title for label in hit.labels.all()],
+                        'screenshots': [{
+                            'caption': screenshot.caption,
+                            'order': screenshot.order,
+                            'screenshot': {
+                                'filename': screenshot.screenshot.name,
+                                'data': screenshot.get_data()
+                            }
+                        } for screenshot in hit.screenshot_set.all()],
+                        'attachments': [{
+                            'title': attachment.attachment_name.title,
+                            'filename': attachment.attachment.name,
+                            'data': attachment.get_data()
+                        } for attachment in hit.attachment_set.all()]
+                    } for hit in assessment.displayable_hits()]
+                } for assessment in project.assessment_set.all()],
+                'retests': [{
+                    'name': retestcampaign.name,
+                    'introduction': retestcampaign.introduction,
+                    'conclusion': retestcampaign.conclusion,
+                    'start_date': retestcampaign.start_date,
+                    'end_date': retestcampaign.end_date,
+                    'hits': [{
+                        'status': retesthit.status,
+                        'body': retesthit.body,
+                        'original_hit': {
+                            'title': retesthit.hit.title,
+                            'body': retesthit.hit.body,
+                            'remediation': retesthit.hit.remediation,
+                            'asset': retesthit.hit.asset,
+                            'severity': retesthit.hit.severity,
+                            'fix_complexity': retesthit.hit.fix_complexity,
+                            'cvss_vector': retesthit.hit.cvss3.get_cvss_string() if project.cvss_type == 3 else retesthit.hit.cvss4.get_cvss_string(),
+                            'cvss_score': retesthit.hit.cvss3.decimal_value if project.cvss_type == 3 else retesthit.hit.cvss4.decimal_value,
+                            'labels': [label.title for label in retesthit.hit.labels.all()],
+                        },
+                        'screenshots': [{
+                            'caption': screenshot.caption,
+                            'order': screenshot.order,
+                            'screenshot': {
+                                'filename': screenshot.screenshot.name,
+                                'data': screenshot.get_data()
+                            }
+                        } for screenshot in retesthit.retestscreenshot_set.all()]
+                    } for retesthit in retestcampaign.retesthit_set.all()]
+                } for retestcampaign in project.retestcampaign_set.all()]
+            }
+
+            # Prepare HTTP response.
+            response = JsonResponse(data=data)
+            response.content_type = 'application/json'
+            response['Content-Disposition'] = 'attachment; filename=' + project.name + ".json"
+            response.accepted_media_type = 'application/json'
+            response.renderer_context = {}
+        else:
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -695,12 +854,12 @@ def project_xlsx(request, pk):
             # --------------------------------------------------------------------------
             # Main sheet.
             # --------------------------------------------------------------------------
-                    
+
             wb = Workbook()
             ws = wb.active
             ws.title = "Synthesis"
 
-            #Define column size
+            # Define column size
             wb.active.column_dimensions['A'].width = 28
             wb.active.column_dimensions['B'].width = 10
             wb.active.column_dimensions['C'].width = 10
@@ -710,47 +869,46 @@ def project_xlsx(request, pk):
             wb.active.column_dimensions['G'].width = 12
             wb.active.column_dimensions['H'].width = 50
 
-            #Add project data.
+            # Add project data.
             ws['A1'] = "Project Name:"
             ws['A2'] = "Client:"
             ws['A3'] = "Date:"
             ws['A4'] = "Auditors:"
             ws['B1'] = project.name
             ws['B2'] = project.client
-            if project.start_date is not None and project.end_date is not None :
+            if project.start_date is not None and project.end_date is not None:
                 ws['B3'] = "From " + str(project.start_date) + " To " + str(project.end_date)
-            else :
+            else:
                 ws['B3'] = project.added
 
-            
-            #Construct the auditor string
+            # Construct the auditor string
             pentester_str = ""
             previous = ""
             for pentester in project.pentesters.all():
-                pentester_str = "{}{}{} - {} {}".format(pentester_str, previous, pentester.username, pentester.first_name, pentester.last_name)
+                pentester_str = "{}{}{} - {} {}".format(pentester_str, previous, pentester.username,
+                                                        pentester.first_name, pentester.last_name)
                 previous = ", "
             ws['B4'] = pentester_str
 
-            #Beautify project data 
+            # Beautify project data
             ws.merge_cells('B1:H1')
             ws.merge_cells('B2:H2')
             ws.merge_cells('B3:H3')
             ws.merge_cells('B4:H4')
 
-            
-            projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
-            projectHeaderStyle.font = styles.Font(name = 'Calibri', size = 14, bold = True, color = '000000')
-            projectHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
-            projectHeaderStyle.alignment = styles.Alignment(horizontal= 'left')
+            projectHeaderStyle = styles.NamedStyle(name='project_header_style')
+            projectHeaderStyle.font = styles.Font(name='Calibri', size=14, bold=True, color='000000')
+            projectHeaderStyle.fill = styles.PatternFill(patternType='solid', fgColor='00B0F0')
+            projectHeaderStyle.alignment = styles.Alignment(horizontal='left')
             ws['A1'].style = projectHeaderStyle
             ws['A2'].style = projectHeaderStyle
             ws['A3'].style = projectHeaderStyle
             ws['A4'].style = projectHeaderStyle
 
-            projectValueStyle = styles.NamedStyle(name = 'project_value_style')
-            projectValueStyle.font = styles.Font(name = 'Calibri', size = 14, italic = True, color = '000000')
-            projectValueStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
-            projectValueStyle.alignment = styles.Alignment(horizontal= 'left')
+            projectValueStyle = styles.NamedStyle(name='project_value_style')
+            projectValueStyle.font = styles.Font(name='Calibri', size=14, italic=True, color='000000')
+            projectValueStyle.fill = styles.PatternFill(patternType='solid', fgColor='00B0F0')
+            projectValueStyle.alignment = styles.Alignment(horizontal='left')
 
             ws['B1'].style = projectValueStyle
             ws['B2'].style = projectValueStyle
@@ -758,8 +916,7 @@ def project_xlsx(request, pk):
             ws['B4'].style = projectValueStyle
             ws['B3'].number_format = 'YYYY MMM DD'
 
-
-            #Add column header.
+            # Add column header.
             ws['A6'] = "Assessment"
             ws['B6'] = "Sev"
             ws['C6'] = "CVSSv3" if project.cvss_type == 3 else "CVSSv4"
@@ -769,10 +926,10 @@ def project_xlsx(request, pk):
             ws['G6'] = "Fix Compl."
             ws['H6'] = "Labels"
 
-            columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
-            columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
-            columnHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '92D050')
-            columnHeaderStyle.alignment = styles.Alignment(horizontal= 'center')
+            columnHeaderStyle = styles.NamedStyle(name='column_header_style')
+            columnHeaderStyle.font = styles.Font(name='Calibri', size=12, bold=True, color='000000')
+            columnHeaderStyle.fill = styles.PatternFill(patternType='solid', fgColor='92D050')
+            columnHeaderStyle.alignment = styles.Alignment(horizontal='center')
 
             ws['A6'].style = columnHeaderStyle
             ws['B6'].style = columnHeaderStyle
@@ -783,34 +940,34 @@ def project_xlsx(request, pk):
             ws['G6'].style = columnHeaderStyle
             ws['H6'].style = columnHeaderStyle
 
-            #Fill the report
-            criticalStyle = styles.NamedStyle(name = 'critical_style')
-            criticalStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-            criticalStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '343a40')
-            criticalStyle.alignment = styles.Alignment(horizontal= 'center')
+            # Fill the report
+            criticalStyle = styles.NamedStyle(name='critical_style')
+            criticalStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+            criticalStyle.fill = styles.PatternFill(patternType='solid', fgColor='343a40')
+            criticalStyle.alignment = styles.Alignment(horizontal='center')
 
-            highStyle = styles.NamedStyle(name = 'high_style')
-            highStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-            highStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'dc3545')
-            highStyle.alignment = styles.Alignment(horizontal= 'center')
+            highStyle = styles.NamedStyle(name='high_style')
+            highStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+            highStyle.fill = styles.PatternFill(patternType='solid', fgColor='dc3545')
+            highStyle.alignment = styles.Alignment(horizontal='center')
 
-            mediumStyle = styles.NamedStyle(name = 'medium_style')
-            mediumStyle.font = styles.Font(name = 'OCR A Extended', color = '212529')
-            mediumStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'ffc107')
-            mediumStyle.alignment = styles.Alignment(horizontal= 'center')
+            mediumStyle = styles.NamedStyle(name='medium_style')
+            mediumStyle.font = styles.Font(name='OCR A Extended', color='212529')
+            mediumStyle.fill = styles.PatternFill(patternType='solid', fgColor='ffc107')
+            mediumStyle.alignment = styles.Alignment(horizontal='center')
 
-            lowStyle = styles.NamedStyle(name = 'low_style')
-            lowStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-            lowStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '28a745')
-            lowStyle.alignment = styles.Alignment(horizontal= 'center')
+            lowStyle = styles.NamedStyle(name='low_style')
+            lowStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+            lowStyle.fill = styles.PatternFill(patternType='solid', fgColor='28a745')
+            lowStyle.alignment = styles.Alignment(horizontal='center')
 
-            infoStyle = styles.NamedStyle(name = 'info_style')
-            infoStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-            infoStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '6c757d')
-            infoStyle.alignment = styles.Alignment(horizontal= 'center')
+            infoStyle = styles.NamedStyle(name='info_style')
+            infoStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+            infoStyle.fill = styles.PatternFill(patternType='solid', fgColor='6c757d')
+            infoStyle.alignment = styles.Alignment(horizontal='center')
 
             line = 7
-            for assessment in project.assessment_set.all():        
+            for assessment in project.assessment_set.all():
                 for hit in assessment.displayable_hits():
                     ws.cell(row=line, column=1).value = assessment.name
                     ws.cell(row=line, column=2).value = "P{}".format(hit.severity)
@@ -827,7 +984,7 @@ def project_xlsx(request, pk):
                         previous = ", "
                     ws.cell(row=line, column=8).value = label_str
 
-                    #Apply style from value.
+                    # Apply style from value.
                     if hit.severity == 1:
                         ws.cell(row=line, column=2).style = criticalStyle
                     elif hit.severity == 2:
@@ -845,10 +1002,10 @@ def project_xlsx(request, pk):
                         ws.cell(row=line, column=7).style = mediumStyle
                     elif hit.fix_complexity == 3:
                         ws.cell(row=line, column=7).style = lowStyle
-                    else :
+                    else:
                         ws.cell(row=line, column=7).style = infoStyle
 
-                    #For the moment, CVSS3 and CVSS4 share the same classification values.
+                    # For the moment, CVSS3 and CVSS4 share the same classification values.
                     try:
                         if float(hit.get_cvss_value()) < 0.1:
                             ws.cell(row=line, column=3).style = infoStyle
@@ -858,36 +1015,36 @@ def project_xlsx(request, pk):
                             ws.cell(row=line, column=3).style = mediumStyle
                         elif float(hit.get_cvss_value()) < 9.0:
                             ws.cell(row=line, column=3).style = highStyle
-                        else :
+                        else:
                             ws.cell(row=line, column=3).style = criticalStyle
                     except ValueError:
                         ws.cell(row=line, column=3).style = infoStyle
 
                     line = line + 1
-            
+
             ws.auto_filter.ref = "A6:H{}".format(line)
 
             # --------------------------------------------------------------------------
             # Recommendations
             # --------------------------------------------------------------------------
 
-            if project.recommendation_set.all() :
+            if project.recommendation_set.all():
                 recommendations_ws = wb.create_sheet()
                 recommendations_ws.title = "Recommendations"
 
-                #Define column size
+                # Define column size
                 recommendations_ws.column_dimensions['A'].width = 50
                 recommendations_ws.column_dimensions['B'].width = 120
 
                 recommendations_ws['A1'].style = columnHeaderStyle
                 recommendations_ws['B1'].style = columnHeaderStyle
 
-                #Add column header.
+                # Add column header.
                 recommendations_ws['A1'] = "Name"
                 recommendations_ws['B1'] = "Body"
 
                 line = 2
-                for recommendation in project.recommendation_set.all():        
+                for recommendation in project.recommendation_set.all():
                     recommendations_ws.cell(row=line, column=1).value = recommendation.name
                     recommendations_ws.cell(row=line, column=2).value = recommendation.body
                     recommendations_ws.cell(row=line, column=1).alignment = Alignment(horizontal='left', vertical='top')
@@ -897,11 +1054,11 @@ def project_xlsx(request, pk):
             # --------------------------------------------------------------------------
             # Restest Campaigns
             # --------------------------------------------------------------------------
-            if project.retestcampaign_set.all() :
+            if project.retestcampaign_set.all():
                 retestcampaigns_ws = wb.create_sheet()
                 retestcampaigns_ws.title = "Retest Campaigns"
 
-                #Define column size
+                # Define column size
                 retestcampaigns_ws.column_dimensions['A'].width = 40
                 retestcampaigns_ws.column_dimensions['B'].width = 15
                 retestcampaigns_ws.column_dimensions['C'].width = 15
@@ -911,40 +1068,41 @@ def project_xlsx(request, pk):
                 retestcampaigns_ws.column_dimensions['G'].width = 7
                 retestcampaigns_ws.column_dimensions['H'].width = 7
 
-                #Define column style
-                columnRetestCampaignNTStyle = styles.NamedStyle(name = 'column_retestcampaignnt_style')
-                columnRetestCampaignNTStyle.alignment = styles.Alignment(horizontal= 'center')
-                columnRetestCampaignNTStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-                columnRetestCampaignNTStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '36A2EB')
-                columnRetestCampaignNAStyle = styles.NamedStyle(name = 'column_retestcampaignna_style')
-                columnRetestCampaignNAStyle.alignment = styles.Alignment(horizontal= 'center')
-                columnRetestCampaignNAStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-                columnRetestCampaignNAStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'E0E0E0')
-                columnRetestCampaignNFStyle = styles.NamedStyle(name = 'column_retestcampaignnf_style')
-                columnRetestCampaignNFStyle.alignment = styles.Alignment(horizontal= 'center')
-                columnRetestCampaignNFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-                columnRetestCampaignNFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FF3333')
-                columnRetestCampaignPFStyle = styles.NamedStyle(name = 'column_retestcampaignpf_style')
-                columnRetestCampaignPFStyle.alignment = styles.Alignment(horizontal= 'center')
-                columnRetestCampaignPFStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-                columnRetestCampaignPFStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'FFB266')
-                columnRetestCampaignFtyle = styles.NamedStyle(name = 'column_retestcampaignf_style')
-                columnRetestCampaignFtyle.alignment = styles.Alignment(horizontal= 'center')
-                columnRetestCampaignFtyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
-                columnRetestCampaignFtyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '33FF33')
+                # Define column style
+                columnRetestCampaignNTStyle = styles.NamedStyle(name='column_retestcampaignnt_style')
+                columnRetestCampaignNTStyle.alignment = styles.Alignment(horizontal='center')
+                columnRetestCampaignNTStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+                columnRetestCampaignNTStyle.fill = styles.PatternFill(patternType='solid', fgColor='36A2EB')
+                columnRetestCampaignNAStyle = styles.NamedStyle(name='column_retestcampaignna_style')
+                columnRetestCampaignNAStyle.alignment = styles.Alignment(horizontal='center')
+                columnRetestCampaignNAStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+                columnRetestCampaignNAStyle.fill = styles.PatternFill(patternType='solid', fgColor='E0E0E0')
+                columnRetestCampaignNFStyle = styles.NamedStyle(name='column_retestcampaignnf_style')
+                columnRetestCampaignNFStyle.alignment = styles.Alignment(horizontal='center')
+                columnRetestCampaignNFStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+                columnRetestCampaignNFStyle.fill = styles.PatternFill(patternType='solid', fgColor='FF3333')
+                columnRetestCampaignPFStyle = styles.NamedStyle(name='column_retestcampaignpf_style')
+                columnRetestCampaignPFStyle.alignment = styles.Alignment(horizontal='center')
+                columnRetestCampaignPFStyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+                columnRetestCampaignPFStyle.fill = styles.PatternFill(patternType='solid', fgColor='FFB266')
+                columnRetestCampaignFtyle = styles.NamedStyle(name='column_retestcampaignf_style')
+                columnRetestCampaignFtyle.alignment = styles.Alignment(horizontal='center')
+                columnRetestCampaignFtyle.font = styles.Font(name='OCR A Extended', color='FFFFFF')
+                columnRetestCampaignFtyle.fill = styles.PatternFill(patternType='solid', fgColor='33FF33')
 
-                #Add legend data.
+                # Add legend data.
                 retestcampaigns_ws['A1'] = "Retest Campaign Summary"
-                retestcampaigns_ws['A2'] = "NT: Not Tested, NA: Not Applicable, NF: Not Fixed, PF: Partially Fixed, F: Fixed"
-                
-                #Beautify legend data 
+                retestcampaigns_ws[
+                    'A2'] = "NT: Not Tested, NA: Not Applicable, NF: Not Fixed, PF: Partially Fixed, F: Fixed"
+
+                # Beautify legend data
                 retestcampaigns_ws.merge_cells('A1:H1')
                 retestcampaigns_ws.merge_cells('A2:H2')
 
                 retestcampaigns_ws['A1'].style = projectHeaderStyle
                 retestcampaigns_ws['A2'].style = projectValueStyle
-            
-                #Add column headers.
+
+                # Add column headers.
                 retestcampaigns_ws['A4'] = "Name"
                 retestcampaigns_ws['B4'] = "Start Date"
                 retestcampaigns_ws['C4'] = "End Date"
@@ -954,7 +1112,7 @@ def project_xlsx(request, pk):
                 retestcampaigns_ws['G4'] = "# PF"
                 retestcampaigns_ws['H4'] = "# F"
 
-                #Beautify column headers.
+                # Beautify column headers.
                 retestcampaigns_ws['A4'].style = columnHeaderStyle
                 retestcampaigns_ws['B4'].style = columnHeaderStyle
                 retestcampaigns_ws['C4'].style = columnHeaderStyle
@@ -963,10 +1121,10 @@ def project_xlsx(request, pk):
                 retestcampaigns_ws['F4'].style = columnHeaderStyle
                 retestcampaigns_ws['G4'].style = columnHeaderStyle
                 retestcampaigns_ws['H4'].style = columnHeaderStyle
-                
-                #Insert data as retest campaign summary.
+
+                # Insert data as retest campaign summary.
                 line = 5
-                for retestcampaign in project.retestcampaign_set.all():        
+                for retestcampaign in project.retestcampaign_set.all():
                     retestcampaigns_ws.cell(row=line, column=1).value = retestcampaign.name
                     retestcampaigns_ws.cell(row=line, column=2).value = retestcampaign.start_date
                     retestcampaigns_ws.cell(row=line, column=3).value = retestcampaign.end_date
@@ -981,7 +1139,7 @@ def project_xlsx(request, pk):
                     retestcampaigns_ws.cell(row=line, column=7).style = columnRetestCampaignPFStyle
                     retestcampaigns_ws.cell(row=line, column=8).style = columnRetestCampaignFtyle
                     line = line + 1
-    
+
                 # --------------------------------------------------------------------------
                 # Create a specific sheet for each retest campaign.
                 # --------------------------------------------------------------------------
@@ -989,7 +1147,7 @@ def project_xlsx(request, pk):
                     retestcampaign_ws = wb.create_sheet()
                     retestcampaign_ws.title = retestcampaign.name
 
-                    #Define column size
+                    # Define column size
                     retestcampaign_ws.column_dimensions['A'].width = 28
                     retestcampaign_ws.column_dimensions['B'].width = 10
                     retestcampaign_ws.column_dimensions['C'].width = 10
@@ -1000,17 +1158,17 @@ def project_xlsx(request, pk):
                     retestcampaign_ws.column_dimensions['H'].width = 17
                     retestcampaign_ws.column_dimensions['I'].width = 50
 
-                    #Add project data.
+                    # Add project data.
                     retestcampaign_ws['A1'] = "Campaign Name:"
                     retestcampaign_ws['A2'] = "Date:"
                     retestcampaign_ws['B1'] = retestcampaign.name
-                    if retestcampaign.start_date is not None and retestcampaign.end_date is not None :
-                        retestcampaign_ws['B2'] = "From " + str(retestcampaign.start_date) + " To " + str(retestcampaign.end_date)
-                    else :
+                    if retestcampaign.start_date is not None and retestcampaign.end_date is not None:
+                        retestcampaign_ws['B2'] = "From " + str(retestcampaign.start_date) + " To " + str(
+                            retestcampaign.end_date)
+                    else:
                         retestcampaign_ws['B2'] = "Not Defined"
 
-                
-                    #Beautify project data 
+                    # Beautify project data
                     retestcampaign_ws.merge_cells('B1:I1')
                     retestcampaign_ws.merge_cells('B2:I2')
 
@@ -1019,7 +1177,7 @@ def project_xlsx(request, pk):
                     retestcampaign_ws['B1'].style = projectValueStyle
                     retestcampaign_ws['B2'].style = projectValueStyle
 
-                    #Add column headers.
+                    # Add column headers.
                     retestcampaign_ws['A4'] = "Assessment"
                     retestcampaign_ws['B4'] = "Sev"
                     retestcampaign_ws['C4'] = "CVSSv3" if project.cvss_type == 3 else "CVSSv4"
@@ -1030,7 +1188,7 @@ def project_xlsx(request, pk):
                     retestcampaign_ws['H4'] = "Status"
                     retestcampaign_ws['I4'] = "Labels"
 
-                    #Beautify column headers.
+                    # Beautify column headers.
                     retestcampaign_ws['A4'].style = columnHeaderStyle
                     retestcampaign_ws['B4'].style = columnHeaderStyle
                     retestcampaign_ws['C4'].style = columnHeaderStyle
@@ -1042,7 +1200,7 @@ def project_xlsx(request, pk):
                     retestcampaign_ws['I4'].style = columnHeaderStyle
 
                     line = 5
-                    for retest_hit in retestcampaign.retesthit_set.all():        
+                    for retest_hit in retestcampaign.retesthit_set.all():
                         retestcampaign_ws.cell(row=line, column=1).value = retest_hit.hit.assessment.name
                         retestcampaign_ws.cell(row=line, column=2).value = "P{}".format(retest_hit.hit.severity)
                         retestcampaign_ws.cell(row=line, column=3).value = retest_hit.hit.get_cvss_value()
@@ -1051,7 +1209,7 @@ def project_xlsx(request, pk):
                         retestcampaign_ws.cell(row=line, column=6).value = retest_hit.hit.asset
                         retestcampaign_ws.cell(row=line, column=7).value = retest_hit.hit.get_fix_complexity_str()
                         retestcampaign_ws.cell(row=line, column=8).value = retest_hit.get_status_display()
-                        
+
                         label_str = ""
                         previous = ""
                         for label in retest_hit.hit.labels.all():
@@ -1059,7 +1217,7 @@ def project_xlsx(request, pk):
                             previous = ", "
                         retestcampaign_ws.cell(row=line, column=9).value = label_str
 
-                        #Apply style from value.
+                        # Apply style from value.
                         if retest_hit.hit.severity == 1:
                             retestcampaign_ws.cell(row=line, column=2).style = criticalStyle
                         elif retest_hit.hit.severity == 2:
@@ -1077,7 +1235,7 @@ def project_xlsx(request, pk):
                             retestcampaign_ws.cell(row=line, column=7).style = mediumStyle
                         elif retest_hit.hit.fix_complexity == 3:
                             retestcampaign_ws.cell(row=line, column=7).style = lowStyle
-                        else :
+                        else:
                             retestcampaign_ws.cell(row=line, column=7).style = infoStyle
 
                         if retest_hit.status == "NT":
@@ -1088,11 +1246,10 @@ def project_xlsx(request, pk):
                             retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignNFStyle
                         elif retest_hit.status == "PF":
                             retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignPFStyle
-                        else :
+                        else:
                             retestcampaign_ws.cell(row=line, column=8).style = columnRetestCampaignFtyle
 
-
-                        #For the moment, CVSS3 and CVSS4 share the same classification values.
+                        # For the moment, CVSS3 and CVSS4 share the same classification values.
                         try:
                             if float(retest_hit.hit.get_cvss_value()) < 0.1:
                                 retestcampaign_ws.cell(row=line, column=3).style = infoStyle
@@ -1102,17 +1259,16 @@ def project_xlsx(request, pk):
                                 retestcampaign_ws.cell(row=line, column=3).style = mediumStyle
                             elif float(retest_hit.hit.get_cvss_value()) < 9.0:
                                 retestcampaign_ws.cell(row=line, column=3).style = highStyle
-                            else :
+                            else:
                                 retestcampaign_ws.cell(row=line, column=3).style = criticalStyle
                         except ValueError:
                             retestcampaign_ws.cell(row=line, column=3).style = infoStyle
 
                         line = line + 1
-                    
+
                     retestcampaign_ws.auto_filter.ref = "A4:H{}".format(line)
 
-
-            #Prepare HTTP response.
+            # Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
             response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             response['Content-Disposition'] = 'attachment; filename=' + project.name + ".xlsx"
@@ -1121,11 +1277,12 @@ def project_xlsx(request, pk):
             response.renderer_context = {}
 
             wb.close()
-        else :
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -1137,97 +1294,99 @@ def project_latex(request, pk):
         if project.is_user_can_view(request.user):
             response = HttpResponse()
             zf = zipfile.ZipFile(response, 'w')
-            
-            #Retrieve Screenshots.
-            for assessment in project.assessment_set.all():        
+
+            # Retrieve Screenshots.
+            for assessment in project.assessment_set.all():
                 for hit in assessment.displayable_hits():
                     for screenshot in hit.screenshot_set.all():
                         ##Screenshots are stored in the zip file.
                         raw_data = screenshot.get_raw_data()
-                        if raw_data is not None :
+                        if raw_data is not None:
                             zf.writestr("screenshots/{}.png".format(screenshot.id), raw_data)
-                        else :
+                        else:
                             with open('reports/resources/default_image.png', 'rb') as file:
                                 default_image_data = file.read()
                                 zf.writestr("screenshots/{}.png".format(screenshot.id), default_image_data)
 
-            #Retrieve Screenshots for retest campaignes.
+            # Retrieve Screenshots for retest campaignes.
             for retestcampaign in project.retestcampaign_set.all():
-                for retest_hit in retestcampaign.retesthit_set.all():        
+                for retest_hit in retestcampaign.retesthit_set.all():
                     for screenshot in retest_hit.retestscreenshot_set.all():
-                            ##Screenshots are stored in the zip file.
-                            raw_data = screenshot.get_raw_data()
-                            if raw_data is not None :
-                                zf.writestr("screenshots_retest/{}.png".format(screenshot.id), raw_data)
-                            else :
-                                with open('reports/resources/default_image.png', 'rb') as file:
-                                    default_image_data = file.read()
-                                    zf.writestr("screenshots_retest/{}.png".format(screenshot.id), default_image_data)   
-            
-            #Retrieve AttackScenarios.
+                        ##Screenshots are stored in the zip file.
+                        raw_data = screenshot.get_raw_data()
+                        if raw_data is not None:
+                            zf.writestr("screenshots_retest/{}.png".format(screenshot.id), raw_data)
+                        else:
+                            with open('reports/resources/default_image.png', 'rb') as file:
+                                default_image_data = file.read()
+                                zf.writestr("screenshots_retest/{}.png".format(screenshot.id), default_image_data)
+
+                                # Retrieve AttackScenarios.
             for attackscenario in project.attackscenario_set.all():
-                #SVG must be converted to PNG to facilitate integration in LaTeX report.
-                tempSvgFilename = "{}_{}_{}.svg".format(project.id, attackscenario.id,random.randint(0,10000))
-                tempPngFilename = "{}_{}_{}.png".format(project.id, attackscenario.id,random.randint(0,10000))
+                # SVG must be converted to PNG to facilitate integration in LaTeX report.
+                tempSvgFilename = "{}_{}_{}.svg".format(project.id, attackscenario.id, random.randint(0, 10000))
+                tempPngFilename = "{}_{}_{}.png".format(project.id, attackscenario.id, random.randint(0, 10000))
                 f = open(tempSvgFilename, "a")
                 f.write(attackscenario.svg)
                 f.close()
                 drawing = svg2rlg(tempSvgFilename)
-                renderPM.drawToFile(drawing, tempPngFilename, fmt="PNG")    
+                renderPM.drawToFile(drawing, tempPngFilename, fmt="PNG")
                 zf.write(tempPngFilename, "attackscenarios/{}.png".format(attackscenario.id))
                 os.remove(tempSvgFilename)
                 os.remove(tempPngFilename)
 
-            #Add resources for LaTeX
+            # Add resources for LaTeX
             zf.write("reports/resources/companylogo.png", "resources/companylogo.png")
             zf.write("reports/resources/logo.png", "resources/logo.png")
-            
-            #Generate Latex report.
-            #Custom environment is used to avoid syntax conflict between Jinja & LaTex
+
+            # Generate Latex report.
+            # Custom environment is used to avoid syntax conflict between Jinja & LaTex
             with open('reports/report_latex.tex') as file_:
                 env = jinja2.Environment(
-                    block_start_string = '\\BLOCK{',
-                    block_end_string = '}',
-                    variable_start_string = '\\VAR{',
-                    variable_end_string = '}',
-                    comment_start_string = '\\#{',
-                    comment_end_string = '}',
-                    line_statement_prefix = '%%',
-                    line_comment_prefix = '%#',
-                    trim_blocks = True,
-                    autoescape = False,
-                    loader = jinja2.FileSystemLoader(os.path.abspath('.'))
+                    block_start_string='\\BLOCK{',
+                    block_end_string='}',
+                    variable_start_string='\\VAR{',
+                    variable_end_string='}',
+                    comment_start_string='\\#{',
+                    comment_end_string='}',
+                    line_statement_prefix='%%',
+                    line_comment_prefix='%#',
+                    trim_blocks=True,
+                    autoescape=False,
+                    loader=jinja2.FileSystemLoader(os.path.abspath('.'))
                 )
-                
-                #Filters that has been used in the LaTex Report.
+
+                # Filters that has been used in the LaTex Report.
                 escape_tex_table = {
-                        '&': r'\&',
-                        '%': r'\%',
-                        '$': r'\$',
-                        '#': r'\#',
-                        '_': r'\_',
-                        '~': r'\textasciitilde{}',
-                        '^': r'\^{}',
-                        '\\': r'\textbackslash{}'
-                    }
-                tex_regex = re.compile('|'.join(re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key = lambda item: - len(item))))
+                    '&': r'\&',
+                    '%': r'\%',
+                    '$': r'\$',
+                    '#': r'\#',
+                    '_': r'\_',
+                    '~': r'\textasciitilde{}',
+                    '^': r'\^{}',
+                    '\\': r'\textbackslash{}'
+                }
+                tex_regex = re.compile('|'.join(
+                    re.escape(str(key)) for key in sorted(escape_tex_table.keys(), key=lambda item: - len(item))))
                 screenshot_pattern = re.compile(r"(\\pandocbounded\{.*?\}\})")
-                
+
                 def tex_escape(text):
                     return tex_regex.sub(lambda match: escape_tex_table[match.group()], text)
-                
-                def markdown_to_latex_common(md, folder, screenshot_class) :
-                    latex = pypandoc.convert_text(md, 'latex', format='md', extra_args=['--wrap=preserve', '--highlight-style=tango'])
-                    if folder is not None :
+
+                def markdown_to_latex_common(md, folder, screenshot_class):
+                    latex = pypandoc.convert_text(md, 'latex', format='md',
+                                                  extra_args=['--wrap=preserve', '--highlight-style=tango'])
+                    if folder is not None:
                         matches = screenshot_pattern.findall(latex)
-                        if matches is not None and len(matches) > 0 :
-                            #Clean the markdown from the screenshots.
-                            latex = latex.replace("\n\\begin{figure}\n\\centering","")
-                            latex = latex.replace("\\caption{ptart\\_screenshot}\n\\end{figure}\n","")
-                            for match in matches :
-                                try :                      
+                        if matches is not None and len(matches) > 0:
+                            # Clean the markdown from the screenshots.
+                            latex = latex.replace("\n\\begin{figure}\n\\centering", "")
+                            latex = latex.replace("\\caption{ptart\\_screenshot}\n\\end{figure}\n", "")
+                            for match in matches:
+                                try:
                                     item = screenshot_class.objects.get(pk=match.split("/")[-2])
-                                    if item.is_user_can_view(request.user) :
+                                    if item.is_user_can_view(request.user):
                                         graphic = """
                                         \\begin{{figure}}[H]
                                         \\centering
@@ -1236,40 +1395,42 @@ def project_latex(request, pk):
                                         \\end{{figure}}
                                         """.format(folder, item.id, tex_escape(item.caption))
                                         latex = latex.replace(match, graphic)
-                                    else :
+                                    else:
                                         latex = latex.replace(match, "")
                                 except Screenshot.DoesNotExist as e:
                                     latex = latex.replace(match, "")
                     return latex
-                
-                def markdown_to_latex(md) :
+
+                def markdown_to_latex(md):
                     return markdown_to_latex_common(md, None, None)
-                
-                def markdown_to_latex_hit(md) :
+
+                def markdown_to_latex_hit(md):
                     return markdown_to_latex_common(md, "screenshots", Screenshot)
 
-                def markdown_to_latex_retesthit(md) :
+                def markdown_to_latex_retesthit(md):
                     return markdown_to_latex_common(md, "screenshots_retest", RetestScreenshot)
 
-                #End of filters.
+                # End of filters.
                 env.filters["mdtolatex"] = markdown_to_latex
                 env.filters["mdtolatexhit"] = markdown_to_latex_hit
                 env.filters["mdtolatexretesthit"] = markdown_to_latex_retesthit
                 env.filters["escape"] = tex_escape
                 template = env.from_string(file_.read())
-                zf.writestr("{}.tex".format(project.name).replace(" ","_"), template.render(project=project, labels=Label.get_viewable(request.user)))     
+                zf.writestr("{}.tex".format(project.name).replace(" ", "_"),
+                            template.render(project=project, labels=Label.get_viewable(request.user)))
 
-            #Prepare HTTP response.
+                # Prepare HTTP response.
             response.content_type = 'application/zip'
             response['Content-Disposition'] = 'attachment; filename=' + project.name + ".zip"
             response.accepted_renderer = BinaryRenderer()
             response.accepted_media_type = 'application/zip'
             response.renderer_context = {}
-        else :
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -1277,31 +1438,32 @@ def project_latex(request, pk):
 def chatgpt(request):
     response = None
 
-    if settings.CHATGPT_API_KEY != "NotConfigured" :
-        if request.data["question"] != None :
+    if settings.CHATGPT_API_KEY != "NotConfigured":
+        if request.data["question"] != None:
 
             req_response = requests.post(
-                'https://api.openai.com/v1/completions', 
-                json = { 
-                    "prompt" : request.data["question"], 
-                    "max_tokens": 2048, 
+                'https://api.openai.com/v1/completions',
+                json={
+                    "prompt": request.data["question"],
+                    "max_tokens": 2048,
                     "model": "gpt-3.5-turbo-instruct"
-                    }, 
-                headers = {
+                },
+                headers={
                     "Authorization": "Bearer " + settings.CHATGPT_API_KEY,
                     "Content-Type": "application/json"
-                    }
+                }
             )
-            if req_response.status_code == 200 :
+            if req_response.status_code == 200:
                 response = Response(req_response.json()["choices"][0]["text"], status=status.HTTP_200_OK)
-            else :
+            else:
                 response = Response({}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else :
+        else:
             response = Response({}, status=status.HTTP_400_BAD_REQUEST)
-    else :
+    else:
         response = Response({}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
     return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -1310,14 +1472,14 @@ def audit(request):
     response = None
     if not request.user.is_staff:
         response = Response(status=status.HTTP_403_FORBIDDEN)
-    else :
+    else:
         try:
-          
+
             wb = Workbook()
             ws = wb.active
             ws.title = "Audit"
 
-            #Define column size
+            # Define column size
             wb.active.column_dimensions['A'].width = 28
             wb.active.column_dimensions['B'].width = 15
             wb.active.column_dimensions['C'].width = 14
@@ -1329,38 +1491,37 @@ def audit(request):
             wb.active.column_dimensions['I'].width = 9
             wb.active.column_dimensions['J'].width = 9
 
-            #Add project data.
+            # Add project data.
             ws['A1'] = "Audit Report"
             ws['A2'] = "Date:"
             ws['A3'] = "User:"
             ws['B2'] = datetime.datetime.now()
             ws['B3'] = "{} - {} {}".format(request.user.username, request.user.first_name, request.user.last_name)
 
-            #Beautify project data 
+            # Beautify project data
             ws.merge_cells('B1:J1')
             ws.merge_cells('B2:J2')
             ws.merge_cells('B3:J3')
-            
-            projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
-            projectHeaderStyle.font = styles.Font(name = 'Calibri', size = 14, bold = True, color = '000000')
-            projectHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
-            projectHeaderStyle.alignment = styles.Alignment(horizontal= 'left')
+
+            projectHeaderStyle = styles.NamedStyle(name='project_header_style')
+            projectHeaderStyle.font = styles.Font(name='Calibri', size=14, bold=True, color='000000')
+            projectHeaderStyle.fill = styles.PatternFill(patternType='solid', fgColor='00B0F0')
+            projectHeaderStyle.alignment = styles.Alignment(horizontal='left')
             ws['A1'].style = projectHeaderStyle
             ws['A2'].style = projectHeaderStyle
             ws['A3'].style = projectHeaderStyle
 
-            projectValueStyle = styles.NamedStyle(name = 'project_value_style')
-            projectValueStyle.font = styles.Font(name = 'Calibri', size = 14, italic = True, color = '000000')
-            projectValueStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '00B0F0')
-            projectValueStyle.alignment = styles.Alignment(horizontal= 'left')
+            projectValueStyle = styles.NamedStyle(name='project_value_style')
+            projectValueStyle.font = styles.Font(name='Calibri', size=14, italic=True, color='000000')
+            projectValueStyle.fill = styles.PatternFill(patternType='solid', fgColor='00B0F0')
+            projectValueStyle.alignment = styles.Alignment(horizontal='left')
 
             ws['B1'].style = projectValueStyle
             ws['B2'].style = projectValueStyle
             ws['B3'].style = projectValueStyle
             ws['B2'].number_format = 'YYYY MMM DD'
 
-
-            #Add column header.
+            # Add column header.
             ws['A5'] = "Project"
             ws['B5'] = "Client"
             ws['C5'] = "Start Date"
@@ -1372,10 +1533,10 @@ def audit(request):
             ws['I5'] = "#P4"
             ws['J5'] = "#P5"
 
-            columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
-            columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
-            columnHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '92D050')
-            columnHeaderStyle.alignment = styles.Alignment(horizontal= 'center')
+            columnHeaderStyle = styles.NamedStyle(name='column_header_style')
+            columnHeaderStyle.font = styles.Font(name='Calibri', size=12, bold=True, color='000000')
+            columnHeaderStyle.fill = styles.PatternFill(patternType='solid', fgColor='92D050')
+            columnHeaderStyle.alignment = styles.Alignment(horizontal='center')
 
             ws['A5'].style = columnHeaderStyle
             ws['B5'].style = columnHeaderStyle
@@ -1390,23 +1551,23 @@ def audit(request):
 
             line = 6
 
-            for project in  Project.objects.all().order_by('added'):        
-    
+            for project in Project.objects.all().order_by('added'):
+
                 ws.cell(row=line, column=1).value = project.name
                 ws.cell(row=line, column=2).value = project.client
                 ws["C{}".format(line)].number_format = 'YYYY MMM DD'
                 ws["D{}".format(line)].number_format = 'YYYY MMM DD'
                 ws.cell(row=line, column=3).value = project.start_date
                 ws.cell(row=line, column=4).value = project.end_date
-                
-                #Construct the auditor string
+
+                # Construct the auditor string
                 pentester_str = ""
                 previous = ""
                 for pentester in project.pentesters.all():
                     pentester_str = "{}{}{}".format(pentester_str, previous, pentester.username)
                     previous = ", "
                 ws.cell(row=line, column=5).value = pentester_str
-                
+
                 ws.cell(row=line, column=6).value = len(project.p1_hits())
                 ws.cell(row=line, column=7).value = len(project.p2_hits())
                 ws.cell(row=line, column=8).value = len(project.p3_hits())
@@ -1414,10 +1575,10 @@ def audit(request):
                 ws.cell(row=line, column=10).value = len(project.p5_hits())
 
                 line = line + 1
-            
+
             ws.auto_filter.ref = "A5:J{}".format(line)
 
-            #Prepare HTTP response.
+            # Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
             response.content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             response['Content-Disposition'] = 'attachment; filename="audit.xlsx"'
@@ -1430,9 +1591,10 @@ def audit(request):
             response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
+
 @csrf_exempt
 @ptart_authentication
-@api_view(['POST','DELETE'])
+@api_view(['POST', 'DELETE'])
 def manage_token(request):
     """
         Grant or Revoke authentication token.
@@ -1442,14 +1604,15 @@ def manage_token(request):
         response = Response(status=status.HTTP_404_NOT_FOUND)
         if not Token.objects.filter(user=request.user).exists():
             token = Token.objects.create(user=request.user)
-            response = Response({"token" : token.key}, status=status.HTTP_201_CREATED)
-    else :
+            response = Response({"token": token.key}, status=status.HTTP_201_CREATED)
+    else:
         response = Response(status=status.HTTP_404_NOT_FOUND)
         if Token.objects.filter(user=request.user).exists():
             Token.objects.filter(user=request.user).delete()
-            response = Response({"token" : ""}, status=status.HTTP_204_NO_CONTENT)
+            response = Response({"token": ""}, status=status.HTTP_204_NO_CONTENT)
 
     return response
+
 
 @csrf_exempt
 @ptart_authentication
@@ -1463,47 +1626,48 @@ def change_password(request):
     if user is not None:
         password1 = str(request.data["newPassword1"])
         password2 = str(request.data["newPassword2"])
-        if password1 == password2 :
-            try :
+        if password1 == password2:
+            try:
                 validate_password(password1, user)
                 user.set_password(password1)
                 user.save()
                 response = Response({}, status=status.HTTP_204_NO_CONTENT)
             except ValidationError as err:
                 response = Response(err, status=status.HTTP_400_BAD_REQUEST)
-        else :
+        else:
             response = Response({"New passwords are not matching"}, status=status.HTTP_400_BAD_REQUEST)
     return response
- 
+
+
 #
 # CRUD operations for a specific item.
 #
-def item(request, pk, class_name, serializer_name) :
+def item(request, pk, class_name, serializer_name):
     response = None
     try:
         item = class_name.objects.get(pk=pk)
 
         if request.method == 'GET':
-            if item.is_user_can_view(request.user) :
+            if item.is_user_can_view(request.user):
                 response = Response(serializer_name(item).data)
-            else :
+            else:
                 response = Response(status=status.HTTP_403_FORBIDDEN)
         elif request.method == 'PUT' or request.method == 'PATCH':
             serializer = serializer_name(item, data=request.data)
             if serializer.is_valid():
-                if item.is_user_can_edit(request.user) :
+                if item.is_user_can_edit(request.user):
                     serializer.save()
                     response = Response(serializer.data)
-                else :
+                else:
                     response = Response(status=status.HTTP_403_FORBIDDEN)
-            else :
+            else:
                 response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         elif request.method == 'DELETE':
-            if item.is_user_can_edit(request.user) :
+            if item.is_user_can_edit(request.user):
                 response = Response(serializer_name(item).data, status=status.HTTP_200_OK)
                 item.delete()
-            else :
+            else:
                 response = Response(status=status.HTTP_403_FORBIDDEN)
 
     except class_name.DoesNotExist:
@@ -1511,25 +1675,27 @@ def item(request, pk, class_name, serializer_name) :
 
     return response
 
+
 #
 # CRUD operations for a specific list of items.
 #
-def items(request, class_name, serializer_name) :
+def items(request, class_name, serializer_name):
     response = None
     if request.method == 'GET':
         response = Response(serializer_name(class_name.get_viewable(request.user), many=True).data)
     elif request.method == 'POST':
         serializer = serializer_name(data=request.data)
         if serializer.is_valid():
-            if class_name(**serializer.validated_data).is_user_can_create(request.user) :
+            if class_name(**serializer.validated_data).is_user_can_create(request.user):
                 serializer.save()
                 response = Response(serializer.data, status=status.HTTP_201_CREATED)
-            else :
+            else:
                 response = Response(status=status.HTTP_403_FORBIDDEN)
-        else :
+        else:
             response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     return response
+
 
 #
 # Image renderer for Screenshots.
@@ -1538,12 +1704,14 @@ class ImageRenderer(BaseRenderer):
     def render(self, data, media_type='image/png', renderer_context=None):
         return data
 
+
 #
 # JSON renderer for Burp config file.
 #
 class JsonRenderer(BaseRenderer):
     def render(self, data, media_type='application/json', renderer_context=None):
         return data
+
 
 #
 # Binary renderer for Attachments.
