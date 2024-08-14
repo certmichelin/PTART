@@ -771,6 +771,7 @@ def project_json(request, pk):
                 'assessments': [{
                     'title': assessment.name,
                     'hits': [{
+                        'id': hit.get_unique_id(),
                         'title': hit.title,
                         'body': hit.body,
                         'remediation': hit.remediation,
@@ -802,9 +803,11 @@ def project_json(request, pk):
                     'start_date': retestcampaign.start_date,
                     'end_date': retestcampaign.end_date,
                     'hits': [{
+                        'id': f'{retesthit.hit.get_unique_id()}-RT',
                         'status': retesthit.status,
                         'body': retesthit.body,
                         'original_hit': {
+                            'id': retesthit.hit.get_unique_id(),
                             'title': retesthit.hit.title,
                             'body': retesthit.hit.body,
                             'remediation': retesthit.hit.remediation,
