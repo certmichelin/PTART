@@ -1307,8 +1307,8 @@ def project_json(request, pk):
                         'asset': hit.asset,
                         'severity': hit.severity,
                         'fix_complexity': hit.fix_complexity,
-                        'cvss_vector': hit.cvss3.get_cvss_string() if project.cvss_type == 3 else hit.cvss4.get_cvss_string(),
-                        'cvss_score': hit.cvss3.decimal_value if project.cvss_type == 3 else hit.cvss4.decimal_value,
+                        'cvss_vector': (hit.cvss3.get_cvss_string() if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.get_cvss_string() if hit.cvss4 is not None else ""),
+                        'cvss_score': (hit.cvss3.decimal_value if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.decimal_value if hit.cvss4 is not None else ""),
                         'labels': [label.title for label in hit.labels.all()],
                         'screenshots': [{
                             'caption': screenshot.caption,
@@ -1343,8 +1343,8 @@ def project_json(request, pk):
                             'asset': retesthit.hit.asset,
                             'severity': retesthit.hit.severity,
                             'fix_complexity': retesthit.hit.fix_complexity,
-                            'cvss_vector': retesthit.hit.cvss3.get_cvss_string() if project.cvss_type == 3 else retesthit.hit.cvss4.get_cvss_string(),
-                            'cvss_score': retesthit.hit.cvss3.decimal_value if project.cvss_type == 3 else retesthit.hit.cvss4.decimal_value,
+                            'cvss_vector': (retesthit.cvss3.get_cvss_string() if retesthit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.cvss4.get_cvss_string() if retesthit.cvss4 is not None else ""),
+                            'cvss_score': (retesthit.cvss3.decimal_value if retesthit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.cvss4.decimal_value if retesthit.cvss4 is not None else ""),
                             'labels': [label.title for label in retesthit.hit.labels.all()],
                         },
                         'screenshots': [{
