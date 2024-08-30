@@ -99,6 +99,7 @@
                     </li>
                     {% endif %}
                 </ul>
+                <input type="text" class="form-control form-control-sm mr-3" style="width: 180px;" id="HitSearchInput" placeholder="Ex: PTART-2024-00001" aria-label="Search">
                 {% load getsetting %}
                 {% if "CHATGPT_API_KEY"|getsetting != "" and "CHATGPT_API_KEY"|getsetting != "NotConfigured"  %}
                     <a href="#chatgptModal" class="btn btn-outline-light" data-backdrop="false" data-toggle="modal">Chat GPT</a>&nbsp;&nbsp;
@@ -136,6 +137,22 @@
     <script src="/static/js/customs/markdown.js"></script>
     <script src="/static/js/customs/messages.js"></script>
     <script src="/static/js/customs/screenshots.js"></script>
+
+    <script>
+        document.getElementById('HitSearchInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                // Redirect to hit page
+                var id = document.getElementById('HitSearchInput').value.trim();
+                id = id.split('-').pop();
+                id = parseInt(id,10)
+                if (!isNaN(id) && Number.isInteger(id) && id > 0) {
+                    window.location.href = '/hit/' + parseInt(id,10) + '/';
+                }
+            }
+        });
+    </script>
+
     {% block extra_foot %}{% endblock %}
 </body>
 
