@@ -1,4 +1,6 @@
 import datetime
+from pprint import pprint
+
 from django.conf import settings
 
 from django.contrib.auth import authenticate
@@ -1319,7 +1321,7 @@ def project_json(request, pk):
                             }
                         } for screenshot in hit.screenshot_set.all()],
                         'attachments': [{
-                            'title': attachment.attachment_name.title,
+                            'title': attachment.attachment_name.title(),
                             'filename': attachment.attachment.name,
                             'data': attachment.get_data().split(',')[1]
                         } for attachment in hit.attachment_set.all()]
@@ -1343,8 +1345,8 @@ def project_json(request, pk):
                             'asset': retesthit.hit.asset,
                             'severity': retesthit.hit.severity,
                             'fix_complexity': retesthit.hit.fix_complexity,
-                            'cvss_vector': (retesthit.cvss3.get_cvss_string() if retesthit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.cvss4.get_cvss_string() if retesthit.cvss4 is not None else ""),
-                            'cvss_score': (retesthit.cvss3.decimal_value if retesthit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.cvss4.decimal_value if retesthit.cvss4 is not None else ""),
+                            'cvss_vector': (retesthit.hit.cvss3.get_cvss_string() if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.get_cvss_string() if retesthit.hit.cvss4 is not None else ""),
+                            'cvss_score': (retesthit.hit.cvss3.decimal_value if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.decimal_value if retesthit.hit.cvss4 is not None else ""),
                             'labels': [label.title for label in retesthit.hit.labels.all()],
                         },
                         'screenshots': [{
