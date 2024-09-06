@@ -14,6 +14,16 @@
         <div class="row">
             <div class="col-lg-7">
                 <div class="form-group">
+                    <label>Status</label>
+                    <select id="status" class="form-control">
+                        <option value="D"> Draft </option>
+                        <option value="R"> To Review </option>
+                        <option value="F"> To Fix </option>
+                        <option value="V"> Validated </option>
+                        <option value="H"> Hidden </option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Severity</label>
                     <select id="severity" class="form-control">
                         {% for sev in severities %}
@@ -67,9 +77,6 @@
                             selected="selected" {% endif %}>{{ assessment.name }}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="checkbox">
-                    <label><input id="displayable" type="checkbox" {% if True == hit.displayable %} checked{% endif %}>Displayed in report</label>
                 </div>
                 <input id="id" type="hidden" value="{{ hit.id }}" />
                 {% if editable == True %}
@@ -194,7 +201,8 @@
     /* --------------------------------------------------------------------------------------------------- */
     /* ------------------------------------------ Init Page ---------------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
-    /* Select the current severity and fix complexity */$
+    /* Select the current status, severity and fix complexity */$
+    $('#status option[value={{hit.status}}]').attr('selected', 'selected');
     $('#severity option[value={{hit.severity}}]').attr('selected', 'selected');
     $('#fix_complexity option[value={{hit.fix_complexity}}]').attr('selected', 'selected');
 
@@ -246,7 +254,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#displayable").prop("checked"), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#status").val(), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
         {% if cvss_type == 3 %}
         ajaxRemoveCVSSv31(cvssDeletionSuccess, commonFailure, $("#id").val());
         {% else %}

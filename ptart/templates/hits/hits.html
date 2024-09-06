@@ -83,9 +83,6 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="checkbox">
-                    <label><input id="displayable" type="checkbox" checked>Displayed in report</label>
-                </div>
                 <button id="createBtn" class="btn btn-outline-primary mb-4">Submit</button>
 
                 <button onclick="createTemplateBtnClick(false)" class="btn btn-outline-success mb-4">Save as New Template</button>
@@ -339,7 +336,7 @@
                 mdRemediation.value(mdRemediation.value().replaceAll(convertIdToMarkdown(String(key)), convertIdToMarkdown(String(value))));
             });
             //Update hit with new body and remediation.
-            ajaxUpdateHit(cleanFields, commonFailure, hitId, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#displayable").prop("checked"), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
+            ajaxUpdateHit(cleanFields, commonFailure, hitId, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
         }
     }
 
@@ -350,7 +347,6 @@
         hitId = -1;
         $("#title").val("");
         $("#asset").val("");
-        $("#displayable").prop("checked", true);
         mdBody.value("");
         mdRemediation.value("");
         clearCVSS3();
@@ -401,7 +397,7 @@
 
     function createHit() {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#displayable").prop("checked"), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
     }
 
     /**
