@@ -41,7 +41,7 @@ class HitTable(tables.Table):
     project = tables.TemplateColumn('<a href="/project/{{ record.assessment.project.pk}}/summary">{{ record.assessment.project }}</a>', order_by=('assessment.project'))
     assessment = tables.TemplateColumn('<a href="/assessment/{{ record.assessment.pk}}">{{ record.assessment }}</a>')
     fix_complexity = tables.TemplateColumn('<span class="fix-complexity-badge fix-complexity-{{ record.fix_complexity }}">{{ record.get_fix_complexity_str }}</span>')
-    displayable = tables.TemplateColumn('{% if record.displayable == True %} <span class="badge badge-success">Displayed</span> {% else %} <span class="badge badge-danger">Hidden</span> {% endif %}', verbose_name= 'Displayable')
+    status = tables.TemplateColumn('{% if record.status == "D" %} <span class="badge badge-primary">Draft</span>  {% elif record.status == "R" %} <span class="badge badge-warning">To Review</span> {% elif record.status == "F" %} <span class="badge badge-danger">To Fix</span> {% elif record.status == "V" %} <span class="badge badge-success">Validated</span> {% else %} <span class="badge badge-secondary">Hidden</span> {% endif %}', verbose_name= 'Status')
     cvss = tables.TemplateColumn('<span class="cvss3 cvss3-badge cvss3-badge-secondary">{{ record.get_cvss_value }}</span>', verbose_name= 'CVSS')
 
     class Meta:

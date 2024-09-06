@@ -176,7 +176,20 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <a href="/hit/{{ hit.id }}/">{{ hit.title }}</a>
+                                                    {% if hit.status == "D" %}
+                                                        <i class="fa fa-info-circle" style="color: blue;" data-toggle="tooltip" data-placement="left" title="Draft"></i>
+                                                    {% elif hit.status == "R" %}
+                                                        <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="To Review"></i>
+                                                    {% elif hit.status == "F" %}
+                                                        <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="To Fix"></i>
+                                                    {% elif hit.status == "V" %}
+                                                        <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Validated"></i>
+                                                    {% else %}
+                                                        <i class="fa fa-eye-slash" style="color: gray;" data-toggle="tooltip" data-placement="left" title="Hidden"></i>
+                                                    {% endif %}
+                                                    <a href="/hit/{{ hit.id }}/">
+                                                        {{ hit.title }}
+                                                    </a>
                                                 </td>
                                             </tr>
                                             {% endfor %}
