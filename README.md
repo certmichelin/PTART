@@ -8,6 +8,7 @@
 PTART is a vulnerability organizer tool developed for pentesters, bug bounty hunters, anybody who wants to leverage its security expertise. Basically this tool will help you to :
 
 - Report a vulnerabiltity with screenshots, attachments, CVSSv3.1 Score, CVSSv4.0 Score, OWASP top 10 labels in less than 3min.
+- Facilitate reviewing with hit lifecycle.
 - Avoid retyping again and again the same vulnerabilities content by using templates (common and personal).
 - Generate attack scenarios that can be imagined using your findings.
 - Generate ToDo lists from pentest methodologies (OWASP and Wahh are natively included) and assign tasks to a project member.
@@ -79,6 +80,7 @@ class HelloWorld {
 	}
 }
 ```
+
 ##### Chat GPT.
 
 In order to enable, the `Chat GPT` console, you just need to enter your api key in settings.py upon `CHATGPT_API_KEY` key.
