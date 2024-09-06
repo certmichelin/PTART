@@ -510,6 +510,14 @@ class Cvss4(models.Model):
 """Hit model."""
 class Hit(models.Model):
 
+    STATUS_CHOICES = (
+        ('D', 'Draft'),
+        ('R', 'To Review'),
+        ('F', 'To Fix'),
+        ('V', 'Validated'),
+        ('H', 'Hidden')
+    )
+
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True, default="")
     remediation = models.TextField(blank=True, default="")
@@ -519,6 +527,7 @@ class Hit(models.Model):
     severity = models.IntegerField(default=5, validators=[MinValueValidator(0), MaxValueValidator(5)])
     fix_complexity = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(3)])
     displayable = models.BooleanField(default=True)
+    status = models.CharField(max_length=1,choices=STATUS_CHOICES, default='D')
     cvss3 = models.OneToOneField(Cvss3, null=True, on_delete=models.SET_NULL)
     cvss4 = models.OneToOneField(Cvss4, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
