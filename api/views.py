@@ -1311,6 +1311,7 @@ def project_json(request, pk):
                         'fix_complexity': hit.fix_complexity,
                         'cvss_vector': (hit.cvss3.get_cvss_string() if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.get_cvss_string() if hit.cvss4 is not None else ""),
                         'cvss_score': (hit.cvss3.decimal_value if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.decimal_value if hit.cvss4 is not None else ""),
+                        'added': hit.added,
                         'labels': [label.title for label in hit.labels.all()],
                         'screenshots': [{
                             'caption': screenshot.caption,
@@ -1347,6 +1348,7 @@ def project_json(request, pk):
                             'fix_complexity': retesthit.hit.fix_complexity,
                             'cvss_vector': (retesthit.hit.cvss3.get_cvss_string() if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.get_cvss_string() if retesthit.hit.cvss4 is not None else ""),
                             'cvss_score': (retesthit.hit.cvss3.decimal_value if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.decimal_value if retesthit.hit.cvss4 is not None else ""),
+                            'added': retesthit.hit.added,
                             'labels': [label.title for label in retesthit.hit.labels.all()],
                         },
                         'screenshots': [{
