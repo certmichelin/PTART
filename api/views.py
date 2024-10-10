@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 
 from django.core.exceptions import ValidationError
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -1266,6 +1266,108 @@ def project_latex(request, pk):
             response.accepted_media_type = 'application/zip'
             response.renderer_context = {}
         else :
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+@csrf_exempt
+@ptart_authentication
+@action(methods=['GET'], detail=True)
+def project_json(request, pk):
+    response = None
+    try:
+        project = Project.objects.get(pk=pk)
+        if project.is_user_can_view(request.user):
+            data = {
+                'name': project.name,
+                'executive_summary': project.executive_summary,
+                'engagement_overview': project.engagement_overview,
+                'conclusion': project.conclusion,
+                'scope': project.scope,
+                'client': project.client,
+                'start_date': project.start_date,
+                'end_date': project.end_date,
+                'cvss_type': project.cvss_type,
+                'tools': [tool.name for tool in project.tools.all()],
+                'methodologies': [methodology.name for methodology in project.methodologies.all()],
+                'pentesters': [{
+                    'username': pentester.username,
+                    'first_name': pentester.first_name,
+                    'last_name': pentester.last_name
+                } for pentester in project.pentesters.all()],
+
+                'assessments': [{
+                    'title': assessment.name,
+                    'hits': [{
+                        'id': hit.get_unique_id(),
+                        'title': hit.title,
+                        'body': hit.body,
+                        'remediation': hit.remediation,
+                        'asset': hit.asset,
+                        'severity': hit.severity,
+                        'fix_complexity': hit.fix_complexity,
+                        'cvss_vector': (hit.cvss3.get_cvss_string() if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.get_cvss_string() if hit.cvss4 is not None else ""),
+                        'cvss_score': (hit.cvss3.decimal_value if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.decimal_value if hit.cvss4 is not None else ""),
+                        'added': hit.added,
+                        'labels': [label.title for label in hit.labels.all()],
+                        'screenshots': [{
+                            'caption': screenshot.caption,
+                            'order': screenshot.order,
+                            'screenshot': {
+                                'filename': screenshot.screenshot.name,
+                                'data': screenshot.get_data().split(',')[1]
+                            }
+                        } for screenshot in hit.screenshot_set.all()],
+                        'attachments': [{
+                            'title': attachment.attachment_name.title(),
+                            'filename': attachment.attachment.name,
+                            'data': attachment.get_data().split(',')[1]
+                        } for attachment in hit.attachment_set.all()]
+                    } for hit in assessment.displayable_hits()]
+                } for assessment in project.assessment_set.all()],
+                'retests': [{
+                    'name': retestcampaign.name,
+                    'introduction': retestcampaign.introduction,
+                    'conclusion': retestcampaign.conclusion,
+                    'start_date': retestcampaign.start_date,
+                    'end_date': retestcampaign.end_date,
+                    'hits': [{
+                        'id': f'{retesthit.hit.get_unique_id()}-RT',
+                        'status': retesthit.status,
+                        'body': retesthit.body,
+                        'original_hit': {
+                            'id': retesthit.hit.get_unique_id(),
+                            'title': retesthit.hit.title,
+                            'body': retesthit.hit.body,
+                            'remediation': retesthit.hit.remediation,
+                            'asset': retesthit.hit.asset,
+                            'severity': retesthit.hit.severity,
+                            'fix_complexity': retesthit.hit.fix_complexity,
+                            'cvss_vector': (retesthit.hit.cvss3.get_cvss_string() if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.get_cvss_string() if retesthit.hit.cvss4 is not None else ""),
+                            'cvss_score': (retesthit.hit.cvss3.decimal_value if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.decimal_value if retesthit.hit.cvss4 is not None else ""),
+                            'added': retesthit.hit.added,
+                            'labels': [label.title for label in retesthit.hit.labels.all()],
+                        },
+                        'screenshots': [{
+                            'caption': screenshot.caption,
+                            'order': screenshot.order,
+                            'screenshot': {
+                                'filename': screenshot.screenshot.name,
+                                'data': screenshot.get_data().split(',')[1]
+                            }
+                        } for screenshot in retesthit.retestscreenshot_set.all()]
+                    } for retesthit in retestcampaign.retesthit_set.all()]
+                } for retestcampaign in project.retestcampaign_set.all()]
+            }
+
+            # Prepare HTTP response.
+            response = JsonResponse(data=data)
+            response.content_type = 'application/json'
+            response['Content-Disposition'] = 'attachment; filename=' + project.name + ".json"
+            response.accepted_media_type = 'application/json'
+            response.renderer_context = {}
+        else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
