@@ -1323,7 +1323,11 @@ def project_json(request, pk):
                             'title': attachment.attachment_name.title(),
                             'filename': attachment.attachment.name,
                             'data': attachment.get_data().split(',')[1]
-                        } for attachment in hit.attachment_set.all()]
+                        } for attachment in hit.attachment_set.all()],
+                        'references': [{
+                            'name': reference.name,
+                            'url': reference.url
+                        } for reference in hit.hitreference_set.all()]
                     } for hit in assessment.displayable_hits()]
                 } for assessment in project.assessment_set.all()],
                 'retests': [{
