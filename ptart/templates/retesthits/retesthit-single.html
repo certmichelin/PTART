@@ -9,7 +9,7 @@
         {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:retesthit.retest_campaign.project.pk|addstr:"/summary" sub_text=retesthit.retest_campaign.project third_icon='fa fa-flask' third_url="/retestcampaign/"|addstr:retesthit.retest_campaign.pk|addstr:"/summary" third_text=retesthit.retest_campaign active_icon='' active_text=retesthit.hit.title %}
         {% include "_include/html/messages.html" %}
 
-        <div class="row">
+        <div class="row min-vh-100">
             <iframe class="col-lg-6" src="/hit/{{ retesthit.hit.id }}?embedded=True" style="border: none;"></iframe>
             <div class="col-lg-6">
                 <h5>Retest</h5>            
