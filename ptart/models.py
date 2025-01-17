@@ -595,6 +595,7 @@ class Hit(models.Model):
     cvss3 = models.OneToOneField(Cvss3, null=True, on_delete=models.SET_NULL)
     cvss4 = models.OneToOneField(Cvss4, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
+    cwes = models.ManyToManyField(CWE)
 
     def __str__(self):  
         return self.title
