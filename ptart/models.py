@@ -134,6 +134,69 @@ class Case(models.Model):
 
     class Meta:
         ordering = ('id',)
+
+""" CWE List model."""
+class CWEs(models.Model):
+
+    version = models.CharField(max_length=200)
+    deprecated = models.BooleanField(default=False)
+
+    def __str__(self):  
+        return self.version
+
+    def get_viewable(user):
+        """Returns all viewable CWE lists"""
+        return Label.objects.all()
+
+    def get_not_deprecated(user):
+        """Returns not deprecated CWE lists"""
+        return Label.objects.filter(deprecated=False)
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this CWE list"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this CWE list"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this CWE list"""
+        return user.is_staff
+
+    class Meta:
+        ordering = ('pk',)
+
+""" CWE model."""
+class CWE(models.Model):
+
+    cwe_id = models.IntegerField()
+    name = models.CharField(max_length=500)
+    description = models.TextField(blank=True, default="")
+    extended_description = models.TextField(blank=True, default="")
+    cwes = models.ForeignKey(CWEs, on_delete=models.CASCADE, null=True, default=None)
+
+    def __str__(self):  
+        return "CWE-" + str(self.cwe_id) + " - " + self.name
+
+    def get_viewable(user):
+        """Returns all viewable CWE Weaknesses"""
+        return Label.objects.all()
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this CWE Weakness"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this CWE Weakness"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this CWE Weakness"""
+        return user.is_staff
+
+    class Meta:
+        ordering = ('cwe_id',)
         
 """ Project model."""
 class Project(models.Model):
@@ -149,6 +212,7 @@ class Project(models.Model):
     end_date = models.DateField(null=True)
     archived = models.BooleanField(default=False)
     cvss_type = models.IntegerField(default=3, validators=[MinValueValidator(3), MaxValueValidator(4)])
+    cwes = models.ForeignKey(CWEs, null=True, on_delete=models.SET_NULL)
     tools = models.ManyToManyField(Tool)
     methodologies = models.ManyToManyField(Methodology)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
@@ -395,68 +459,6 @@ class Label(models.Model):
     class Meta:
         ordering = ('pk',)
 
-""" CWE List model."""
-class CWEs(models.Model):
-
-    version = models.CharField(max_length=200)
-    deprecated = models.BooleanField(default=False)
-
-    def __str__(self):  
-        return self.version
-
-    def get_viewable(user):
-        """Returns all viewable CWE lists"""
-        return Label.objects.all()
-
-    def get_not_deprecated(user):
-        """Returns not deprecated CWE lists"""
-        return Label.objects.filter(deprecated=False)
-
-    def is_user_can_view(self, user):
-        """Verify if the user have read access for this CWE list"""
-        return True
-
-    def is_user_can_edit(self, user):
-        """Verify if the user have write access for this CWE list"""
-        return user.is_staff
-
-    def is_user_can_create(self, user):
-        """Verify if the user can create this CWE list"""
-        return user.is_staff
-
-    class Meta:
-        ordering = ('pk',)
-
-""" CWE model."""
-class CWE(models.Model):
-
-    cwe_id = models.IntegerField()
-    name = models.CharField(max_length=500)
-    description = models.TextField(blank=True, default="")
-    extended_description = models.TextField(blank=True, default="")
-    cwes = models.ForeignKey(CWEs, on_delete=models.CASCADE, null=True, default=None)
-
-    def __str__(self):  
-        return "CWE-" + str(self.cwe_id) + " - " + self.name
-
-    def get_viewable(user):
-        """Returns all viewable CWE Weaknesses"""
-        return Label.objects.all()
-
-    def is_user_can_view(self, user):
-        """Verify if the user have read access for this CWE Weakness"""
-        return True
-
-    def is_user_can_edit(self, user):
-        """Verify if the user have write access for this CWE Weakness"""
-        return user.is_staff
-
-    def is_user_can_create(self, user):
-        """Verify if the user can create this CWE Weakness"""
-        return user.is_staff
-
-    class Meta:
-        ordering = ('pk',)
 
 """CvssV3.1 model"""
 class Cvss3(models.Model):
