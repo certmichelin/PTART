@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %} CWEs | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+
+        {% include '_include/html/header.html' with item='CWE List' sub_icon='fa fa-sticky-note' sub_url='/cwes/' sub_text='CWEs' active_icon='' active_text=cwes.version %}
+        {% include "_include/html/messages.html" %}
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label>Version</label>
+                    <input class="form-control" id="version" value="{{ cwes.version }}" autocomplete="off" />
+                </div>
+                <div class="checkbox">
+                    <label><input id="deprecated" type="checkbox" {% if True == cwes.deprecated %} checked{% endif %}> Deprecated</label>
+                </div>
+                <input type="hidden" value="{{ cwes.id }}" id="id" />
+                <button id="updateBtn" class="btn btn-primary">Update</button>
+                <button id="delBtn" class="btn btn-danger">Delete</button>
+            </div>
+
+            <div class="col-lg-12 mt-4">
+                <h2>Items</h2>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cwe in cwes.cwe_set.all %}
+                        <tr>
+                            <td>{{ cwe.print_cwe_id }}</td>
+                            <td>{{ cwe.name }}</td>
+                            <td>{{ cwe.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+{% include '_include/js/deleteItem.html' with item='Label' ajax_function='ajaxDeleteLabel' %}
+<script>
+    /**
+    * Item updation success callback.
+    */
+    function itemUpdationSuccess(data) {
+        success($("#messages"), "CWEs was Updated!");
+    }
+
+    /**
+     * Update item.
+     */
+    $('#updateBtn').on('click', function () {
+        cleanMessagesContainer($("#messages"));
+        ajaxUpdateCWEs(itemUpdationSuccess, commonFailure, $("#id").val(), $("#version").val(), $("#deprecated").prop("checked"));
+    });
+</script>
+{% endblock %}

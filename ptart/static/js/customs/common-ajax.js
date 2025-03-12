@@ -286,7 +286,7 @@ function ajaxCreateCWEs(successFunction, errorFunction, version, deprecated) {
  * @param {*} version CWE list version.
  * @param {*} deprecated True if CWE list is deprecated.
  */
-function ajaxUpdateCWEs(successFunction, errorFunction, id, title, deprecated, color) {
+function ajaxUpdateCWEs(successFunction, errorFunction, id, version, deprecated) {
     $.ajax({
         url: "/api/cwes/" + id + "/",
         data: '{"version":' + JSON.stringify(version) + ',"deprecated":' + JSON.stringify(deprecated) + '}',

@@ -1,6 +1,6 @@
 import django_tables2 as tables
 
-from .models import Project, Flag, Hit, Label, Assessment, Project, Template, Methodology, Module, Case, Tool
+from .models import Project, Flag, Hit, CWEs, Label, Assessment, Project, Template, Methodology, Module, Case, Tool
 
 
 class ProjectTable(tables.Table):
@@ -50,6 +50,18 @@ class HitTable(tables.Table):
         sequence = ('selection','severity','id', 'cvss', 'title', 'fix_complexity', 'project', 'assessment', 'added')
         fields = ('severity','cvss', 'id', 'title', 'fix_complexity', 'project', 'assessment', 'added')
 
+
+class CWEsTable(tables.Table):
+
+    selection = tables.CheckBoxColumn(accessor='pk', attrs={"th__input": {"onclick": "toggle(this)"}}, orderable=False)
+    version = tables.TemplateColumn('<a href="/cwes/{{ record.pk }}"> {{ record.version }}</a>')
+   
+
+    class Meta:
+        model = CWEs
+        template_name = "django_tables2/bootstrap4.html"
+        sequence = ('selection', 'version')
+        fields = ('version', 'deprecated')
 
 class LabelTable(tables.Table):
 

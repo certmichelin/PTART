@@ -45,6 +45,9 @@ urlpatterns = [
     re_path(r'^hits/new/$', views.hits_new),
     re_path(r'^hit/([0-9]+)/$', views.hit),
 
+    re_path(r'^cwes/$', views.cwes_all),
+    re_path(r'^cwes/([0-9]+)/$', views.cwes),
+
     re_path(r'^labels/$', views.labels_all),
     re_path(r'^labels/new/$', views.labels_new),
     re_path(r'^label/([0-9]+)/$', views.label),

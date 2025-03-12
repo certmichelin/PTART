@@ -17,8 +17,8 @@ from qrcode.image.svg import SvgPathImage as svg
 
 from rest_framework.authtoken.models import Token
 
-from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
-from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable, ToolTable
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, CWEs, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
+from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, CWEsTable, LabelTable, ToolTable
 
 @otp_required
 def index(request):
@@ -74,6 +74,11 @@ def assessments_all(request):
 @otp_required
 def hits_all(request):
     return generic_all(request, Hit.get_viewable(request.user), HitTable, 'hits/hits-list.html')
+
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
+def cwes_all(request):
+    return generic_all(request, CWEs.get_viewable(request.user), CWEsTable, 'cwes/cwes-list.html')
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
@@ -278,6 +283,16 @@ def label(request, label_id):
     try:
         response = generate_render(request, 'labels/label-single.html', {'label': Label.objects.get(pk=label_id)})
     except Label.DoesNotExist:
+        response = redirect('/')
+    return response
+
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
+def cwes(request, cwes_id):
+    response = None
+    try:
+        response = generate_render(request, 'cwes/cwes-single.html', {'cwes': CWEs.objects.get(pk=cwes_id)})
+    except CWEs.DoesNotExist:
         response = redirect('/')
     return response
 

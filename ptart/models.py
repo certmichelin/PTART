@@ -146,11 +146,11 @@ class CWEs(models.Model):
 
     def get_viewable(user):
         """Returns all viewable CWE lists"""
-        return Label.objects.all()
+        return CWEs.objects.all()
 
     def get_not_deprecated(user):
         """Returns not deprecated CWE lists"""
-        return Label.objects.filter(deprecated=False)
+        return CWEs.objects.filter(deprecated=False)
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this CWE list"""
@@ -178,10 +178,14 @@ class CWE(models.Model):
 
     def __str__(self):  
         return "CWE-" + str(self.cwe_id) + " - " + self.name
+    
+    def print_cwe_id(self):
+        """Return the CWE ID in a pretty format"""
+        return "CWE-" + str(self.cwe_id)
 
     def get_viewable(user):
         """Returns all viewable CWE Weaknesses"""
-        return Label.objects.all()
+        return CWE.objects.all()
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this CWE Weakness"""
