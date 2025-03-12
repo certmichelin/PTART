@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ptart.settings")
 django.setup()
 
-from ptart.models import CWE, CWEs
+from ptart.models import Project, CWE, CWEs
 
 cwes = CWEs(version="v4.16")
 cwes.save()
@@ -32,3 +32,8 @@ for weakness in weaknesses:
                 extended_description=extended_description)
     cwe.save()
 print("CWE v4.16 : {} CWEs imported !".format(len(weaknesses)))
+
+for project in Project.objects.all():
+    project.cwes = cwes
+    project.save()
+print("CWE v4.16 assigned to all projects!")
