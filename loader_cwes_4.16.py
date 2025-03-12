@@ -31,4 +31,4 @@ for weakness in weaknesses:
                 description=weakness.find("{http://cwe.mitre.org/cwe-7}Description").text, 
                 extended_description=extended_description)
     cwe.save()
-print("{} CWEs imported !".format(len(weaknesses)))
+print("CWE v4.16 : {} CWEs imported !".format(len(weaknesses)))
