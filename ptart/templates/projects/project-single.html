@@ -56,6 +56,19 @@
                 </div>
 
                 <div class="form-group">
+                    <label>CWEs</label>
+                    <select class="js-states form-control" id="cwes">
+                        {% for cwe in cwes %}
+                            {% if cwe.deprecated %} 
+                                <option value="{{ cwe.id }}">{{ cwe.version }} - DEPRECATED</option>
+                            {% else %}
+                                <option value="{{ cwe.id }}">{{ cwe.version }}</option>
+                            {% endif %}>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Methodologies</label>
                     <select class="js-states form-control" id="methodologies" multiple="multiple">
                         {% for methodology in methodologies %}
@@ -128,6 +141,8 @@
         $('#enddate').datepicker('setDate', new Date('{{project.end_date|date:"Y-m-d"}}'));
     {% endif %}
 
+    $('#cwes option[value={{project.cwes.id}}]').attr('selected', 'selected');
+
     var selectedMethodologies = [];
     {% for methodology in project.methodologies.all %}
         selectedMethodologies.push({{ methodology.id }});
@@ -175,7 +190,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $('#cvss_type').prop('checked')? 4 : 3, $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $('#cvss_type').prop('checked')? 4 : 3, $("#cwes").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}

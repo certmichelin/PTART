@@ -165,7 +165,7 @@ class CWEs(models.Model):
         return user.is_staff
 
     class Meta:
-        ordering = ('pk',)
+        ordering = ('version',)
 
 """ CWE model."""
 class CWE(models.Model):

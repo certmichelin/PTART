@@ -11,8 +11,8 @@ class ProjectTable(tables.Table):
     class Meta:
         model = Project
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ('selection', 'name', 'client', 'start_date', 'end_date', 'cvss_type', 'added')
-        fields = ('name', 'client', 'start_date', 'end_date', 'cvss_type', 'added')
+        sequence = ('selection', 'name', 'client', 'start_date', 'end_date', 'cvss_type', 'cwes', 'added')
+        fields = ('name', 'client', 'start_date', 'end_date', 'cvss_type', 'cwes', 'added')
 
 
 class FlagTable(tables.Table):

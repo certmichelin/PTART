@@ -12,6 +12,16 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username')
 
+class CWESerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CWE
+        fields = ('id', 'cwe_id', 'name', 'description', 'extended_description', 'cwes')
+
+class CWEsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CWEs
+        fields = ('id', 'version', 'deprecated')
+
 class ToolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tool
@@ -39,10 +49,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     viewers = UserSerializer(read_only=True, many=True)
     tools = ToolSerializer(read_only=True, many=True)
     methodologies = MethodologySerializer(read_only=True, many=True)
+    cwes = CWEsSerializer(read_only=True)
 
     class Meta:
         model = Project
-        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'cvss_type', 'added', 'archived', 'tools', 'methodologies')
+        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'cvss_type', 'cwes', 'added', 'archived', 'tools', 'methodologies')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -73,6 +84,11 @@ class ProjectSerializer(serializers.ModelSerializer):
             for tool in tools:
                 tool_instance = Tool.objects.get(pk=tool)
                 project.tools.add(tool_instance)
+
+        if "cwes" in self.initial_data:
+            cwes = self.initial_data.get("cwes")
+            cwes_instance = CWEs.objects.get(pk=cwes)
+            project.cwes = cwes_instance
 
         if "methodologies" in self.initial_data:
             methodologies = self.initial_data.get("methodologies")
@@ -109,6 +125,11 @@ class ProjectSerializer(serializers.ModelSerializer):
             methodology_instance = Methodology.objects.get(pk=methodology)
             instance.methodologies.add(methodology_instance)
 
+        if "cwes" in self.initial_data:
+            cwes = self.initial_data.get("cwes")
+            cwes_instance = CWEs.objects.get(pk=cwes)
+            instance.cwes = cwes_instance
+
         instance.__dict__.update(**validated_data)
         instance.save()
         return instance
@@ -124,16 +145,6 @@ class FlagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flag
         fields = ('id', 'title', 'asset', 'note', 'done', 'assessment', 'assignee')
-
-class CWESerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CWE
-        fields = ('id', 'cwe_id', 'name', 'description', 'extended_description', 'cwes')
-
-class CWEsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CWEs
-        fields = ('id', 'version', 'deprecated')
 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
