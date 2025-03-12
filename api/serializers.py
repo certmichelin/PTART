@@ -3,7 +3,7 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
+from ptart.models import Project, Assessment, Hit, Label, Flag, Template, Host, Service, Comment, HitReference, Screenshot, Attachment, Cvss3, Cvss4, CWEs, CWE, Case, Module, Methodology, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
 from .tools import FileField
 
 
@@ -125,6 +125,15 @@ class FlagSerializer(serializers.ModelSerializer):
         model = Flag
         fields = ('id', 'title', 'asset', 'note', 'done', 'assessment', 'assignee')
 
+class CWESerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CWE
+        fields = ('id', 'cwe_id', 'name', 'description', 'extended_description', 'cwes')
+
+class CWEsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CWEs
+        fields = ('id', 'version', 'deprecated')
 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
