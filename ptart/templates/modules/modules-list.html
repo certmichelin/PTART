@@ -6,7 +6,7 @@
     <div class="container-fluid">
         {% include '_include/html/header.html' with item='Modules' create_item_url='/modules/new' create_item_button_text='Create Module' create_item_button_class='primary' active_icon='fa fa-file-text' active_text='Modules' %}
         {% include "_include/html/messages.html" %}
-        {% include '_include/html/list.html' with table=table create_item_url='/modules/new' create_item_text='Add a module' %}
+        {% include '_include/html/list.html' with table=table %}
     </div>
 </div>
 {% endblock %}
