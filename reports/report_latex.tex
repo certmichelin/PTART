@@ -621,8 +621,11 @@
 
 	\BLOCK{ for retestcampaign in project.retestcampaign_set.all() }
 		\subsection{\VAR{retestcampaign.name | escape }}
-		\subsubsection{Introduction}
-		\VAR{ retestcampaign.introduction | mdtolatex }
+
+		\BLOCK{ if retestcampaign.introduction }
+			\subsubsection{Introduction}
+			\VAR{ retestcampaign.introduction | mdtolatex }
+		\BLOCK{ endif }
 
 		\BLOCK{ if retestcampaign.retesthit_set.all()|length > 0 }
 			\subsubsection{Observations}
@@ -740,8 +743,10 @@
 				\BLOCK{ endfor }
 		\BLOCK{ endfor }
 		
-		\subsubsection{Conclusion}
-		\VAR{ retestcampaign.conclusion | mdtolatex }
+		\BLOCK{ if retestcampaign.conclusion }
+			\subsubsection{Conclusion}
+			\VAR{ retestcampaign.conclusion | mdtolatex }
+		\BLOCK{ endif }
 	\BLOCK{ endfor }
 	\newpage
 \BLOCK{ endif }
