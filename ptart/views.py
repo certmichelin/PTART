@@ -207,7 +207,8 @@ def hit(request, hit_id):
         if hit.is_user_can_view(request.user):
             #This complex trick is necessary to continue to display the deprecated labels in old projects (https://github.com/certmichelin/PTART/issues/73). 
             labels = list(dict.fromkeys(list(Label.get_not_deprecated(request.user)) + list(hit.labels.all())))
-            response = generate_render(request, 'hits/hit-single.html', {'hit': hit, 'cvss_type': hit.assessment.project.cvss_type, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'severities': Severity.values, 'editable' : (hit.is_user_can_edit(request.user) and not embedded), 'embedded':embedded})
+            cwes = hit.assessment.project.cwes.cwe_set.all()
+            response = generate_render(request, 'hits/hit-single.html', {'hit': hit, 'cvss_type': hit.assessment.project.cvss_type, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'cwes': cwes, 'severities': Severity.values, 'editable' : (hit.is_user_can_edit(request.user) and not embedded), 'embedded':embedded})
         else :
             response = redirect('/')
     except Hit.DoesNotExist:
@@ -390,9 +391,12 @@ def hits_new(request):
         if project.is_user_can_edit(request.user) :
             assessments = project.assessment_set.all
             cvss_type = project.cvss_type
+            cwes = project.cwes.cwe_set.all()
     except :
-        pass
-    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'cvss_type': cvss_type , 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+        response = redirect("/")
+    
+    response = generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'cvss_type': cvss_type , 'cwes': cwes, 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+    return response
 
 @otp_required
 def attackscenarios_new(request):

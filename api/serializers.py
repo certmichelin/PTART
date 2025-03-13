@@ -173,12 +173,13 @@ class Cvss4Serializer(serializers.ModelSerializer):
 
 class HitSerializer(serializers.ModelSerializer):
     labels = LabelSerializer(read_only=True, many=True)
+    cwes = CWESerializer(read_only=True, many=True)
     cvss3 = Cvss3Serializer(read_only=True)
     cvss4 = Cvss4Serializer(read_only=True)
     
     class Meta:
         model = Hit
-        fields = ('id', 'title', 'labels', 'severity', 'cvss3', 'cvss4', 'asset', 'body', 'remediation', 'added', 'status', 'fix_complexity', 'assessment', 'get_unique_id')
+        fields = ('id', 'title', 'labels', 'cwes', 'severity', 'cvss3', 'cvss4', 'asset', 'body', 'remediation', 'added', 'status', 'fix_complexity', 'assessment', 'get_unique_id')
     
     @transaction.atomic
     def create(self, validated_data):
@@ -188,6 +189,11 @@ class HitSerializer(serializers.ModelSerializer):
             for label in labels:
                 label_instance = Label.objects.get(pk=label)
                 hit.labels.add(label_instance)
+        if "cwes" in self.initial_data:
+            cwes = self.initial_data.get("cwes")
+            for cwe in cwes:
+                cwe_instance = CWE.objects.get(pk=cwe)
+                hit.cwes.add(cwe_instance)
         hit.save()
         return hit
 
@@ -198,6 +204,12 @@ class HitSerializer(serializers.ModelSerializer):
         for label in labels:
             label_instance = Label.objects.get(pk=label)
             instance.labels.add(label_instance)
+
+        instance.cwes.clear()
+        cwes = self.initial_data.get("cwes")
+        for cwe in cwes:
+            cwe_instance = CWE.objects.get(pk=cwe)
+            instance.cwes.add(cwe_instance)
 
         assessment = self.initial_data.get("assessment")
         instance.assessment = Assessment.objects.get(pk=assessment)
