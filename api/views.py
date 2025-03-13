@@ -1349,6 +1349,7 @@ def project_json(request, pk):
                 'start_date': project.start_date,
                 'end_date': project.end_date,
                 'cvss_type': project.cvss_type,
+                'cwe_version' : project.cwes.version,
                 'tools': [tool.name for tool in project.tools.all()],
                 'methodologies': [methodology.name for methodology in project.methodologies.all()],
                 'pentesters': [{
@@ -1371,6 +1372,7 @@ def project_json(request, pk):
                         'cvss_score': (hit.cvss3.decimal_value if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.decimal_value if hit.cvss4 is not None else ""),
                         'added': hit.added,
                         'labels': [label.title for label in hit.labels.all()],
+                        'cwes': [str(cwe) for cwe in hit.cwes.all()],
                         'screenshots': [{
                             'caption': screenshot.caption,
                             'order': screenshot.order,
@@ -1412,6 +1414,7 @@ def project_json(request, pk):
                             'cvss_score': (retesthit.hit.cvss3.decimal_value if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.decimal_value if retesthit.hit.cvss4 is not None else ""),
                             'added': retesthit.hit.added,
                             'labels': [label.title for label in retesthit.hit.labels.all()],
+                            'cwes': [str(cwe) for cwe in retesthit.hit.cwes.all()],
                         },
                         'screenshots': [{
                             'caption': screenshot.caption,
