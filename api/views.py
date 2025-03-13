@@ -244,25 +244,25 @@ def methodologies(request):
 
 @csrf_exempt
 @ptart_authentication
-@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+@api_view(['GET', 'PATCH', 'PUT'])
 def cwe_list(request, pk):
     return item(request, pk, CWEs, CWEsSerializer)
 
 @csrf_exempt
 @ptart_authentication
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def cwe_lists(request):
     return items(request, CWEs, CWEsSerializer)
 
 @csrf_exempt
 @ptart_authentication
-@api_view(['GET', 'PATCH', 'PUT', 'DELETE'])
+@api_view(['GET'])
 def cwe(request, pk):
     return item(request, pk, CWE, CWESerializer)
 
 @csrf_exempt
 @ptart_authentication
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def cwes(request):
     return items(request, CWE, CWESerializer)
 

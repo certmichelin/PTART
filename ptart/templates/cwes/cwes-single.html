@@ -19,7 +19,6 @@
                 </div>
                 <input type="hidden" value="{{ cwes.id }}" id="id" />
                 <button id="updateBtn" class="btn btn-primary">Update</button>
-                <button id="delBtn" class="btn btn-danger">Delete</button>
             </div>
 
             <div class="col-lg-12 mt-4">
@@ -49,7 +48,6 @@
 {% endblock %}
 
 {% block extra_foot %}
-{% include '_include/js/deleteItem.html' with item='Label' ajax_function='ajaxDeleteLabel' %}
 <script>
     /**
     * Item updation success callback.

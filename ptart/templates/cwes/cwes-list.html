@@ -6,11 +6,10 @@
     <div class="container-fluid">
         {% include '_include/html/header.html' with item='CWEs' active_icon='fa fa-sticky-note' active_text='CWEs' %}
         {% include "_include/html/messages.html" %}
-        {% include '_include/html/list.html' with table=table %}
+        {% include '_include/html/list.html' with table=table nodelete='1' %}
     </div>
 </div>
 {% endblock %}
 
 {% block extra_foot %}
-    {% include '_include/js/deleteItems.html' with item='CWEs' items='cwes' ajax_function='ajaxDeleteCWEs' %}
 {% endblock %}

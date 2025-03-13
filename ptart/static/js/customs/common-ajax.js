@@ -264,24 +264,6 @@ function ajaxDeleteLabel(successFunction, errorFunction, id) {
 }
 
 /**
- * Create a CWE List.
- * 
- * @param {*} successFunction Function to call in case of ajax success.
- * @param {*} errorFunction Function to call in case of ajax failure.
- * @param {*} version CWE list version.
- * @param {*} deprecated Label Is list is deprecated.
- */
-function ajaxCreateCWEs(successFunction, errorFunction, version, deprecated) {
-    $.ajax({
-        url: "/api/cwes/",
-        data: '{"version":' + JSON.stringify(version) + ',"deprecated":' + JSON.stringify(deprecated) + '}',
-        type: 'POST',
-        success: successFunction,
-        error: errorFunction
-    });
-}
-
-/**
  * Update a CWE list.
  * 
  * @param {*} successFunction Function to call in case of ajax success.
@@ -295,81 +277,6 @@ function ajaxUpdateCWEs(successFunction, errorFunction, id, version, deprecated)
         url: "/api/cwes/" + id + "/",
         data: '{"version":' + JSON.stringify(version) + ',"deprecated":' + JSON.stringify(deprecated) + '}',
         type: 'PUT',
-        success: successFunction,
-        error: errorFunction
-    });
-}
-
-/**
- * Delete a CWE list.
- * 
- * @param {*} successFunction Function to call in case of ajax success.
- * @param {*} errorFunction Function to call in case of ajax failure.
- * @param {*} id CWE list id.
- */
-function ajaxDeleteCWEs(successFunction, errorFunction, id) {
-    $.ajax({
-        url: "/api/cwes/" + id + "/",
-        type: 'DELETE',
-        success: successFunction,
-        error: errorFunction
-    });
-}
-
-/**
- * Create a CWE entry.
- * 
- * @param {*} successFunction Function to call in case of ajax success.
- * @param {*} errorFunction Function to call in case of ajax failure.
- * @param {*} cwe_id CWE entry visible id.
- * @param {*} name CWE item name .
- * @param {*} description CWE item description.
- * @param {*} extended_description CWE item extended description.
- * @param {*} cwes CWE list id.
- */
-function ajaxCreateCWE(successFunction, errorFunction, cwe_id, name, description, extended_description, cwes) {
-    $.ajax({
-        url: "/api/cwe/",
-        data: '{"cwe_id":' + JSON.stringify(cwe_id) + ',"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description)+ ',"extended_description":' + JSON.stringify(extended_description)+ ',"cwes":' + JSON.stringify(cwes) + '}',
-        type: 'POST',
-        success: successFunction,
-        error: errorFunction
-    });
-}
-
-/**
- * Update a CWE entry.
- * 
- * @param {*} successFunction Function to call in case of ajax success.
- * @param {*} errorFunction Function to call in case of ajax failure.
- * @param {*} id CWE entry id.
- * @param {*} cwe_id CWE item visible id.
- * @param {*} name CWE item name .
- * @param {*} description CWE item description.
- * @param {*} extended_description CWE item extended description.
- * @param {*} cwes CWE list id.
- */
-function ajaxUpdateCWE(successFunction, errorFunction, id,cwe_id, name, description, extended_description, cwes) {
-    $.ajax({
-        url: "/api/cwe/" + id + "/",
-        data: '{"cwe_id":' + JSON.stringify(cwe_id) + ',"name":' + JSON.stringify(name) + ',"description":' + JSON.stringify(description)+ ',"extended_description":' + JSON.stringify(extended_description)+ ',"cwes":' + JSON.stringify(cwes) + '}',
-        type: 'PUT',
-        success: successFunction,
-        error: errorFunction
-    });
-}
-
-/**
- * Delete a CWE entry.
- * 
- * @param {*} successFunction Function to call in case of ajax success.
- * @param {*} errorFunction Function to call in case of ajax failure.
- * @param {*} id CWE entry id.
- */
-function ajaxDeleteCWE(successFunction, errorFunction, id) {
-    $.ajax({
-        url: "/api/cwe/" + id + "/",
-        type: 'DELETE',
         success: successFunction,
         error: errorFunction
     });

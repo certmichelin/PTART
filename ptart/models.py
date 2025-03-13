@@ -216,7 +216,7 @@ class Project(models.Model):
     end_date = models.DateField(null=True)
     archived = models.BooleanField(default=False)
     cvss_type = models.IntegerField(default=3, validators=[MinValueValidator(3), MaxValueValidator(4)])
-    cwes = models.ForeignKey(CWEs, null=True, on_delete=models.SET_NULL)
+    cwes = models.ForeignKey(CWEs, null=True, on_delete=models.PROTECT)
     tools = models.ManyToManyField(Tool)
     methodologies = models.ManyToManyField(Methodology)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
