@@ -115,6 +115,14 @@
                                 <h4>CVSS {% if project.cvss_type == 3 %}v3.1{% else %}v4.0{% endif %}: <span class="cvss{{project.cvss_type}} cvss{{project.cvss_type}}-badge cvss{{project.cvss_type}}-badge-secondary">{{ hit.get_cvss_value }}</span> </h4>
                                 <h5>{{ hit.get_cvss_string }}</h5>
                                 <h5>Fix complexity: <span class="fix-complexity-badge fix-complexity-{{ hit.fix_complexity }}">{{ hit.get_fix_complexity_str }}</span></h5>
+                                {% for cwe in hit.cwes.all %}
+                                    <span class="bc-badge bc-badge-secondary" style="background-color:#877e7e">{{ cwe }}</span>
+                                {% endfor %}
+
+                                {% if hit.cwes.all %}
+                                    <br/>
+                                {% endif %}
+                                
                                 {% for label in hit.labels.all %}
                                     <span class="bc-badge bc-badge-secondary" style="background-color:{{ label.color }}">{{ label.title }}</span>
                                 {% endfor %}
