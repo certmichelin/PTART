@@ -270,6 +270,28 @@ class Project(models.Model):
                     else:
                         statistics[label.title] = statistics[label.title] + 1
         return statistics
+    
+    def cwes_statistics(self):
+        """Compute statistics on cwes"""
+        statistics = {}
+        for assessment in self.assessment_set.all() :
+            for hit in assessment.displayable_hits():
+                for cwe in hit.cwes.all():
+                    if statistics.get(cwe.print_cwe_id()) is None :
+                        statistics[cwe.print_cwe_id()] = 1
+                    else:
+                        statistics[cwe.print_cwe_id()] = statistics[cwe.print_cwe_id()] + 1
+        return statistics
+    
+    def cwes_used(self):
+        """Compute statistics on cwes"""
+        cwes = []
+        for assessment in self.assessment_set.all() :
+            for hit in assessment.displayable_hits():
+                for cwe in hit.cwes.all():
+                    if cwe not in cwes :
+                        cwes.append(cwe)
+        return cwes
 
     def get_viewable(user):
         """Returns all viewable & non-archived projects"""
