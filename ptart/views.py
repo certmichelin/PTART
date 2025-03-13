@@ -17,8 +17,8 @@ from qrcode.image.svg import SvgPathImage as svg
 
 from rest_framework.authtoken.models import Token
 
-from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
-from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, LabelTable, ToolTable
+from .models import Assessment, Project, Hit, Flag, Template, Methodology, Module, Case, Severity, CWEs, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit
+from .tables import FlagTable, HitTable, AssessmentTable, ProjectTable, TemplateTable, MethodologyTable, ModuleTable, CaseTable, CWEsTable, LabelTable, ToolTable
 
 @otp_required
 def index(request):
@@ -77,6 +77,11 @@ def hits_all(request):
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
+def cwes_all(request):
+    return generic_all(request, CWEs.get_viewable(request.user), CWEsTable, 'cwes/cwes-list.html')
+
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
 def labels_all(request):
     return generic_all(request, Label.get_viewable(request.user), LabelTable, 'labels/labels-list.html')
 
@@ -128,7 +133,10 @@ def project(request, project_id):
             #This complex trick is necessary to continue to display the deprecated tools and methodologies in old projects. 
             tools = list(dict.fromkeys(list(Tool.get_not_deprecated(request.user)) + list(project.tools.all())))
             methodologies = list(dict.fromkeys(list(Methodology.get_not_deprecated(request.user)) + list(project.methodologies.all())))
-            response = generate_render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'tools': tools, 'methodologies': methodologies, 'editable' : project.is_user_can_edit(request.user)})
+            cwes = list(CWEs.get_not_deprecated(request.user))
+            if project.cwes not in cwes :
+                cwes.append(project.cwes)
+            response = generate_render(request, 'projects/project-single.html', {'project': project, 'users': User.objects.all(), 'cwes': cwes, 'tools': tools, 'methodologies': methodologies, 'editable' : project.is_user_can_edit(request.user)})
         else :
             response = redirect('/')
     except Project.DoesNotExist:
@@ -199,7 +207,8 @@ def hit(request, hit_id):
         if hit.is_user_can_view(request.user):
             #This complex trick is necessary to continue to display the deprecated labels in old projects (https://github.com/certmichelin/PTART/issues/73). 
             labels = list(dict.fromkeys(list(Label.get_not_deprecated(request.user)) + list(hit.labels.all())))
-            response = generate_render(request, 'hits/hit-single.html', {'hit': hit, 'cvss_type': hit.assessment.project.cvss_type, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'severities': Severity.values, 'editable' : (hit.is_user_can_edit(request.user) and not embedded), 'embedded':embedded})
+            cwes = hit.assessment.project.cwes.cwe_set.all()
+            response = generate_render(request, 'hits/hit-single.html', {'hit': hit, 'cvss_type': hit.assessment.project.cvss_type, 'assessments': hit.assessment.project.assessment_set.all,'labels': labels, 'cwes': cwes, 'severities': Severity.values, 'editable' : (hit.is_user_can_edit(request.user) and not embedded), 'embedded':embedded})
         else :
             response = redirect('/')
     except Hit.DoesNotExist:
@@ -283,6 +292,16 @@ def label(request, label_id):
 
 @otp_required
 @user_passes_test(lambda u: u.is_staff)
+def cwes(request, cwes_id):
+    response = None
+    try:
+        response = generate_render(request, 'cwes/cwes-single.html', {'cwes': CWEs.objects.get(pk=cwes_id)})
+    except CWEs.DoesNotExist:
+        response = redirect('/')
+    return response
+
+@otp_required
+@user_passes_test(lambda u: u.is_staff)
 def tool(request, tool_id):
     response = None
     try:
@@ -355,7 +374,7 @@ def case(request, case_id):
 
 @otp_required
 def projects_new(request):
-    return generate_render(request, 'projects/projects.html', {'users': User.objects.filter(is_active=True),'tools': Tool.get_not_deprecated(request.user), 'methodologies': Methodology.get_not_deprecated(request.user)})
+    return generate_render(request, 'projects/projects.html', {'users': User.objects.filter(is_active=True), 'cwes': CWEs.get_not_deprecated(request.user), 'tools': Tool.get_not_deprecated(request.user), 'methodologies': Methodology.get_not_deprecated(request.user)})
 
 
 @otp_required
@@ -372,9 +391,12 @@ def hits_new(request):
         if project.is_user_can_edit(request.user) :
             assessments = project.assessment_set.all
             cvss_type = project.cvss_type
+            cwes = project.cwes.cwe_set.all()
     except :
-        pass
-    return generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'cvss_type': cvss_type , 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+        response = redirect("/")
+    
+    response = generate_render(request, 'hits/hits.html', {'assessments':  assessments, 'cvss_type': cvss_type , 'cwes': cwes, 'templates': Template.get_usable(request.user),'labels': Label.get_not_deprecated(request.user), 'severities': Severity.values, 'editable' : True })
+    return response
 
 @otp_required
 def attackscenarios_new(request):

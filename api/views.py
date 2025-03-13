@@ -32,11 +32,11 @@ import re
 import requests
 import zipfile
 
-from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
+from ptart.models import Flag, Hit, Assessment, Project, Template, Comment, HitReference, Host, Service, Screenshot, Attachment, Cvss3, Cvss4, Case, Module, Methodology, Label, CWEs, CWE, AttackScenario, Recommendation, Tool, RetestCampaign, RetestHit, RetestScreenshot
 
 from api.decorators import ptart_authentication
 
-from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, RetestHitSerializer, RetestScreenshotSerializer
+from .serializers import FlagSerializer, HitSerializer, AssessmentSerializer, ProjectSerializer, TemplateSerializer, HostSerializer, ServiceSerializer, ScreenshotSerializer, AttachmentSerializer, CommentSerializer, HitReferenceSerializer, Cvss3Serializer, Cvss4Serializer, CaseSerializer, ModuleSerializer, MethodologySerializer, LabelSerializer, CWEsSerializer, CWESerializer, AttackScenarioSerializer, RecommendationSerializer, ToolSerializer, RetestCampaignSerializer, RetestHitSerializer, RetestScreenshotSerializer
 
 @csrf_exempt
 @ptart_authentication
@@ -241,6 +241,30 @@ def methodology(request, pk):
 @api_view(['GET', 'POST'])
 def methodologies(request):
     return items(request, Methodology, MethodologySerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET', 'PATCH', 'PUT'])
+def cwe_list(request, pk):
+    return item(request, pk, CWEs, CWEsSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET'])
+def cwe_lists(request):
+    return items(request, CWEs, CWEsSerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET'])
+def cwe(request, pk):
+    return item(request, pk, CWE, CWESerializer)
+
+@csrf_exempt
+@ptart_authentication
+@api_view(['GET'])
+def cwes(request):
+    return items(request, CWE, CWESerializer)
 
 @csrf_exempt
 @ptart_authentication
@@ -706,9 +730,10 @@ def project_xlsx(request, pk):
             wb.active.column_dimensions['C'].width = 10
             wb.active.column_dimensions['D'].width = 17
             wb.active.column_dimensions['E'].width = 50
-            wb.active.column_dimensions['F'].width = 30
+            wb.active.column_dimensions['F'].width = 40
             wb.active.column_dimensions['G'].width = 12
             wb.active.column_dimensions['H'].width = 50
+            wb.active.column_dimensions['I'].width = 70
 
             #Add project data.
             ws['A1'] = "Project Name:"
@@ -732,10 +757,10 @@ def project_xlsx(request, pk):
             ws['B4'] = pentester_str
 
             #Beautify project data 
-            ws.merge_cells('B1:H1')
-            ws.merge_cells('B2:H2')
-            ws.merge_cells('B3:H3')
-            ws.merge_cells('B4:H4')
+            ws.merge_cells('B1:I1')
+            ws.merge_cells('B2:I2')
+            ws.merge_cells('B3:I3')
+            ws.merge_cells('B4:I4')
 
             
             projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
@@ -768,6 +793,7 @@ def project_xlsx(request, pk):
             ws['F6'] = "Asset"
             ws['G6'] = "Fix Compl."
             ws['H6'] = "Labels"
+            ws['I6'] = "CWE(s)"
 
             columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
             columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
@@ -782,32 +808,28 @@ def project_xlsx(request, pk):
             ws['F6'].style = columnHeaderStyle
             ws['G6'].style = columnHeaderStyle
             ws['H6'].style = columnHeaderStyle
+            ws['I6'].style = columnHeaderStyle
 
             #Fill the report
             criticalStyle = styles.NamedStyle(name = 'critical_style')
             criticalStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
             criticalStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '343a40')
-            criticalStyle.alignment = styles.Alignment(horizontal= 'center')
 
             highStyle = styles.NamedStyle(name = 'high_style')
             highStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
             highStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'dc3545')
-            highStyle.alignment = styles.Alignment(horizontal= 'center')
 
             mediumStyle = styles.NamedStyle(name = 'medium_style')
             mediumStyle.font = styles.Font(name = 'OCR A Extended', color = '212529')
             mediumStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = 'ffc107')
-            mediumStyle.alignment = styles.Alignment(horizontal= 'center')
 
             lowStyle = styles.NamedStyle(name = 'low_style')
             lowStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
             lowStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '28a745')
-            lowStyle.alignment = styles.Alignment(horizontal= 'center')
 
             infoStyle = styles.NamedStyle(name = 'info_style')
             infoStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
             infoStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '6c757d')
-            infoStyle.alignment = styles.Alignment(horizontal= 'center')
 
             line = 7
             for assessment in project.assessment_set.all():        
@@ -824,8 +846,15 @@ def project_xlsx(request, pk):
                     previous = ""
                     for label in hit.labels.all():
                         label_str = "{}{}{}".format(label_str, previous, label.title)
-                        previous = ", "
+                        previous = "\n"
                     ws.cell(row=line, column=8).value = label_str
+                    
+                    cwe_str = ""
+                    previous = ""
+                    for cwe in hit.cwes.all():
+                        cwe_str = "{}{}{}".format(cwe_str, previous, cwe)
+                        previous = "\n"
+                    ws.cell(row=line, column=9).value = cwe_str
 
                     #Apply style from value.
                     if hit.severity == 1:
@@ -863,9 +892,19 @@ def project_xlsx(request, pk):
                     except ValueError:
                         ws.cell(row=line, column=3).style = infoStyle
 
+                    ws.cell(row=line, column=1).alignment = Alignment(vertical="center", horizontal="left")
+                    ws.cell(row=line, column=2).alignment = Alignment(vertical="center", horizontal="center")
+                    ws.cell(row=line, column=3).alignment = Alignment(vertical="center", horizontal="center")
+                    ws.cell(row=line, column=4).alignment = Alignment(vertical="center", horizontal="center")
+                    ws.cell(row=line, column=5).alignment = Alignment(vertical="top", horizontal="left", wrap_text=True)
+                    ws.cell(row=line, column=6).alignment = Alignment(vertical="top", horizontal="left", wrap_text=True)
+                    ws.cell(row=line, column=7).alignment = Alignment(vertical="center", horizontal="center")
+                    ws.cell(row=line, column=8).alignment = Alignment(vertical="top", wrap_text=True)
+                    ws.cell(row=line, column=9).alignment = Alignment(vertical="top", wrap_text=True)
+
                     line = line + 1
             
-            ws.auto_filter.ref = "A6:H{}".format(line)
+            ws.auto_filter.ref = "A6:I{}".format(line)
 
             # --------------------------------------------------------------------------
             # Recommendations
@@ -999,6 +1038,7 @@ def project_xlsx(request, pk):
                     retestcampaign_ws.column_dimensions['G'].width = 12
                     retestcampaign_ws.column_dimensions['H'].width = 17
                     retestcampaign_ws.column_dimensions['I'].width = 50
+                    retestcampaign_ws.column_dimensions['J'].width = 70
 
                     #Add project data.
                     retestcampaign_ws['A1'] = "Campaign Name:"
@@ -1011,8 +1051,8 @@ def project_xlsx(request, pk):
 
                 
                     #Beautify project data 
-                    retestcampaign_ws.merge_cells('B1:I1')
-                    retestcampaign_ws.merge_cells('B2:I2')
+                    retestcampaign_ws.merge_cells('B1:J1')
+                    retestcampaign_ws.merge_cells('B2:J2')
 
                     retestcampaign_ws['A1'].style = projectHeaderStyle
                     retestcampaign_ws['A2'].style = projectHeaderStyle
@@ -1029,6 +1069,7 @@ def project_xlsx(request, pk):
                     retestcampaign_ws['G4'] = "Fix Compl."
                     retestcampaign_ws['H4'] = "Status"
                     retestcampaign_ws['I4'] = "Labels"
+                    retestcampaign_ws['J4'] = "CWE(s)"
 
                     #Beautify column headers.
                     retestcampaign_ws['A4'].style = columnHeaderStyle
@@ -1040,6 +1081,7 @@ def project_xlsx(request, pk):
                     retestcampaign_ws['G4'].style = columnHeaderStyle
                     retestcampaign_ws['H4'].style = columnHeaderStyle
                     retestcampaign_ws['I4'].style = columnHeaderStyle
+                    retestcampaign_ws['J4'].style = columnHeaderStyle
 
                     line = 5
                     for retest_hit in retestcampaign.retesthit_set.all():        
@@ -1056,8 +1098,15 @@ def project_xlsx(request, pk):
                         previous = ""
                         for label in retest_hit.hit.labels.all():
                             label_str = "{}{}{}".format(label_str, previous, label.title)
-                            previous = ", "
+                            previous = "\n"
                         retestcampaign_ws.cell(row=line, column=9).value = label_str
+                        
+                        cwe_str = ""
+                        previous = ""
+                        for cwe in retest_hit.hit.cwes.all():
+                            cwe_str = "{}{}{}".format(cwe_str, previous, cwe)
+                            previous = "\n"
+                        retestcampaign_ws.cell(row=line, column=10).value = cwe_str
 
                         #Apply style from value.
                         if retest_hit.hit.severity == 1:
@@ -1106,6 +1155,17 @@ def project_xlsx(request, pk):
                                 retestcampaign_ws.cell(row=line, column=3).style = criticalStyle
                         except ValueError:
                             retestcampaign_ws.cell(row=line, column=3).style = infoStyle
+
+                        retestcampaign_ws.cell(row=line, column=1).alignment = Alignment(vertical="center", horizontal="left")
+                        retestcampaign_ws.cell(row=line, column=2).alignment = Alignment(vertical="center", horizontal="center")
+                        retestcampaign_ws.cell(row=line, column=3).alignment = Alignment(vertical="center", horizontal="center")
+                        retestcampaign_ws.cell(row=line, column=4).alignment = Alignment(vertical="center", horizontal="center")
+                        retestcampaign_ws.cell(row=line, column=5).alignment = Alignment(vertical="top", horizontal="left", wrap_text=True)
+                        retestcampaign_ws.cell(row=line, column=6).alignment = Alignment(vertical="top", horizontal="left", wrap_text=True)
+                        retestcampaign_ws.cell(row=line, column=7).alignment = Alignment(vertical="center", horizontal="center")
+                        retestcampaign_ws.cell(row=line, column=8).alignment = Alignment(vertical="center", horizontal="center")
+                        retestcampaign_ws.cell(row=line, column=9).alignment = Alignment(vertical="top", wrap_text=True)
+                        retestcampaign_ws.cell(row=line, column=10).alignment = Alignment(vertical="top", wrap_text=True)
 
                         line = line + 1
                     

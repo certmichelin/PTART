@@ -6,7 +6,7 @@
     <div class="container-fluid">
         {% include '_include/html/header.html' with item='Flags' create_item_url='/flags/new' create_item_button_text='Create Flag' create_item_button_class='success' active_icon='fa fa-flag' active_text='Flags' %}
         {% include "_include/html/messages.html" %}
-        {% include '_include/html/list.html' with table=table create_item_url='/flags/new' create_item_text='Add a flag' %}
+        {% include '_include/html/list.html' with table=table %}
     </div>
 </div>
 {% endblock %}

@@ -76,6 +76,14 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>CWE(s)</label>
+                    <select class="js-states form-control" id="cwes" multiple="multiple">
+                        {% for cwe in cwes %}
+                        <option value="{{ cwe.id }}">{{ cwe }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="assessment">Assessment</label>
                     <select id="assessment" class="form-control">
                         {% for assessment in assessments %}
@@ -169,6 +177,8 @@
             return data.text;
         }
     });
+
+    $('#cwes').select2();
 
     var screenshotsToUpload = 0;
     var screenshotsUploaded = 0;
@@ -336,7 +346,7 @@
                 mdRemediation.value(mdRemediation.value().replaceAll(convertIdToMarkdown(String(key)), convertIdToMarkdown(String(value))));
             });
             //Update hit with new body and remediation.
-            ajaxUpdateHit(cleanFields, commonFailure, hitId, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
+            ajaxUpdateHit(cleanFields, commonFailure, hitId, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#cwes").select2("val"), $("#assessment").val());
         }
     }
 
@@ -397,7 +407,7 @@
 
     function createHit() {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxCreateHit(hitCreationSuccess, hitCreationFailure, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#cwes").select2("val"), $("#assessment").val());
     }
 
     /**

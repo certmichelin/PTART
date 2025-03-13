@@ -23,15 +23,16 @@ $.ajaxSetup({
  * @param {*} scope Project scope.
  * @param {*} client Project client.
  * @param {*} cvss_type Project cvss type (3 or 4).
+ * @param {*} cwes Project cwes list.
  * @param {*} methodologies Project methodologies.
  * @param {*} tools Project tools.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  */
-function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, cvss_type, methodologies, tools, pentesters, viewers) {
+function ajaxCreateProject(successFunction, errorFunction, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, cvss_type, cwes, methodologies, tools, pentesters, viewers) {
     $.ajax({
         url: "/api/projects/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"cvss_type":' + JSON.stringify(cvss_type) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"cvss_type":' + JSON.stringify(cvss_type) + ',"cwes":' + JSON.stringify(cwes) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -53,16 +54,17 @@ function ajaxCreateProject(successFunction, errorFunction, name, start_date, end
  * @param {*} scope Project scope.
  * @param {*} client Project client.
  * @param {*} cvss_type Project cvss type (3 or 4).
+ * @param {*} cwes Project cwes list.
  * @param {*} methodologies Project methodologies.
  * @param {*} tools Project tools.
  * @param {*} pentesters Project pentesters.
  * @param {*} viewers Project viewers.
  * @param {*} archived True if the project is archived.
  */
-function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, cvss_type, methodologies, tools, pentesters, viewers, archived) {
+function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date, end_date, executive_summary, engagement_overview, conclusion, scope, client, cvss_type, cwes, methodologies, tools, pentesters, viewers, archived) {
     $.ajax({
         url: "/api/project/" + id + "/",
-        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"cvss_type":' + JSON.stringify(cvss_type) + ',"archived":' + JSON.stringify(archived) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
+        data: '{"name":' + JSON.stringify(name) + ',"start_date":' + JSON.stringify(start_date) + ',"end_date":' + JSON.stringify(end_date) + ',"executive_summary":' + JSON.stringify(executive_summary) + ',"engagement_overview":' + JSON.stringify(engagement_overview) + ',"conclusion":' + JSON.stringify(conclusion) + ',"scope":' + JSON.stringify(scope) + ',"client":' + JSON.stringify(client) + ',"cvss_type":' + JSON.stringify(cvss_type) + ',"cwes":' + JSON.stringify(cwes) + ',"archived":' + JSON.stringify(archived) + ',"methodologies":' + convertArrayToJSON(methodologies) + ',"tools":' + convertArrayToJSON(tools) + ',"pentesters":' + convertArrayToJSON(pentesters) + ',"viewers":' + convertArrayToJSON(viewers) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
@@ -149,14 +151,15 @@ function ajaxDeleteAssessment(successFunction, errorFunction, id) {
  * @param {*} body Hit body.
  * @param {*} remediation Hit remediation.
  * @param {*} labels Hit labels.
+ * @param {*} cwes Hit cwes.
  * @param {*} status Hit status.
  * @param {*} fix_complexity Hit fix complexity (N/D, High, Medium, Low)
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxCreateHit(successFunction, errorFunction, severity, title, asset, body, remediation, status, fix_complexity, labels, assessmentId) {
+function ajaxCreateHit(successFunction, errorFunction, severity, title, asset, body, remediation, status, fix_complexity, labels, cwes, assessmentId) {
     $.ajax({
         url: "/api/hits/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"status":' + JSON.stringify(status) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"status":' + JSON.stringify(status) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"cwes":' + convertArrayToJSON(cwes) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'POST',
         success: successFunction,
         error: errorFunction
@@ -177,12 +180,13 @@ function ajaxCreateHit(successFunction, errorFunction, severity, title, asset, b
  * @param {*} status Hit status.
  * @param {*} fix_complexity Hit fix complexity (N/D, High, Medium, Low)
  * @param {*} labels Hit labels.
+ * @param {*} cwes Hit cwes.
  * @param {*} assessmentId  Assessment id.
  */
-function ajaxUpdateHit(successFunction, errorFunction, id, severity, title, asset, body, remediation, status, fix_complexity, labels, assessmentId) {
+function ajaxUpdateHit(successFunction, errorFunction, id, severity, title, asset, body, remediation, status, fix_complexity, labels, cwes, assessmentId) {
     $.ajax({
         url: "/api/hit/" + id + "/",
-        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"status":' + JSON.stringify(status) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
+        data: '{"severity":' + JSON.stringify(severity) + ',"title":' + JSON.stringify(title) + ',"asset":' + JSON.stringify(asset) + ',"body":' + JSON.stringify(body) + ',"remediation":' + JSON.stringify(remediation) + ',"status":' + JSON.stringify(status) + ',"fix_complexity":' + JSON.stringify(fix_complexity) + ',"labels":' + convertArrayToJSON(labels) + ',"cwes":' + convertArrayToJSON(cwes) + ',"assessment":' + JSON.stringify(assessmentId) + '}',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
@@ -254,6 +258,25 @@ function ajaxDeleteLabel(successFunction, errorFunction, id) {
     $.ajax({
         url: "/api/label/" + id + "/",
         type: 'DELETE',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a CWE list.
+ * 
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id CWE list id.
+ * @param {*} version CWE list version.
+ * @param {*} deprecated True if CWE list is deprecated.
+ */
+function ajaxUpdateCWEs(successFunction, errorFunction, id, version, deprecated) {
+    $.ajax({
+        url: "/api/cwes/" + id + "/",
+        data: '{"version":' + JSON.stringify(version) + ',"deprecated":' + JSON.stringify(deprecated) + '}',
+        type: 'PUT',
         success: successFunction,
         error: errorFunction
     });

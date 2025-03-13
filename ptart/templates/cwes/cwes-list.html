@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %} CWE List | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        {% include '_include/html/header.html' with item='CWEs' active_icon='fa fa-sticky-note' active_text='CWEs' %}
+        {% include "_include/html/messages.html" %}
+        {% include '_include/html/list.html' with table=table nodelete='1' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_foot %}
+{% endblock %}

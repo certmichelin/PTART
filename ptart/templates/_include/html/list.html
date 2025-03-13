@@ -5,9 +5,11 @@
             <div class="panel-body">
                 {% if count > 0 %}
                 {% render_table table %}
-                <div class="left">
-                    <input id="delBtn" type="button" value="Delete" class="btn btn-outline-danger" />
-                </div>
+                    {% if not nodelete %}
+                    <div class="left">
+                        <input id="delBtn" type="button" value="Delete" class="btn btn-outline-danger" />
+                    </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

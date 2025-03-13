@@ -179,6 +179,8 @@
 \definecolor{retest-status-PF}{HTML}{FFB266}
 \definecolor{retest-status-F}{HTML}{33FF33}
 
+\definecolor{cwe}{HTML}{877e7e}
+
 \BLOCK{for label in labels }
 \definecolor{label-color-\VAR{label.id }}{HTML}{\VAR{label.color | replace("#","")}}
 \BLOCK{ endfor }
@@ -447,6 +449,30 @@
 		\caption{Statistics of vulnerabilities by label}
 	\end{figure}
 \BLOCK{ endif }
+
+\BLOCK{ if project.cwes_statistics().items()|length > 0 }
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\pie
+			[
+				rotate=180, 
+				after number=,
+				/tikz/nodes={text=black, font=\normalfont},
+				/tikz/every pin/.style={align=center, text=black, font=\normalfont},
+				sum=auto,
+				text = legend
+			]
+			{
+				\BLOCK{ for key, value in project.cwes_statistics().items() }
+					\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }  
+				\BLOCK{ endfor }
+			}
+		\end{tikzpicture}
+		\caption{Statistics of vulnerabilities by CWE}
+	\end{figure}
+\BLOCK{ endif }
+
 \newpage
 %-----------------------------------------------------%
 % End of Observations                                 %
@@ -483,47 +509,49 @@
 					{\setlength{\extrarowheight}{2pt}%
 					\begin{tabular}{| l | p{12cm} |}
 						\hline 
-						Severity & \badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }}\\
+						Severity & \badge[bc-badge-p\VAR{ hit.severity }]{\footnotesize P\VAR{ hit.severity }}\\
 						\hline
 						\BLOCK{ if project.cvss_type == 3 }
 						\BLOCK{ if hit.get_cvss_value() == "---" }
-							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{ N.C } \\
+							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{\footnotesize  N.C } \\
 						\BLOCK{ elif hit.get_cvss_value() <= 0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{\footnotesize \VAR{ hit.get_cvss_value()} - None} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-success]{\VAR{ hit.get_cvss_value()} - Low} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-success]{\footnotesize \VAR{ hit.get_cvss_value()} - Low} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-warning]{\footnotesize \VAR{ hit.get_cvss_value()} - Medium} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-danger]{\VAR{ hit.get_cvss_value()} - High} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-danger]{\footnotesize \VAR{ hit.get_cvss_value()} - High} \\
 						\BLOCK{ else }
-							CVSSv3 Base Score & \badge[cvss3-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-dark]{\footnotesize \VAR{ hit.get_cvss_value()} - Critical} \\
 						\BLOCK{ endif }
 						\hline
 						CVSSv3 String &  \VAR{ hit.get_cvss_string() } \\
 						\BLOCK{ else }
 						\BLOCK{ if hit.get_cvss_value() == "---" }
-							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{ N.C } \\
+							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{\footnotesize N.C } \\
 						\BLOCK{ elif hit.get_cvss_value() <= 0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{\VAR{ hit.get_cvss_value()} - None} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{\footnotesize \VAR{ hit.get_cvss_value()} - None} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 4.0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-success]{\VAR{ hit.get_cvss_value()} - Low} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-success]{\footnotesize \VAR{ hit.get_cvss_value()} - Low} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 7.0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-warning]{\VAR{ hit.get_cvss_value()} - Medium} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-warning]{\footnotesize \VAR{ hit.get_cvss_value()} - Medium} \\
 						\BLOCK{ elif hit.get_cvss_value() <= 9.0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-danger]{\VAR{ hit.get_cvss_value()} - High} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-danger]{\footnotesize \VAR{ hit.get_cvss_value()} - High} \\
 						\BLOCK{ else }
-							CVSSv4 Base Score & \badge[cvss4-badge-dark]{\VAR{ hit.get_cvss_value()} - Critical} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-dark]{\footnotesize \VAR{ hit.get_cvss_value()} - Critical} \\
 						\BLOCK{ endif }
 						\hline
 						CVSSv4 String &  {\small \VAR{ hit.get_cvss_string() }} \\
 						\BLOCK{ endif }
 						\hline 
-						Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}} \\
+						Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\footnotesize \VAR{ hit.get_fix_complexity_str()}} \\
 						\hline 
 						Asset & \VAR{ hit.asset | escape  } \\
 						\hline 
-						Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
+						CWE(s) &  \BLOCK{ for cwe in hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe }}\BLOCK{ endfor } \\
+						\hline
+						Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\	
 						\hline 
 						Reference(s) & \BLOCK{ if hit.hitreference_set.all() and hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
 						\hline 
@@ -593,8 +621,11 @@
 
 	\BLOCK{ for retestcampaign in project.retestcampaign_set.all() }
 		\subsection{\VAR{retestcampaign.name | escape }}
-		\subsubsection{Introduction}
-		\VAR{ retestcampaign.introduction | mdtolatex }
+
+		\BLOCK{ if retestcampaign.introduction }
+			\subsubsection{Introduction}
+			\VAR{ retestcampaign.introduction | mdtolatex }
+		\BLOCK{ endif }
 
 		\BLOCK{ if retestcampaign.retesthit_set.all()|length > 0 }
 			\subsubsection{Observations}
@@ -650,49 +681,51 @@
 					{\setlength{\extrarowheight}{2pt}%
 					\begin{tabular}{| l | p{12cm} |}
 						\hline 
-						Severity & \badge[bc-badge-p\VAR{ retest_hit.hit.severity }]{P\VAR{ retest_hit.hit.severity }}\\
+						Severity & \badge[bc-badge-p\VAR{ retest_hit.hit.severity }]{\footnotesize P\VAR{ retest_hit.hit.severity }}\\
 						\hline
 						\BLOCK{ if project.cvss_type == 3 }
 						\BLOCK{ if retest_hit.hit.get_cvss_value() == "---" }
-							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{ N.C } \\
+							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{\footnotesize  N.C } \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{\VAR{ retest_hit.hit.get_cvss_value()} - None} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-secondary]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - None} \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 4.0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-success]{\VAR{ retest_hit.hit.get_cvss_value()} - Low} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-success]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - Low} \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 7.0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-warning]{\VAR{ retest_hit.hit.get_cvss_value()} - Medium} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-warning]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - Medium} \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 9.0 }
-							CVSSv3 Base Score & \badge[cvss3-badge-danger]{\VAR{ retest_hit.hit.get_cvss_value()} - High} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-danger]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - High} \\
 						\BLOCK{ else }
-							CVSSv3 Base Score & \badge[cvss3-badge-dark]{\VAR{ retest_hit.hit.get_cvss_value()} - Critical} \\
+							CVSSv3 Base Score & \badge[cvss3-badge-dark]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - Critical} \\
 						\BLOCK{ endif }
 						\hline
 						CVSSv3 String &  \VAR{ retest_hit.hit.get_cvss_string() } \\
 						\BLOCK{ else }
 						\BLOCK{ if retest_hit.hit.get_cvss_value() == "---" }
-							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{ N.C } \\
+							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{\footnotesize N.C } \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{\VAR{ retest_hit.hit.get_cvss_value()} - None} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-secondary]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - None} \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 4.0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-success]{\VAR{ retest_hit.hit.get_cvss_value()} - Low} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-success]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - Low} \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 7.0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-warning]{\VAR{ retest_hit.hit.get_cvss_value()} - Medium} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-warning]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - Medium} \\
 						\BLOCK{ elif retest_hit.hit.get_cvss_value() <= 9.0 }
-							CVSSv4 Base Score & \badge[cvss4-badge-danger]{\VAR{ retest_hit.hit.get_cvss_value()} - High} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-danger]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - High} \\
 						\BLOCK{ else }
-							CVSSv4 Base Score & \badge[cvss4-badge-dark]{\VAR{ retest_hit.hit.get_cvss_value()} - Critical} \\
+							CVSSv4 Base Score & \badge[cvss4-badge-dark]{\footnotesize \VAR{ retest_hit.hit.get_cvss_value()} - Critical} \\
 						\BLOCK{ endif }
 						\hline
 						CVSSv4 String &  {\small \VAR{ retest_hit.hit.get_cvss_string() }} \\
 						\BLOCK{ endif }
 						\hline
-						Status & \badge[retest-status-\VAR{ retest_hit.status }]{\VAR{ retest_hit.get_status_display()}} \\
+						Status & \badge[retest-status-\VAR{ retest_hit.status }]{\footnotesize \VAR{ retest_hit.get_status_display()}} \\
 						\hline  
-						Fix Complexity & \badge[fix-complexity-\VAR{ retest_hit.hit.fix_complexity }]{\VAR{ retest_hit.hit.get_fix_complexity_str()}} \\
+						Fix Complexity & \badge[fix-complexity-\VAR{ retest_hit.hit.fix_complexity }]{\footnotesize \VAR{ retest_hit.hit.get_fix_complexity_str()}} \\
 						\hline 
 						Asset & \VAR{ retest_hit.hit.asset | escape  } \\
 						\hline 
-						Label(s) &  \BLOCK{ for label in retest_hit.hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\VAR{ label.title }}\BLOCK{ endfor } \\	
+						CWE(s) &  \BLOCK{ for cwe in retest_hit.hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe }}\BLOCK{ endfor } \\
+						\hline 
+						Label(s) &  \BLOCK{ for label in retest_hit.hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\	
 						\hline 
 						Reference(s) & \BLOCK{ if retest_hit.hit.hitreference_set.all() and retest_hit.hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in retest_hit.hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
 						\hline
@@ -710,8 +743,10 @@
 				\BLOCK{ endfor }
 		\BLOCK{ endfor }
 		
-		\subsubsection{Conclusion}
-		\VAR{ retestcampaign.conclusion | mdtolatex }
+		\BLOCK{ if retestcampaign.conclusion }
+			\subsubsection{Conclusion}
+			\VAR{ retestcampaign.conclusion | mdtolatex }
+		\BLOCK{ endif }
 	\BLOCK{ endfor }
 	\newpage
 \BLOCK{ endif }
@@ -786,7 +821,16 @@
 	\newpage
 \BLOCK{ endif } 
 
-
+\BLOCK{ if project.cwes_used()|length > 0 }
+\section{Common Weakness Enumeration (CWE) Details : \VAR{ project.cwes.version | escape }}
+	 
+\BLOCK{ for cwe in project.cwes_used() }
+	\subsection{\VAR{ cwe }}
+	\VAR{ cwe.description | mdtolatex }
+	\VAR{ cwe.extended_description | mdtolatex }
+\BLOCK{ endfor }
+\BLOCK{ endif } 
+	
 \BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
 	\section{Testing Methodology Details}
 	 

@@ -70,6 +70,14 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>CWE(s)</label>
+                    <select class="js-states form-control" id="cwes" multiple="multiple">
+                        {% for cwe in cwes %}
+                        <option value="{{ cwe.id }}">{{ cwe }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="assessment">Assessment</label>
                     <select id="assessment" class="form-control">
                         {% for assessment in assessments %}
@@ -236,6 +244,12 @@
         }
     }).val(selectedLabels).trigger("change");
 
+    var selectedCwes = [];
+    {% for cwe in hit.cwes.all %}
+    selectedCwes.push({{ cwe.id }});
+    {% endfor %}
+    $('#cwes').select2().val(selectedCwes).trigger("change");
+
     activeBootstapMenuForScreenshots(screenshotMoveUpCallback,screenshotMoveDownCallback);
 
     /* --------------------------------------------------------------------------------------------------- */
@@ -254,7 +268,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#status").val(), $("#fix_complexity").val(), $("#labels").select2("val"), $("#assessment").val());
+        ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#status").val(), $("#fix_complexity").val(), $("#labels").select2("val"), $("#cwes").select2("val"), $("#assessment").val());
         {% if cvss_type == 3 %}
         ajaxRemoveCVSSv31(cvssDeletionSuccess, commonFailure, $("#id").val());
         {% else %}

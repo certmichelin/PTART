@@ -134,6 +134,73 @@ class Case(models.Model):
 
     class Meta:
         ordering = ('id',)
+
+""" CWE List model."""
+class CWEs(models.Model):
+
+    version = models.CharField(max_length=200)
+    deprecated = models.BooleanField(default=False)
+
+    def __str__(self):  
+        return self.version
+
+    def get_viewable(user):
+        """Returns all viewable CWE lists"""
+        return CWEs.objects.all()
+
+    def get_not_deprecated(user):
+        """Returns not deprecated CWE lists"""
+        return CWEs.objects.filter(deprecated=False)
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this CWE list"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this CWE list"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this CWE list"""
+        return user.is_staff
+
+    class Meta:
+        ordering = ('version',)
+
+""" CWE model."""
+class CWE(models.Model):
+
+    cwe_id = models.IntegerField()
+    name = models.CharField(max_length=500)
+    description = models.TextField(blank=True, default="")
+    extended_description = models.TextField(blank=True, default="")
+    cwes = models.ForeignKey(CWEs, on_delete=models.CASCADE, null=True, default=None)
+
+    def __str__(self):  
+        return "CWE-" + str(self.cwe_id) + " - " + self.name
+    
+    def print_cwe_id(self):
+        """Return the CWE ID in a pretty format"""
+        return "CWE-" + str(self.cwe_id)
+
+    def get_viewable(user):
+        """Returns all viewable CWE Weaknesses"""
+        return CWE.objects.all()
+
+    def is_user_can_view(self, user):
+        """Verify if the user have read access for this CWE Weakness"""
+        return True
+
+    def is_user_can_edit(self, user):
+        """Verify if the user have write access for this CWE Weakness"""
+        return user.is_staff
+
+    def is_user_can_create(self, user):
+        """Verify if the user can create this CWE Weakness"""
+        return user.is_staff
+
+    class Meta:
+        ordering = ('cwe_id',)
         
 """ Project model."""
 class Project(models.Model):
@@ -149,6 +216,7 @@ class Project(models.Model):
     end_date = models.DateField(null=True)
     archived = models.BooleanField(default=False)
     cvss_type = models.IntegerField(default=3, validators=[MinValueValidator(3), MaxValueValidator(4)])
+    cwes = models.ForeignKey(CWEs, null=True, on_delete=models.PROTECT)
     tools = models.ManyToManyField(Tool)
     methodologies = models.ManyToManyField(Methodology)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
@@ -202,6 +270,28 @@ class Project(models.Model):
                     else:
                         statistics[label.title] = statistics[label.title] + 1
         return statistics
+    
+    def cwes_statistics(self):
+        """Compute statistics on cwes"""
+        statistics = {}
+        for assessment in self.assessment_set.all() :
+            for hit in assessment.displayable_hits():
+                for cwe in hit.cwes.all():
+                    if statistics.get(cwe.print_cwe_id()) is None :
+                        statistics[cwe.print_cwe_id()] = 1
+                    else:
+                        statistics[cwe.print_cwe_id()] = statistics[cwe.print_cwe_id()] + 1
+        return statistics
+    
+    def cwes_used(self):
+        """Compute statistics on cwes"""
+        cwes = []
+        for assessment in self.assessment_set.all() :
+            for hit in assessment.displayable_hits():
+                for cwe in hit.cwes.all():
+                    if cwe not in cwes :
+                        cwes.append(cwe)
+        return cwes
 
     def get_viewable(user):
         """Returns all viewable & non-archived projects"""
@@ -395,6 +485,7 @@ class Label(models.Model):
     class Meta:
         ordering = ('pk',)
 
+
 """CvssV3.1 model"""
 class Cvss3(models.Model):
     NALP_CHOICES = (
@@ -530,6 +621,7 @@ class Hit(models.Model):
     cvss3 = models.OneToOneField(Cvss3, null=True, on_delete=models.SET_NULL)
     cvss4 = models.OneToOneField(Cvss4, null=True, on_delete=models.SET_NULL)
     labels = models.ManyToManyField(Label)
+    cwes = models.ManyToManyField(CWE)
 
     def __str__(self):  
         return self.title
