@@ -826,8 +826,8 @@
 	 
 \BLOCK{ for cwe in project.cwes_used() }
 	\subsection{\VAR{ cwe.print_cwe() | escape }}
-	\VAR{ cwe.description | mdtolatex }
-	\VAR{ cwe.extended_description | mdtolatex }
+	\VAR{ cwe.description | escape }
+	\VAR{ cwe.extended_description | escape }
 \BLOCK{ endfor }
 \BLOCK{ endif } 
 	
