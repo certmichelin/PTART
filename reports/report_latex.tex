@@ -549,7 +549,7 @@
 						\hline 
 						Asset & \VAR{ hit.asset | escape  } \\
 						\hline 
-						CWE(s) &  \BLOCK{ for cwe in hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe | mdtolatex }}\BLOCK{ endfor } \\
+						CWE(s) &  \BLOCK{ for cwe in hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe.print_cwe() | mdtolatex }}\BLOCK{ endfor } \\
 						\hline
 						Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\	
 						\hline 
@@ -723,7 +723,7 @@
 						\hline 
 						Asset & \VAR{ retest_hit.hit.asset | escape  } \\
 						\hline 
-						CWE(s) &  \BLOCK{ for cwe in retest_hit.hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe }}\BLOCK{ endfor } \\
+						CWE(s) &  \BLOCK{ for cwe in retest_hit.hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe.print_cwe() | mdtolatex }}\BLOCK{ endfor } \\
 						\hline 
 						Label(s) &  \BLOCK{ for label in retest_hit.hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\	
 						\hline 
@@ -825,7 +825,7 @@
 \section{Common Weakness Enumeration (CWE) Details : \VAR{ project.cwes.version | escape }}
 	 
 \BLOCK{ for cwe in project.cwes_used() }
-	\subsection{\VAR{ cwe | mdtolatex }}
+	\subsection{\VAR{ cwe.print_cwe() | mdtolatex }}
 	\VAR{ cwe.description | mdtolatex }
 	\VAR{ cwe.extended_description | mdtolatex }
 \BLOCK{ endfor }

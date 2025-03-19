@@ -179,6 +179,9 @@ class CWE(models.Model):
     def __str__(self):  
         return "CWE-" + str(self.cwe_id) + " - " + self.name
     
+    def print_cwe(self):
+        return str(self)
+    
     def print_cwe_id(self):
         """Return the CWE ID in a pretty format"""
         return "CWE-" + str(self.cwe_id)
