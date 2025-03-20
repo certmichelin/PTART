@@ -186,6 +186,13 @@ class CWE(models.Model):
         """Return the CWE ID in a pretty format"""
         return "CWE-" + str(self.cwe_id)
 
+    def export(self):
+        """Return the CWE in a dict format"""
+        return {
+            "cwe_id": self.cwe_id,
+            "title": self.print_cwe()
+        }
+
     def get_viewable(user):
         """Returns all viewable CWE Weaknesses"""
         return CWE.objects.all()
@@ -745,7 +752,14 @@ class HitReference(models.Model):
     hit = models.ForeignKey(Hit, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=1000, default="")
     url = models.CharField(max_length=1000, default="")
-    
+
+    def export(self):
+        """Return the hit reference in a dict format"""
+        return {
+            'name': self.name,
+            'url': self.url
+        }
+
     def get_viewable(user):
         """Returns all viewable hit references"""
         return HitReference.objects.filter(hit__in=Hit.get_viewable(user))
@@ -786,6 +800,17 @@ class Screenshot(models.Model):
     def get_raw_data(self):
         """Get screenshot data in binary format"""
         return get_screenshot_raw_data(self.screenshot)
+
+    def export(self):
+        """Return the screenshot in a dict format"""
+        return {
+            'caption': self.caption,
+            'order': self.order,
+            'screenshot': {
+                'filename': self.screenshot.name,
+                'data': self.get_data().split(',')[1]
+            }
+        }
 
     def delete(self):
         delete_screenshot_file(self.screenshot)
@@ -856,7 +881,15 @@ class Attachment(models.Model):
             url = "." + url
         os.remove(url)
         super(Attachment, self).delete()
-    
+
+    def export(self):
+        """Return the attachment in a dict format"""
+        return {
+            'title': self.attachment_name.title(),
+            'filename': self.attachment.name,
+            'data': self.get_data().split(',')[1]
+        }
+
     def get_viewable(user):
         """Returns all viewable attachments"""
         return Attachment.objects.filter(hit__in=Hit.get_viewable(user))
@@ -1100,7 +1133,18 @@ class RetestScreenshot(models.Model):
             screenshot.save(update_fields=['order'])
             
         super(RetestScreenshot, self).delete()
-    
+
+    def export(self):
+        """Return the screenshot in a dict format"""
+        return {
+            'caption': self.caption,
+            'order': self.order,
+            'screenshot': {
+                'filename': self.screenshot.name,
+                'data': self.get_data().split(',')[1]
+            }
+        }
+
     def get_viewable(user):
         """Returns all viewable screenshots"""
         return RetestScreenshot.objects.filter(retest_hit__in=RetestHit.get_viewable(user))

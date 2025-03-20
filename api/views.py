@@ -1371,25 +1371,11 @@ def project_json(request, pk):
                         'cvss_vector': (hit.cvss3.get_cvss_string() if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.get_cvss_string() if hit.cvss4 is not None else ""),
                         'cvss_score': (hit.cvss3.decimal_value if hit.cvss3 is not None else "") if project.cvss_type == 3 else (hit.cvss4.decimal_value if hit.cvss4 is not None else ""),
                         'added': hit.added,
-                        'labels': [label.title for label in hit.labels.all()],
-                        'cwes': [str(cwe) for cwe in hit.cwes.all()],
-                        'screenshots': [{
-                            'caption': screenshot.caption,
-                            'order': screenshot.order,
-                            'screenshot': {
-                                'filename': screenshot.screenshot.name,
-                                'data': screenshot.get_data().split(',')[1]
-                            }
-                        } for screenshot in hit.screenshot_set.all()],
-                        'attachments': [{
-                            'title': attachment.attachment_name.title(),
-                            'filename': attachment.attachment.name,
-                            'data': attachment.get_data().split(',')[1]
-                        } for attachment in hit.attachment_set.all()],
-                        'references': [{
-                            'name': reference.name,
-                            'url': reference.url
-                        } for reference in hit.hitreference_set.all()]
+                        'labels': [label_hit.title for label_hit in hit.labels.all()],
+                        'cwes': [cwe_hit.export() for cwe_hit in hit.cwes.all()],
+                        'screenshots': [screenshot.export() for screenshot in hit.screenshot_set.all()],
+                        'attachments': [attachment.export() for attachment in hit.attachment_set.all()],
+                        'references': [reference.export() for reference in hit.hitreference_set.all()]
                     } for hit in assessment.displayable_hits()]
                 } for assessment in project.assessment_set.all()],
                 'retests': [{
@@ -1413,17 +1399,10 @@ def project_json(request, pk):
                             'cvss_vector': (retesthit.hit.cvss3.get_cvss_string() if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.get_cvss_string() if retesthit.hit.cvss4 is not None else ""),
                             'cvss_score': (retesthit.hit.cvss3.decimal_value if retesthit.hit.cvss3 is not None else "") if project.cvss_type == 3 else (retesthit.hit.cvss4.decimal_value if retesthit.hit.cvss4 is not None else ""),
                             'added': retesthit.hit.added,
-                            'labels': [label.title for label in retesthit.hit.labels.all()],
-                            'cwes': [str(cwe) for cwe in retesthit.hit.cwes.all()],
+                            'labels': [label_hit.title for label_hit in retesthit.hit.labels.all()],
+                            'cwes': [cwe_hit.export() for cwe_hit in retesthit.hit.cwes.all()],
                         },
-                        'screenshots': [{
-                            'caption': screenshot.caption,
-                            'order': screenshot.order,
-                            'screenshot': {
-                                'filename': screenshot.screenshot.name,
-                                'data': screenshot.get_data().split(',')[1]
-                            }
-                        } for screenshot in retesthit.retestscreenshot_set.all()]
+                        'screenshots': [screenshot.export() for screenshot in retesthit.retestscreenshot_set.all()]
                     } for retesthit in retestcampaign.retesthit_set.all()]
                 } for retestcampaign in project.retestcampaign_set.all()]
             }
