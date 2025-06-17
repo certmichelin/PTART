@@ -4,7 +4,7 @@ import django
 import xml.etree.ElementTree as ET
 
 #
-# Bugcrowd VRT templates loader.
+# CWE v4.16 loader.
 #
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ptart.settings")
