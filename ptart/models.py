@@ -796,7 +796,11 @@ class Screenshot(models.Model):
     
     def get_data(self):
         """Get screenshot data in Base64"""
-        return 'data:image/%s;base64,%s' % (os.path.splitext(self.screenshot.url)[1], base64.b64encode(get_screenshot_raw_data(self.screenshot)).decode("utf-8"))
+        result = ''
+        data = get_screenshot_raw_data(self.screenshot)
+        if data is not None:
+            result = 'data:image/%s;base64,%s' % (os.path.splitext(self.screenshot.url)[1], base64.b64encode(data).decode("utf-8"))
+        return result
 
     def get_raw_data(self):
         """Get screenshot data in binary format"""
@@ -804,12 +808,15 @@ class Screenshot(models.Model):
 
     def export(self):
         """Return the screenshot in a dict format"""
+        data = self.get_data()
+        if data.startswith("data:image"):
+            data = data.split(',')[1]
         return {
             'caption': self.caption,
             'order': self.order,
             'screenshot': {
                 'filename': self.screenshot.name,
-                'data': self.get_data().split(',')[1]
+                'data': data
             }
         }
 
