@@ -96,6 +96,15 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Reviewers</label>
+                    <select class="js-states form-control" id="reviewers" multiple="multiple">
+                        {% for usr in users %}
+                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Viewers</label>
                     <select class="js-states form-control" id="viewers" multiple="multiple">
                         {% for usr in users %}
@@ -120,7 +129,8 @@
     $('.datepicker').datepicker({});
 
     $('#pentesters').select2().val(defaultPentester()).trigger("change");
-    $('#viewers').select2()
+    $('#reviewers').select2();
+    $('#viewers').select2();
     $('#methodologies').select2();
     $('#tools').select2();
 
@@ -137,6 +147,7 @@
         introSimpleMDE.value("");
         engagementOverviewMDE.value("");
         $('#pentesters').select2().val(defaultPentester()).trigger("change");
+        $('#reviewers').val(null).trigger('change');
         $('#viewers').val(null).trigger('change');
         $('#methodologies').val(null).trigger('change');
         $('#tools').val(null).trigger('change');
@@ -157,7 +168,7 @@
 
     $('#createBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), "", $("#scope").val(), $("#client").val(), $('#cvss_type').prop('checked')? 4 : 3, $("#cwes").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"));
+        ajaxCreateProject(projectCreationSuccess, commonFailure, $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), "", $("#scope").val(), $("#client").val(), $('#cvss_type').prop('checked')? 4 : 3, $("#cwes").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#reviewers").select2("val"), $("#viewers").select2("val"));
     });
 </script>
 {% endblock %}

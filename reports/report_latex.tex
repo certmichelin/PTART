@@ -297,7 +297,24 @@
 		\end{center}
 		\vfill
 		% End of Pentesters.
-		
+
+		% Reviewers.
+		\BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
+		Reviewers(s):
+		\begin{center}
+			\small{
+			\begin{itemize}
+				\centering
+				\BLOCK{ for reviewer in project.reviewers.all() }
+					\item[] \VAR{ reviewer.username | escape } - \VAR{ reviewer.first_name | escape } \VAR{ reviewer.last_name | escape }
+				\BLOCK{ endfor }
+			\end{itemize}
+			}
+		\end{center}
+		\vfill
+		\BLOCK{ endif }
+		% End of Reviewers.
+
 		\includegraphics[width=\textwidth/4]{\companylogo}
 				
 		% % Bottom of the page

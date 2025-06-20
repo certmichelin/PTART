@@ -230,6 +230,7 @@ class Project(models.Model):
     tools = models.ManyToManyField(Tool)
     methodologies = models.ManyToManyField(Methodology)
     pentesters = models.ManyToManyField(User, related_name='%(class)s_pentesters')
+    reviewers = models.ManyToManyField(User, related_name='%(class)s_reviewers')
     viewers = models.ManyToManyField(User, related_name='%(class)s_viewers')
 
     def __str__(self):  
@@ -305,23 +306,23 @@ class Project(models.Model):
 
     def get_viewable(user):
         """Returns all viewable & non-archived projects"""
-        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])).filter(archived = False).distinct()
+        return Project.objects.filter(Q(pentesters__in=[user]) | Q(reviewers__in=[user]) | Q(viewers__in=[user])).filter(archived = False).distinct()
 
     def get_archived_viewable(user):
         """Returns all viewable & non-archived projects"""
-        return Project.objects.filter(Q(pentesters__in=[user]) | Q(viewers__in=[user])).filter(archived = True).distinct()  
+        return Project.objects.filter(Q(pentesters__in=[user]) | Q(reviewers__in=[user]) | Q(viewers__in=[user])).filter(archived = True).distinct()  
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this project"""
         result = False
-        if user in self.pentesters.all() or user in self.viewers.all() :
+        if user in self.pentesters.all() or user in self.reviewers.all() or user in self.viewers.all() :
             result = True
         return result
 
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this project"""
         result = False
-        if user in self.pentesters.all() :
+        if user in self.pentesters.all() or user in self.reviewers.all() :
             result = True
         return result
 

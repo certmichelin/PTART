@@ -98,6 +98,20 @@
                         {% endfor %}
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label>Reviewers</label>
+                    <select class="js-states form-control" id="reviewers" multiple="multiple">
+                        {% for usr in users %}
+                            {% if usr.is_active == True %}
+                                <option value="{{ usr.id }}">{{ usr.username }}</option>
+                            {% else %}
+                                <option value="{{ usr.id }}">{{ usr.username }} (inactive)</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>Viewers</label>
                     <select class="js-states form-control" id="viewers" multiple="multiple">
@@ -163,6 +177,12 @@
     {% endfor %}
     $('#pentesters').select2().val(selectedPentesters).trigger("change");
 
+    var selectedReviewers = [];
+    {% for reviewer in project.reviewers.all %}
+    selectedReviewers.push({{ reviewer.id }});
+    {% endfor %}
+    $('#reviewers').select2().val(selectedReviewers).trigger("change");
+
     var selectedViewers = [];
     {% for viewer in project.viewers.all %}
     selectedViewers.push({{ viewer.id }});
@@ -190,7 +210,7 @@
      */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
-        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $('#cvss_type').prop('checked')? 4 : 3, $("#cwes").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
+        ajaxUpdateProject(projectUpdationSuccess, commonFailure, $("#id").val(), $("#name").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#executive_summary").val(), $("#engagement_overview").val(), $("#conclusion").val(), $("#scope").val(), $("#client").val(), $('#cvss_type').prop('checked')? 4 : 3, $("#cwes").val(), $("#methodologies").select2("val"), $("#tools").select2("val"), $("#pentesters").select2("val"), $("#reviewers").select2("val"), $("#viewers").select2("val"), $("#archived").prop("checked"));
     });
 </script>
 {% endblock %}

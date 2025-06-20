@@ -46,6 +46,7 @@ class MethodologySerializer(serializers.ModelSerializer):
         
 class ProjectSerializer(serializers.ModelSerializer):
     pentesters = UserSerializer(read_only=True, many=True)
+    reviewers = UserSerializer(read_only=True, many=True)
     viewers = UserSerializer(read_only=True, many=True)
     tools = ToolSerializer(read_only=True, many=True)
     methodologies = MethodologySerializer(read_only=True, many=True)
@@ -53,7 +54,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'viewers', 'start_date', 'end_date', 'cvss_type', 'cwes', 'added', 'archived', 'tools', 'methodologies')
+        fields = ('id', 'name','executive_summary', 'engagement_overview', 'conclusion', 'scope', 'client', 'pentesters', 'reviewers', 'viewers', 'start_date', 'end_date', 'cvss_type', 'cwes', 'added', 'archived', 'tools', 'methodologies')
   
     def validate(self, data):
         """Validate the fact that at least one pentester is present on the project"""
@@ -73,6 +74,12 @@ class ProjectSerializer(serializers.ModelSerializer):
                 pentester_instance = User.objects.get(pk=pentester)
                 project.pentesters.add(pentester_instance)
         
+        if "reviewers" in self.initial_data:
+            reviewers = self.initial_data.get("reviewers")
+            for reviewer in reviewers:
+                reviewer_instance = User.objects.get(pk=reviewer)
+                project.reviewers.add(reviewer_instance)
+
         if "viewers" in self.initial_data:
             viewers = self.initial_data.get("viewers")
             for viewer in viewers:
@@ -106,6 +113,12 @@ class ProjectSerializer(serializers.ModelSerializer):
         for pentester in pentesters:
             pentester_instance = User.objects.get(pk=pentester)
             instance.pentesters.add(pentester_instance)
+
+        instance.reviewers.clear()
+        reviewers = self.initial_data.get("reviewers")
+        for reviewer in reviewers:
+            reviewer_instance = User.objects.get(pk=reviewer)
+            instance.reviewers.add(reviewer_instance)
 
         instance.viewers.clear()
         viewers = self.initial_data.get("viewers")

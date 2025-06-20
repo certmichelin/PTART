@@ -53,6 +53,17 @@
                 </ul>
             </section>
 
+            {% if project.reviewers.all %}
+            <section>
+                <h3>Reviewed by:</h3>
+                <ul>
+                    {% for reviewer in project.reviewers.all %}
+                        <li>{{ reviewer.username }} - {{ reviewer.first_name }} {{ reviewer.last_name }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+            
             {% if project.scope %}
             <section>
                 <h3>Scope :</h3>

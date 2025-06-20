@@ -740,6 +740,7 @@ def project_xlsx(request, pk):
             ws['A2'] = "Client:"
             ws['A3'] = "Date:"
             ws['A4'] = "Auditors:"
+            ws['A5'] = "Reviewers:"
             ws['B1'] = project.name
             ws['B2'] = project.client
             if project.start_date is not None and project.end_date is not None :
@@ -756,11 +757,20 @@ def project_xlsx(request, pk):
                 previous = ", "
             ws['B4'] = pentester_str
 
+            #Construct the reviewer string
+            reviewer_str = ""
+            previous = ""
+            for reviewer in project.reviewers.all():
+                reviewer_str = "{}{}{} - {} {}".format(reviewer_str, previous, reviewer.username, reviewer.first_name, reviewer.last_name)
+                previous = ", "
+            ws['B5'] = reviewer_str
+
             #Beautify project data 
             ws.merge_cells('B1:I1')
             ws.merge_cells('B2:I2')
             ws.merge_cells('B3:I3')
             ws.merge_cells('B4:I4')
+            ws.merge_cells('B5:I5')
 
             
             projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
@@ -771,6 +781,7 @@ def project_xlsx(request, pk):
             ws['A2'].style = projectHeaderStyle
             ws['A3'].style = projectHeaderStyle
             ws['A4'].style = projectHeaderStyle
+            ws['A5'].style = projectHeaderStyle
 
             projectValueStyle = styles.NamedStyle(name = 'project_value_style')
             projectValueStyle.font = styles.Font(name = 'Calibri', size = 14, italic = True, color = '000000')
@@ -781,34 +792,35 @@ def project_xlsx(request, pk):
             ws['B2'].style = projectValueStyle
             ws['B3'].style = projectValueStyle
             ws['B4'].style = projectValueStyle
+            ws['B5'].style = projectValueStyle
             ws['B3'].number_format = 'YYYY MMM DD'
 
 
             #Add column header.
-            ws['A6'] = "Assessment"
-            ws['B6'] = "Sev"
-            ws['C6'] = "CVSSv3" if project.cvss_type == 3 else "CVSSv4"
-            ws['D6'] = "ID"
-            ws['E6'] = "Title"
-            ws['F6'] = "Asset"
-            ws['G6'] = "Fix Compl."
-            ws['H6'] = "Labels"
-            ws['I6'] = "CWE(s)"
+            ws['A7'] = "Assessment"
+            ws['B7'] = "Sev"
+            ws['C7'] = "CVSSv3" if project.cvss_type == 3 else "CVSSv4"
+            ws['D7'] = "ID"
+            ws['E7'] = "Title"
+            ws['F7'] = "Asset"
+            ws['G7'] = "Fix Compl."
+            ws['H7'] = "Labels"
+            ws['I7'] = "CWE(s)"
 
             columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
             columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
             columnHeaderStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '92D050')
             columnHeaderStyle.alignment = styles.Alignment(horizontal= 'center')
 
-            ws['A6'].style = columnHeaderStyle
-            ws['B6'].style = columnHeaderStyle
-            ws['C6'].style = columnHeaderStyle
-            ws['D6'].style = columnHeaderStyle
-            ws['E6'].style = columnHeaderStyle
-            ws['F6'].style = columnHeaderStyle
-            ws['G6'].style = columnHeaderStyle
-            ws['H6'].style = columnHeaderStyle
-            ws['I6'].style = columnHeaderStyle
+            ws['A7'].style = columnHeaderStyle
+            ws['B7'].style = columnHeaderStyle
+            ws['C7'].style = columnHeaderStyle
+            ws['D7'].style = columnHeaderStyle
+            ws['E7'].style = columnHeaderStyle
+            ws['F7'].style = columnHeaderStyle
+            ws['G7'].style = columnHeaderStyle
+            ws['H7'].style = columnHeaderStyle
+            ws['I7'].style = columnHeaderStyle
 
             #Fill the report
             criticalStyle = styles.NamedStyle(name = 'critical_style')
@@ -831,7 +843,7 @@ def project_xlsx(request, pk):
             infoStyle.font = styles.Font(name = 'OCR A Extended', color = 'FFFFFF')
             infoStyle.fill = styles.PatternFill(patternType = 'solid', fgColor = '6c757d')
 
-            line = 7
+            line = 8
             for assessment in project.assessment_set.all():        
                 for hit in assessment.displayable_hits():
                     ws.cell(row=line, column=1).value = assessment.name
@@ -904,7 +916,7 @@ def project_xlsx(request, pk):
 
                     line = line + 1
             
-            ws.auto_filter.ref = "A6:I{}".format(line)
+            ws.auto_filter.ref = "A7:I{}".format(line)
 
             # --------------------------------------------------------------------------
             # Recommendations
@@ -1357,7 +1369,11 @@ def project_json(request, pk):
                     'first_name': pentester.first_name,
                     'last_name': pentester.last_name
                 } for pentester in project.pentesters.all()],
-
+                'reviewers': [{
+                    'username': reviewer.username,
+                    'first_name': reviewer.first_name,
+                    'last_name': reviewer.last_name
+                } for reviewer in project.reviewers.all()],
                 'assessments': [{
                     'title': assessment.name,
                     'hits': [{
@@ -1471,11 +1487,12 @@ def audit(request):
             wb.active.column_dimensions['C'].width = 14
             wb.active.column_dimensions['D'].width = 14
             wb.active.column_dimensions['E'].width = 50
-            wb.active.column_dimensions['F'].width = 9
+            wb.active.column_dimensions['F'].width = 50
             wb.active.column_dimensions['G'].width = 9
             wb.active.column_dimensions['H'].width = 9
             wb.active.column_dimensions['I'].width = 9
             wb.active.column_dimensions['J'].width = 9
+            wb.active.column_dimensions['K'].width = 9
 
             #Add project data.
             ws['A1'] = "Audit Report"
@@ -1485,9 +1502,9 @@ def audit(request):
             ws['B3'] = "{} - {} {}".format(request.user.username, request.user.first_name, request.user.last_name)
 
             #Beautify project data 
-            ws.merge_cells('B1:J1')
-            ws.merge_cells('B2:J2')
-            ws.merge_cells('B3:J3')
+            ws.merge_cells('B1:K1')
+            ws.merge_cells('B2:K2')
+            ws.merge_cells('B3:K3')
             
             projectHeaderStyle = styles.NamedStyle(name = 'project_header_style')
             projectHeaderStyle.font = styles.Font(name = 'Calibri', size = 14, bold = True, color = '000000')
@@ -1514,11 +1531,12 @@ def audit(request):
             ws['C5'] = "Start Date"
             ws['D5'] = "End Date"
             ws['E5'] = "Pentesters"
-            ws['F5'] = "#P1"
-            ws['G5'] = "#P2"
-            ws['H5'] = "#P3"
-            ws['I5'] = "#P4"
-            ws['J5'] = "#P5"
+            ws['F5'] = "Reviewers"
+            ws['G5'] = "#P1"
+            ws['H5'] = "#P2"
+            ws['I5'] = "#P3"
+            ws['J5'] = "#P4"
+            ws['K5'] = "#P5"
 
             columnHeaderStyle = styles.NamedStyle(name = 'column_header_style')
             columnHeaderStyle.font = styles.Font(name = 'Calibri', size = 12, bold = True, color = '000000')
@@ -1535,6 +1553,7 @@ def audit(request):
             ws['H5'].style = columnHeaderStyle
             ws['I5'].style = columnHeaderStyle
             ws['J5'].style = columnHeaderStyle
+            ws['K5'].style = columnHeaderStyle
 
             line = 6
 
@@ -1554,16 +1573,25 @@ def audit(request):
                     pentester_str = "{}{}{}".format(pentester_str, previous, pentester.username)
                     previous = ", "
                 ws.cell(row=line, column=5).value = pentester_str
-                
-                ws.cell(row=line, column=6).value = len(project.p1_hits())
-                ws.cell(row=line, column=7).value = len(project.p2_hits())
-                ws.cell(row=line, column=8).value = len(project.p3_hits())
-                ws.cell(row=line, column=9).value = len(project.p4_hits())
-                ws.cell(row=line, column=10).value = len(project.p5_hits())
+
+                #Construct the reviewer string
+                reviewer_str = ""
+                previous = ""
+                for reviewer in project.reviewers.all():
+                    reviewer_str = "{}{}{}".format(reviewer_str, previous, reviewer.username)
+                    previous = ", "
+                ws.cell(row=line, column=6).value = reviewer_str
+
+
+                ws.cell(row=line, column=7).value = len(project.p1_hits())
+                ws.cell(row=line, column=8).value = len(project.p2_hits())
+                ws.cell(row=line, column=9).value = len(project.p3_hits())
+                ws.cell(row=line, column=10).value = len(project.p4_hits())
+                ws.cell(row=line, column=11).value = len(project.p5_hits())
 
                 line = line + 1
             
-            ws.auto_filter.ref = "A5:J{}".format(line)
+            ws.auto_filter.ref = "A5:K{}".format(line)
 
             #Prepare HTTP response.
             response = Response(save_virtual_workbook(wb))
