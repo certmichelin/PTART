@@ -277,7 +277,7 @@
             style: "cursor: pointer"
         });
         cardTitleSpan.text(data.hostname + " - " + data.ip);
-        
+
         var cardTitleDeleteHostButton = $('<button>', {
             class: "btn btn-outline-danger float-right ml-2",
             onclick: "deleteHost('" + data.id + "')"
@@ -311,9 +311,9 @@
             value: data.notes
         });
         var cardBody = $('<div>', { class: "card-body" });
-        var cardBodyRow = $('<div>', { 
+        var cardBodyRow = $('<div>', {
             id: "host" + data.id +"Body",
-            class: "row" 
+            class: "row"
         });
 
         //Append everything!!
@@ -350,22 +350,22 @@
      */
      function ServiceCreationSuccess(data) {
         success($("#messages"), "Service was Created");
-        
+
         //Create host according to the result.
         var block = $('<div>', { class: "col-lg-4" });
         var card = $('<div>', { class: "card mb-2", style: "cursor: pointer", onclick: "displayServiceModal('" + data.id + "')" });
         var cardBody = $('<div>', { class: "card-body" });
-        var cardTitle = $('<h5>', { 
+        var cardTitle = $('<h5>', {
             class: "card-title",
             id: "service" + data.id + "Header1"
          });
         cardTitle.text(data.name);
-        var cardSubtitle = $('<h6>', { 
+        var cardSubtitle = $('<h6>', {
             class: "card-subtitle mb-2 text-muted",
             id: "service" + data.id + "Header2"
          });
         cardSubtitle.text(data.port + " - " + data.protocol + " (" + data.version + ")");
-        
+
         var portInput = $('<input>', {
             type: "hidden",
             id: "service" + data.id + "Port",
@@ -532,7 +532,7 @@
         $("#serviceHostId").val($("#service" + id + "HostId").val());
         $("#serviceModal").modal('toggle');
     }
-    
+
     /**
      * Display new service modal.
      */

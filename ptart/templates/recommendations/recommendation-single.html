@@ -9,7 +9,7 @@
 
         {% include '_include/html/header.html' with item='Recommendation' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:recommendation.project.pk|addstr:"/summary" sub_text=recommendation.project.name third_icon='fa fa-book' third_url='#' third_text='Recommendation' active_icon='' active_text=recommendation.name %}
         {% include "_include/html/messages.html" %}
-        
+
         <!-- Recommendation creation form -->
         <div class="row">
             <div class="col-lg-12">
@@ -28,7 +28,7 @@
 
         <input type="hidden" value="{{ recommendation.id }}" id="id"/>
         <input type="hidden" value="{{ recommendation.project.id }}" id="projectId"/>
-        
+
         <div class="row">
             <div class="col-lg-12 mb-5">
                 <button id="updateBtn" class="btn btn-primary">Update</button>

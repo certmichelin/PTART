@@ -12,7 +12,7 @@
     <link href="/static/css/plugins/reveal/reveal.css" rel="stylesheet" type="text/css">
     <link href="/static/css/plugins/reveal/theme/blood.css" rel="stylesheet" type="text/css">
     <link href="/static/css/customs/badges.css" rel="stylesheet" type="text/css">
-    <link href="/static/css/customs/deciduous.css" rel="stylesheet" type="text/css">  
+    <link href="/static/css/customs/deciduous.css" rel="stylesheet" type="text/css">
 
 </head>
 
@@ -22,7 +22,7 @@
         <div class="slides">
             <section>
                 <h1>{{ project.name }}</h1>
-                
+
                 {% if project.client %}
                     <h3>{{ project.client }}</h3>
                 {% endif %}
@@ -63,7 +63,7 @@
                 </ul>
             </section>
             {% endif %}
-            
+
             {% if project.scope %}
             <section>
                 <h3>Scope :</h3>
@@ -133,7 +133,7 @@
                                 {% if hit.cwes.all %}
                                     <br/>
                                 {% endif %}
-                                
+
                                 {% for label in hit.labels.all %}
                                     <span class="bc-badge bc-badge-secondary" style="background-color:{{ label.color }}">{{ label.title }}</span>
                                 {% endfor %}
@@ -164,7 +164,7 @@
                                     </div>
                                 </section>
                             {% endif %}
-                            
+
                             {% if hit.hitreference_set.all and hit.hitreference_set.all|length > 0 %}
                             <section>
                                 <h5>Reference(s) :</h5>
@@ -193,7 +193,7 @@
                         <textarea id="scenario_{{ attackscenario.id }}" class="scenarioToDraw" style="display: none;">{{ attackscenario.scenario }}</textarea>
                         <div id="scenario_{{ attackscenario.id }}_svg" width=100 height=100></div>
                     </section>
-                {% endfor %} 
+                {% endfor %}
             {% endif %}
             -->
 
@@ -209,7 +209,7 @@
                                 {{ recommendation.body }}
                             </div>
                         </section>
-                {% endfor %} 
+                {% endfor %}
             {% endif %}
         </div>
     </div>
@@ -233,7 +233,7 @@
             markdown: {
                 sanitize: true
             },
-            
+
             // The "normal" size of the presentation, aspect ratio will be preserved
             // when the presentation is scaled to fit different resolutions. Can be
             // specified using percentage units.

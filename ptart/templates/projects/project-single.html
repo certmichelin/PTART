@@ -59,7 +59,7 @@
                     <label>CWEs</label>
                     <select class="js-states form-control" id="cwes">
                         {% for cwe in cwes %}
-                            {% if cwe.deprecated %} 
+                            {% if cwe.deprecated %}
                                 <option value="{{ cwe.id }}">{{ cwe.version }} - DEPRECATED</option>
                             {% else %}
                                 <option value="{{ cwe.id }}">{{ cwe.version }}</option>
@@ -150,7 +150,7 @@
     {% if project.start_date %}
         $('#startdate').datepicker('setDate', new Date('{{project.start_date|date:"Y-m-d"}}'));
     {% endif %}
-    
+
     {% if project.end_date %}
         $('#enddate').datepicker('setDate', new Date('{{project.end_date|date:"Y-m-d"}}'));
     {% endif %}
@@ -163,14 +163,14 @@
     {% endfor %}
 
     $('#methodologies').select2().val(selectedMethodologies).trigger("change");
-    
+
     var selectedTools = [];
     {% for tool in project.tools.all %}
         selectedTools.push({{ tool.id }});
     {% endfor %}
 
     $('#tools').select2().val(selectedTools).trigger("change");
-    
+
     var selectedPentesters = [];
     {% for pentester in project.pentesters.all %}
     selectedPentesters.push({{ pentester.id }});

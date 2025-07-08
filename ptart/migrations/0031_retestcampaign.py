@@ -7,23 +7,38 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0030_rename_cvss_cvss3'),
+        ("ptart", "0030_rename_cvss_cvss3"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RetestCampaign',
+            name="RetestCampaign",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('introduction', models.TextField(blank=True, default='')),
-                ('conclusion', models.TextField(blank=True, default='')),
-                ('start_date', models.DateField(null=True)),
-                ('end_date', models.DateField(null=True)),
-                ('project', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.project')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("introduction", models.TextField(blank=True, default="")),
+                ("conclusion", models.TextField(blank=True, default="")),
+                ("start_date", models.DateField(null=True)),
+                ("end_date", models.DateField(null=True)),
+                (
+                    "project",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ptart.project",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('start_date', 'name'),
+                "ordering": ("start_date", "name"),
             },
         ),
     ]

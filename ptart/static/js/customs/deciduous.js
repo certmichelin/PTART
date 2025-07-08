@@ -301,7 +301,7 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
     let lastObjectURL = "";
     let lastSvgObjectURL = "";
     let types = {};
-    
+
     //Michelin CERT customization to display attack scenario svg outside dedicated page
     function generateSvg(dom){
         let dot, title;
@@ -312,7 +312,7 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
     $('.scenarioToDraw').each(function(i, obj) {
         document.getElementById(obj.id + "_svg").innerHTML = generateSvg(obj);
     });
-    
+
     function selectRange(start, end) {
         inputSource.blur();
         inputSource.selectionEnd = inputSource.selectionStart = start;
@@ -607,10 +607,10 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
             });
         }
     }
-    
+
     window.addEventListener("hashchange", tryHashRender, false);
     rerender();
-    
+
     // Focus the textarea so that users know it's editable
     inputSource.selectionStart = inputSource.selectionEnd = 0;
     inputSource.focus();
@@ -623,7 +623,7 @@ window["@hpcc-js/wasm"].graphvizSync().then(graphviz => {
         currentPercentage = localStorage.getItem("deciduous-divider") || 40;
     }
     function updateDivider(percent) {
-       
+
     }
     function mouseMove(e) {
         const clientWidth = document.body.clientWidth;

@@ -8,8 +8,8 @@
     <div class="container-fluid">
 
         {% include '_include/html/header.html' with item='Recommendations' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:project.pk|addstr:"/summary" sub_text=project.name active_icon='fa fa-medkit' active_text='Recommendations' %}
-        {% include "_include/html/messages.html" %} 
-        
+        {% include "_include/html/messages.html" %}
+
         <!-- Recommendation creation form -->
         <div class="row">
           <div class="col-lg-12">
@@ -46,7 +46,7 @@
 {% block extra_foot %}
   <script>
       var mdBody = activeMarkdown("body");
-      
+
       function itemCreationSuccess(data) {
         $("#name").val("");
         mdBody.value("");

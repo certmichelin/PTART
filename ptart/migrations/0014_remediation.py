@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0013_hit_fix_complexity'),
+        ("ptart", "0013_hit_fix_complexity"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hit',
-            name='remediation',
-            field=models.TextField(blank=True, default=''),
+            model_name="hit",
+            name="remediation",
+            field=models.TextField(blank=True, default=""),
         ),
         migrations.AddField(
-            model_name='template',
-            name='remediation',
-            field=models.TextField(blank=True, default=''),
+            model_name="template",
+            name="remediation",
+            field=models.TextField(blank=True, default=""),
         ),
     ]

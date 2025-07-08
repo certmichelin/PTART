@@ -34,7 +34,7 @@ function cleanMessagesContainer(container) {
 }
 
 /**
- * Generic message. 
+ * Generic message.
  */
 function genericMessage(parent, message, alertClass) {
     parent.append($('<div>', { class: alertClass, "role": "alert" }).text(message).append($('<button>', { type: "button", class: "close", "data-dismiss": "alert", "aria-hidden": "true" }).text("×")));

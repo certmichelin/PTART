@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0010_project_archived'),
+        ("ptart", "0010_project_archived"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='label',
-            name='deprecated',
+            model_name="label",
+            name="deprecated",
             field=models.BooleanField(default=False),
         ),
     ]

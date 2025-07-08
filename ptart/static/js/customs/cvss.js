@@ -33,7 +33,7 @@ function clearCVSS3() {
 
     $("#cvss3Value").attr("class", "cvss3-badge cvss3-badge-secondary")
     $("#cvss3Value").text("No Rating (---)");
-    $("#cvss3").val("---"); 
+    $("#cvss3").val("---");
 
     $('#cvss3VectorNetwork').removeClass("active");
     $('#cvss3VectorAdjacent').removeClass("active");
@@ -74,7 +74,7 @@ function clearCVSS4() {
 
     $("#cvss4Value").attr("class", "cvss4-badge cvss4-badge-secondary")
     $("#cvss4Value").text("No Rating (---)");
-    $("#cvss4").val("---"); 
+    $("#cvss4").val("---");
 
     $('#cvss4VectorNetwork').removeClass("active");
     $('#cvss4VectorAdjacent').removeClass("active");

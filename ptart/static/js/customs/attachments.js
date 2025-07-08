@@ -1,5 +1,5 @@
 /**
- * Manage attachement. 
+ * Manage attachement.
  */
 function openAttachment(event) {
     var input = event.target;

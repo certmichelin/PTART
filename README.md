@@ -101,7 +101,7 @@ Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser
 
 **Preparing PTART environment :**
 
-Python requires Python 3.12 and a few more packages. The simplest way to set up PTART is using [venv](https://docs.python.org/3/library/venv.html). 
+Python requires Python 3.12 and a few more packages. The simplest way to set up PTART is using [venv](https://docs.python.org/3/library/venv.html).
 
 1. Clone the project and go to the new directory.
 2. Create a new virtual environment and installing dependencies: `python3.12 -m venv venv`.

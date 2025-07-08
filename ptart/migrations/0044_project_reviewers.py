@@ -8,13 +8,15 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('ptart', '0043_alter_cwes_options_alter_project_cwes'),
+        ("ptart", "0043_alter_cwes_options_alter_project_cwes"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='reviewers',
-            field=models.ManyToManyField(related_name='%(class)s_reviewers', to=settings.AUTH_USER_MODEL),
+            model_name="project",
+            name="reviewers",
+            field=models.ManyToManyField(
+                related_name="%(class)s_reviewers", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

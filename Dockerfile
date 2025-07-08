@@ -7,7 +7,7 @@ RUN apk add --no-cache \
     musl-dev \
     postgresql-dev \
     jpeg-dev \
-    cairo-dev 
+    cairo-dev
 
 # Install pandoc 3.2.1 manually based on architecture
 RUN ARCH=$(uname -m) && \

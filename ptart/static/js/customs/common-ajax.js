@@ -11,7 +11,7 @@ $.ajaxSetup({
 
 /**
  * Create a project.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Project name.
@@ -42,7 +42,7 @@ function ajaxCreateProject(successFunction, errorFunction, name, start_date, end
 
 /**
  * Update a project.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Project ID.
@@ -75,7 +75,7 @@ function ajaxUpdateProject(successFunction, errorFunction, id, name, start_date,
 
 /**
  * Delete a project.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Project id.
@@ -91,7 +91,7 @@ function ajaxDeleteProject(successFunction, errorFunction, id) {
 
 /**
  * Create an assessment.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Assessment name.
@@ -109,7 +109,7 @@ function ajaxCreateAssessment(successFunction, errorFunction, name, projectId) {
 
 /**
  * Update an assessment.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Assessment ID.
@@ -128,7 +128,7 @@ function ajaxUpdateAssessment(successFunction, errorFunction, id, name, projectI
 
 /**
  * Delete an assessment.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Assessment id.
@@ -144,7 +144,7 @@ function ajaxDeleteAssessment(successFunction, errorFunction, id) {
 
 /**
  * Create a hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} severity Hit severity.
@@ -170,7 +170,7 @@ function ajaxCreateHit(successFunction, errorFunction, severity, title, asset, b
 
 /**
  * Update a hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Hit id.
@@ -197,7 +197,7 @@ function ajaxUpdateHit(successFunction, errorFunction, id, severity, title, asse
 
 /**
  * Delete a hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Hit id.
@@ -213,7 +213,7 @@ function ajaxDeleteHit(successFunction, errorFunction, id) {
 
 /**
  * Create a label.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Label title.
@@ -231,7 +231,7 @@ function ajaxCreateLabel(successFunction, errorFunction, title, color) {
 
 /**
  * Update a label.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Label id.
@@ -251,7 +251,7 @@ function ajaxUpdateLabel(successFunction, errorFunction, id, title, deprecated, 
 
 /**
  * Delete a label.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Label id.
@@ -267,7 +267,7 @@ function ajaxDeleteLabel(successFunction, errorFunction, id) {
 
 /**
  * Update a CWE list.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id CWE list id.
@@ -286,7 +286,7 @@ function ajaxUpdateCWEs(successFunction, errorFunction, id, version, deprecated)
 
 /**
  * Create a tool.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Tool name.
@@ -304,7 +304,7 @@ function ajaxCreateTool(successFunction, errorFunction, name, url) {
 
 /**
  * Update a tool.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Tool id.
@@ -324,7 +324,7 @@ function ajaxUpdateTool(successFunction, errorFunction, id, name, deprecated, ur
 
 /**
  * Delete a tool.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Tool id.
@@ -340,7 +340,7 @@ function ajaxDeleteTool(successFunction, errorFunction, id) {
 
 /**
  * Create a comment.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} comment Comment Text.
@@ -358,7 +358,7 @@ function ajaxCreateComment(successFunction, errorFunction, comment, hitId) {
 
 /**
  * Delete a comment.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Comment id.
@@ -374,7 +374,7 @@ function ajaxDeleteComment(successFunction, errorFunction, id) {
 
 /**
  * Create a hit reference.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Hit reference name.
@@ -393,9 +393,9 @@ function ajaxCreateHitReference(successFunction, errorFunction, name, url, hitId
 
 /**
  * Delete a hit reference.10.
- * 
- * 
- 
+ *
+ *
+
 * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Hit reference id.
@@ -411,7 +411,7 @@ function ajaxDeleteHitReference(successFunction, errorFunction, id) {
 
 /**
  * Upload a screenshot for a hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} data Base64 image to upload.
@@ -430,7 +430,7 @@ function ajaxUploadScreenshot(successFunction, errorFunction, data, caption, hit
 
 /**
  * Delete a screenshot.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Screenshot id.
@@ -446,7 +446,7 @@ function ajaxDeleteScreenshot(successFunction, errorFunction, id) {
 
 /**
  * Reorder a screenshot.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} screenshot_id ID of the screenshot.
@@ -464,7 +464,7 @@ function ajaxReorderScreenshot(successFunction, errorFunction, screenshot_id, or
 
 /**
  * Upload a screenshot for a retest hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} data Base64 image to upload.
@@ -483,7 +483,7 @@ function ajaxUploadRetestScreenshot(successFunction, errorFunction, data, captio
 
 /**
  * Delete a retest hit screenshot.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Screenshot id.
@@ -499,7 +499,7 @@ function ajaxDeleteRetestScreenshot(successFunction, errorFunction, id) {
 
 /**
  * Reorder a retest hit screenshot.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id ID of the retest hit screenshot.
@@ -517,7 +517,7 @@ function ajaxReorderRetestScreenshot(successFunction, errorFunction, id, order) 
 
 /**
  * Upload an attachment for a hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} data Base64 attachment to upload.
@@ -536,7 +536,7 @@ function ajaxUploadAttachment(successFunction, errorFunction, data, name, hitId)
 
 /**
  * Delete an attachment.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Attachment id.
@@ -552,7 +552,7 @@ function ajaxDeleteAttachment(successFunction, errorFunction, id) {
 
 /**
  * Compute the cvss v3 value a screenshot for a hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} attackVector Attack vector.
@@ -576,7 +576,7 @@ function ajaxComputeCVSSv31(successFunction, errorFunction, attackVector, attack
 
 /**
  * Compute the cvss v3 and add it to the hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} hitId Hit ID.
@@ -601,7 +601,7 @@ function ajaxAddCVSSv31(successFunction, errorFunction, hitId, attackVector, att
 
 /**
  * Remove the CVSS v3 value from the hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} hitId Hit ID.
@@ -617,7 +617,7 @@ function ajaxRemoveCVSSv31(successFunction, errorFunction, hitId) {
 
 /**
  * Compute the cvss v4 value a screenshot for a hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} attackVector Attack vector.
@@ -644,7 +644,7 @@ function ajaxComputeCVSSv4(successFunction, errorFunction, attackVector, attackC
 
 /**
  * Compute the cvss v4 and add it to the hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} hitId Hit ID.
@@ -672,7 +672,7 @@ function ajaxAddCVSSv4(successFunction, errorFunction, hitId, attackVector, atta
 
 /**
  * Remove the CVSS v4 value from the hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} hitId Hit ID.
@@ -688,7 +688,7 @@ function ajaxRemoveCVSSv4(successFunction, errorFunction, hitId) {
 
 /**
  * Create a flag.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Flag name.
@@ -709,7 +709,7 @@ function ajaxCreateFlag(successFunction, errorFunction, title, asset, note, asse
 
 /**
  * Update a flag.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Flag id.
@@ -732,7 +732,7 @@ function ajaxUpdateFlag(successFunction, errorFunction, id, title, asset, note, 
 
 /**
  * Delete a flag.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Flag id.
@@ -748,7 +748,7 @@ function ajaxDeleteFlag(successFunction, errorFunction, id) {
 
 /**
  * Mark flag as done.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Flag id.
@@ -764,7 +764,7 @@ function ajaxMarkFlagAsDone(successFunction, errorFunction, id) {
 
 /**
  * Get a template
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Template id.
@@ -780,7 +780,7 @@ function ajaxGetTemplate(successFunction, errorFunction, id) {
 
 /**
  * Create a template.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} severity Template severity.
@@ -801,7 +801,7 @@ function ajaxCreateTemplate(successFunction, errorFunction, severity, name, asse
 
 /**
  * Update a template.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Template id.
@@ -824,7 +824,7 @@ function ajaxUpdateTemplate(successFunction, errorFunction, id, severity, name, 
 
 /**
  * Delete a template.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Template id.
@@ -840,7 +840,7 @@ function ajaxDeleteTemplate(successFunction, errorFunction, id) {
 
 /**
  * Create a methodology.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Methodology name.
@@ -858,7 +858,7 @@ function ajaxCreateMethodology(successFunction, errorFunction, name, description
 
 /**
  * Update a methodology.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Methodology id.
@@ -878,7 +878,7 @@ function ajaxUpdateMethodology(successFunction, errorFunction, id, name, descrip
 
 /**
  * Delete a methodology.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Methodology id.
@@ -894,7 +894,7 @@ function ajaxDeleteMethodology(successFunction, errorFunction, id) {
 
 /**
  * Create a module.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Module name.
@@ -913,7 +913,7 @@ function ajaxCreateModule(successFunction, errorFunction, name, description, met
 
 /**
  * Update a module.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Module id.
@@ -933,7 +933,7 @@ function ajaxUpdateModule(successFunction, errorFunction, id, name, description,
 
 /**
  * Delete a module.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Module id.
@@ -949,7 +949,7 @@ function ajaxDeleteModule(successFunction, errorFunction, id) {
 
 /**
  * Create a case.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Case name.
@@ -969,7 +969,7 @@ function ajaxCreateCase(successFunction, errorFunction, name, description, refer
 
 /**
  * Update a case.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Case id.
@@ -990,7 +990,7 @@ function ajaxUpdateCase(successFunction, errorFunction, id, name, description, r
 
 /**
  * Delete a case.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Case id.
@@ -1006,7 +1006,7 @@ function ajaxDeleteCase(successFunction, errorFunction, id) {
 
 /**
  * Load flags from module to an assessment.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} moduleId Module id.
@@ -1023,7 +1023,7 @@ function ajaxLoadFlagsFromModule(successFunction, errorfunction, moduleId, asses
 
 /**
  * Create a host.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} ip Host ip.
@@ -1044,7 +1044,7 @@ function ajaxCreateHost(successFunction, errorfunction, ip, hostname, os, notes,
 
 /**
  * Update a host.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Host id.
@@ -1066,7 +1066,7 @@ function ajaxUpdateHost(successFunction, errorfunction, id, ip, hostname, os, no
 
 /**
  * Delete a host.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Host id.
@@ -1082,7 +1082,7 @@ function ajaxDeleteHost(successFunction, errorfunction, id) {
 
 /**
  * Create a service.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} port Service port.
@@ -1104,7 +1104,7 @@ function ajaxCreateService(successFunction, errorfunction, port, protocol, name,
 
 /**
  * Update a service.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Service id.
@@ -1127,7 +1127,7 @@ function ajaxUpdateService(successFunction, errorfunction, id, port, protocol, n
 
 /**
  * Delete a service.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Service id.
@@ -1143,7 +1143,7 @@ function ajaxDeleteService(successFunction, errorfunction, id) {
 
 /**
  * Create an attack scenario.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Attack scenario name.
@@ -1164,7 +1164,7 @@ function ajaxDeleteService(successFunction, errorfunction, id) {
 
 /**
  * Update an attack scenario.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Attack scenario id.
@@ -1186,7 +1186,7 @@ function ajaxUpdateAttackScenario(successFunction, errorFunction, id, name, scen
 
 /**
  * Delete an attack scenario.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Attack scenario id.
@@ -1202,7 +1202,7 @@ function ajaxDeleteAttackScenario(successFunction, errorFunction, id) {
 
 /**
  * Create a recommendation.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Recommendation name.
@@ -1221,7 +1221,7 @@ function ajaxCreateRecommendation(successFunction, errorFunction, name, body, pr
 
 /**
  * Update a recommendation.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Recommendation name.
@@ -1240,7 +1240,7 @@ function ajaxUpdateRecommendation(successFunction, errorFunction, id, name, body
 
 /**
  * Delete a recommendation.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Recommendation id.
@@ -1256,7 +1256,7 @@ function ajaxDeleteRecommendation(successFunction, errorFunction, id) {
 
 /**
  * Create a retest campaign.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} name Retest campaign name.
@@ -1278,10 +1278,10 @@ function ajaxCreateRetestCampaign(successFunction, errorFunction, name, introduc
 
 /**
  * Update a retest campaign.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
- * @param {*} id Retest campaign id. 
+ * @param {*} id Retest campaign id.
  * @param {*} name Retest campaign name.
  * @param {*} introduction Retest campaign introduction.
  * @param {*} conclusion Retest campaign conclusion.
@@ -1301,7 +1301,7 @@ function ajaxUpdateRetestCampaign(successFunction, errorFunction, id, name, intr
 
 /**
  * Delete a retest campaign.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Retest campaign id.
@@ -1317,7 +1317,7 @@ function ajaxDeleteRetestCampaign(successFunction, errorFunction, id) {
 
 /**
  * Create a retest hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} body Retest hit body.
@@ -1337,10 +1337,10 @@ function ajaxCreateRetestHit(successFunction, errorFunction, body, status, hit, 
 
 /**
  * Update a retest hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
- * @param {*} id Retest hit id. 
+ * @param {*} id Retest hit id.
  * @param {*} body Retest hit body.
  * @param {*} status Retest hit status.
  * @param {*} hit Retest hit hit.
@@ -1358,7 +1358,7 @@ function ajaxUpdateRetestHit(successFunction, errorFunction, id, body, status, h
 
 /**
  * Delete a retest hit.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} id Retest hit id.
@@ -1374,7 +1374,7 @@ function ajaxDeleteRetestHit(successFunction, errorFunction, id) {
 
 /**
  * Grant authentication token.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  */
@@ -1390,7 +1390,7 @@ function ajaxDeleteRetestHit(successFunction, errorFunction, id) {
 
 /**
  * Revoke authentication token.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  */
@@ -1405,7 +1405,7 @@ function ajaxDeleteRetestHit(successFunction, errorFunction, id) {
 
 /**
  * Change current user password.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} oldPassword Old password.
@@ -1424,7 +1424,7 @@ function ajaxDeleteRetestHit(successFunction, errorFunction, id) {
 
 /**
  * Request ChatGPT.
- * 
+ *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
  * @param {*} question Request to ChatGPT.
@@ -1441,7 +1441,7 @@ function ajaxChatGpt(successFunction, errorFunction, question) {
 
 /**
  * Convert array to JSON string.
- * 
+ *
  * @param {*} array Array to convert.
  */
 function convertArrayToJSON(array) {

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0006_host_service'),
+        ("ptart", "0006_host_service"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hit',
-            name='displayable',
+            model_name="hit",
+            name="displayable",
             field=models.BooleanField(default=True),
         ),
     ]

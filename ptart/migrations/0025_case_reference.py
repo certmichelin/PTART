@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0024_tools'),
+        ("ptart", "0024_tools"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='case',
-            name='reference',
-            field=models.CharField(blank=True, default='', max_length=500),
+            model_name="case",
+            name="reference",
+            field=models.CharField(blank=True, default="", max_length=500),
         ),
     ]

@@ -12,13 +12,13 @@
 </head>
 
 <body class="text-center">
-  
+
     {% if form.get_user and form.otp_device|length < 1 %}
         <!-- TODO : Auto submit the OTP creation.-->
         <form id="OtpCreationForm" style="display: none;" method="POST" action="/otp/">
             {{ form.username }}
             {{ form.password }}
-            {% csrf_token %}  
+            {% csrf_token %}
         <form>
         <script>
                 document.getElementById("OtpCreationForm").submit();
@@ -28,43 +28,43 @@
         {% if form.get_user %}
 
             <form class="form-signin" method="POST">
-        
+
                 <img class="mb-4" src="/static/img/logo.png" alt="" width="110" height="110">
                 <h1 class="h3 mb-3 font-weight-normal">Please validate the second factor</h1>
-        
+
                 <label for="otp_token" class="sr-only">OTP Token</label>
                 <input id="otp_token" name="otp_token" class="form-control" placeholder="OTP Token (ex: 123456)" required autofocus>
-        
+
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                 <p class="mt-5 mb-3 text-muted">Software developed under MIT License</p>
-                
+
                 <div style="display: none;">
                     {{ form.username }}
                     {{ form.password }}
-                    {{ form.otp_device }} 
+                    {{ form.otp_device }}
                     {% csrf_token %}
                 </div>
             </form>
-            
+
         {% else %}
 
             <form class="form-signin" method="POST">
-        
+
                 <img class="mb-4" src="/static/img/logo.png" alt="" width="110" height="110">
-                
+
                 <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-                
+
                 <label for="username" class="sr-only">Username</label>
                 <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
-                
+
                 <label for="password" class="sr-only">Password</label>
                 <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
                 {% csrf_token %}
-            
+
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                 <p class="mt-5 mb-3 text-muted">Software developed under MIT License</p>
             </form>
-    
+
         {% endif %}
     {% endif %}
 

@@ -3,7 +3,7 @@
 {% block title %} Project | PTART{% endblock %}
 
 {% block extra_head %}
-    <link href="/static/css/customs/deciduous.css" rel="stylesheet" type="text/css">    
+    <link href="/static/css/customs/deciduous.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block page %}
@@ -54,7 +54,7 @@
                                 {% endif %}
                             {% endif %}
                         {% endif %}
-                    </div>                    
+                    </div>
                 </h1>
             </div>
         </div>
@@ -232,7 +232,7 @@
             {% if project.attackscenario_set.all %}
             <div class="col-lg-7">
                 <h3><i class="fa fa-book"></i> Attack Scenarios</h3>
-            
+
                 <table class="table table-bordered table-hover table-striped">
                     <thead>
                         <tr>
@@ -252,7 +252,7 @@
                                 <!-- The svg will populated into the block having the id of the code block concatenated with '_svg' -->
                                 <textarea id="scenario_{{ attackscenario.id }}" class="scenarioToDraw" style="display: none;">{{ attackscenario.scenario }}</textarea>
                                 <div id="scenario_{{ attackscenario.id }}_svg" style="display: none;"></div>
-                                <a class="btn btn-outline-success" href="#" role="button" onclick="displayScenarioAttack('{{ attackscenario.name }}','scenario_{{ attackscenario.id }}_svg')">Display</a>                           
+                                <a class="btn btn-outline-success" href="#" role="button" onclick="displayScenarioAttack('{{ attackscenario.name }}','scenario_{{ attackscenario.id }}_svg')">Display</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -283,7 +283,7 @@
 
             <!-- Recommendations -->
             {% if project.recommendation_set.all %}
-            
+
             <div class="col-lg-5">
                 <h3><i class="fa fa-medkit"></i> Recommendations</h3>
                 <table class="table table-bordered table-hover table-striped">

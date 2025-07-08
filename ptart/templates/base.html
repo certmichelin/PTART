@@ -49,11 +49,11 @@
                             {% endfor %}
                         </div>
                     </li>
-                    
+
                     <li class="nav-item {% if '/todo' in request.path %}active{% endif %}">
                         <a class="nav-link" href="/todo"><i class="fa fa-list-ul"></i > My ToDo</a>
                     </li>
-                    
+
                     <li class="nav-item {% if '/hit' in request.path %}active{% endif %}">
                         <a class="nav-link" href="/hits"><i class="fa fa-bullseye"></i> Hits</a>
                     </li>
@@ -70,7 +70,7 @@
                     <li class="nav-item {% if '/token' in request.path %}active{% endif %}">
                         <a class="nav-link" href="/token"><i class="fa fa-user"></i> Token</a>
                     </li>
-                    
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-cogs"></i> Administration
@@ -153,7 +153,7 @@
             }
         });
     </script>
-    
+
     {% block extra_foot %}{% endblock %}
 </body>
 

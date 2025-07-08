@@ -22,7 +22,7 @@
             <div class="col-lg-6">
                 {% if retestcampaign.get_assigned_hits|length != 0 %}
                     <canvas height="200" id="myChart"></canvas>
-                {% endif %}    
+                {% endif %}
             </div>
         </div>
 
@@ -112,10 +112,10 @@
             data: {
                 labels: ['Not Tested', 'N/A', 'Not Fixed', 'Partially Fixed', 'Fixed'],
                 datasets: [{
-                    data: [ 
-                        {{retestcampaign.get_not_tested_hits|length}}, 
-                        {{retestcampaign.get_not_applicable_hits|length}}, 
-                        {{retestcampaign.get_not_fixed_hits|length}}, 
+                    data: [
+                        {{retestcampaign.get_not_tested_hits|length}},
+                        {{retestcampaign.get_not_applicable_hits|length}},
+                        {{retestcampaign.get_not_fixed_hits|length}},
                         {{retestcampaign.get_partially_fixed_hits|length}},
                         {{retestcampaign.get_fixed_hits|length}}],
                     backgroundColor: [

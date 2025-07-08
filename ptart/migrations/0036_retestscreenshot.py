@@ -7,21 +7,36 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0035_alter_screenshot_options_screenshot_order'),
+        ("ptart", "0035_alter_screenshot_options_screenshot_order"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RetestScreenshot',
+            name="RetestScreenshot",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('screenshot', models.ImageField(upload_to='screenshots_retest')),
-                ('caption', models.CharField(blank=True, default='', max_length=256)),
-                ('order', models.IntegerField(default=-1)),
-                ('retest_hit', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.retesthit')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("screenshot", models.ImageField(upload_to="screenshots_retest")),
+                ("caption", models.CharField(blank=True, default="", max_length=256)),
+                ("order", models.IntegerField(default=-1)),
+                (
+                    "retest_hit",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ptart.retesthit",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('order',),
+                "ordering": ("order",),
             },
         ),
     ]

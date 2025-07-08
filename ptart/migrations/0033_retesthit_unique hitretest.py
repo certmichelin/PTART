@@ -6,12 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0032_retesthit'),
+        ("ptart", "0032_retesthit"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='retesthit',
-            constraint=models.UniqueConstraint(fields=('retest_campaign', 'hit'), name='unique hitretest'),
+            model_name="retesthit",
+            constraint=models.UniqueConstraint(
+                fields=("retest_campaign", "hit"), name="unique hitretest"
+            ),
         ),
     ]

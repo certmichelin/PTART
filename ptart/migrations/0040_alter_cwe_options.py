@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0039_cwes_cwe'),
+        ("ptart", "0039_cwes_cwe"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='cwe',
-            options={'ordering': ('cwe_id',)},
+            name="cwe",
+            options={"ordering": ("cwe_id",)},
         ),
     ]

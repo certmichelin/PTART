@@ -7,20 +7,35 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0021_project_engagement_overview'),
+        ("ptart", "0021_project_engagement_overview"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HitReference',
+            name="HitReference",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='', max_length=1000)),
-                ('url', models.CharField(default='', max_length=1000)),
-                ('hit', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.hit')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(default="", max_length=1000)),
+                ("url", models.CharField(default="", max_length=1000)),
+                (
+                    "hit",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ptart.hit",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('name',),
+                "ordering": ("name",),
             },
         ),
     ]

@@ -6,57 +6,57 @@
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.SimpleMDE = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
     'use strict'
-    
+
     exports.toByteArray = toByteArray
     exports.fromByteArray = fromByteArray
-    
+
     var lookup = []
     var revLookup = []
     var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
-    
+
     function init () {
       var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
       for (var i = 0, len = code.length; i < len; ++i) {
         lookup[i] = code[i]
         revLookup[code.charCodeAt(i)] = i
       }
-    
+
       revLookup['-'.charCodeAt(0)] = 62
       revLookup['_'.charCodeAt(0)] = 63
     }
-    
+
     init()
-    
+
     function toByteArray (b64) {
       var i, j, l, tmp, placeHolders, arr
       var len = b64.length
-    
+
       if (len % 4 > 0) {
         throw new Error('Invalid string. Length must be a multiple of 4')
       }
-    
+
       // the number of equal signs (place holders)
       // if there are two placeholders, than the two characters before it
       // represent one byte
       // if there is only one, then the three characters before it represent 2 bytes
       // this is just a cheap hack to not do indexOf twice
       placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
-    
+
       // base64 is 4/3 + up to two characters of the original data
       arr = new Arr(len * 3 / 4 - placeHolders)
-    
+
       // if there are placeholders, only get up to the last complete 4 chars
       l = placeHolders > 0 ? len - 4 : len
-    
+
       var L = 0
-    
+
       for (i = 0, j = 0; i < l; i += 4, j += 3) {
         tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
         arr[L++] = (tmp >> 16) & 0xFF
         arr[L++] = (tmp >> 8) & 0xFF
         arr[L++] = tmp & 0xFF
       }
-    
+
       if (placeHolders === 2) {
         tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
         arr[L++] = tmp & 0xFF
@@ -65,14 +65,14 @@
         arr[L++] = (tmp >> 8) & 0xFF
         arr[L++] = tmp & 0xFF
       }
-    
+
       return arr
     }
-    
+
     function tripletToBase64 (num) {
       return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
     }
-    
+
     function encodeChunk (uint8, start, end) {
       var tmp
       var output = []
@@ -82,7 +82,7 @@
       }
       return output.join('')
     }
-    
+
     function fromByteArray (uint8) {
       var tmp
       var len = uint8.length
@@ -90,12 +90,12 @@
       var output = ''
       var parts = []
       var maxChunkLength = 16383 // must be multiple of 3
-    
+
       // go through the array every three bytes, we'll deal with trailing stuff later
       for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
         parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
       }
-    
+
       // pad the end with zeros, but make sure to not forget the extra bytes
       if (extraBytes === 1) {
         tmp = uint8[len - 1]
@@ -109,14 +109,14 @@
         output += lookup[(tmp << 2) & 0x3F]
         output += '='
       }
-    
+
       parts.push(output)
-    
+
       return parts.join('')
     }
-    
+
     },{}],2:[function(require,module,exports){
-    
+
     },{}],3:[function(require,module,exports){
     (function (global){
     /*!
@@ -126,17 +126,17 @@
      * @license  MIT
      */
     /* eslint-disable no-proto */
-    
+
     'use strict'
-    
+
     var base64 = require('base64-js')
     var ieee754 = require('ieee754')
     var isArray = require('isarray')
-    
+
     exports.Buffer = Buffer
     exports.SlowBuffer = SlowBuffer
     exports.INSPECT_MAX_BYTES = 50
-    
+
     /**
      * If `Buffer.TYPED_ARRAY_SUPPORT`:
      *   === true    Use Uint8Array implementation (fastest)
@@ -157,19 +157,19 @@
      *
      *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
      *     incorrect length in some situations.
-    
+
      * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
      * get the Object implementation, which is slower but behaves correctly.
      */
     Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
       ? global.TYPED_ARRAY_SUPPORT
       : typedArraySupport()
-    
+
     /*
      * Export kMaxLength after typed array support is determined.
      */
     exports.kMaxLength = kMaxLength()
-    
+
     function typedArraySupport () {
       try {
         var arr = new Uint8Array(1)
@@ -181,13 +181,13 @@
         return false
       }
     }
-    
+
     function kMaxLength () {
       return Buffer.TYPED_ARRAY_SUPPORT
         ? 0x7fffffff
         : 0x3fffffff
     }
-    
+
     function createBuffer (that, length) {
       if (kMaxLength() < length) {
         throw new RangeError('Invalid typed array length')
@@ -203,10 +203,10 @@
         }
         that.length = length
       }
-    
+
       return that
     }
-    
+
     /**
      * The Buffer constructor returns instances of `Uint8Array` that have their
      * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
@@ -216,12 +216,12 @@
      *
      * The `Uint8Array` prototype remains unmodified.
      */
-    
+
     function Buffer (arg, encodingOrOffset, length) {
       if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
         return new Buffer(arg, encodingOrOffset, length)
       }
-    
+
       // Common case.
       if (typeof arg === 'number') {
         if (typeof encodingOrOffset === 'string') {
@@ -233,31 +233,31 @@
       }
       return from(this, arg, encodingOrOffset, length)
     }
-    
+
     Buffer.poolSize = 8192 // not used by this implementation
-    
+
     // TODO: Legacy, not needed anymore. Remove in next major version.
     Buffer._augment = function (arr) {
       arr.__proto__ = Buffer.prototype
       return arr
     }
-    
+
     function from (that, value, encodingOrOffset, length) {
       if (typeof value === 'number') {
         throw new TypeError('"value" argument must not be a number')
       }
-    
+
       if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
         return fromArrayBuffer(that, value, encodingOrOffset, length)
       }
-    
+
       if (typeof value === 'string') {
         return fromString(that, value, encodingOrOffset)
       }
-    
+
       return fromObject(that, value)
     }
-    
+
     /**
      * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
      * if value is a number.
@@ -269,7 +269,7 @@
     Buffer.from = function (value, encodingOrOffset, length) {
       return from(null, value, encodingOrOffset, length)
     }
-    
+
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       Buffer.prototype.__proto__ = Uint8Array.prototype
       Buffer.__proto__ = Uint8Array
@@ -282,13 +282,13 @@
         })
       }
     }
-    
+
     function assertSize (size) {
       if (typeof size !== 'number') {
         throw new TypeError('"size" argument must be a number')
       }
     }
-    
+
     function alloc (that, size, fill, encoding) {
       assertSize(size)
       if (size <= 0) {
@@ -304,7 +304,7 @@
       }
       return createBuffer(that, size)
     }
-    
+
     /**
      * Creates a new filled Buffer instance.
      * alloc(size[, fill[, encoding]])
@@ -312,7 +312,7 @@
     Buffer.alloc = function (size, fill, encoding) {
       return alloc(null, size, fill, encoding)
     }
-    
+
     function allocUnsafe (that, size) {
       assertSize(size)
       that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
@@ -323,7 +323,7 @@
       }
       return that
     }
-    
+
     /**
      * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
      * */
@@ -336,23 +336,23 @@
     Buffer.allocUnsafeSlow = function (size) {
       return allocUnsafe(null, size)
     }
-    
+
     function fromString (that, string, encoding) {
       if (typeof encoding !== 'string' || encoding === '') {
         encoding = 'utf8'
       }
-    
+
       if (!Buffer.isEncoding(encoding)) {
         throw new TypeError('"encoding" must be a valid string encoding')
       }
-    
+
       var length = byteLength(string, encoding) | 0
       that = createBuffer(that, length)
-    
+
       that.write(string, encoding)
       return that
     }
-    
+
     function fromArrayLike (that, array) {
       var length = checked(array.length) | 0
       that = createBuffer(that, length)
@@ -361,24 +361,24 @@
       }
       return that
     }
-    
+
     function fromArrayBuffer (that, array, byteOffset, length) {
       array.byteLength // this throws if `array` is not a valid ArrayBuffer
-    
+
       if (byteOffset < 0 || array.byteLength < byteOffset) {
         throw new RangeError('\'offset\' is out of bounds')
       }
-    
+
       if (array.byteLength < byteOffset + (length || 0)) {
         throw new RangeError('\'length\' is out of bounds')
       }
-    
+
       if (length === undefined) {
         array = new Uint8Array(array, byteOffset)
       } else {
         array = new Uint8Array(array, byteOffset, length)
       }
-    
+
       if (Buffer.TYPED_ARRAY_SUPPORT) {
         // Return an augmented `Uint8Array` instance, for best performance
         that = array
@@ -389,20 +389,20 @@
       }
       return that
     }
-    
+
     function fromObject (that, obj) {
       if (Buffer.isBuffer(obj)) {
         var len = checked(obj.length) | 0
         that = createBuffer(that, len)
-    
+
         if (that.length === 0) {
           return that
         }
-    
+
         obj.copy(that, 0, 0, len)
         return that
       }
-    
+
       if (obj) {
         if ((typeof ArrayBuffer !== 'undefined' &&
             obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
@@ -411,15 +411,15 @@
           }
           return fromArrayLike(that, obj)
         }
-    
+
         if (obj.type === 'Buffer' && isArray(obj.data)) {
           return fromArrayLike(that, obj.data)
         }
       }
-    
+
       throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
     }
-    
+
     function checked (length) {
       // Note: cannot use `length < kMaxLength` here because that fails when
       // length is NaN (which is otherwise coerced to zero.)
@@ -429,28 +429,28 @@
       }
       return length | 0
     }
-    
+
     function SlowBuffer (length) {
       if (+length != length) { // eslint-disable-line eqeqeq
         length = 0
       }
       return Buffer.alloc(+length)
     }
-    
+
     Buffer.isBuffer = function isBuffer (b) {
       return !!(b != null && b._isBuffer)
     }
-    
+
     Buffer.compare = function compare (a, b) {
       if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
         throw new TypeError('Arguments must be Buffers')
       }
-    
+
       if (a === b) return 0
-    
+
       var x = a.length
       var y = b.length
-    
+
       for (var i = 0, len = Math.min(x, y); i < len; ++i) {
         if (a[i] !== b[i]) {
           x = a[i]
@@ -458,12 +458,12 @@
           break
         }
       }
-    
+
       if (x < y) return -1
       if (y < x) return 1
       return 0
     }
-    
+
     Buffer.isEncoding = function isEncoding (encoding) {
       switch (String(encoding).toLowerCase()) {
         case 'hex':
@@ -482,16 +482,16 @@
           return false
       }
     }
-    
+
     Buffer.concat = function concat (list, length) {
       if (!isArray(list)) {
         throw new TypeError('"list" argument must be an Array of Buffers')
       }
-    
+
       if (list.length === 0) {
         return Buffer.alloc(0)
       }
-    
+
       var i
       if (length === undefined) {
         length = 0
@@ -499,7 +499,7 @@
           length += list[i].length
         }
       }
-    
+
       var buffer = Buffer.allocUnsafe(length)
       var pos = 0
       for (i = 0; i < list.length; i++) {
@@ -512,7 +512,7 @@
       }
       return buffer
     }
-    
+
     function byteLength (string, encoding) {
       if (Buffer.isBuffer(string)) {
         return string.length
@@ -524,10 +524,10 @@
       if (typeof string !== 'string') {
         string = '' + string
       }
-    
+
       var len = string.length
       if (len === 0) return 0
-    
+
       // Use a for loop to avoid recursion
       var loweredCase = false
       for (;;) {
@@ -559,13 +559,13 @@
       }
     }
     Buffer.byteLength = byteLength
-    
+
     function slowToString (encoding, start, end) {
       var loweredCase = false
-    
+
       // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
       // property of a typed array.
-    
+
       // This behaves neither like String nor Uint8Array in that we set start/end
       // to their upper/lower bounds if the value passed is out of range.
       // undefined is handled specially as per ECMA-262 6th Edition,
@@ -578,49 +578,49 @@
       if (start > this.length) {
         return ''
       }
-    
+
       if (end === undefined || end > this.length) {
         end = this.length
       }
-    
+
       if (end <= 0) {
         return ''
       }
-    
+
       // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
       end >>>= 0
       start >>>= 0
-    
+
       if (end <= start) {
         return ''
       }
-    
+
       if (!encoding) encoding = 'utf8'
-    
+
       while (true) {
         switch (encoding) {
           case 'hex':
             return hexSlice(this, start, end)
-    
+
           case 'utf8':
           case 'utf-8':
             return utf8Slice(this, start, end)
-    
+
           case 'ascii':
             return asciiSlice(this, start, end)
-    
+
           case 'binary':
             return binarySlice(this, start, end)
-    
+
           case 'base64':
             return base64Slice(this, start, end)
-    
+
           case 'ucs2':
           case 'ucs-2':
           case 'utf16le':
           case 'utf-16le':
             return utf16leSlice(this, start, end)
-    
+
           default:
             if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
             encoding = (encoding + '').toLowerCase()
@@ -628,17 +628,17 @@
         }
       }
     }
-    
+
     // The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
     // Buffer instances.
     Buffer.prototype._isBuffer = true
-    
+
     function swap (b, n, m) {
       var i = b[n]
       b[n] = b[m]
       b[m] = i
     }
-    
+
     Buffer.prototype.swap16 = function swap16 () {
       var len = this.length
       if (len % 2 !== 0) {
@@ -649,7 +649,7 @@
       }
       return this
     }
-    
+
     Buffer.prototype.swap32 = function swap32 () {
       var len = this.length
       if (len % 4 !== 0) {
@@ -661,20 +661,20 @@
       }
       return this
     }
-    
+
     Buffer.prototype.toString = function toString () {
       var length = this.length | 0
       if (length === 0) return ''
       if (arguments.length === 0) return utf8Slice(this, 0, length)
       return slowToString.apply(this, arguments)
     }
-    
+
     Buffer.prototype.equals = function equals (b) {
       if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
       if (this === b) return true
       return Buffer.compare(this, b) === 0
     }
-    
+
     Buffer.prototype.inspect = function inspect () {
       var str = ''
       var max = exports.INSPECT_MAX_BYTES
@@ -684,12 +684,12 @@
       }
       return '<Buffer ' + str + '>'
     }
-    
+
     Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
       if (!Buffer.isBuffer(target)) {
         throw new TypeError('Argument must be a Buffer')
       }
-    
+
       if (start === undefined) {
         start = 0
       }
@@ -702,11 +702,11 @@
       if (thisEnd === undefined) {
         thisEnd = this.length
       }
-    
+
       if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
         throw new RangeError('out of range index')
       }
-    
+
       if (thisStart >= thisEnd && start >= end) {
         return 0
       }
@@ -716,21 +716,21 @@
       if (start >= end) {
         return 1
       }
-    
+
       start >>>= 0
       end >>>= 0
       thisStart >>>= 0
       thisEnd >>>= 0
-    
+
       if (this === target) return 0
-    
+
       var x = thisEnd - thisStart
       var y = end - start
       var len = Math.min(x, y)
-    
+
       var thisCopy = this.slice(thisStart, thisEnd)
       var targetCopy = target.slice(start, end)
-    
+
       for (var i = 0; i < len; ++i) {
         if (thisCopy[i] !== targetCopy[i]) {
           x = thisCopy[i]
@@ -738,17 +738,17 @@
           break
         }
       }
-    
+
       if (x < y) return -1
       if (y < x) return 1
       return 0
     }
-    
+
     function arrayIndexOf (arr, val, byteOffset, encoding) {
       var indexSize = 1
       var arrLength = arr.length
       var valLength = val.length
-    
+
       if (encoding !== undefined) {
         encoding = String(encoding).toLowerCase()
         if (encoding === 'ucs2' || encoding === 'ucs-2' ||
@@ -762,7 +762,7 @@
           byteOffset /= 2
         }
       }
-    
+
       function read (buf, i) {
         if (indexSize === 1) {
           return buf[i]
@@ -770,7 +770,7 @@
           return buf.readUInt16BE(i * indexSize)
         }
       }
-    
+
       var foundIndex = -1
       for (var i = 0; byteOffset + i < arrLength; i++) {
         if (read(arr, byteOffset + i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
@@ -783,7 +783,7 @@
       }
       return -1
     }
-    
+
     Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
       if (typeof byteOffset === 'string') {
         encoding = byteOffset
@@ -794,17 +794,17 @@
         byteOffset = -0x80000000
       }
       byteOffset >>= 0
-    
+
       if (this.length === 0) return -1
       if (byteOffset >= this.length) return -1
-    
+
       // Negative offsets start from the end of the buffer
       if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
-    
+
       if (typeof val === 'string') {
         val = Buffer.from(val, encoding)
       }
-    
+
       if (Buffer.isBuffer(val)) {
         // special case: looking for empty string/buffer always fails
         if (val.length === 0) {
@@ -818,14 +818,14 @@
         }
         return arrayIndexOf(this, [ val ], byteOffset, encoding)
       }
-    
+
       throw new TypeError('val must be string, number or Buffer')
     }
-    
+
     Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
       return this.indexOf(val, byteOffset, encoding) !== -1
     }
-    
+
     function hexWrite (buf, string, offset, length) {
       offset = Number(offset) || 0
       var remaining = buf.length - offset
@@ -837,11 +837,11 @@
           length = remaining
         }
       }
-    
+
       // must be an even number of digits
       var strLen = string.length
       if (strLen % 2 !== 0) throw new Error('Invalid hex string')
-    
+
       if (length > strLen / 2) {
         length = strLen / 2
       }
@@ -852,27 +852,27 @@
       }
       return i
     }
-    
+
     function utf8Write (buf, string, offset, length) {
       return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
     }
-    
+
     function asciiWrite (buf, string, offset, length) {
       return blitBuffer(asciiToBytes(string), buf, offset, length)
     }
-    
+
     function binaryWrite (buf, string, offset, length) {
       return asciiWrite(buf, string, offset, length)
     }
-    
+
     function base64Write (buf, string, offset, length) {
       return blitBuffer(base64ToBytes(string), buf, offset, length)
     }
-    
+
     function ucs2Write (buf, string, offset, length) {
       return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
     }
-    
+
     Buffer.prototype.write = function write (string, offset, length, encoding) {
       // Buffer#write(string)
       if (offset === undefined) {
@@ -900,42 +900,42 @@
           'Buffer.write(string, encoding, offset[, length]) is no longer supported'
         )
       }
-    
+
       var remaining = this.length - offset
       if (length === undefined || length > remaining) length = remaining
-    
+
       if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
         throw new RangeError('Attempt to write outside buffer bounds')
       }
-    
+
       if (!encoding) encoding = 'utf8'
-    
+
       var loweredCase = false
       for (;;) {
         switch (encoding) {
           case 'hex':
             return hexWrite(this, string, offset, length)
-    
+
           case 'utf8':
           case 'utf-8':
             return utf8Write(this, string, offset, length)
-    
+
           case 'ascii':
             return asciiWrite(this, string, offset, length)
-    
+
           case 'binary':
             return binaryWrite(this, string, offset, length)
-    
+
           case 'base64':
             // Warning: maxLength not taken into account in base64Write
             return base64Write(this, string, offset, length)
-    
+
           case 'ucs2':
           case 'ucs-2':
           case 'utf16le':
           case 'utf-16le':
             return ucs2Write(this, string, offset, length)
-    
+
           default:
             if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
             encoding = ('' + encoding).toLowerCase()
@@ -943,14 +943,14 @@
         }
       }
     }
-    
+
     Buffer.prototype.toJSON = function toJSON () {
       return {
         type: 'Buffer',
         data: Array.prototype.slice.call(this._arr || this, 0)
       }
     }
-    
+
     function base64Slice (buf, start, end) {
       if (start === 0 && end === buf.length) {
         return base64.fromByteArray(buf)
@@ -958,11 +958,11 @@
         return base64.fromByteArray(buf.slice(start, end))
       }
     }
-    
+
     function utf8Slice (buf, start, end) {
       end = Math.min(buf.length, end)
       var res = []
-    
+
       var i = start
       while (i < end) {
         var firstByte = buf[i]
@@ -971,10 +971,10 @@
           : (firstByte > 0xDF) ? 3
           : (firstByte > 0xBF) ? 2
           : 1
-    
+
         if (i + bytesPerSequence <= end) {
           var secondByte, thirdByte, fourthByte, tempCodePoint
-    
+
           switch (bytesPerSequence) {
             case 1:
               if (firstByte < 0x80) {
@@ -1012,7 +1012,7 @@
               }
           }
         }
-    
+
         if (codePoint === null) {
           // we did not generate a valid codePoint so insert a
           // replacement char (U+FFFD) and advance only 1 byte
@@ -1024,25 +1024,25 @@
           res.push(codePoint >>> 10 & 0x3FF | 0xD800)
           codePoint = 0xDC00 | codePoint & 0x3FF
         }
-    
+
         res.push(codePoint)
         i += bytesPerSequence
       }
-    
+
       return decodeCodePointsArray(res)
     }
-    
+
     // Based on http://stackoverflow.com/a/22747272/680742, the browser with
     // the lowest limit is Chrome, with 0x10000 args.
     // We go 1 magnitude less, for safety
     var MAX_ARGUMENTS_LENGTH = 0x1000
-    
+
     function decodeCodePointsArray (codePoints) {
       var len = codePoints.length
       if (len <= MAX_ARGUMENTS_LENGTH) {
         return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
       }
-    
+
       // Decode in chunks to avoid "call stack size exceeded".
       var res = ''
       var i = 0
@@ -1054,40 +1054,40 @@
       }
       return res
     }
-    
+
     function asciiSlice (buf, start, end) {
       var ret = ''
       end = Math.min(buf.length, end)
-    
+
       for (var i = start; i < end; i++) {
         ret += String.fromCharCode(buf[i] & 0x7F)
       }
       return ret
     }
-    
+
     function binarySlice (buf, start, end) {
       var ret = ''
       end = Math.min(buf.length, end)
-    
+
       for (var i = start; i < end; i++) {
         ret += String.fromCharCode(buf[i])
       }
       return ret
     }
-    
+
     function hexSlice (buf, start, end) {
       var len = buf.length
-    
+
       if (!start || start < 0) start = 0
       if (!end || end < 0 || end > len) end = len
-    
+
       var out = ''
       for (var i = start; i < end; i++) {
         out += toHex(buf[i])
       }
       return out
     }
-    
+
     function utf16leSlice (buf, start, end) {
       var bytes = buf.slice(start, end)
       var res = ''
@@ -1096,28 +1096,28 @@
       }
       return res
     }
-    
+
     Buffer.prototype.slice = function slice (start, end) {
       var len = this.length
       start = ~~start
       end = end === undefined ? len : ~~end
-    
+
       if (start < 0) {
         start += len
         if (start < 0) start = 0
       } else if (start > len) {
         start = len
       }
-    
+
       if (end < 0) {
         end += len
         if (end < 0) end = 0
       } else if (end > len) {
         end = len
       }
-    
+
       if (end < start) end = start
-    
+
       var newBuf
       if (Buffer.TYPED_ARRAY_SUPPORT) {
         newBuf = this.subarray(start, end)
@@ -1129,10 +1129,10 @@
           newBuf[i] = this[i + start]
         }
       }
-    
+
       return newBuf
     }
-    
+
     /*
      * Need to make sure that buffer isn't trying to write out of bounds.
      */
@@ -1140,76 +1140,76 @@
       if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
       if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
     }
-    
+
     Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
       offset = offset | 0
       byteLength = byteLength | 0
       if (!noAssert) checkOffset(offset, byteLength, this.length)
-    
+
       var val = this[offset]
       var mul = 1
       var i = 0
       while (++i < byteLength && (mul *= 0x100)) {
         val += this[offset + i] * mul
       }
-    
+
       return val
     }
-    
+
     Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
       offset = offset | 0
       byteLength = byteLength | 0
       if (!noAssert) {
         checkOffset(offset, byteLength, this.length)
       }
-    
+
       var val = this[offset + --byteLength]
       var mul = 1
       while (byteLength > 0 && (mul *= 0x100)) {
         val += this[offset + --byteLength] * mul
       }
-    
+
       return val
     }
-    
+
     Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 1, this.length)
       return this[offset]
     }
-    
+
     Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length)
       return this[offset] | (this[offset + 1] << 8)
     }
-    
+
     Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length)
       return (this[offset] << 8) | this[offset + 1]
     }
-    
+
     Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length)
-    
+
       return ((this[offset]) |
           (this[offset + 1] << 8) |
           (this[offset + 2] << 16)) +
           (this[offset + 3] * 0x1000000)
     }
-    
+
     Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length)
-    
+
       return (this[offset] * 0x1000000) +
         ((this[offset + 1] << 16) |
         (this[offset + 2] << 8) |
         this[offset + 3])
     }
-    
+
     Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
       offset = offset | 0
       byteLength = byteLength | 0
       if (!noAssert) checkOffset(offset, byteLength, this.length)
-    
+
       var val = this[offset]
       var mul = 1
       var i = 0
@@ -1217,17 +1217,17 @@
         val += this[offset + i] * mul
       }
       mul *= 0x80
-    
+
       if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-    
+
       return val
     }
-    
+
     Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
       offset = offset | 0
       byteLength = byteLength | 0
       if (!noAssert) checkOffset(offset, byteLength, this.length)
-    
+
       var i = byteLength
       var mul = 1
       var val = this[offset + --i]
@@ -1235,74 +1235,74 @@
         val += this[offset + --i] * mul
       }
       mul *= 0x80
-    
+
       if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-    
+
       return val
     }
-    
+
     Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 1, this.length)
       if (!(this[offset] & 0x80)) return (this[offset])
       return ((0xff - this[offset] + 1) * -1)
     }
-    
+
     Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length)
       var val = this[offset] | (this[offset + 1] << 8)
       return (val & 0x8000) ? val | 0xFFFF0000 : val
     }
-    
+
     Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 2, this.length)
       var val = this[offset + 1] | (this[offset] << 8)
       return (val & 0x8000) ? val | 0xFFFF0000 : val
     }
-    
+
     Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length)
-    
+
       return (this[offset]) |
         (this[offset + 1] << 8) |
         (this[offset + 2] << 16) |
         (this[offset + 3] << 24)
     }
-    
+
     Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length)
-    
+
       return (this[offset] << 24) |
         (this[offset + 1] << 16) |
         (this[offset + 2] << 8) |
         (this[offset + 3])
     }
-    
+
     Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length)
       return ieee754.read(this, offset, true, 23, 4)
     }
-    
+
     Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 4, this.length)
       return ieee754.read(this, offset, false, 23, 4)
     }
-    
+
     Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 8, this.length)
       return ieee754.read(this, offset, true, 52, 8)
     }
-    
+
     Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
       if (!noAssert) checkOffset(offset, 8, this.length)
       return ieee754.read(this, offset, false, 52, 8)
     }
-    
+
     function checkInt (buf, value, offset, ext, max, min) {
       if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
       if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
       if (offset + ext > buf.length) throw new RangeError('Index out of range')
     }
-    
+
     Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
       value = +value
       offset = offset | 0
@@ -1311,17 +1311,17 @@
         var maxBytes = Math.pow(2, 8 * byteLength) - 1
         checkInt(this, value, offset, byteLength, maxBytes, 0)
       }
-    
+
       var mul = 1
       var i = 0
       this[offset] = value & 0xFF
       while (++i < byteLength && (mul *= 0x100)) {
         this[offset + i] = (value / mul) & 0xFF
       }
-    
+
       return offset + byteLength
     }
-    
+
     Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
       value = +value
       offset = offset | 0
@@ -1330,17 +1330,17 @@
         var maxBytes = Math.pow(2, 8 * byteLength) - 1
         checkInt(this, value, offset, byteLength, maxBytes, 0)
       }
-    
+
       var i = byteLength - 1
       var mul = 1
       this[offset + i] = value & 0xFF
       while (--i >= 0 && (mul *= 0x100)) {
         this[offset + i] = (value / mul) & 0xFF
       }
-    
+
       return offset + byteLength
     }
-    
+
     Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1349,7 +1349,7 @@
       this[offset] = (value & 0xff)
       return offset + 1
     }
-    
+
     function objectWriteUInt16 (buf, value, offset, littleEndian) {
       if (value < 0) value = 0xffff + value + 1
       for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; i++) {
@@ -1357,7 +1357,7 @@
           (littleEndian ? i : 1 - i) * 8
       }
     }
-    
+
     Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1370,7 +1370,7 @@
       }
       return offset + 2
     }
-    
+
     Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1383,14 +1383,14 @@
       }
       return offset + 2
     }
-    
+
     function objectWriteUInt32 (buf, value, offset, littleEndian) {
       if (value < 0) value = 0xffffffff + value + 1
       for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; i++) {
         buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
       }
     }
-    
+
     Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1405,7 +1405,7 @@
       }
       return offset + 4
     }
-    
+
     Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1420,16 +1420,16 @@
       }
       return offset + 4
     }
-    
+
     Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
       value = +value
       offset = offset | 0
       if (!noAssert) {
         var limit = Math.pow(2, 8 * byteLength - 1)
-    
+
         checkInt(this, value, offset, byteLength, limit - 1, -limit)
       }
-    
+
       var i = 0
       var mul = 1
       var sub = 0
@@ -1440,19 +1440,19 @@
         }
         this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
       }
-    
+
       return offset + byteLength
     }
-    
+
     Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
       value = +value
       offset = offset | 0
       if (!noAssert) {
         var limit = Math.pow(2, 8 * byteLength - 1)
-    
+
         checkInt(this, value, offset, byteLength, limit - 1, -limit)
       }
-    
+
       var i = byteLength - 1
       var mul = 1
       var sub = 0
@@ -1463,10 +1463,10 @@
         }
         this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
       }
-    
+
       return offset + byteLength
     }
-    
+
     Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1476,7 +1476,7 @@
       this[offset] = (value & 0xff)
       return offset + 1
     }
-    
+
     Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1489,7 +1489,7 @@
       }
       return offset + 2
     }
-    
+
     Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1502,7 +1502,7 @@
       }
       return offset + 2
     }
-    
+
     Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1517,7 +1517,7 @@
       }
       return offset + 4
     }
-    
+
     Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
       value = +value
       offset = offset | 0
@@ -1533,12 +1533,12 @@
       }
       return offset + 4
     }
-    
+
     function checkIEEE754 (buf, value, offset, ext, max, min) {
       if (offset + ext > buf.length) throw new RangeError('Index out of range')
       if (offset < 0) throw new RangeError('Index out of range')
     }
-    
+
     function writeFloat (buf, value, offset, littleEndian, noAssert) {
       if (!noAssert) {
         checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
@@ -1546,15 +1546,15 @@
       ieee754.write(buf, value, offset, littleEndian, 23, 4)
       return offset + 4
     }
-    
+
     Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
       return writeFloat(this, value, offset, true, noAssert)
     }
-    
+
     Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
       return writeFloat(this, value, offset, false, noAssert)
     }
-    
+
     function writeDouble (buf, value, offset, littleEndian, noAssert) {
       if (!noAssert) {
         checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
@@ -1562,15 +1562,15 @@
       ieee754.write(buf, value, offset, littleEndian, 52, 8)
       return offset + 8
     }
-    
+
     Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
       return writeDouble(this, value, offset, true, noAssert)
     }
-    
+
     Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
       return writeDouble(this, value, offset, false, noAssert)
     }
-    
+
     // copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
     Buffer.prototype.copy = function copy (target, targetStart, start, end) {
       if (!start) start = 0
@@ -1578,27 +1578,27 @@
       if (targetStart >= target.length) targetStart = target.length
       if (!targetStart) targetStart = 0
       if (end > 0 && end < start) end = start
-    
+
       // Copy 0 bytes; we're done
       if (end === start) return 0
       if (target.length === 0 || this.length === 0) return 0
-    
+
       // Fatal error conditions
       if (targetStart < 0) {
         throw new RangeError('targetStart out of bounds')
       }
       if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
       if (end < 0) throw new RangeError('sourceEnd out of bounds')
-    
+
       // Are we oob?
       if (end > this.length) end = this.length
       if (target.length - targetStart < end - start) {
         end = target.length - targetStart + start
       }
-    
+
       var len = end - start
       var i
-    
+
       if (this === target && start < targetStart && targetStart < end) {
         // descending copy from end
         for (i = len - 1; i >= 0; i--) {
@@ -1616,10 +1616,10 @@
           targetStart
         )
       }
-    
+
       return len
     }
-    
+
     // Usage:
     //    buffer.fill(number[, offset[, end]])
     //    buffer.fill(buffer[, offset[, end]])
@@ -1650,21 +1650,21 @@
       } else if (typeof val === 'number') {
         val = val & 255
       }
-    
+
       // Invalid ranges are not set to a default, so can range check early.
       if (start < 0 || this.length < start || this.length < end) {
         throw new RangeError('Out of range index')
       }
-    
+
       if (end <= start) {
         return this
       }
-    
+
       start = start >>> 0
       end = end === undefined ? this.length : end >>> 0
-    
+
       if (!val) val = 0
-    
+
       var i
       if (typeof val === 'number') {
         for (i = start; i < end; i++) {
@@ -1679,15 +1679,15 @@
           this[i + start] = bytes[i % len]
         }
       }
-    
+
       return this
     }
-    
+
     // HELPER FUNCTIONS
     // ================
-    
+
     var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
-    
+
     function base64clean (str) {
       // Node strips out invalid characters like \n and \t from the string, base64-js does not
       str = stringtrim(str).replace(INVALID_BASE64_RE, '')
@@ -1699,27 +1699,27 @@
       }
       return str
     }
-    
+
     function stringtrim (str) {
       if (str.trim) return str.trim()
       return str.replace(/^\s+|\s+$/g, '')
     }
-    
+
     function toHex (n) {
       if (n < 16) return '0' + n.toString(16)
       return n.toString(16)
     }
-    
+
     function utf8ToBytes (string, units) {
       units = units || Infinity
       var codePoint
       var length = string.length
       var leadSurrogate = null
       var bytes = []
-    
+
       for (var i = 0; i < length; i++) {
         codePoint = string.charCodeAt(i)
-    
+
         // is surrogate component
         if (codePoint > 0xD7FF && codePoint < 0xE000) {
           // last char was a lead
@@ -1734,29 +1734,29 @@
               if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
               continue
             }
-    
+
             // valid lead
             leadSurrogate = codePoint
-    
+
             continue
           }
-    
+
           // 2 leads in a row
           if (codePoint < 0xDC00) {
             if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
             leadSurrogate = codePoint
             continue
           }
-    
+
           // valid surrogate pair
           codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
         } else if (leadSurrogate) {
           // valid bmp char, but last char was a lead
           if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
         }
-    
+
         leadSurrogate = null
-    
+
         // encode utf8
         if (codePoint < 0x80) {
           if ((units -= 1) < 0) break
@@ -1786,10 +1786,10 @@
           throw new Error('Invalid code point')
         }
       }
-    
+
       return bytes
     }
-    
+
     function asciiToBytes (str) {
       var byteArray = []
       for (var i = 0; i < str.length; i++) {
@@ -1798,27 +1798,27 @@
       }
       return byteArray
     }
-    
+
     function utf16leToBytes (str, units) {
       var c, hi, lo
       var byteArray = []
       for (var i = 0; i < str.length; i++) {
         if ((units -= 2) < 0) break
-    
+
         c = str.charCodeAt(i)
         hi = c >> 8
         lo = c % 256
         byteArray.push(lo)
         byteArray.push(hi)
       }
-    
+
       return byteArray
     }
-    
+
     function base64ToBytes (str) {
       return base64.toByteArray(base64clean(str))
     }
-    
+
     function blitBuffer (src, dst, offset, length) {
       for (var i = 0; i < length; i++) {
         if ((i + offset >= dst.length) || (i >= src.length)) break
@@ -1826,34 +1826,34 @@
       }
       return i
     }
-    
+
     function isnan (val) {
       return val !== val // eslint-disable-line no-self-compare
     }
-    
+
     }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
     },{"base64-js":1,"ieee754":15,"isarray":16}],4:[function(require,module,exports){
     // Use strict mode (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)
     "use strict";
-    
-    
+
+
     // Requires
     var Typo = require("typo-js");
-    
-    
+
+
     // Create function
     function CodeMirrorSpellChecker(options) {
         // Initialize
         options = options || {};
-    
-    
+
+
         // Verify
         if(typeof options.codeMirrorInstance !== "function" || typeof options.codeMirrorInstance.defineMode !== "function") {
             console.log("CodeMirror Spell Checker: You must provide an instance of CodeMirror via the option `codeMirrorInstance`");
             return;
         }
-    
-    
+
+
         // Because some browsers don't support this functionality yet
         if(!String.prototype.includes) {
             String.prototype.includes = function() {
@@ -1861,8 +1861,8 @@
                 return String.prototype.indexOf.apply(this, arguments) !== -1;
             };
         }
-    
-    
+
+
         // Define the new mode
         options.codeMirrorInstance.defineMode("spell-checker", function(config) {
             // Load AFF/DIC data
@@ -1874,7 +1874,7 @@
                     if(xhr_aff.readyState === 4 && xhr_aff.status === 200) {
                         CodeMirrorSpellChecker.aff_data = xhr_aff.responseText;
                         CodeMirrorSpellChecker.num_loaded++;
-    
+
                         if(CodeMirrorSpellChecker.num_loaded == 2) {
                             CodeMirrorSpellChecker.typo = new Typo("en_US", CodeMirrorSpellChecker.aff_data, CodeMirrorSpellChecker.dic_data, {
                                 platform: "any"
@@ -1884,7 +1884,7 @@
                 };
                 xhr_aff.send(null);
             }
-    
+
             if(!CodeMirrorSpellChecker.dic_loading) {
                 CodeMirrorSpellChecker.dic_loading = true;
                 var xhr_dic = new XMLHttpRequest();
@@ -1893,7 +1893,7 @@
                     if(xhr_dic.readyState === 4 && xhr_dic.status === 200) {
                         CodeMirrorSpellChecker.dic_data = xhr_dic.responseText;
                         CodeMirrorSpellChecker.num_loaded++;
-    
+
                         if(CodeMirrorSpellChecker.num_loaded == 2) {
                             CodeMirrorSpellChecker.typo = new Typo("en_US", CodeMirrorSpellChecker.aff_data, CodeMirrorSpellChecker.dic_data, {
                                 platform: "any"
@@ -1903,44 +1903,44 @@
                 };
                 xhr_dic.send(null);
             }
-    
-    
+
+
             // Define what separates a word
             var rx_word = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ ";
-    
-    
+
+
             // Create the overlay and such
             var overlay = {
                 token: function(stream) {
                     var ch = stream.peek();
                     var word = "";
-    
+
                     if(rx_word.includes(ch)) {
                         stream.next();
                         return null;
                     }
-    
+
                     while((ch = stream.peek()) != null && !rx_word.includes(ch)) {
                         word += ch;
                         stream.next();
                     }
-    
+
                     if(CodeMirrorSpellChecker.typo && !CodeMirrorSpellChecker.typo.check(word))
                         return "spell-error"; // CSS class: cm-spell-error
-    
+
                     return null;
                 }
             };
-    
+
             var mode = options.codeMirrorInstance.getMode(
                 config, config.backdrop || "text/plain"
             );
-    
+
             return options.codeMirrorInstance.overlayMode(mode, overlay, true);
         });
     }
-    
-    
+
+
     // Initialize data globally to reduce memory consumption
     CodeMirrorSpellChecker.num_loaded = 0;
     CodeMirrorSpellChecker.aff_loading = false;
@@ -1948,14 +1948,14 @@
     CodeMirrorSpellChecker.aff_data = "";
     CodeMirrorSpellChecker.dic_data = "";
     CodeMirrorSpellChecker.typo;
-    
-    
+
+
     // Export
     module.exports = CodeMirrorSpellChecker;
     },{"typo-js":18}],5:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"));
@@ -1965,14 +1965,14 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
       "use strict";
-    
+
       CodeMirror.defineOption("fullScreen", false, function(cm, val, old) {
         if (old == CodeMirror.Init) old = false;
         if (!old == !val) return;
         if (val) setFullscreen(cm);
         else setNormal(cm);
       });
-    
+
       function setFullscreen(cm) {
         var wrap = cm.getWrapperElement();
         cm.state.fullScreenRestore = {scrollTop: window.pageYOffset, scrollLeft: window.pageXOffset,
@@ -1983,7 +1983,7 @@
         document.documentElement.style.overflow = "hidden";
         cm.refresh();
       }
-    
+
       function setNormal(cm) {
         var wrap = cm.getWrapperElement();
         wrap.className = wrap.className.replace(/\s*CodeMirror-fullscreen\b/, "");
@@ -1994,11 +1994,11 @@
         cm.refresh();
       }
     });
-    
+
     },{"../../lib/codemirror":10}],6:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"));
@@ -2022,10 +2022,10 @@
           var wrapper = cm.getWrapperElement();
           wrapper.className = wrapper.className.replace(" CodeMirror-empty", "");
         }
-    
+
         if (val && !cm.hasFocus()) onBlur(cm);
       });
-    
+
       function clearPlaceholder(cm) {
         if (cm.state.placeholder) {
           cm.state.placeholder.parentNode.removeChild(cm.state.placeholder);
@@ -2042,27 +2042,27 @@
         elt.appendChild(placeHolder)
         cm.display.lineSpace.insertBefore(elt, cm.display.lineSpace.firstChild);
       }
-    
+
       function onBlur(cm) {
         if (isEmpty(cm)) setPlaceholder(cm);
       }
       function onChange(cm) {
         var wrapper = cm.getWrapperElement(), empty = isEmpty(cm);
         wrapper.className = wrapper.className.replace(" CodeMirror-empty", "") + (empty ? " CodeMirror-empty" : "");
-    
+
         if (empty) setPlaceholder(cm);
         else clearPlaceholder(cm);
       }
-    
+
       function isEmpty(cm) {
         return (cm.lineCount() === 1) && (cm.getLine(0) === "");
       }
     });
-    
+
     },{"../../lib/codemirror":10}],7:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"));
@@ -2072,11 +2072,11 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
       "use strict";
-    
+
       var listRE = /^(\s*)(>[> ]*|[*+-]\s|(\d+)([.)]))(\s*)/,
           emptyListRE = /^(\s*)(>[> ]*|[*+-]|(\d+)[.)])(\s*)$/,
           unorderedListRE = /[*+-]\s/;
-    
+
       CodeMirror.commands.newlineAndIndentContinueMarkdownList = function(cm) {
         if (cm.getOption("disableInput")) return CodeMirror.Pass;
         var ranges = cm.listSelections(), replacements = [];
@@ -2085,7 +2085,7 @@
           var eolState = cm.getStateAfter(pos.line);
           var inList = eolState.list !== false;
           var inQuote = eolState.quote !== 0;
-    
+
           var line = cm.getLine(pos.line), match = listRE.exec(line);
           if (!ranges[i].empty() || (!inList && !inQuote) || !match) {
             cm.execCommand("newlineAndIndent");
@@ -2103,19 +2103,19 @@
             var bullet = unorderedListRE.test(match[2]) || match[2].indexOf(">") >= 0
               ? match[2]
               : (parseInt(match[3], 10) + 1) + match[4];
-    
+
             replacements[i] = "\n" + indent + bullet + after;
           }
         }
-    
+
         cm.replaceSelections(replacements);
       };
     });
-    
+
     },{"../../lib/codemirror":10}],8:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     // Utility function that allows modes to be combined. The mode given
     // as the base argument takes care of most of the normal mode
     // functionality, but a second (typically simple) mode is used, which
@@ -2124,7 +2124,7 @@
     // overlay wins, unless the combine argument was true and not overridden,
     // or state.overlay.combineTokens was true, in which case the styles are
     // combined.
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"));
@@ -2134,7 +2134,7 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
     "use strict";
-    
+
     CodeMirror.overlayMode = function(base, overlay, combine) {
       return {
         startState: function() {
@@ -2154,14 +2154,14 @@
             overlayPos: state.overlayPos, overlayCur: null
           };
         },
-    
+
         token: function(stream, state) {
           if (stream != state.streamSeen ||
               Math.min(state.basePos, state.overlayPos) < stream.start) {
             state.streamSeen = stream;
             state.basePos = state.overlayPos = stream.start;
           }
-    
+
           if (stream.start == state.basePos) {
             state.baseCur = base.token(stream, state.base);
             state.basePos = stream.pos;
@@ -2172,7 +2172,7 @@
             state.overlayPos = stream.pos;
           }
           stream.pos = Math.min(state.basePos, state.overlayPos);
-    
+
           // state.overlay.combineTokens always takes precedence over combine,
           // unless set to null
           if (state.overlayCur == null) return state.baseCur;
@@ -2182,33 +2182,33 @@
             return state.baseCur + " " + state.overlayCur;
           else return state.overlayCur;
         },
-    
+
         indent: base.indent && function(state, textAfter) {
           return base.indent(state.base, textAfter);
         },
         electricChars: base.electricChars,
-    
+
         innerMode: function(state) { return {state: state.base, mode: base}; },
-    
+
         blankLine: function(state) {
           if (base.blankLine) base.blankLine(state.base);
           if (overlay.blankLine) overlay.blankLine(state.overlay);
         }
       };
     };
-    
+
     });
-    
+
     },{"../../lib/codemirror":10}],9:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     // Because sometimes you need to mark the selected *text*.
     //
     // Adds an option 'styleSelectedText' which, when enabled, gives
     // selected text the CSS class given as option value, or
     // "CodeMirror-selectedtext" when the value is not a string.
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"));
@@ -2218,7 +2218,7 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
       "use strict";
-    
+
       CodeMirror.defineOption("styleSelectedText", false, function(cm, val, old) {
         var prev = old && old != CodeMirror.Init;
         if (val && !prev) {
@@ -2234,20 +2234,20 @@
           cm.state.markedSelection = cm.state.markedSelectionStyle = null;
         }
       });
-    
+
       function onCursorActivity(cm) {
         cm.operation(function() { update(cm); });
       }
-    
+
       function onChange(cm) {
         if (cm.state.markedSelection.length)
           cm.operation(function() { clear(cm); });
       }
-    
+
       var CHUNK_SIZE = 8;
       var Pos = CodeMirror.Pos;
       var cmp = CodeMirror.cmpPos;
-    
+
       function coverRange(cm, from, to, addAt) {
         if (cmp(from, to) == 0) return;
         var array = cm.state.markedSelection;
@@ -2263,34 +2263,34 @@
           line = endLine;
         }
       }
-    
+
       function clear(cm) {
         var array = cm.state.markedSelection;
         for (var i = 0; i < array.length; ++i) array[i].clear();
         array.length = 0;
       }
-    
+
       function reset(cm) {
         clear(cm);
         var ranges = cm.listSelections();
         for (var i = 0; i < ranges.length; i++)
           coverRange(cm, ranges[i].from(), ranges[i].to());
       }
-    
+
       function update(cm) {
         if (!cm.somethingSelected()) return clear(cm);
         if (cm.listSelections().length > 1) return reset(cm);
-    
+
         var from = cm.getCursor("start"), to = cm.getCursor("end");
-    
+
         var array = cm.state.markedSelection;
         if (!array.length) return coverRange(cm, from, to);
-    
+
         var coverStart = array[0].find(), coverEnd = array[array.length - 1].find();
         if (!coverStart || !coverEnd || to.line - from.line < CHUNK_SIZE ||
             cmp(from, coverEnd.to) >= 0 || cmp(to, coverStart.from) <= 0)
           return reset(cm);
-    
+
         while (cmp(from, coverStart.from) > 0) {
           array.shift().clear();
           coverStart = array[0].find();
@@ -2303,7 +2303,7 @@
             coverRange(cm, from, coverStart.from, 0);
           }
         }
-    
+
         while (cmp(to, coverEnd.to) < 0) {
           array.pop().clear();
           coverEnd = array[array.length - 1].find();
@@ -2318,17 +2318,17 @@
         }
       }
     });
-    
+
     },{"../../lib/codemirror":10}],10:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     // This is CodeMirror (http://codemirror.net), a code editor
     // implemented in JavaScript on top of the browser's DOM.
     //
     // You can find some technical background for some of the code below
     // at http://marijnhaverbeke.nl/blog/#cm-internals .
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         module.exports = mod();
@@ -2338,14 +2338,14 @@
         (this || window).CodeMirror = mod();
     })(function() {
       "use strict";
-    
+
       // BROWSER SNIFFING
-    
+
       // Kludges for bugs and behavior differences that can't be feature
       // detected are enabled based on userAgent etc sniffing.
       var userAgent = navigator.userAgent;
       var platform = navigator.platform;
-    
+
       var gecko = /gecko\/\d/i.test(userAgent);
       var ie_upto10 = /MSIE \d/.test(userAgent);
       var ie_11up = /Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(userAgent);
@@ -2358,41 +2358,41 @@
       var safari = /Apple Computer/.test(navigator.vendor);
       var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(userAgent);
       var phantom = /PhantomJS/.test(userAgent);
-    
+
       var ios = /AppleWebKit/.test(userAgent) && /Mobile\/\w+/.test(userAgent);
       // This is woefully incomplete. Suggestions for alternative methods welcome.
       var mobile = ios || /Android|webOS|BlackBerry|Opera Mini|Opera Mobi|IEMobile/i.test(userAgent);
       var mac = ios || /Mac/.test(platform);
       var chromeOS = /\bCrOS\b/.test(userAgent);
       var windows = /win/i.test(platform);
-    
+
       var presto_version = presto && userAgent.match(/Version\/(\d*\.\d*)/);
       if (presto_version) presto_version = Number(presto_version[1]);
       if (presto_version && presto_version >= 15) { presto = false; webkit = true; }
       // Some browsers use the wrong event properties to signal cmd/ctrl on OS X
       var flipCtrlCmd = mac && (qtwebkit || presto && (presto_version == null || presto_version < 12.11));
       var captureRightClick = gecko || (ie && ie_version >= 9);
-    
+
       // Optimize some code when these features are not used.
       var sawReadOnlySpans = false, sawCollapsedSpans = false;
-    
+
       // EDITOR CONSTRUCTOR
-    
+
       // A CodeMirror instance represents an editor. This is the object
       // that user code is usually dealing with.
-    
+
       function CodeMirror(place, options) {
         if (!(this instanceof CodeMirror)) return new CodeMirror(place, options);
-    
+
         this.options = options = options ? copyObj(options) : {};
         // Determine effective options based on given values and defaults.
         copyObj(defaults, options, false);
         setGuttersForLineNumbers(options);
-    
+
         var doc = options.value;
         if (typeof doc == "string") doc = new Doc(doc, options.mode, null, options.lineSeparator);
         this.doc = doc;
-    
+
         var input = new CodeMirror.inputStyles[options.inputStyle](this);
         var display = this.display = new Display(place, doc, input);
         display.wrapper.CodeMirror = this;
@@ -2402,7 +2402,7 @@
           this.display.wrapper.className += " CodeMirror-wrap";
         if (options.autofocus && !mobile) display.input.focus();
         initScrollbars(this);
-    
+
         this.state = {
           keyMaps: [],  // stores maps added by addKeyMap
           overlays: [], // highlighting overlays, as added by addOverlay
@@ -2418,25 +2418,25 @@
           keySeq: null,  // Unfinished key sequence
           specialChars: null
         };
-    
+
         var cm = this;
-    
+
         // Override magic textarea content restore that IE sometimes does
         // on our hidden textarea on reload
         if (ie && ie_version < 11) setTimeout(function() { cm.display.input.reset(true); }, 20);
-    
+
         registerEventHandlers(this);
         ensureGlobalHandlers();
-    
+
         startOperation(this);
         this.curOp.forceUpdate = true;
         attachDoc(this, doc);
-    
+
         if ((options.autofocus && !mobile) || cm.hasFocus())
           setTimeout(bind(onFocus, this), 20);
         else
           onBlur(this);
-    
+
         for (var opt in optionHandlers) if (optionHandlers.hasOwnProperty(opt))
           optionHandlers[opt](this, options[opt], Init);
         maybeUpdateLineNumberWidth(this);
@@ -2449,17 +2449,17 @@
             getComputedStyle(display.lineDiv).textRendering == "optimizelegibility")
           display.lineDiv.style.textRendering = "auto";
       }
-    
+
       // DISPLAY CONSTRUCTOR
-    
+
       // The display handles the DOM integration, both for input reading
       // and content drawing. It holds references to DOM nodes and
       // display-related state.
-    
+
       function Display(place, doc, input) {
         var d = this;
         this.input = input;
-    
+
         // Covers bottom-right square when both scrollbars are present.
         d.scrollbarFiller = elt("div", null, "CodeMirror-scrollbar-filler");
         d.scrollbarFiller.setAttribute("cm-not-content", "true");
@@ -2496,16 +2496,16 @@
         d.scroller.setAttribute("tabIndex", "-1");
         // The element in which the editor lives.
         d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror");
-    
+
         // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
         if (ie && ie_version < 8) { d.gutters.style.zIndex = -1; d.scroller.style.paddingRight = 0; }
         if (!webkit && !(gecko && mobile)) d.scroller.draggable = true;
-    
+
         if (place) {
           if (place.appendChild) place.appendChild(d.wrapper);
           else place(d.wrapper);
         }
-    
+
         // Current rendered range (may be bigger than the view window).
         d.viewFrom = d.viewTo = doc.first;
         d.reportedViewFrom = d.reportedViewTo = doc.first;
@@ -2519,10 +2519,10 @@
         d.viewOffset = 0;
         d.lastWrapHeight = d.lastWrapWidth = 0;
         d.updateLineNumbers = null;
-    
+
         d.nativeBarWidth = d.barHeight = d.barWidth = 0;
         d.scrollbarsClipped = false;
-    
+
         // Used to only resize the line number gutter when necessary (when
         // the amount of lines crosses a boundary that makes its width change)
         d.lineNumWidth = d.lineNumInnerWidth = d.lineNumChars = null;
@@ -2530,39 +2530,39 @@
         // added. As an optimization, line widget aligning is skipped when
         // this is false.
         d.alignWidgets = false;
-    
+
         d.cachedCharWidth = d.cachedTextHeight = d.cachedPaddingH = null;
-    
+
         // Tracks the maximum line length so that the horizontal scrollbar
         // can be kept static when scrolling.
         d.maxLine = null;
         d.maxLineLength = 0;
         d.maxLineChanged = false;
-    
+
         // Used for measuring wheel scrolling granularity
         d.wheelDX = d.wheelDY = d.wheelStartX = d.wheelStartY = null;
-    
+
         // True when shift is held down.
         d.shift = false;
-    
+
         // Used to track whether anything happened since the context menu
         // was opened.
         d.selForContextMenu = null;
-    
+
         d.activeTouch = null;
-    
+
         input.init(d);
       }
-    
+
       // STATE UPDATES
-    
+
       // Used to get the editor into a consistent state again when options change.
-    
+
       function loadMode(cm) {
         cm.doc.mode = CodeMirror.getMode(cm.options, cm.doc.modeOption);
         resetModeState(cm);
       }
-    
+
       function resetModeState(cm) {
         cm.doc.iter(function(line) {
           if (line.stateAfter) line.stateAfter = null;
@@ -2573,7 +2573,7 @@
         cm.state.modeGen++;
         if (cm.curOp) regChange(cm);
       }
-    
+
       function wrappingChanged(cm) {
         if (cm.options.lineWrapping) {
           addClass(cm.display.wrapper, "CodeMirror-wrap");
@@ -2588,7 +2588,7 @@
         clearCaches(cm);
         setTimeout(function(){updateScrollbars(cm);}, 100);
       }
-    
+
       // Returns a function that estimates the height of a line, to use as
       // first approximation until the line becomes visible (and is thus
       // properly measurable).
@@ -2597,19 +2597,19 @@
         var perLine = wrapping && Math.max(5, cm.display.scroller.clientWidth / charWidth(cm.display) - 3);
         return function(line) {
           if (lineIsHidden(cm.doc, line)) return 0;
-    
+
           var widgetsHeight = 0;
           if (line.widgets) for (var i = 0; i < line.widgets.length; i++) {
             if (line.widgets[i].height) widgetsHeight += line.widgets[i].height;
           }
-    
+
           if (wrapping)
             return widgetsHeight + (Math.ceil(line.text.length / perLine) || 1) * th;
           else
             return widgetsHeight + th;
         };
       }
-    
+
       function estimateLineHeights(cm) {
         var doc = cm.doc, est = estimateHeight(cm);
         doc.iter(function(line) {
@@ -2617,19 +2617,19 @@
           if (estHeight != line.height) updateLineHeight(line, estHeight);
         });
       }
-    
+
       function themeChanged(cm) {
         cm.display.wrapper.className = cm.display.wrapper.className.replace(/\s*cm-s-\S+/g, "") +
           cm.options.theme.replace(/(^|\s)\s*/g, " cm-s-");
         clearCaches(cm);
       }
-    
+
       function guttersChanged(cm) {
         updateGutters(cm);
         regChange(cm);
         setTimeout(function(){alignHorizontally(cm);}, 20);
       }
-    
+
       // Rebuild the gutter elements, ensure the margin to the left of the
       // code matches their width.
       function updateGutters(cm) {
@@ -2646,12 +2646,12 @@
         gutters.style.display = i ? "" : "none";
         updateGutterSpace(cm);
       }
-    
+
       function updateGutterSpace(cm) {
         var width = cm.display.gutters.offsetWidth;
         cm.display.sizer.style.marginLeft = width + "px";
       }
-    
+
       // Compute the character length of a line, taking into account
       // collapsed ranges (see markText) that might hide parts, and join
       // other lines onto it.
@@ -2672,7 +2672,7 @@
         }
         return len;
       }
-    
+
       // Find the longest line in the document.
       function findMaxLine(cm) {
         var d = cm.display, doc = cm.doc;
@@ -2687,7 +2687,7 @@
           }
         });
       }
-    
+
       // Make sure the gutters options contains the element
       // "CodeMirror-linenumbers" when the lineNumbers option is true.
       function setGuttersForLineNumbers(options) {
@@ -2699,9 +2699,9 @@
           options.gutters.splice(found, 1);
         }
       }
-    
+
       // SCROLLBARS
-    
+
       // Prepare DOM reads needed to update the scrollbars. Done in one
       // shot to minimize update/measure roundtrips.
       function measureForScrollbars(cm) {
@@ -2719,31 +2719,31 @@
           gutterWidth: gutterW
         };
       }
-    
+
       function NativeScrollbars(place, scroll, cm) {
         this.cm = cm;
         var vert = this.vert = elt("div", [elt("div", null, null, "min-width: 1px")], "CodeMirror-vscrollbar");
         var horiz = this.horiz = elt("div", [elt("div", null, null, "height: 100%; min-height: 1px")], "CodeMirror-hscrollbar");
         place(vert); place(horiz);
-    
+
         on(vert, "scroll", function() {
           if (vert.clientHeight) scroll(vert.scrollTop, "vertical");
         });
         on(horiz, "scroll", function() {
           if (horiz.clientWidth) scroll(horiz.scrollLeft, "horizontal");
         });
-    
+
         this.checkedZeroWidth = false;
         // Need to set a minimum width to see the scrollbar on IE7 (but must not set it on IE8).
         if (ie && ie_version < 8) this.horiz.style.minHeight = this.vert.style.minWidth = "18px";
       }
-    
+
       NativeScrollbars.prototype = copyObj({
         update: function(measure) {
           var needsH = measure.scrollWidth > measure.clientWidth + 1;
           var needsV = measure.scrollHeight > measure.clientHeight + 1;
           var sWidth = measure.nativeBarWidth;
-    
+
           if (needsV) {
             this.vert.style.display = "block";
             this.vert.style.bottom = needsH ? sWidth + "px" : "0";
@@ -2755,7 +2755,7 @@
             this.vert.style.display = "";
             this.vert.firstChild.style.height = "0";
           }
-    
+
           if (needsH) {
             this.horiz.style.display = "block";
             this.horiz.style.right = needsV ? sWidth + "px" : "0";
@@ -2767,12 +2767,12 @@
             this.horiz.style.display = "";
             this.horiz.firstChild.style.width = "0";
           }
-    
+
           if (!this.checkedZeroWidth && measure.clientHeight > 0) {
             if (sWidth == 0) this.zeroWidthHack();
             this.checkedZeroWidth = true;
           }
-    
+
           return {right: needsV ? sWidth : 0, bottom: needsH ? sWidth : 0};
         },
         setScrollLeft: function(pos) {
@@ -2812,25 +2812,25 @@
           parent.removeChild(this.vert);
         }
       }, NativeScrollbars.prototype);
-    
+
       function NullScrollbars() {}
-    
+
       NullScrollbars.prototype = copyObj({
         update: function() { return {bottom: 0, right: 0}; },
         setScrollLeft: function() {},
         setScrollTop: function() {},
         clear: function() {}
       }, NullScrollbars.prototype);
-    
+
       CodeMirror.scrollbarModel = {"native": NativeScrollbars, "null": NullScrollbars};
-    
+
       function initScrollbars(cm) {
         if (cm.display.scrollbars) {
           cm.display.scrollbars.clear();
           if (cm.display.scrollbars.addClass)
             rmClass(cm.display.wrapper, cm.display.scrollbars.addClass);
         }
-    
+
         cm.display.scrollbars = new CodeMirror.scrollbarModel[cm.options.scrollbarStyle](function(node) {
           cm.display.wrapper.insertBefore(node, cm.display.scrollbarFiller);
           // Prevent clicks in the scrollbars from killing focus
@@ -2845,7 +2845,7 @@
         if (cm.display.scrollbars.addClass)
           addClass(cm.display.wrapper, cm.display.scrollbars.addClass);
       }
-    
+
       function updateScrollbars(cm, measure) {
         if (!measure) measure = measureForScrollbars(cm);
         var startWidth = cm.display.barWidth, startHeight = cm.display.barHeight;
@@ -2857,17 +2857,17 @@
           startWidth = cm.display.barWidth; startHeight = cm.display.barHeight;
         }
       }
-    
+
       // Re-synchronize the fake scrollbars with the actual size of the
       // content.
       function updateScrollbarsInner(cm, measure) {
         var d = cm.display;
         var sizes = d.scrollbars.update(measure);
-    
+
         d.sizer.style.paddingRight = (d.barWidth = sizes.right) + "px";
         d.sizer.style.paddingBottom = (d.barHeight = sizes.bottom) + "px";
         d.heightForcer.style.borderBottom = sizes.bottom + "px solid transparent"
-    
+
         if (sizes.right && sizes.bottom) {
           d.scrollbarFiller.style.display = "block";
           d.scrollbarFiller.style.height = sizes.bottom + "px";
@@ -2879,7 +2879,7 @@
           d.gutterFiller.style.width = measure.gutterWidth + "px";
         } else d.gutterFiller.style.display = "";
       }
-    
+
       // Compute the lines that are visible in a given viewport (defaults
       // the the current scroll position). viewport may contain top,
       // height, and ensure (see op.scrollToPos) properties.
@@ -2887,7 +2887,7 @@
         var top = viewport && viewport.top != null ? Math.max(0, viewport.top) : display.scroller.scrollTop;
         top = Math.floor(top - paddingTop(display));
         var bottom = viewport && viewport.bottom != null ? viewport.bottom : top + display.wrapper.clientHeight;
-    
+
         var from = lineAtHeight(doc, top), to = lineAtHeight(doc, bottom);
         // Ensure is a {from: {line, ch}, to: {line, ch}} object, and
         // forces those lines into the viewport (if possible).
@@ -2903,9 +2903,9 @@
         }
         return {from: from, to: Math.max(to, from + 1)};
       }
-    
+
       // LINE NUMBERS
-    
+
       // Re-align line numbers and gutter marks to compensate for
       // horizontal scrolling.
       function alignHorizontally(cm) {
@@ -2923,7 +2923,7 @@
         if (cm.options.fixedGutter)
           display.gutters.style.left = (comp + gutterW) + "px";
       }
-    
+
       // Used to ensure that the line number gutter is still the right
       // size for the current document size. Returns true when an update
       // is needed.
@@ -2944,23 +2944,23 @@
         }
         return false;
       }
-    
+
       function lineNumberFor(options, i) {
         return String(options.lineNumberFormatter(i + options.firstLineNumber));
       }
-    
+
       // Computes display.scroller.scrollLeft + display.gutters.offsetWidth,
       // but using getBoundingClientRect to get a sub-pixel-accurate
       // result.
       function compensateForHScroll(display) {
         return display.scroller.getBoundingClientRect().left - display.sizer.getBoundingClientRect().left;
       }
-    
+
       // DISPLAY DRAWING
-    
+
       function DisplayUpdate(cm, viewport, force) {
         var display = cm.display;
-    
+
         this.viewport = viewport;
         // Store some values that we'll need later (but don't want to force a relayout for)
         this.visible = visibleLines(display, cm.doc, viewport);
@@ -2972,7 +2972,7 @@
         this.dims = getDimensions(cm);
         this.events = [];
       }
-    
+
       DisplayUpdate.prototype.signal = function(emitter, type) {
         if (hasHandler(emitter, type))
           this.events.push(arguments);
@@ -2981,7 +2981,7 @@
         for (var i = 0; i < this.events.length; i++)
           signal.apply(null, this.events[i]);
       };
-    
+
       function maybeClipScrollbars(cm) {
         var display = cm.display;
         if (!display.scrollbarsClipped && display.scroller.offsetWidth) {
@@ -2992,30 +2992,30 @@
           display.scrollbarsClipped = true;
         }
       }
-    
+
       // Does the actual updating of the line display. Bails out
       // (returning false) when there is nothing to be done and forced is
       // false.
       function updateDisplayIfNeeded(cm, update) {
         var display = cm.display, doc = cm.doc;
-    
+
         if (update.editorIsHidden) {
           resetView(cm);
           return false;
         }
-    
+
         // Bail out if the visible area is already rendered and nothing changed.
         if (!update.force &&
             update.visible.from >= display.viewFrom && update.visible.to <= display.viewTo &&
             (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo) &&
             display.renderedView == display.view && countDirtyView(cm) == 0)
           return false;
-    
+
         if (maybeUpdateLineNumberWidth(cm)) {
           resetView(cm);
           update.dims = getDimensions(cm);
         }
-    
+
         // Compute a suitable new viewport (from & to)
         var end = doc.first + doc.size;
         var from = Math.max(update.visible.from - cm.options.viewportMargin, doc.first);
@@ -3026,20 +3026,20 @@
           from = visualLineNo(cm.doc, from);
           to = visualLineEndNo(cm.doc, to);
         }
-    
+
         var different = from != display.viewFrom || to != display.viewTo ||
           display.lastWrapHeight != update.wrapperHeight || display.lastWrapWidth != update.wrapperWidth;
         adjustView(cm, from, to);
-    
+
         display.viewOffset = heightAtLine(getLine(cm.doc, display.viewFrom));
         // Position the mover div to align with the current scroll position
         cm.display.mover.style.top = display.viewOffset + "px";
-    
+
         var toUpdate = countDirtyView(cm);
         if (!different && toUpdate == 0 && !update.force && display.renderedView == display.view &&
             (display.updateLineNumbers == null || display.updateLineNumbers >= display.viewTo))
           return false;
-    
+
         // For big changes, we hide the enclosing element during the
         // update, since that speeds up the operations on most browsers.
         var focused = activeElt();
@@ -3050,27 +3050,27 @@
         // There might have been a widget with a focused element that got
         // hidden or updated, if so re-focus it.
         if (focused && activeElt() != focused && focused.offsetHeight) focused.focus();
-    
+
         // Prevent selection and cursors from interfering with the scroll
         // width and height.
         removeChildren(display.cursorDiv);
         removeChildren(display.selectionDiv);
         display.gutters.style.height = display.sizer.style.minHeight = 0;
-    
+
         if (different) {
           display.lastWrapHeight = update.wrapperHeight;
           display.lastWrapWidth = update.wrapperWidth;
           startWorker(cm, 400);
         }
-    
+
         display.updateLineNumbers = null;
-    
+
         return true;
       }
-    
+
       function postUpdateDisplay(cm, update) {
         var viewport = update.viewport;
-    
+
         for (var first = true;; first = false) {
           if (!first || !cm.options.lineWrapping || update.oldDisplayWidth == displayWidth(cm)) {
             // Clip forced viewport to actual scrollable area.
@@ -3089,14 +3089,14 @@
           updateScrollbars(cm, barMeasure);
           setDocumentHeight(cm, barMeasure);
         }
-    
+
         update.signal(cm, "update", cm);
         if (cm.display.viewFrom != cm.display.reportedViewFrom || cm.display.viewTo != cm.display.reportedViewTo) {
           update.signal(cm, "viewportChange", cm, cm.display.viewFrom, cm.display.viewTo);
           cm.display.reportedViewFrom = cm.display.viewFrom; cm.display.reportedViewTo = cm.display.viewTo;
         }
       }
-    
+
       function updateDisplaySimple(cm, viewport) {
         var update = new DisplayUpdate(cm, viewport);
         if (updateDisplayIfNeeded(cm, update)) {
@@ -3109,13 +3109,13 @@
           update.finish();
         }
       }
-    
+
       function setDocumentHeight(cm, measure) {
         cm.display.sizer.style.minHeight = measure.docHeight + "px";
         cm.display.heightForcer.style.top = measure.docHeight + "px";
         cm.display.gutters.style.height = (measure.docHeight + cm.display.barHeight + scrollGap(cm)) + "px";
       }
-    
+
       // Read the actual heights of the rendered lines, and update their
       // stored heights to match.
       function updateHeightsInViewport(cm) {
@@ -3142,14 +3142,14 @@
           }
         }
       }
-    
+
       // Read and store the height of line widgets associated with the
       // given line.
       function updateWidgetHeight(line) {
         if (line.widgets) for (var i = 0; i < line.widgets.length; ++i)
           line.widgets[i].height = line.widgets[i].node.parentNode.offsetHeight;
       }
-    
+
       // Do a bulk-read of the DOM positions and sizes needed to draw the
       // view, so that we don't interleave reading and writing to the DOM.
       function getDimensions(cm) {
@@ -3165,7 +3165,7 @@
                 gutterWidth: width,
                 wrapperWidth: d.wrapper.clientWidth};
       }
-    
+
       // Sync the actual display DOM structure with display.view, removing
       // nodes for lines that are no longer in view, and creating the ones
       // that are not there yet, and updating the ones that are out of
@@ -3173,7 +3173,7 @@
       function patchDisplay(cm, updateNumbersFrom, dims) {
         var display = cm.display, lineNumbers = cm.options.lineNumbers;
         var container = display.lineDiv, cur = container.firstChild;
-    
+
         function rm(node) {
           var next = node.nextSibling;
           // Works around a throw-scroll bug in OS X Webkit
@@ -3183,7 +3183,7 @@
             node.parentNode.removeChild(node);
           return next;
         }
-    
+
         var view = display.view, lineN = display.viewFrom;
         // Loop over the elements in the view, syncing cur (the DOM nodes
         // in display.lineDiv) with the view as we go.
@@ -3211,7 +3211,7 @@
         }
         while (cur) cur = rm(cur);
       }
-    
+
       // When an aspect of a line changes, a string is added to
       // lineView.changes. This updates the relevant part of the line's
       // DOM structure.
@@ -3225,7 +3225,7 @@
         }
         lineView.changes = null;
       }
-    
+
       // Lines with gutter elements, widgets or a background class need to
       // be wrapped, and have the extra elements added to the wrapper div
       function ensureLineWrapped(lineView) {
@@ -3238,7 +3238,7 @@
         }
         return lineView.node;
       }
-    
+
       function updateLineBackground(lineView) {
         var cls = lineView.bgClass ? lineView.bgClass + " " + (lineView.line.bgClass || "") : lineView.line.bgClass;
         if (cls) cls += " CodeMirror-linebackground";
@@ -3250,7 +3250,7 @@
           lineView.background = wrap.insertBefore(elt("div", null, cls), wrap.firstChild);
         }
       }
-    
+
       // Wrapper around buildLineContent which will reuse the structure
       // in display.externalMeasured when possible.
       function getLineContent(cm, lineView) {
@@ -3262,7 +3262,7 @@
         }
         return buildLineContent(cm, lineView);
       }
-    
+
       // Redraw the line's text. Interacts with the background and text
       // classes because the mode may output tokens that influence these
       // classes.
@@ -3280,7 +3280,7 @@
           lineView.text.className = cls;
         }
       }
-    
+
       function updateLineClasses(lineView) {
         updateLineBackground(lineView);
         if (lineView.line.wrapClass)
@@ -3290,7 +3290,7 @@
         var textClass = lineView.textClass ? lineView.textClass + " " + (lineView.line.textClass || "") : lineView.line.textClass;
         lineView.text.className = textClass || "";
       }
-    
+
       function updateLineGutter(cm, lineView, lineN, dims) {
         if (lineView.gutter) {
           lineView.node.removeChild(lineView.gutter);
@@ -3330,7 +3330,7 @@
           }
         }
       }
-    
+
       function updateLineWidgets(cm, lineView, dims) {
         if (lineView.alignable) lineView.alignable = null;
         for (var node = lineView.node.firstChild, next; node; node = next) {
@@ -3340,20 +3340,20 @@
         }
         insertLineWidgets(cm, lineView, dims);
       }
-    
+
       // Build a line's DOM representation from scratch
       function buildLineElement(cm, lineView, lineN, dims) {
         var built = getLineContent(cm, lineView);
         lineView.text = lineView.node = built.pre;
         if (built.bgClass) lineView.bgClass = built.bgClass;
         if (built.textClass) lineView.textClass = built.textClass;
-    
+
         updateLineClasses(lineView);
         updateLineGutter(cm, lineView, lineN, dims);
         insertLineWidgets(cm, lineView, dims);
         return lineView.node;
       }
-    
+
       // A lineView may contain multiple logical lines (when merged by
       // collapsed spans). The widgets for all of them need to be drawn.
       function insertLineWidgets(cm, lineView, dims) {
@@ -3361,7 +3361,7 @@
         if (lineView.rest) for (var i = 0; i < lineView.rest.length; i++)
           insertLineWidgetsFor(cm, lineView.rest[i], lineView, dims, false);
       }
-    
+
       function insertLineWidgetsFor(cm, line, lineView, dims, allowAbove) {
         if (!line.widgets) return;
         var wrap = ensureLineWrapped(lineView);
@@ -3377,7 +3377,7 @@
           signalLater(widget, "redraw");
         }
       }
-    
+
       function positionLineWidget(widget, node, lineView, dims) {
         if (widget.noHScroll) {
           (lineView.alignable || (lineView.alignable = [])).push(node);
@@ -3395,39 +3395,39 @@
           if (!widget.noHScroll) node.style.marginLeft = -dims.gutterTotalWidth + "px";
         }
       }
-    
+
       // POSITION OBJECT
-    
+
       // A Pos instance represents a position within the text.
       var Pos = CodeMirror.Pos = function(line, ch) {
         if (!(this instanceof Pos)) return new Pos(line, ch);
         this.line = line; this.ch = ch;
       };
-    
+
       // Compare two positions, return 0 if they are the same, a negative
       // number when a is less, and a positive number otherwise.
       var cmp = CodeMirror.cmpPos = function(a, b) { return a.line - b.line || a.ch - b.ch; };
-    
+
       function copyPos(x) {return Pos(x.line, x.ch);}
       function maxPos(a, b) { return cmp(a, b) < 0 ? b : a; }
       function minPos(a, b) { return cmp(a, b) < 0 ? a : b; }
-    
+
       // INPUT HANDLING
-    
+
       function ensureFocus(cm) {
         if (!cm.state.focused) { cm.display.input.focus(); onFocus(cm); }
       }
-    
+
       // This will be set to a {lineWise: bool, text: [string]} object, so
       // that, when pasting, we know what kind of selections the copied
       // text was made out of.
       var lastCopied = null;
-    
+
       function applyTextInput(cm, inserted, deleted, sel, origin) {
         var doc = cm.doc;
         cm.display.shift = false;
         if (!sel) sel = doc.sel;
-    
+
         var paste = cm.state.pasteIncoming || origin == "paste";
         var textLines = doc.splitLines(inserted), multiPaste = null
         // When pasing N lines into N selections, insert one line per selection
@@ -3442,7 +3442,7 @@
             multiPaste = map(textLines, function(l) { return [l]; });
           }
         }
-    
+
         // Normal behavior is to insert the new text into every selection
         for (var i = sel.ranges.length - 1; i >= 0; i--) {
           var range = sel.ranges[i];
@@ -3463,13 +3463,13 @@
         }
         if (inserted && !paste)
           triggerElectric(cm, inserted);
-    
+
         ensureCursorVisible(cm);
         cm.curOp.updateInput = updateInput;
         cm.curOp.typing = true;
         cm.state.pasteIncoming = cm.state.cutIncoming = false;
       }
-    
+
       function handlePaste(e, cm) {
         var pasted = e.clipboardData && e.clipboardData.getData("text/plain");
         if (pasted) {
@@ -3479,12 +3479,12 @@
           return true;
         }
       }
-    
+
       function triggerElectric(cm, inserted) {
         // When an 'electric' character is inserted, immediately trigger a reindent
         if (!cm.options.electricChars || !cm.options.smartIndent) return;
         var sel = cm.doc.sel;
-    
+
         for (var i = sel.ranges.length - 1; i >= 0; i--) {
           var range = sel.ranges[i];
           if (range.head.ch > 100 || (i && sel.ranges[i - 1].head.line == range.head.line)) continue;
@@ -3503,7 +3503,7 @@
           if (indented) signalLater(cm, "electricInput", cm, range.head.line);
         }
       }
-    
+
       function copyableRanges(cm) {
         var text = [], ranges = [];
         for (var i = 0; i < cm.doc.sel.ranges.length; i++) {
@@ -3514,20 +3514,20 @@
         }
         return {text: text, ranges: ranges};
       }
-    
+
       function disableBrowserMagic(field) {
         field.setAttribute("autocorrect", "off");
         field.setAttribute("autocapitalize", "off");
         field.setAttribute("spellcheck", "false");
       }
-    
+
       // TEXTAREA INPUT STYLE
-    
+
       function TextareaInput(cm) {
         this.cm = cm;
         // See input.poll and input.reset
         this.prevInput = "";
-    
+
         // Flag that indicates whether we expect input to appear real soon
         // now (after some event like 'keypress' or 'input') and are
         // polling intensively.
@@ -3541,7 +3541,7 @@
         this.hasSelection = false;
         this.composing = null;
       };
-    
+
       function hiddenTextarea() {
         var te = elt("textarea", null, null, "position: absolute; padding: 0; width: 1px; height: 1em; outline: none");
         var div = elt("div", [te], null, "overflow: hidden; position: relative; width: 3px; height: 0px;");
@@ -3556,33 +3556,33 @@
         disableBrowserMagic(te);
         return div;
       }
-    
+
       TextareaInput.prototype = copyObj({
         init: function(display) {
           var input = this, cm = this.cm;
-    
+
           // Wraps and hides input textarea
           var div = this.wrapper = hiddenTextarea();
           // The semihidden textarea that is focused when the editor is
           // focused, and receives input.
           var te = this.textarea = div.firstChild;
           display.wrapper.insertBefore(div, display.wrapper.firstChild);
-    
+
           // Needed to hide big blue blinking cursor on Mobile Safari (doesn't seem to work in iOS 8 anymore)
           if (ios) te.style.width = "0px";
-    
+
           on(te, "input", function() {
             if (ie && ie_version >= 9 && input.hasSelection) input.hasSelection = null;
             input.poll();
           });
-    
+
           on(te, "paste", function(e) {
             if (signalDOMEvent(cm, e) || handlePaste(e, cm)) return
-    
+
             cm.state.pasteIncoming = true;
             input.fastPoll();
           });
-    
+
           function prepareCopyCut(e) {
             if (signalDOMEvent(cm, e)) return
             if (cm.somethingSelected()) {
@@ -3610,18 +3610,18 @@
           }
           on(te, "cut", prepareCopyCut);
           on(te, "copy", prepareCopyCut);
-    
+
           on(display.scroller, "paste", function(e) {
             if (eventInWidget(display, e) || signalDOMEvent(cm, e)) return;
             cm.state.pasteIncoming = true;
             input.focus();
           });
-    
+
           // Prevent normal selection in the editor (we handle our own)
           on(display.lineSpace, "selectstart", function(e) {
             if (!eventInWidget(display, e)) e_preventDefault(e);
           });
-    
+
           on(te, "compositionstart", function() {
             var start = cm.getCursor("from");
             if (input.composing) input.composing.range.clear()
@@ -3638,12 +3638,12 @@
             }
           });
         },
-    
+
         prepareSelection: function() {
           // Redraw the selection and/or cursor
           var cm = this.cm, display = cm.display, doc = cm.doc;
           var result = prepareSelection(cm);
-    
+
           // Move the hidden textarea near the cursor to prevent scrolling artifacts
           if (cm.options.moveInputWithCursor) {
             var headPos = cursorCoords(cm, doc.sel.primary().head, "div");
@@ -3653,10 +3653,10 @@
             result.teLeft = Math.max(0, Math.min(display.wrapper.clientWidth - 10,
                                                  headPos.left + lineOff.left - wrapOff.left));
           }
-    
+
           return result;
         },
-    
+
         showSelection: function(drawn) {
           var cm = this.cm, display = cm.display;
           removeChildrenAndAdd(display.cursorDiv, drawn.cursors);
@@ -3666,7 +3666,7 @@
             this.wrapper.style.left = drawn.teLeft + "px";
           }
         },
-    
+
         // Reset the input to correspond to the selection (or to be empty,
         // when not typing and nothing is selected)
         reset: function(typing) {
@@ -3687,26 +3687,26 @@
           }
           this.inaccurateSelection = minimal;
         },
-    
+
         getField: function() { return this.textarea; },
-    
+
         supportsTouch: function() { return false; },
-    
+
         focus: function() {
           if (this.cm.options.readOnly != "nocursor" && (!mobile || activeElt() != this.textarea)) {
             try { this.textarea.focus(); }
             catch (e) {} // IE8 will throw if the textarea is display: none or not in DOM
           }
         },
-    
+
         blur: function() { this.textarea.blur(); },
-    
+
         resetPosition: function() {
           this.wrapper.style.top = this.wrapper.style.left = 0;
         },
-    
+
         receivedFocus: function() { this.slowPoll(); },
-    
+
         // Poll for input changes, using the normal rate of polling. This
         // runs as long as the editor is focused.
         slowPoll: function() {
@@ -3717,7 +3717,7 @@
             if (input.cm.state.focused) input.slowPoll();
           });
         },
-    
+
         // When an event has just come in that is likely to add or change
         // something in the input textarea, we poll faster, to ensure that
         // the change appears on the screen quickly.
@@ -3731,7 +3731,7 @@
           }
           input.polling.set(20, p);
         },
-    
+
         // Read input from the textarea, and update the document to match.
         // When something is selected, it is present in the textarea, and
         // selected (unless it is huge, in which case a placeholder is
@@ -3748,7 +3748,7 @@
               (hasSelection(input) && !prevInput && !this.composing) ||
               cm.isReadOnly() || cm.options.disableInput || cm.state.keySeq)
             return false;
-    
+
           var text = input.value;
           // If nothing changed, bail.
           if (text == prevInput && !cm.somethingSelected()) return false;
@@ -3760,7 +3760,7 @@
             cm.display.input.reset();
             return false;
           }
-    
+
           if (cm.doc.sel == cm.display.selForContextMenu) {
             var first = text.charCodeAt(0);
             if (first == 0x200b && !prevInput) prevInput = "\u200b";
@@ -3769,16 +3769,16 @@
           // Find the part of the input that is actually new
           var same = 0, l = Math.min(prevInput.length, text.length);
           while (same < l && prevInput.charCodeAt(same) == text.charCodeAt(same)) ++same;
-    
+
           var self = this;
           runInOp(cm, function() {
             applyTextInput(cm, text.slice(same), prevInput.length - same,
                            null, self.composing ? "*compose" : null);
-    
+
             // Don't leave long text in the textarea, since it makes further polling slow
             if (text.length > 1000 || text.indexOf("\n") > -1) input.value = self.prevInput = "";
             else self.prevInput = text;
-    
+
             if (self.composing) {
               self.composing.range.clear();
               self.composing.range = cm.markText(self.composing.start, cm.getCursor("to"),
@@ -3787,27 +3787,27 @@
           });
           return true;
         },
-    
+
         ensurePolled: function() {
           if (this.pollingFast && this.poll()) this.pollingFast = false;
         },
-    
+
         onKeyPress: function() {
           if (ie && ie_version >= 9) this.hasSelection = null;
           this.fastPoll();
         },
-    
+
         onContextMenu: function(e) {
           var input = this, cm = input.cm, display = cm.display, te = input.textarea;
           var pos = posFromMouse(cm, e), scrollPos = display.scroller.scrollTop;
           if (!pos || presto) return; // Opera is difficult.
-    
+
           // Reset the current text selection only if the click is done outside of the selection
           // and 'resetSelectionOnContextMenu' option is true.
           var reset = cm.options.resetSelectionOnContextMenu;
           if (reset && cm.doc.sel.contains(pos) == -1)
             operation(cm, setSelection)(cm.doc, simpleSelection(pos), sel_dontScroll);
-    
+
           var oldCSS = te.style.cssText, oldWrapperCSS = input.wrapper.style.cssText;
           input.wrapper.style.cssText = "position: absolute"
           var wrapperBox = input.wrapper.getBoundingClientRect()
@@ -3824,7 +3824,7 @@
           input.contextMenuPending = true;
           display.selForContextMenu = cm.doc.sel;
           clearTimeout(display.detectingSelectAll);
-    
+
           // Select-all will be greyed out if there's nothing to select, so
           // this adds a zero-width space so that we can later check whether
           // it got selected.
@@ -3846,7 +3846,7 @@
             input.wrapper.style.cssText = oldWrapperCSS
             te.style.cssText = oldCSS;
             if (ie && ie_version < 9) display.scrollbars.setScrollTop(display.scroller.scrollTop = scrollPos);
-    
+
             // Try to detect the user choosing select-all
             if (te.selectionStart != null) {
               if (!ie || (ie && ie_version < 9)) prepareSelectAllHack();
@@ -3860,7 +3860,7 @@
               display.detectingSelectAll = setTimeout(poll, 200);
             }
           }
-    
+
           if (ie && ie_version >= 9) prepareSelectAllHack();
           if (captureRightClick) {
             e_stop(e);
@@ -3873,35 +3873,35 @@
             setTimeout(rehide, 50);
           }
         },
-    
+
         readOnlyChanged: function(val) {
           if (!val) this.reset();
         },
-    
+
         setUneditable: nothing,
-    
+
         needsContentAttribute: false
       }, TextareaInput.prototype);
-    
+
       // CONTENTEDITABLE INPUT STYLE
-    
+
       function ContentEditableInput(cm) {
         this.cm = cm;
         this.lastAnchorNode = this.lastAnchorOffset = this.lastFocusNode = this.lastFocusOffset = null;
         this.polling = new Delayed();
         this.gracePeriod = false;
       }
-    
+
       ContentEditableInput.prototype = copyObj({
         init: function(display) {
           var input = this, cm = input.cm;
           var div = input.div = display.lineDiv;
           disableBrowserMagic(div);
-    
+
           on(div, "paste", function(e) {
             if (!signalDOMEvent(cm, e)) handlePaste(e, cm);
           })
-    
+
           on(div, "compositionstart", function(e) {
             var data = e.data;
             input.composing = {sel: cm.doc.sel, data: data, startData: data};
@@ -3931,17 +3931,17 @@
                 input.composing = null;
             }, 50);
           });
-    
+
           on(div, "touchstart", function() {
             input.forceCompositionEnd();
           });
-    
+
           on(div, "input", function() {
             if (input.composing) return;
             if (cm.isReadOnly() || !input.pollContent())
               runInOp(input.cm, function() {regChange(cm);});
           });
-    
+
           function onCopyCut(e) {
             if (signalDOMEvent(cm, e)) return
             if (cm.somethingSelected()) {
@@ -3980,19 +3980,19 @@
           on(div, "copy", onCopyCut);
           on(div, "cut", onCopyCut);
         },
-    
+
         prepareSelection: function() {
           var result = prepareSelection(this.cm, false);
           result.focus = this.cm.state.focused;
           return result;
         },
-    
+
         showSelection: function(info, takeFocus) {
           if (!info || !this.cm.display.view.length) return;
           if (info.focus || takeFocus) this.showPrimarySelection();
           this.showMultipleSelections(info);
         },
-    
+
         showPrimarySelection: function() {
           var sel = window.getSelection(), prim = this.cm.doc.sel.primary();
           var curAnchor = domToPos(this.cm, sel.anchorNode, sel.anchorOffset);
@@ -4001,11 +4001,11 @@
               cmp(minPos(curAnchor, curFocus), prim.from()) == 0 &&
               cmp(maxPos(curAnchor, curFocus), prim.to()) == 0)
             return;
-    
+
           var start = posToDOM(this.cm, prim.from());
           var end = posToDOM(this.cm, prim.to());
           if (!start && !end) return;
-    
+
           var view = this.cm.display.view;
           var old = sel.rangeCount && sel.getRangeAt(0);
           if (!start) {
@@ -4015,7 +4015,7 @@
             var map = measure.maps ? measure.maps[measure.maps.length - 1] : measure.map;
             end = {node: map[map.length - 1], offset: map[map.length - 2] - map[map.length - 3]};
           }
-    
+
           try { var rng = range(start.node, start.offset, end.offset, end.node); }
           catch(e) {} // Our model of the DOM might be outdated, in which case the range we try to set can be impossible
           if (rng) {
@@ -4031,7 +4031,7 @@
           }
           this.rememberSelection();
         },
-    
+
         startGracePeriod: function() {
           var input = this;
           clearTimeout(this.gracePeriod);
@@ -4041,40 +4041,40 @@
               input.cm.operation(function() { input.cm.curOp.selectionChanged = true; });
           }, 20);
         },
-    
+
         showMultipleSelections: function(info) {
           removeChildrenAndAdd(this.cm.display.cursorDiv, info.cursors);
           removeChildrenAndAdd(this.cm.display.selectionDiv, info.selection);
         },
-    
+
         rememberSelection: function() {
           var sel = window.getSelection();
           this.lastAnchorNode = sel.anchorNode; this.lastAnchorOffset = sel.anchorOffset;
           this.lastFocusNode = sel.focusNode; this.lastFocusOffset = sel.focusOffset;
         },
-    
+
         selectionInEditor: function() {
           var sel = window.getSelection();
           if (!sel.rangeCount) return false;
           var node = sel.getRangeAt(0).commonAncestorContainer;
           return contains(this.div, node);
         },
-    
+
         focus: function() {
           if (this.cm.options.readOnly != "nocursor") this.div.focus();
         },
         blur: function() { this.div.blur(); },
         getField: function() { return this.div; },
-    
+
         supportsTouch: function() { return true; },
-    
+
         receivedFocus: function() {
           var input = this;
           if (this.selectionInEditor())
             this.pollSelection();
           else
             runInOp(this.cm, function() { input.cm.curOp.selectionChanged = true; });
-    
+
           function poll() {
             if (input.cm.state.focused) {
               input.pollSelection();
@@ -4083,13 +4083,13 @@
           }
           this.polling.set(this.cm.options.pollInterval, poll);
         },
-    
+
         selectionChanged: function() {
           var sel = window.getSelection();
           return sel.anchorNode != this.lastAnchorNode || sel.anchorOffset != this.lastAnchorOffset ||
             sel.focusNode != this.lastFocusNode || sel.focusOffset != this.lastFocusOffset;
         },
-    
+
         pollSelection: function() {
           if (!this.composing && !this.gracePeriod && this.selectionChanged()) {
             var sel = window.getSelection(), cm = this.cm;
@@ -4102,12 +4102,12 @@
             });
           }
         },
-    
+
         pollContent: function() {
           var cm = this.cm, display = cm.display, sel = cm.doc.sel.primary();
           var from = sel.from(), to = sel.to();
           if (from.line < display.viewFrom || to.line > display.viewTo - 1) return false;
-    
+
           var fromIndex;
           if (from.line == display.viewFrom || (fromIndex = findViewIndex(cm, from.line)) == 0) {
             var fromLine = lineNo(display.view[0].line);
@@ -4124,7 +4124,7 @@
             var toLine = lineNo(display.view[toIndex + 1].line) - 1;
             var toNode = display.view[toIndex + 1].node.previousSibling;
           }
-    
+
           var newText = cm.doc.splitLines(domTextBetween(cm, fromNode, toNode, fromLine, toLine));
           var oldText = getBetween(cm.doc, Pos(fromLine, 0), Pos(toLine, getLine(cm.doc, toLine).text.length));
           while (newText.length > 1 && oldText.length > 1) {
@@ -4132,7 +4132,7 @@
             else if (newText[0] == oldText[0]) { newText.shift(); oldText.shift(); fromLine++; }
             else break;
           }
-    
+
           var cutFront = 0, cutEnd = 0;
           var newTop = newText[0], oldTop = oldText[0], maxCutFront = Math.min(newTop.length, oldTop.length);
           while (cutFront < maxCutFront && newTop.charCodeAt(cutFront) == oldTop.charCodeAt(cutFront))
@@ -4143,10 +4143,10 @@
           while (cutEnd < maxCutEnd &&
                  newBot.charCodeAt(newBot.length - cutEnd - 1) == oldBot.charCodeAt(oldBot.length - cutEnd - 1))
             ++cutEnd;
-    
+
           newText[newText.length - 1] = newBot.slice(0, newBot.length - cutEnd);
           newText[0] = newText[0].slice(cutFront);
-    
+
           var chFrom = Pos(fromLine, cutFront);
           var chTo = Pos(toLine, oldText.length ? lst(oldText).length - cutEnd : 0);
           if (newText.length > 1 || newText[0] || cmp(chFrom, chTo)) {
@@ -4154,7 +4154,7 @@
             return true;
           }
         },
-    
+
         ensurePolled: function() {
           this.forceCompositionEnd();
         },
@@ -4174,33 +4174,33 @@
           else if (composing.data && composing.data != composing.startData)
             operation(this.cm, applyTextInput)(this.cm, composing.data, 0, composing.sel);
         },
-    
+
         setUneditable: function(node) {
           node.contentEditable = "false"
         },
-    
+
         onKeyPress: function(e) {
           e.preventDefault();
           if (!this.cm.isReadOnly())
             operation(this.cm, applyTextInput)(this.cm, String.fromCharCode(e.charCode == null ? e.keyCode : e.charCode), 0);
         },
-    
+
         readOnlyChanged: function(val) {
           this.div.contentEditable = String(val != "nocursor")
         },
-    
+
         onContextMenu: nothing,
         resetPosition: nothing,
-    
+
         needsContentAttribute: true
       }, ContentEditableInput.prototype);
-    
+
       function posToDOM(cm, pos) {
         var view = findViewForLine(cm, pos.line);
         if (!view || view.hidden) return null;
         var line = getLine(cm.doc, pos.line);
         var info = mapFromLineView(view, line, pos.line);
-    
+
         var order = getOrder(line), side = "left";
         if (order) {
           var partPos = getBidiPartAt(order, pos.ch);
@@ -4210,9 +4210,9 @@
         result.offset = result.collapse == "right" ? result.end : result.start;
         return result;
       }
-    
+
       function badPos(pos, bad) { if (bad) pos.bad = true; return pos; }
-    
+
       function domToPos(cm, node, offset) {
         var lineNode;
         if (node == cm.display.lineDiv) {
@@ -4231,7 +4231,7 @@
             return locateNodeInLineView(lineView, node, offset);
         }
       }
-    
+
       function locateNodeInLineView(lineView, node, offset) {
         var wrapper = lineView.text.firstChild, bad = false;
         if (!node || !contains(wrapper, node)) return badPos(Pos(lineNo(lineView.line), 0), true);
@@ -4244,7 +4244,7 @@
             return badPos(Pos(lineNo(line), line.text.length), bad);
           }
         }
-    
+
         var textNode = node.nodeType == 3 ? node : null, topNode = node;
         if (!textNode && node.childNodes.length == 1 && node.firstChild.nodeType == 3) {
           textNode = node.firstChild;
@@ -4252,7 +4252,7 @@
         }
         while (topNode.parentNode != wrapper) topNode = topNode.parentNode;
         var measure = lineView.measure, maps = measure.maps;
-    
+
         function find(textNode, topNode, offset) {
           for (var i = -1; i < (maps ? maps.length : 0); i++) {
             var map = i < 0 ? measure.map : maps[i];
@@ -4269,7 +4269,7 @@
         }
         var found = find(textNode, topNode, offset);
         if (found) return badPos(found, bad);
-    
+
         // FIXME this is all really shaky. might handle the few cases it needs to handle, but likely to cause problems
         for (var after = topNode.nextSibling, dist = textNode ? textNode.nodeValue.length - offset : 0; after; after = after.nextSibling) {
           found = find(after, after.firstChild, 0);
@@ -4286,7 +4286,7 @@
             dist += after.textContent.length;
         }
       }
-    
+
       function domTextBetween(cm, from, to, fromLine, toLine) {
         var text = "", closing = false, lineSep = cm.doc.lineSeparator();
         function recognizeMarker(id) { return function(marker) { return marker.id == id; }; }
@@ -4327,11 +4327,11 @@
         }
         return text;
       }
-    
+
       CodeMirror.inputStyles = {"textarea": TextareaInput, "contenteditable": ContentEditableInput};
-    
+
       // SELECTION / CURSOR
-    
+
       // Selection objects are immutable. A new one is created every time
       // the selection changes. A selection is one or more non-overlapping
       // (and non-touching) ranges, sorted, and an integer that indicates
@@ -4341,7 +4341,7 @@
         this.ranges = ranges;
         this.primIndex = primIndex;
       }
-    
+
       Selection.prototype = {
         primary: function() { return this.ranges[this.primIndex]; },
         equals: function(other) {
@@ -4373,11 +4373,11 @@
           return -1;
         }
       };
-    
+
       function Range(anchor, head) {
         this.anchor = anchor; this.head = head;
       }
-    
+
       Range.prototype = {
         from: function() { return minPos(this.anchor, this.head); },
         to: function() { return maxPos(this.anchor, this.head); },
@@ -4385,7 +4385,7 @@
           return this.head.line == this.anchor.line && this.head.ch == this.anchor.ch;
         }
       };
-    
+
       // Take an unsorted, potentially overlapping set of ranges, and
       // build a selection out of it. 'Consumes' ranges array (modifying
       // it).
@@ -4404,11 +4404,11 @@
         }
         return new Selection(ranges, primIndex);
       }
-    
+
       function simpleSelection(anchor, head) {
         return new Selection([new Range(anchor, head || anchor)], 0);
       }
-    
+
       // Most of the external API clips given positions to make sure they
       // actually exist within the document.
       function clipLine(doc, n) {return Math.max(doc.first, Math.min(n, doc.first + doc.size - 1));}
@@ -4429,13 +4429,13 @@
         for (var out = [], i = 0; i < array.length; i++) out[i] = clipPos(doc, array[i]);
         return out;
       }
-    
+
       // SELECTION UPDATES
-    
+
       // The 'scroll' parameter given to many of these indicated whether
       // the new cursor position should be scrolled into view after
       // modifying the selection.
-    
+
       // If shift is held or the extend flag is set, extends a range to
       // include a given position (and optionally a second position).
       // Otherwise, simply returns the range between the given positions.
@@ -4457,12 +4457,12 @@
           return new Range(other || head, head);
         }
       }
-    
+
       // Extend the primary selection range, discard the rest.
       function extendSelection(doc, head, other, options) {
         setSelection(doc, new Selection([extendRange(doc, doc.sel.primary(), head, other)], 0), options);
       }
-    
+
       // Extend all selections (pos is an array of selections with length
       // equal the number of selections)
       function extendSelections(doc, heads, options) {
@@ -4471,19 +4471,19 @@
         var newSel = normalizeSelection(out, doc.sel.primIndex);
         setSelection(doc, newSel, options);
       }
-    
+
       // Updates a single range in the selection.
       function replaceOneSelection(doc, i, range, options) {
         var ranges = doc.sel.ranges.slice(0);
         ranges[i] = range;
         setSelection(doc, normalizeSelection(ranges, doc.sel.primIndex), options);
       }
-    
+
       // Reset the selection to a single range.
       function setSimpleSelection(doc, anchor, head, options) {
         setSelection(doc, simpleSelection(anchor, head), options);
       }
-    
+
       // Give beforeSelectionChange handlers a change to influence a
       // selection update.
       function filterSelectionChange(doc, sel, options) {
@@ -4502,7 +4502,7 @@
         if (obj.ranges != sel.ranges) return normalizeSelection(obj.ranges, obj.ranges.length - 1);
         else return sel;
       }
-    
+
       function setSelectionReplaceHistory(doc, sel, options) {
         var done = doc.history.done, last = lst(done);
         if (last && last.ranges) {
@@ -4512,43 +4512,43 @@
           setSelection(doc, sel, options);
         }
       }
-    
+
       // Set a new selection.
       function setSelection(doc, sel, options) {
         setSelectionNoUndo(doc, sel, options);
         addSelectionToHistory(doc, doc.sel, doc.cm ? doc.cm.curOp.id : NaN, options);
       }
-    
+
       function setSelectionNoUndo(doc, sel, options) {
         if (hasHandler(doc, "beforeSelectionChange") || doc.cm && hasHandler(doc.cm, "beforeSelectionChange"))
           sel = filterSelectionChange(doc, sel, options);
-    
+
         var bias = options && options.bias ||
           (cmp(sel.primary().head, doc.sel.primary().head) < 0 ? -1 : 1);
         setSelectionInner(doc, skipAtomicInSelection(doc, sel, bias, true));
-    
+
         if (!(options && options.scroll === false) && doc.cm)
           ensureCursorVisible(doc.cm);
       }
-    
+
       function setSelectionInner(doc, sel) {
         if (sel.equals(doc.sel)) return;
-    
+
         doc.sel = sel;
-    
+
         if (doc.cm) {
           doc.cm.curOp.updateInput = doc.cm.curOp.selectionChanged = true;
           signalCursorActivity(doc.cm);
         }
         signalLater(doc, "cursorActivity", doc);
       }
-    
+
       // Verify that the selection does not partially select any atomic
       // marked ranges.
       function reCheckSelection(doc) {
         setSelectionInner(doc, skipAtomicInSelection(doc, doc.sel, null, false), sel_dontScroll);
       }
-    
+
       // Return a selection that does not partially select any atomic
       // ranges.
       function skipAtomicInSelection(doc, sel, bias, mayClear) {
@@ -4565,7 +4565,7 @@
         }
         return out ? normalizeSelection(out, sel.primIndex) : sel;
       }
-    
+
       function skipAtomicInner(doc, pos, oldPos, dir, mayClear) {
         var line = getLine(doc, pos.line);
         if (line.markedSpans) for (var i = 0; i < line.markedSpans.length; ++i) {
@@ -4580,7 +4580,7 @@
               }
             }
             if (!m.atomic) continue;
-    
+
             if (oldPos) {
               var near = m.find(dir < 0 ? 1 : -1), diff;
               if (dir < 0 ? m.inclusiveRight : m.inclusiveLeft)
@@ -4588,7 +4588,7 @@
               if (near && near.line == pos.line && (diff = cmp(near, oldPos)) && (dir < 0 ? diff < 0 : diff > 0))
                 return skipAtomicInner(doc, near, pos, dir, mayClear);
             }
-    
+
             var far = m.find(dir < 0 ? -1 : 1);
             if (dir < 0 ? m.inclusiveLeft : m.inclusiveRight)
               far = movePos(doc, far, dir, far.line == pos.line ? line : null);
@@ -4597,7 +4597,7 @@
         }
         return pos;
       }
-    
+
       // Ensure a given position is not inside an atomic range.
       function skipAtomic(doc, pos, oldPos, bias, mayClear) {
         var dir = bias || 1;
@@ -4611,7 +4611,7 @@
         }
         return found;
       }
-    
+
       function movePos(doc, pos, dir, line) {
         if (dir < 0 && pos.ch == 0) {
           if (pos.line > doc.first) return clipPos(doc, Pos(pos.line - 1));
@@ -4623,18 +4623,18 @@
           return new Pos(pos.line, pos.ch + dir);
         }
       }
-    
+
       // SELECTION DRAWING
-    
+
       function updateSelection(cm) {
         cm.display.input.showSelection(cm.display.input.prepareSelection());
       }
-    
+
       function prepareSelection(cm, primary) {
         var doc = cm.doc, result = {};
         var curFragment = result.cursors = document.createDocumentFragment();
         var selFragment = result.selection = document.createDocumentFragment();
-    
+
         for (var i = 0; i < doc.sel.ranges.length; i++) {
           if (primary === false && i == doc.sel.primIndex) continue;
           var range = doc.sel.ranges[i];
@@ -4647,16 +4647,16 @@
         }
         return result;
       }
-    
+
       // Draws a cursor for the given range
       function drawSelectionCursor(cm, head, output) {
         var pos = cursorCoords(cm, head, "div", null, null, !cm.options.singleCursorHeightPerLine);
-    
+
         var cursor = output.appendChild(elt("div", "\u00a0", "CodeMirror-cursor"));
         cursor.style.left = pos.left + "px";
         cursor.style.top = pos.top + "px";
         cursor.style.height = Math.max(0, pos.bottom - pos.top) * cm.options.cursorHeight + "px";
-    
+
         if (pos.other) {
           // Secondary cursor, shown when on a 'jump' in bi-directional text
           var otherCursor = output.appendChild(elt("div", "\u00a0", "CodeMirror-cursor CodeMirror-secondarycursor"));
@@ -4666,14 +4666,14 @@
           otherCursor.style.height = (pos.other.bottom - pos.other.top) * .85 + "px";
         }
       }
-    
+
       // Draws the given range as a highlighted selection
       function drawSelectionRange(cm, range, output) {
         var display = cm.display, doc = cm.doc;
         var fragment = document.createDocumentFragment();
         var padding = paddingH(cm.display), leftSide = padding.left;
         var rightSide = Math.max(display.sizerWidth, displayWidth(cm) - display.sizer.offsetLeft) - padding.right;
-    
+
         function add(left, top, width, bottom) {
           if (top < 0) top = 0;
           top = Math.round(top);
@@ -4682,7 +4682,7 @@
                                    "px; top: " + top + "px; width: " + (width == null ? rightSide - left : width) +
                                    "px; height: " + (bottom - top) + "px"));
         }
-    
+
         function drawForLine(line, fromArg, toArg) {
           var lineObj = getLine(doc, line);
           var lineLen = lineObj.text.length;
@@ -4690,7 +4690,7 @@
           function coords(ch, bias) {
             return charCoords(cm, Pos(line, ch), "div", lineObj, bias);
           }
-    
+
           iterateBidiSections(getOrder(lineObj), fromArg || 0, toArg == null ? lineLen : toArg, function(from, to, dir) {
             var leftPos = coords(from, "left"), rightPos, left, right;
             if (from == to) {
@@ -4718,7 +4718,7 @@
           });
           return {start: start, end: end};
         }
-    
+
         var sFrom = range.from(), sTo = range.to();
         if (sFrom.line == sTo.line) {
           drawForLine(sFrom.line, sFrom.ch, sTo.ch);
@@ -4738,10 +4738,10 @@
           if (leftEnd.bottom < rightStart.top)
             add(leftSide, leftEnd.bottom, null, rightStart.top);
         }
-    
+
         output.appendChild(fragment);
       }
-    
+
       // Cursor-blinking
       function restartBlink(cm) {
         if (!cm.state.focused) return;
@@ -4756,14 +4756,14 @@
         else if (cm.options.cursorBlinkRate < 0)
           display.cursorDiv.style.visibility = "hidden";
       }
-    
+
       // HIGHLIGHT WORKER
-    
+
       function startWorker(cm, time) {
         if (cm.doc.mode.startState && cm.doc.frontier < cm.display.viewTo)
           cm.state.highlight.set(time, bind(highlightWorker, cm));
       }
-    
+
       function highlightWorker(cm) {
         var doc = cm.doc;
         if (doc.frontier < doc.first) doc.frontier = doc.first;
@@ -4771,7 +4771,7 @@
         var end = +new Date + cm.options.workTime;
         var state = copyState(doc.mode, getStateBefore(cm, doc.frontier));
         var changedLines = [];
-    
+
         doc.iter(doc.frontier, Math.min(doc.first + doc.size, cm.display.viewTo + 500), function(line) {
           if (doc.frontier >= cm.display.viewFrom) { // Visible
             var oldStyles = line.styles, tooLong = line.text.length > cm.options.maxHighlightLength;
@@ -4801,7 +4801,7 @@
             regLineChange(cm, changedLines[i], "text");
         });
       }
-    
+
       // Finds the line to start with when starting a parse. Tries to
       // find a line with a stateAfter, so that it can start with a
       // valid state. If that fails, it returns the line with the
@@ -4822,7 +4822,7 @@
         }
         return minline;
       }
-    
+
       function getStateBefore(cm, n, precise) {
         var doc = cm.doc, display = cm.display;
         if (!doc.mode.startState) return true;
@@ -4838,9 +4838,9 @@
         if (precise) doc.frontier = pos;
         return state;
       }
-    
+
       // POSITION MEASUREMENT
-    
+
       function paddingTop(display) {return display.lineSpace.offsetTop;}
       function paddingVert(display) {return display.mover.offsetHeight - display.lineSpace.offsetHeight;}
       function paddingH(display) {
@@ -4851,7 +4851,7 @@
         if (!isNaN(data.left) && !isNaN(data.right)) display.cachedPaddingH = data;
         return data;
       }
-    
+
       function scrollGap(cm) { return scrollerGap - cm.display.nativeBarWidth; }
       function displayWidth(cm) {
         return cm.display.scroller.clientWidth - scrollGap(cm) - cm.display.barWidth;
@@ -4859,7 +4859,7 @@
       function displayHeight(cm) {
         return cm.display.scroller.clientHeight - scrollGap(cm) - cm.display.barHeight;
       }
-    
+
       // Ensure the lineView.wrapping.heights array is populated. This is
       // an array of bottom offsets for the lines that make up a drawn
       // line. When lineWrapping is on, there might be more than one
@@ -4881,7 +4881,7 @@
           heights.push(rect.bottom - rect.top);
         }
       }
-    
+
       // Find a line map (mapping character offsets to text nodes) and a
       // measurement cache for the given line number. (A line view might
       // contain multiple lines when collapsed ranges are present.)
@@ -4895,7 +4895,7 @@
           if (lineNo(lineView.rest[i]) > lineN)
             return {map: lineView.measure.maps[i], cache: lineView.measure.caches[i], before: true};
       }
-    
+
       // Render a line into the hidden node display.externalMeasured. Used
       // when measurement is needed for a line that's not in the viewport.
       function updateExternalMeasurement(cm, line) {
@@ -4908,13 +4908,13 @@
         removeChildrenAndAdd(cm.display.lineMeasure, built.pre);
         return view;
       }
-    
+
       // Get a {top, bottom, left, right} box (in line-local coordinates)
       // for a given character.
       function measureChar(cm, line, ch, bias) {
         return measureCharPrepared(cm, prepareMeasureForLine(cm, line), ch, bias);
       }
-    
+
       // Find a line view that corresponds to the given line number.
       function findViewForLine(cm, lineN) {
         if (lineN >= cm.display.viewFrom && lineN < cm.display.viewTo)
@@ -4923,7 +4923,7 @@
         if (ext && lineN >= ext.lineN && lineN < ext.lineN + ext.size)
           return ext;
       }
-    
+
       // Measurement can be split in two steps, the set-up work that
       // applies to the whole line, and the measurement of the actual
       // character. Functions like coordsChar, that need to do a lot of
@@ -4940,7 +4940,7 @@
         }
         if (!view)
           view = updateExternalMeasurement(cm, line);
-    
+
         var info = mapFromLineView(view, line, lineN);
         return {
           line: line, view: view, rect: null,
@@ -4948,7 +4948,7 @@
           hasHeights: false
         };
       }
-    
+
       // Given a prepared measurement object, measures the position of an
       // actual character (or fetches it from the cache).
       function measureCharPrepared(cm, prepared, ch, bias, varHeight) {
@@ -4970,9 +4970,9 @@
                 top: varHeight ? found.rtop : found.top,
                 bottom: varHeight ? found.rbottom : found.bottom};
       }
-    
+
       var nullRect = {left: 0, right: 0, top: 0, bottom: 0};
-    
+
       function nodeAndOffsetInLineMap(map, ch, bias) {
         var node, start, end, collapse;
         // First, search the line map for the text node corresponding to,
@@ -5009,11 +5009,11 @@
         }
         return {node: node, start: start, end: end, collapse: collapse, coverStart: mStart, coverEnd: mEnd};
       }
-    
+
       function measureCharInner(cm, prepared, ch, bias) {
         var place = nodeAndOffsetInLineMap(prepared.map, ch, bias);
         var node = place.node, start = place.start, end = place.end, collapse = place.collapse;
-    
+
         var rect;
         if (node.nodeType == 3) { // If it is a text node, use a range to retrieve the coordinates.
           for (var i = 0; i < 4; i++) { // Retry a maximum of 4 times when nonsense rectangles are returned
@@ -5051,7 +5051,7 @@
           else
             rect = nullRect;
         }
-    
+
         var rtop = rect.top - prepared.rect.top, rbot = rect.bottom - prepared.rect.top;
         var mid = (rtop + rbot) / 2;
         var heights = prepared.view.measure.heights;
@@ -5063,10 +5063,10 @@
                       top: top, bottom: bot};
         if (!rect.left && !rect.right) result.bogus = true;
         if (!cm.options.singleCursorHeightPerLine) { result.rtop = rtop; result.rbottom = rbot; }
-    
+
         return result;
       }
-    
+
       // Work around problem with bounding client rects on ranges being
       // returned incorrectly when zoomed on IE10 and below.
       function maybeUpdateRectForZooming(measure, rect) {
@@ -5078,7 +5078,7 @@
         return {left: rect.left * scaleX, right: rect.right * scaleX,
                 top: rect.top * scaleY, bottom: rect.bottom * scaleY};
       }
-    
+
       function clearLineMeasurementCacheFor(lineView) {
         if (lineView.measure) {
           lineView.measure.cache = {};
@@ -5087,24 +5087,24 @@
             lineView.measure.caches[i] = {};
         }
       }
-    
+
       function clearLineMeasurementCache(cm) {
         cm.display.externalMeasure = null;
         removeChildren(cm.display.lineMeasure);
         for (var i = 0; i < cm.display.view.length; i++)
           clearLineMeasurementCacheFor(cm.display.view[i]);
       }
-    
+
       function clearCaches(cm) {
         clearLineMeasurementCache(cm);
         cm.display.cachedCharWidth = cm.display.cachedTextHeight = cm.display.cachedPaddingH = null;
         if (!cm.options.lineWrapping) cm.display.maxLineChanged = true;
         cm.display.lineNumChars = null;
       }
-    
+
       function pageScrollX() { return window.pageXOffset || (document.documentElement || document.body).scrollLeft; }
       function pageScrollY() { return window.pageYOffset || (document.documentElement || document.body).scrollTop; }
-    
+
       // Converts a {top, bottom, left, right} box from line-local
       // coordinates into another coordinate system. Context may be one of
       // "line", "div" (display.lineDiv), "local"/null (editor), "window",
@@ -5128,7 +5128,7 @@
         rect.top += yOff; rect.bottom += yOff;
         return rect;
       }
-    
+
       // Coverts a box from "div" coords to another coordinate system.
       // Context may be "window", "page", "div", or "local"/null.
       function fromCoordSystem(cm, coords, context) {
@@ -5143,16 +5143,16 @@
           left += localBox.left;
           top += localBox.top;
         }
-    
+
         var lineSpaceBox = cm.display.lineSpace.getBoundingClientRect();
         return {left: left - lineSpaceBox.left, top: top - lineSpaceBox.top};
       }
-    
+
       function charCoords(cm, pos, context, lineObj, bias) {
         if (!lineObj) lineObj = getLine(cm.doc, pos.line);
         return intoCoordSystem(cm, lineObj, measureChar(cm, lineObj, pos.ch, bias), context);
       }
-    
+
       // Returns a box for a given cursor position, which may have an
       // 'other' property containing the position of the secondary cursor
       // on a bidi boundary.
@@ -5185,7 +5185,7 @@
         if (bidiOther != null) val.other = getBidi(ch, bidiOther);
         return val;
       }
-    
+
       // Used to cheaply estimate the coordinates for a position. Used for
       // intermediate scroll updates.
       function estimateCoords(cm, pos) {
@@ -5195,7 +5195,7 @@
         var top = heightAtLine(lineObj) + paddingTop(cm.display);
         return {left: left, right: left, top: top, bottom: top + lineObj.height};
       }
-    
+
       // Positions returned by coordsChar contain some extra information.
       // xRel is the relative x position of the input coordinates compared
       // to the found position (so xRel > 0 means the coordinates are to
@@ -5208,7 +5208,7 @@
         if (outside) pos.outside = true;
         return pos;
       }
-    
+
       // Compute the character position closest to the given coordinates.
       // Input must be lineSpace-local ("div" coordinate system).
       function coordsChar(cm, x, y) {
@@ -5219,7 +5219,7 @@
         if (lineN > last)
           return PosWithInfo(doc.first + doc.size - 1, getLine(doc, last).text.length, true, 1);
         if (x < 0) x = 0;
-    
+
         var lineObj = getLine(doc, lineN);
         for (;;) {
           var found = coordsCharInner(cm, lineObj, lineN, x, y);
@@ -5231,12 +5231,12 @@
             return found;
         }
       }
-    
+
       function coordsCharInner(cm, lineObj, lineNo, x, y) {
         var innerOff = y - heightAtLine(lineObj);
         var wrongLine = false, adjust = 2 * cm.display.wrapper.clientWidth;
         var preparedMeasure = prepareMeasureForLine(cm, lineObj);
-    
+
         function getX(ch) {
           var sp = cursorCoords(cm, Pos(lineNo, ch), "line", lineObj, preparedMeasure);
           wrongLine = true;
@@ -5245,11 +5245,11 @@
           else wrongLine = false;
           return sp.left;
         }
-    
+
         var bidi = getOrder(lineObj), dist = lineObj.text.length;
         var from = lineLeft(lineObj), to = lineRight(lineObj);
         var fromX = getX(from), fromOutside = wrongLine, toX = getX(to), toOutside = wrongLine;
-    
+
         if (x > toX) return PosWithInfo(lineNo, to, toOutside, 1);
         // Do a binary search between these bounds.
         for (;;) {
@@ -5271,7 +5271,7 @@
           else {from = middle; fromX = middleX; fromOutside = wrongLine; dist -= step;}
         }
       }
-    
+
       var measureText;
       // Compute the default text height.
       function textHeight(display) {
@@ -5292,7 +5292,7 @@
         removeChildren(display.measure);
         return height || 1;
       }
-    
+
       // Compute the default character width.
       function charWidth(display) {
         if (display.cachedCharWidth != null) return display.cachedCharWidth;
@@ -5303,17 +5303,17 @@
         if (width > 2) display.cachedCharWidth = width;
         return width || 10;
       }
-    
+
       // OPERATIONS
-    
+
       // Operations are used to wrap a series of changes to the editor
       // state in such a way that each change won't have to update the
       // cursor and display (which would be awkward, slow, and
       // error-prone). Instead, display updates are batched and then all
       // combined and executed at once.
-    
+
       var operationGroup = null;
-    
+
       var nextOpId = 0;
       // Start a new operation.
       function startOperation(cm) {
@@ -5343,7 +5343,7 @@
           };
         }
       }
-    
+
       function fireCallbacksForOps(group) {
         // Calls delayed callbacks and cursorActivity handlers until no
         // new ones appear
@@ -5359,12 +5359,12 @@
           }
         } while (i < callbacks.length);
       }
-    
+
       // Finish an operation, updating the display and signalling delayed events
       function endOperation(cm) {
         var op = cm.curOp, group = op.ownsGroup;
         if (!group) return;
-    
+
         try { fireCallbacksForOps(group); }
         finally {
           operationGroup = null;
@@ -5373,7 +5373,7 @@
           endOperations(group);
         }
       }
-    
+
       // The DOM updates done when an operation finishes are batched so
       // that the minimum number of relayouts are required.
       function endOperations(group) {
@@ -5389,12 +5389,12 @@
         for (var i = 0; i < ops.length; i++) // Read DOM
           endOperation_finish(ops[i]);
       }
-    
+
       function endOperation_R1(op) {
         var cm = op.cm, display = cm.display;
         maybeClipScrollbars(cm);
         if (op.updateMaxLine) findMaxLine(cm);
-    
+
         op.mustUpdate = op.viewChanged || op.forceUpdate || op.scrollTop != null ||
           op.scrollToPos && (op.scrollToPos.from.line < display.viewFrom ||
                              op.scrollToPos.to.line >= display.viewTo) ||
@@ -5402,17 +5402,17 @@
         op.update = op.mustUpdate &&
           new DisplayUpdate(cm, op.mustUpdate && {top: op.scrollTop, ensure: op.scrollToPos}, op.forceUpdate);
       }
-    
+
       function endOperation_W1(op) {
         op.updatedDisplay = op.mustUpdate && updateDisplayIfNeeded(op.cm, op.update);
       }
-    
+
       function endOperation_R2(op) {
         var cm = op.cm, display = cm.display;
         if (op.updatedDisplay) updateHeightsInViewport(cm);
-    
+
         op.barMeasure = measureForScrollbars(cm);
-    
+
         // If the max line changed since it was last measured, measure it,
         // and ensure the document's width matches it.
         // updateDisplay_W2 will use these properties to do the actual resizing
@@ -5423,21 +5423,21 @@
             Math.max(display.scroller.clientWidth, display.sizer.offsetLeft + op.adjustWidthTo + scrollGap(cm) + cm.display.barWidth);
           op.maxScrollLeft = Math.max(0, display.sizer.offsetLeft + op.adjustWidthTo - displayWidth(cm));
         }
-    
+
         if (op.updatedDisplay || op.selectionChanged)
           op.preparedSelection = display.input.prepareSelection(op.focus);
       }
-    
+
       function endOperation_W2(op) {
         var cm = op.cm;
-    
+
         if (op.adjustWidthTo != null) {
           cm.display.sizer.style.minWidth = op.adjustWidthTo + "px";
           if (op.maxScrollLeft < cm.doc.scrollLeft)
             setScrollLeft(cm, Math.min(cm.display.scroller.scrollLeft, op.maxScrollLeft), true);
           cm.display.maxLineChanged = false;
         }
-    
+
         var takeFocus = op.focus && op.focus == activeElt() && (!document.hasFocus || document.hasFocus())
         if (op.preparedSelection)
           cm.display.input.showSelection(op.preparedSelection, takeFocus);
@@ -5445,23 +5445,23 @@
           updateScrollbars(cm, op.barMeasure);
         if (op.updatedDisplay)
           setDocumentHeight(cm, op.barMeasure);
-    
+
         if (op.selectionChanged) restartBlink(cm);
-    
+
         if (cm.state.focused && op.updateInput)
           cm.display.input.reset(op.typing);
         if (takeFocus) ensureFocus(op.cm);
       }
-    
+
       function endOperation_finish(op) {
         var cm = op.cm, display = cm.display, doc = cm.doc;
-    
+
         if (op.updatedDisplay) postUpdateDisplay(cm, op.update);
-    
+
         // Abort mouse wheel delta measurement, when scrolling explicitly
         if (display.wheelStartX != null && (op.scrollTop != null || op.scrollLeft != null || op.scrollToPos))
           display.wheelStartX = display.wheelStartY = null;
-    
+
         // Propagate the scroll position to the actual DOM scroller
         if (op.scrollTop != null && (display.scroller.scrollTop != op.scrollTop || op.forceScroll)) {
           doc.scrollTop = Math.max(0, Math.min(display.scroller.scrollHeight - display.scroller.clientHeight, op.scrollTop));
@@ -5480,7 +5480,7 @@
                                          clipPos(doc, op.scrollToPos.to), op.scrollToPos.margin);
           if (op.scrollToPos.isCursor && cm.state.focused) maybeScrollWindow(cm, coords);
         }
-    
+
         // Fire events for markers that are hidden/unidden by editing or
         // undoing
         var hidden = op.maybeHiddenMarkers, unhidden = op.maybeUnhiddenMarkers;
@@ -5488,17 +5488,17 @@
           if (!hidden[i].lines.length) signal(hidden[i], "hide");
         if (unhidden) for (var i = 0; i < unhidden.length; ++i)
           if (unhidden[i].lines.length) signal(unhidden[i], "unhide");
-    
+
         if (display.wrapper.offsetHeight)
           doc.scrollTop = cm.display.scroller.scrollTop;
-    
+
         // Fire change events, and delayed event handlers
         if (op.changeObjs)
           signal(cm, "changes", cm, op.changeObjs);
         if (op.update)
           op.update.finish();
       }
-    
+
       // Run the given function in an operation
       function runInOp(cm, f) {
         if (cm.curOp) return f();
@@ -5534,9 +5534,9 @@
           finally { endOperation(cm); }
         };
       }
-    
+
       // VIEW TRACKING
-    
+
       // These objects are used to represent the visible (currently drawn)
       // part of the document. A LineView may correspond to multiple
       // logical lines, if those are connected by collapsed ranges.
@@ -5550,7 +5550,7 @@
         this.node = this.text = null;
         this.hidden = lineIsHidden(doc, line);
       }
-    
+
       // Create a range of LineView objects for the given lines.
       function buildViewArray(cm, from, to) {
         var array = [], nextPos;
@@ -5561,7 +5561,7 @@
         }
         return array;
       }
-    
+
       // Updates the display.view data structure for a given change to the
       // document. From and to are in pre-change coordinates. Lendiff is
       // the amount of lines added or subtracted by the change. This is
@@ -5572,14 +5572,14 @@
         if (from == null) from = cm.doc.first;
         if (to == null) to = cm.doc.first + cm.doc.size;
         if (!lendiff) lendiff = 0;
-    
+
         var display = cm.display;
         if (lendiff && to < display.viewTo &&
             (display.updateLineNumbers == null || display.updateLineNumbers > from))
           display.updateLineNumbers = from;
-    
+
         cm.curOp.viewChanged = true;
-    
+
         if (from >= display.viewTo) { // Change after
           if (sawCollapsedSpans && visualLineNo(cm.doc, from) < display.viewTo)
             resetView(cm);
@@ -5621,7 +5621,7 @@
             resetView(cm);
           }
         }
-    
+
         var ext = display.externalMeasured;
         if (ext) {
           if (to < ext.lineN)
@@ -5630,7 +5630,7 @@
             display.externalMeasured = null;
         }
       }
-    
+
       // Register a change to a single line. Type must be one of "text",
       // "gutter", "class", "widget"
       function regLineChange(cm, line, type) {
@@ -5638,21 +5638,21 @@
         var display = cm.display, ext = cm.display.externalMeasured;
         if (ext && line >= ext.lineN && line < ext.lineN + ext.size)
           display.externalMeasured = null;
-    
+
         if (line < display.viewFrom || line >= display.viewTo) return;
         var lineView = display.view[findViewIndex(cm, line)];
         if (lineView.node == null) return;
         var arr = lineView.changes || (lineView.changes = []);
         if (indexOf(arr, type) == -1) arr.push(type);
       }
-    
+
       // Clear the view.
       function resetView(cm) {
         cm.display.viewFrom = cm.display.viewTo = cm.doc.first;
         cm.display.view = [];
         cm.display.viewOffset = 0;
       }
-    
+
       // Find the view element corresponding to a given line. Return null
       // when the line isn't visible.
       function findViewIndex(cm, n) {
@@ -5665,7 +5665,7 @@
           if (n < 0) return i;
         }
       }
-    
+
       function viewCuttingPoint(cm, oldN, newN, dir) {
         var index = findViewIndex(cm, oldN), diff, view = cm.display.view;
         if (!sawCollapsedSpans || newN == cm.doc.first + cm.doc.size)
@@ -5689,7 +5689,7 @@
         }
         return {index: index, lineN: newN};
       }
-    
+
       // Force the view to cover a given range, adding empty view element
       // or clipping off existing ones as needed.
       function adjustView(cm, from, to) {
@@ -5710,7 +5710,7 @@
         }
         display.viewTo = to;
       }
-    
+
       // Count the number of lines in the view whose DOM representation is
       // out of date (or nonexistent).
       function countDirtyView(cm) {
@@ -5721,9 +5721,9 @@
         }
         return dirty;
       }
-    
+
       // EVENT HANDLERS
-    
+
       // Attach the necessary event handlers when initializing the editor
       function registerEventHandlers(cm) {
         var d = cm.display;
@@ -5744,7 +5744,7 @@
         // which point we can't mess with it anymore. Context menu is
         // handled in onMouseDown for these browsers.
         if (!captureRightClick) on(d.scroller, "contextmenu", function(e) {onContextMenu(cm, e);});
-    
+
         // Used to suppress mouse event handling when a touch happens
         var touchFinished, prevTouch = {end: 0};
         function finishTouch() {
@@ -5797,7 +5797,7 @@
           finishTouch();
         });
         on(d.scroller, "touchcancel", finishTouch);
-    
+
         // Sync scrolling between fake scrollbars and real scrollable
         // area, ensure viewport is updated when scrolling.
         on(d.scroller, "scroll", function() {
@@ -5807,14 +5807,14 @@
             signal(cm, "scroll", cm);
           }
         });
-    
+
         // Listen to wheel events in order to try and update the viewport on time.
         on(d.scroller, "mousewheel", function(e){onScrollWheel(cm, e);});
         on(d.scroller, "DOMMouseScroll", function(e){onScrollWheel(cm, e);});
-    
+
         // Prevent wrapper from ever scrolling
         on(d.wrapper, "scroll", function() { d.wrapper.scrollTop = d.wrapper.scrollLeft = 0; });
-    
+
         d.dragFunctions = {
           enter: function(e) {if (!signalDOMEvent(cm, e)) e_stop(e);},
           over: function(e) {if (!signalDOMEvent(cm, e)) { onDragOver(cm, e); e_stop(e); }},
@@ -5822,7 +5822,7 @@
           drop: operation(cm, onDrop),
           leave: function(e) {if (!signalDOMEvent(cm, e)) { clearDragCursor(cm); }}
         };
-    
+
         var inp = d.input.getField();
         on(inp, "keyup", function(e) { onKeyUp.call(cm, e); });
         on(inp, "keydown", operation(cm, onKeyDown));
@@ -5830,7 +5830,7 @@
         on(inp, "focus", bind(onFocus, cm));
         on(inp, "blur", bind(onBlur, cm));
       }
-    
+
       function dragDropChanged(cm, value, old) {
         var wasOn = old && old != CodeMirror.Init;
         if (!value != !wasOn) {
@@ -5843,7 +5843,7 @@
           toggle(cm.display.scroller, "drop", funcs.drop);
         }
       }
-    
+
       // Called when the window resizes
       function onResize(cm) {
         var d = cm.display;
@@ -5854,9 +5854,9 @@
         d.scrollbarsClipped = false;
         cm.setSize();
       }
-    
+
       // MOUSE EVENTS
-    
+
       // Return true when the given mouse event happened in a widget
       function eventInWidget(display, e) {
         for (var n = e_target(e); n != display.wrapper; n = n.parentNode) {
@@ -5865,7 +5865,7 @@
             return true;
         }
       }
-    
+
       // Given a mouse event, find the corresponding position. If liberal
       // is false, it checks whether a gutter or scrollbar was clicked,
       // and returns null if it was. forRect is used by rectangular
@@ -5874,7 +5874,7 @@
       function posFromMouse(cm, e, liberal, forRect) {
         var display = cm.display;
         if (!liberal && e_target(e).getAttribute("cm-not-content") == "true") return null;
-    
+
         var x, y, space = display.lineSpace.getBoundingClientRect();
         // Fails unpredictably on IE[67] when mouse is dragged around quickly.
         try { x = e.clientX - space.left; y = e.clientY - space.top; }
@@ -5886,7 +5886,7 @@
         }
         return coords;
       }
-    
+
       // A mouse down can be a single click, double click, triple click,
       // start of selection drag, start of text drag, new cursor
       // (ctrl-click), rectangle drag (alt-drag), or xwin
@@ -5896,7 +5896,7 @@
         var cm = this, display = cm.display;
         if (signalDOMEvent(cm, e) || display.activeTouch && display.input.supportsTouch()) return;
         display.shift = e.shiftKey;
-    
+
         if (eventInWidget(display, e)) {
           if (!webkit) {
             // Briefly turn off draggability, to allow widgets to do
@@ -5909,7 +5909,7 @@
         if (clickInGutter(cm, e)) return;
         var start = posFromMouse(cm, e);
         window.focus();
-    
+
         switch (e_button(e)) {
         case 1:
           // #3261: make sure, that we're not starting a second selection
@@ -5932,12 +5932,12 @@
           break;
         }
       }
-    
+
       var lastClick, lastDoubleClick;
       function leftButtonDown(cm, e, start) {
         if (ie) setTimeout(bind(ensureFocus, cm), 0);
         else cm.curOp.focus = activeElt();
-    
+
         var now = +new Date, type;
         if (lastDoubleClick && lastDoubleClick.time > now - 400 && cmp(lastDoubleClick.pos, start) == 0) {
           type = "triple";
@@ -5948,7 +5948,7 @@
           type = "single";
           lastClick = {time: now, pos: start};
         }
-    
+
         var sel = cm.doc.sel, modifier = mac ? e.metaKey : e.ctrlKey, contained;
         if (cm.options.dragDrop && dragAndDrop && !cm.isReadOnly() &&
             type == "single" && (contained = sel.contains(start)) > -1 &&
@@ -5958,7 +5958,7 @@
         else
           leftButtonSelect(cm, e, start, type, modifier);
       }
-    
+
       // Start a text drag. When it ends, see if any dragging actually
       // happen, and treat as a click if it didn't.
       function leftButtonStartDrag(cm, e, start, modifier) {
@@ -5987,12 +5987,12 @@
         on(document, "mouseup", dragEnd);
         on(display.scroller, "drop", dragEnd);
       }
-    
+
       // Normal selection, as opposed to text dragging.
       function leftButtonSelect(cm, e, start, type, addNew) {
         var display = cm.display, doc = cm.doc;
         e_preventDefault(e);
-    
+
         var ourRange, ourIndex, startSel = doc.sel, ranges = startSel.ranges;
         if (addNew && !e.shiftKey) {
           ourIndex = doc.sel.contains(start);
@@ -6004,7 +6004,7 @@
           ourRange = doc.sel.primary();
           ourIndex = doc.sel.primIndex;
         }
-    
+
         if (chromeOS ? e.shiftKey && e.metaKey : e.altKey) {
           type = "rect";
           if (!addNew) ourRange = new Range(start, start);
@@ -6025,7 +6025,7 @@
         } else {
           ourRange = extendRange(doc, ourRange, start);
         }
-    
+
         if (!addNew) {
           ourIndex = 0;
           setSelection(doc, new Selection([ourRange], 0), sel_mouse);
@@ -6041,12 +6041,12 @@
         } else {
           replaceOneSelection(doc, ourIndex, ourRange, sel_mouse);
         }
-    
+
         var lastPos = start;
         function extendTo(pos) {
           if (cmp(lastPos, pos) == 0) return;
           lastPos = pos;
-    
+
           if (type == "rect") {
             var ranges = [], tabSize = cm.options.tabSize;
             var startCol = countColumn(getLine(doc, start.line).text, start.ch, tabSize);
@@ -6085,14 +6085,14 @@
             setSelection(doc, normalizeSelection(ranges, ourIndex), sel_mouse);
           }
         }
-    
+
         var editorSize = display.wrapper.getBoundingClientRect();
         // Used to ensure timeout re-tries don't fire when another extend
         // happened in the meantime (clearTimeout isn't reliable -- at
         // least on Chrome, the timeouts still happen even when cleared,
         // if the clear happens after their scheduled firing time).
         var counter = 0;
-    
+
         function extend(e) {
           var curCount = ++counter;
           var cur = posFromMouse(cm, e, true, type == "rect");
@@ -6112,7 +6112,7 @@
             }), 50);
           }
         }
-    
+
         function done(e) {
           cm.state.selectingText = false;
           counter = Infinity;
@@ -6122,7 +6122,7 @@
           off(document, "mouseup", up);
           doc.history.lastSelOrigin = null;
         }
-    
+
         var move = operation(cm, function(e) {
           if (!e_button(e)) done(e);
           else extend(e);
@@ -6132,7 +6132,7 @@
         on(document, "mousemove", move);
         on(document, "mouseup", up);
       }
-    
+
       // Determines whether an event happened in the gutter, and fires the
       // handlers for the corresponding event.
       function gutterEvent(cm, e, type, prevent) {
@@ -6140,13 +6140,13 @@
         catch(e) { return false; }
         if (mX >= Math.floor(cm.display.gutters.getBoundingClientRect().right)) return false;
         if (prevent) e_preventDefault(e);
-    
+
         var display = cm.display;
         var lineBox = display.lineDiv.getBoundingClientRect();
-    
+
         if (mY > lineBox.bottom || !hasHandler(cm, type)) return e_defaultPrevented(e);
         mY -= lineBox.top - display.viewOffset;
-    
+
         for (var i = 0; i < cm.options.gutters.length; ++i) {
           var g = display.gutters.childNodes[i];
           if (g && g.getBoundingClientRect().right >= mX) {
@@ -6157,15 +6157,15 @@
           }
         }
       }
-    
+
       function clickInGutter(cm, e) {
         return gutterEvent(cm, e, "gutterClick", true);
       }
-    
+
       // Kludge to work around strange IE behavior where it'll sometimes
       // re-fire a series of drag-related events right after the drop (#1551)
       var lastDrop = 0;
-    
+
       function onDrop(e) {
         var cm = this;
         clearDragCursor(cm);
@@ -6183,7 +6183,7 @@
             if (cm.options.allowDropFileTypes &&
                 indexOf(cm.options.allowDropFileTypes, file.type) == -1)
               return;
-    
+
             var reader = new FileReader;
             reader.onload = operation(cm, function() {
               var content = reader.result;
@@ -6224,14 +6224,14 @@
           catch(e){}
         }
       }
-    
+
       function onDragStart(cm, e) {
         if (ie && (!cm.state.draggingText || +new Date - lastDrop < 100)) { e_stop(e); return; }
         if (signalDOMEvent(cm, e) || eventInWidget(cm.display, e)) return;
-    
+
         e.dataTransfer.setData("Text", cm.getSelection());
         e.dataTransfer.effectAllowed = "copyMove"
-    
+
         // Use dummy image instead of default browsers image.
         // Recent Safari (~6.0.2) have a tendency to segfault when this happens, so we don't do it there.
         if (e.dataTransfer.setDragImage && !safari) {
@@ -6247,7 +6247,7 @@
           if (presto) img.parentNode.removeChild(img);
         }
       }
-    
+
       function onDragOver(cm, e) {
         var pos = posFromMouse(cm, e);
         if (!pos) return;
@@ -6259,16 +6259,16 @@
         }
         removeChildrenAndAdd(cm.display.dragCursor, frag);
       }
-    
+
       function clearDragCursor(cm) {
         if (cm.display.dragCursor) {
           cm.display.lineSpace.removeChild(cm.display.dragCursor);
           cm.display.dragCursor = null;
         }
       }
-    
+
       // SCROLL EVENTS
-    
+
       // Sync the scrollable area and scrollbars, ensure the viewport
       // covers the visible area.
       function setScrollTop(cm, val) {
@@ -6290,7 +6290,7 @@
         if (cm.display.scroller.scrollLeft != val) cm.display.scroller.scrollLeft = val;
         cm.display.scrollbars.setScrollLeft(val);
       }
-    
+
       // Since the delta values reported on mouse wheel events are
       // unstandardized between browsers and even browser versions, and
       // generally horribly unpredictable, this code starts by measuring
@@ -6301,7 +6301,7 @@
       // The reason we want to know the amount a wheel event will scroll
       // is that it gives us a chance to update the display before the
       // actual scrolling happens, reducing flickering.
-    
+
       var wheelSamples = 0, wheelPixelsPerUnit = null;
       // Fill in a browser-detected starting value on browsers where we
       // know one. These don't have to be accurate -- the result of them
@@ -6311,7 +6311,7 @@
       else if (gecko) wheelPixelsPerUnit = 15;
       else if (chrome) wheelPixelsPerUnit = -.7;
       else if (safari) wheelPixelsPerUnit = -1/3;
-    
+
       var wheelEventDelta = function(e) {
         var dx = e.wheelDeltaX, dy = e.wheelDeltaY;
         if (dx == null && e.detail && e.axis == e.HORIZONTAL_AXIS) dx = e.detail;
@@ -6325,16 +6325,16 @@
         delta.y *= wheelPixelsPerUnit;
         return delta;
       };
-    
+
       function onScrollWheel(cm, e) {
         var delta = wheelEventDelta(e), dx = delta.x, dy = delta.y;
-    
+
         var display = cm.display, scroll = display.scroller;
         // Quit if there's nothing to scroll here
         var canScrollX = scroll.scrollWidth > scroll.clientWidth;
         var canScrollY = scroll.scrollHeight > scroll.clientHeight;
         if (!(dx && canScrollX || dy && canScrollY)) return;
-    
+
         // Webkit browsers on OS X abort momentum scrolls when the target
         // of the scroll event is removed from the scrollable element.
         // This hack (see related code in patchDisplay) makes sure the
@@ -6349,7 +6349,7 @@
             }
           }
         }
-    
+
         // On some browsers, horizontal scrolling will cause redraws to
         // happen before the gutter has been realigned, causing it to
         // wriggle around in a most unseemly way. When we have an
@@ -6369,7 +6369,7 @@
           display.wheelStartX = null; // Abort measurement, if in progress
           return;
         }
-    
+
         // 'Project' the visible viewport to cover the area that is being
         // scrolled into view (if we know enough to estimate it).
         if (dy && wheelPixelsPerUnit != null) {
@@ -6379,7 +6379,7 @@
           else bot = Math.min(cm.doc.height, bot + pixels + 50);
           updateDisplaySimple(cm, {top: top, bottom: bot});
         }
-    
+
         if (wheelSamples < 20) {
           if (display.wheelStartX == null) {
             display.wheelStartX = scroll.scrollLeft; display.wheelStartY = scroll.scrollTop;
@@ -6400,9 +6400,9 @@
           }
         }
       }
-    
+
       // KEY EVENTS
-    
+
       // Run a handler that was bound to a key.
       function doHandleBinding(cm, bound, dropShift) {
         if (typeof bound == "string") {
@@ -6423,7 +6423,7 @@
         }
         return done;
       }
-    
+
       function lookupKeyForEditor(cm, name, handle) {
         for (var i = 0; i < cm.state.keyMaps.length; i++) {
           var result = lookupKey(name, cm.state.keyMaps[i], handle, cm);
@@ -6432,7 +6432,7 @@
         return (cm.options.extraKeys && lookupKey(name, cm.options.extraKeys, handle, cm))
           || lookupKey(name, cm.options.keyMap, handle, cm);
       }
-    
+
       var stopSeq = new Delayed;
       function dispatchKey(cm, name, e, handle) {
         var seq = cm.state.keySeq;
@@ -6447,29 +6447,29 @@
           name = seq + " " + name;
         }
         var result = lookupKeyForEditor(cm, name, handle);
-    
+
         if (result == "multi")
           cm.state.keySeq = name;
         if (result == "handled")
           signalLater(cm, "keyHandled", cm, name, e);
-    
+
         if (result == "handled" || result == "multi") {
           e_preventDefault(e);
           restartBlink(cm);
         }
-    
+
         if (seq && !result && /\'$/.test(name)) {
           e_preventDefault(e);
           return true;
         }
         return !!result;
       }
-    
+
       // Handle a key from the keydown event.
       function handleKeyBinding(cm, e) {
         var name = keyName(e, true);
         if (!name) return false;
-    
+
         if (e.shiftKey && !cm.state.keySeq) {
           // First try to resolve full name (including 'Shift-'). Failing
           // that, see if there is a cursor-motion command (starting with
@@ -6483,13 +6483,13 @@
           return dispatchKey(cm, name, e, function(b) { return doHandleBinding(cm, b); });
         }
       }
-    
+
       // Handle a key from the keypress event
       function handleCharBinding(cm, e, ch) {
         return dispatchKey(cm, "'" + ch + "'", e,
                            function(b) { return doHandleBinding(cm, b, true); });
       }
-    
+
       var lastStoppedKey = null;
       function onKeyDown(e) {
         var cm = this;
@@ -6506,16 +6506,16 @@
           if (!handled && code == 88 && !hasCopyEvent && (mac ? e.metaKey : e.ctrlKey))
             cm.replaceSelection("", null, "cut");
         }
-    
+
         // Turn mouse into crosshair when Alt is held on Mac.
         if (code == 18 && !/\bCodeMirror-crosshair\b/.test(cm.display.lineDiv.className))
           showCrossHair(cm);
       }
-    
+
       function showCrossHair(cm) {
         var lineDiv = cm.display.lineDiv;
         addClass(lineDiv, "CodeMirror-crosshair");
-    
+
         function up(e) {
           if (e.keyCode == 18 || !e.altKey) {
             rmClass(lineDiv, "CodeMirror-crosshair");
@@ -6526,12 +6526,12 @@
         on(document, "keyup", up);
         on(document, "mouseover", up);
       }
-    
+
       function onKeyUp(e) {
         if (e.keyCode == 16) this.doc.sel.shift = false;
         signalDOMEvent(this, e);
       }
-    
+
       function onKeyPress(e) {
         var cm = this;
         if (eventInWidget(cm.display, e) || signalDOMEvent(cm, e) || e.ctrlKey && !e.altKey || mac && e.metaKey) return;
@@ -6542,9 +6542,9 @@
         if (handleCharBinding(cm, e, ch)) return;
         cm.display.input.onKeyPress(e);
       }
-    
+
       // FOCUS/BLUR EVENTS
-    
+
       function delayBlurEvent(cm) {
         cm.state.delayingBlurEvent = true;
         setTimeout(function() {
@@ -6554,10 +6554,10 @@
           }
         }, 100);
       }
-    
+
       function onFocus(cm) {
         if (cm.state.delayingBlurEvent) cm.state.delayingBlurEvent = false;
-    
+
         if (cm.options.readOnly == "nocursor") return;
         if (!cm.state.focused) {
           signal(cm, "focus", cm);
@@ -6576,7 +6576,7 @@
       }
       function onBlur(cm) {
         if (cm.state.delayingBlurEvent) return;
-    
+
         if (cm.state.focused) {
           signal(cm, "blur", cm);
           cm.state.focused = false;
@@ -6585,9 +6585,9 @@
         clearInterval(cm.display.blinker);
         setTimeout(function() {if (!cm.state.focused) cm.display.shift = false;}, 150);
       }
-    
+
       // CONTEXT MENU HANDLING
-    
+
       // To make the context menu work, we need to briefly unhide the
       // textarea (making it as unobtrusive as possible) to let the
       // right-click take effect on it.
@@ -6596,14 +6596,14 @@
         if (signalDOMEvent(cm, e, "contextmenu")) return;
         cm.display.input.onContextMenu(e);
       }
-    
+
       function contextMenuInGutter(cm, e) {
         if (!hasHandler(cm, "gutterContextMenu")) return false;
         return gutterEvent(cm, e, "gutterContextMenu", false);
       }
-    
+
       // UPDATING
-    
+
       // Compute the position of the end of a change (its 'to' property
       // refers to the pre-change end).
       var changeEnd = CodeMirror.changeEnd = function(change) {
@@ -6611,18 +6611,18 @@
         return Pos(change.from.line + change.text.length - 1,
                    lst(change.text).length + (change.text.length == 1 ? change.from.ch : 0));
       };
-    
+
       // Adjust a position to refer to the post-change position of the
       // same text, or the end of the change if the change covers it.
       function adjustForChange(pos, change) {
         if (cmp(pos, change.from) < 0) return pos;
         if (cmp(pos, change.to) <= 0) return changeEnd(change);
-    
+
         var line = pos.line + change.text.length - (change.to.line - change.from.line) - 1, ch = pos.ch;
         if (pos.line == change.to.line) ch += changeEnd(change).ch - change.to.ch;
         return Pos(line, ch);
       }
-    
+
       function computeSelAfterChange(doc, change) {
         var out = [];
         for (var i = 0; i < doc.sel.ranges.length; i++) {
@@ -6632,14 +6632,14 @@
         }
         return normalizeSelection(out, doc.sel.primIndex);
       }
-    
+
       function offsetPos(pos, old, nw) {
         if (pos.line == old.line)
           return Pos(nw.line, pos.ch - old.ch + nw.ch);
         else
           return Pos(nw.line + (pos.line - old.line), pos.ch);
       }
-    
+
       // Used by replaceSelections to allow moving the selection to the
       // start or around the replaced test. Hint may be "start" or "around".
       function computeReplacedSel(doc, changes, hint) {
@@ -6660,7 +6660,7 @@
         }
         return new Selection(out, doc.sel.primIndex);
       }
-    
+
       // Allow "beforeChange" event handlers to influence a change
       function filterChange(doc, change, update) {
         var obj = {
@@ -6679,11 +6679,11 @@
         };
         signal(doc, "beforeChange", doc, obj);
         if (doc.cm) signal(doc.cm, "beforeChange", doc.cm, obj);
-    
+
         if (obj.canceled) return null;
         return {from: obj.from, to: obj.to, text: obj.text, origin: obj.origin};
       }
-    
+
       // Apply a change to a document, and add it to the document's
       // history, and propagating it to all linked documents.
       function makeChange(doc, change, ignoreReadOnly) {
@@ -6691,12 +6691,12 @@
           if (!doc.cm.curOp) return operation(doc.cm, makeChange)(doc, change, ignoreReadOnly);
           if (doc.cm.state.suppressEdits) return;
         }
-    
+
         if (hasHandler(doc, "beforeChange") || doc.cm && hasHandler(doc.cm, "beforeChange")) {
           change = filterChange(doc, change, true);
           if (!change) return;
         }
-    
+
         // Possibly split or suppress the update based on the presence
         // of read-only spans in its range.
         var split = sawReadOnlySpans && !ignoreReadOnly && removeReadOnlyRanges(doc, change.from, change.to);
@@ -6707,15 +6707,15 @@
           makeChangeInner(doc, change);
         }
       }
-    
+
       function makeChangeInner(doc, change) {
         if (change.text.length == 1 && change.text[0] == "" && cmp(change.from, change.to) == 0) return;
         var selAfter = computeSelAfterChange(doc, change);
         addChangeToHistory(doc, change, selAfter, doc.cm ? doc.cm.curOp.id : NaN);
-    
+
         makeChangeSingleDoc(doc, change, selAfter, stretchSpansOverChange(doc, change));
         var rebased = [];
-    
+
         linkedDocs(doc, function(doc, sharedHist) {
           if (!sharedHist && indexOf(rebased, doc.history) == -1) {
             rebaseHist(doc.history, change);
@@ -6724,14 +6724,14 @@
           makeChangeSingleDoc(doc, change, null, stretchSpansOverChange(doc, change));
         });
       }
-    
+
       // Revert a change stored in a document's history.
       function makeChangeFromHistory(doc, type, allowSelectionOnly) {
         if (doc.cm && doc.cm.state.suppressEdits) return;
-    
+
         var hist = doc.history, event, selAfter = doc.sel;
         var source = type == "undo" ? hist.done : hist.undone, dest = type == "undo" ? hist.undone : hist.done;
-    
+
         // Verify that there is a useable event (so that ctrl-z won't
         // needlessly clear selection events)
         for (var i = 0; i < source.length; i++) {
@@ -6741,7 +6741,7 @@
         }
         if (i == source.length) return;
         hist.lastOrigin = hist.lastSelOrigin = null;
-    
+
         for (;;) {
           event = source.pop();
           if (event.ranges) {
@@ -6754,16 +6754,16 @@
           }
           else break;
         }
-    
+
         // Build up a reverse change object to add to the opposite history
         // stack (redo when undoing, and vice versa).
         var antiChanges = [];
         pushSelectionToHistory(selAfter, dest);
         dest.push({changes: antiChanges, generation: hist.generation});
         hist.generation = event.generation || ++hist.maxGeneration;
-    
+
         var filter = hasHandler(doc, "beforeChange") || doc.cm && hasHandler(doc.cm, "beforeChange");
-    
+
         for (var i = event.changes.length - 1; i >= 0; --i) {
           var change = event.changes[i];
           change.origin = type;
@@ -6771,14 +6771,14 @@
             source.length = 0;
             return;
           }
-    
+
           antiChanges.push(historyChangeFromChange(doc, change));
-    
+
           var after = i ? computeSelAfterChange(doc, change) : lst(source);
           makeChangeSingleDoc(doc, change, after, mergeOldSpans(doc, change));
           if (!i && doc.cm) doc.cm.scrollIntoView({from: change.from, to: changeEnd(change)});
           var rebased = [];
-    
+
           // Propagate to the linked documents
           linkedDocs(doc, function(doc, sharedHist) {
             if (!sharedHist && indexOf(rebased, doc.history) == -1) {
@@ -6789,7 +6789,7 @@
           });
         }
       }
-    
+
       // Sub-views need their line numbers shifted when text is added
       // above or below them in the parent document.
       function shiftDoc(doc, distance) {
@@ -6805,19 +6805,19 @@
             regLineChange(doc.cm, l, "gutter");
         }
       }
-    
+
       // More lower-level change function, handling only a single document
       // (not linked ones).
       function makeChangeSingleDoc(doc, change, selAfter, spans) {
         if (doc.cm && !doc.cm.curOp)
           return operation(doc.cm, makeChangeSingleDoc)(doc, change, selAfter, spans);
-    
+
         if (change.to.line < doc.first) {
           shiftDoc(doc, change.text.length - 1 - (change.to.line - change.from.line));
           return;
         }
         if (change.from.line > doc.lastLine()) return;
-    
+
         // Clip the change to the size of this doc
         if (change.from.line < doc.first) {
           var shift = change.text.length - 1 - (doc.first - change.from.line);
@@ -6830,20 +6830,20 @@
           change = {from: change.from, to: Pos(last, getLine(doc, last).text.length),
                     text: [change.text[0]], origin: change.origin};
         }
-    
+
         change.removed = getBetween(doc, change.from, change.to);
-    
+
         if (!selAfter) selAfter = computeSelAfterChange(doc, change);
         if (doc.cm) makeChangeSingleDocInEditor(doc.cm, change, spans);
         else updateDoc(doc, change, spans);
         setSelectionNoUndo(doc, selAfter, sel_dontScroll);
       }
-    
+
       // Handle the interaction of a change to a document with the editor
       // that this document is part of.
       function makeChangeSingleDocInEditor(cm, change, spans) {
         var doc = cm.doc, display = cm.display, from = change.from, to = change.to;
-    
+
         var recomputeMaxLength = false, checkWidthStart = from.line;
         if (!cm.options.lineWrapping) {
           checkWidthStart = lineNo(visualLine(getLine(doc, from.line)));
@@ -6854,12 +6854,12 @@
             }
           });
         }
-    
+
         if (doc.sel.contains(change.from, change.to) > -1)
           signalCursorActivity(cm);
-    
+
         updateDoc(doc, change, spans, estimateHeight(cm));
-    
+
         if (!cm.options.lineWrapping) {
           doc.iter(checkWidthStart, from.line + change.text.length, function(line) {
             var len = lineLength(line);
@@ -6872,11 +6872,11 @@
           });
           if (recomputeMaxLength) cm.curOp.updateMaxLine = true;
         }
-    
+
         // Adjust frontier, schedule worker
         doc.frontier = Math.min(doc.frontier, from.line);
         startWorker(cm, 400);
-    
+
         var lendiff = change.text.length - (to.line - from.line) - 1;
         // Remember that these lines changed, for updating the display
         if (change.full)
@@ -6885,7 +6885,7 @@
           regLineChange(cm, from.line, "text");
         else
           regChange(cm, from.line, to.line + 1, lendiff);
-    
+
         var changesHandler = hasHandler(cm, "changes"), changeHandler = hasHandler(cm, "change");
         if (changeHandler || changesHandler) {
           var obj = {
@@ -6899,21 +6899,21 @@
         }
         cm.display.selForContextMenu = null;
       }
-    
+
       function replaceRange(doc, code, from, to, origin) {
         if (!to) to = from;
         if (cmp(to, from) < 0) { var tmp = to; to = from; from = tmp; }
         if (typeof code == "string") code = doc.splitLines(code);
         makeChange(doc, {from: from, to: to, text: code, origin: origin});
       }
-    
+
       // SCROLLING THINGS INTO VIEW
-    
+
       // If an editor sits on the top or bottom of the window, partially
       // scrolled out of view, this ensures that the cursor is visible.
       function maybeScrollWindow(cm, coords) {
         if (signalDOMEvent(cm, "scrollCursorIntoView")) return;
-    
+
         var display = cm.display, box = display.sizer.getBoundingClientRect(), doScroll = null;
         if (coords.top + box.top < 0) doScroll = true;
         else if (coords.bottom + box.top > (window.innerHeight || document.documentElement.clientHeight)) doScroll = false;
@@ -6927,7 +6927,7 @@
           cm.display.lineSpace.removeChild(scrollNode);
         }
       }
-    
+
       // Scroll a given position into view (immediately), verifying that
       // it actually became visible (as line heights are accurately
       // measured, the position of something may 'drift' during drawing).
@@ -6953,14 +6953,14 @@
         }
         return coords;
       }
-    
+
       // Scroll a given set of coordinates into view (immediately).
       function scrollIntoView(cm, x1, y1, x2, y2) {
         var scrollPos = calculateScrollPos(cm, x1, y1, x2, y2);
         if (scrollPos.scrollTop != null) setScrollTop(cm, scrollPos.scrollTop);
         if (scrollPos.scrollLeft != null) setScrollLeft(cm, scrollPos.scrollLeft);
       }
-    
+
       // Calculate a new scroll position needed to scroll the given
       // rectangle into view. Returns an object with scrollTop and
       // scrollLeft properties. When these are undefined, the
@@ -6979,7 +6979,7 @@
           var newTop = Math.min(y1, (atBottom ? docBottom : y2) - screen);
           if (newTop != screentop) result.scrollTop = newTop;
         }
-    
+
         var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft;
         var screenw = displayWidth(cm) - (cm.options.fixedGutter ? display.gutters.offsetWidth : 0);
         var tooWide = x2 - x1 > screenw;
@@ -6992,7 +6992,7 @@
           result.scrollLeft = x2 + (tooWide ? 0 : 10) - screenw;
         return result;
       }
-    
+
       // Store a relative adjustment to the scroll position in the current
       // operation (to be applied when the operation finishes).
       function addToScrollPos(cm, left, top) {
@@ -7002,7 +7002,7 @@
         if (top != null)
           cm.curOp.scrollTop = (cm.curOp.scrollTop == null ? cm.doc.scrollTop : cm.curOp.scrollTop) + top;
       }
-    
+
       // Make sure that at the end of the operation the current cursor is
       // shown.
       function ensureCursorVisible(cm) {
@@ -7014,7 +7014,7 @@
         }
         cm.curOp.scrollToPos = {from: from, to: to, margin: cm.options.cursorScrollMargin, isCursor: true};
       }
-    
+
       // When an operation has its scrollToPos property set, and another
       // scroll action is applied before the end of the operation, this
       // 'simulates' scrolling that position into view in a cheap way, so
@@ -7031,9 +7031,9 @@
           cm.scrollTo(sPos.scrollLeft, sPos.scrollTop);
         }
       }
-    
+
       // API UTILITIES
-    
+
       // Indent the given line. The how parameter can be "smart",
       // "add"/null, "subtract", or "prev". When aggressive is false
       // (typically set to true for forced single-line indents), empty
@@ -7048,7 +7048,7 @@
           if (!doc.mode.indent) how = "prev";
           else state = getStateBefore(cm, n);
         }
-    
+
         var tabSize = cm.options.tabSize;
         var line = getLine(doc, n), curSpace = countColumn(line.text, null, tabSize);
         if (line.stateAfter) line.stateAfter = null;
@@ -7074,12 +7074,12 @@
           indentation = curSpace + how;
         }
         indentation = Math.max(0, indentation);
-    
+
         var indentString = "", pos = 0;
         if (cm.options.indentWithTabs)
           for (var i = Math.floor(indentation / tabSize); i; --i) {pos += tabSize; indentString += "\t";}
         if (pos < indentation) indentString += spaceStr(indentation - pos);
-    
+
         if (indentString != curSpaceString) {
           replaceRange(doc, indentString, Pos(n, 0), Pos(n, curSpaceString.length), "+input");
           line.stateAfter = null;
@@ -7097,7 +7097,7 @@
           }
         }
       }
-    
+
       // Utility for applying a change to a line by handle or number,
       // returning the number and optionally registering the line as
       // changed.
@@ -7109,7 +7109,7 @@
         if (op(line, no) && doc.cm) regLineChange(doc.cm, no, changeType);
         return line;
       }
-    
+
       // Helper for deleting text near the selection(s), used to implement
       // backspace, delete, and similar functionality.
       function deleteNearSelection(cm, compute) {
@@ -7134,7 +7134,7 @@
           ensureCursorVisible(cm);
         });
       }
-    
+
       // Used for horizontal relative motion. Dir is -1 or 1 (left or
       // right), unit can be "char", "column" (like char, but doesn't
       // cross line boundaries), "word" (across next word), or "group" (to
@@ -7163,7 +7163,7 @@
           } else ch = next;
           return true;
         }
-    
+
         if (unit == "char") {
           moveOnce()
         } else if (unit == "column") {
@@ -7183,7 +7183,7 @@
               if (dir < 0) {dir = 1; moveOnce();}
               break;
             }
-    
+
             if (type) sawType = type;
             if (dir > 0 && !moveOnce(!first)) break;
           }
@@ -7192,7 +7192,7 @@
         if (!cmp(pos, result)) result.hitSide = true;
         return result;
       }
-    
+
       // For relative vertical movement. Dir may be -1 or 1. Unit can be
       // "page" or "line". The resulting position will have a hitSide=true
       // property if it reached the end of the document.
@@ -7212,21 +7212,21 @@
         }
         return target;
       }
-    
+
       // EDITOR METHODS
-    
+
       // The publicly visible API. Note that methodOp(f) means
       // 'wrap f in an operation, performed on its `this` parameter'.
-    
+
       // This is not the complete set of editor methods. Most of the
       // methods defined on the Doc type are also injected into
       // CodeMirror.prototype, for backwards compatibility and
       // convenience.
-    
+
       CodeMirror.prototype = {
         constructor: CodeMirror,
         focus: function(){window.focus(); this.display.input.focus();},
-    
+
         setOption: function(option, value) {
           var options = this.options, old = options[option];
           if (options[option] == value && option != "mode") return;
@@ -7234,10 +7234,10 @@
           if (optionHandlers.hasOwnProperty(option))
             operation(this, optionHandlers[option])(this, value, old);
         },
-    
+
         getOption: function(option) {return this.options[option];},
         getDoc: function() {return this.doc;},
-    
+
         addKeyMap: function(map, bottom) {
           this.state.keyMaps[bottom ? "push" : "unshift"](getKeyMap(map));
         },
@@ -7249,7 +7249,7 @@
               return true;
             }
         },
-    
+
         addOverlay: methodOp(function(spec, options) {
           var mode = spec.token ? spec : CodeMirror.getMode(this.options, spec);
           if (mode.startState) throw new Error("Overlays may not be stateful.");
@@ -7269,7 +7269,7 @@
             }
           }
         }),
-    
+
         indentLine: methodOp(function(n, dir, aggressive) {
           if (typeof dir != "string" && typeof dir != "number") {
             if (dir == null) dir = this.options.smartIndent ? "smart" : "prev";
@@ -7297,17 +7297,17 @@
             }
           }
         }),
-    
+
         // Fetch the parser token for a given character. Useful for hacks
         // that want to inspect the mode state (say, for completion).
         getTokenAt: function(pos, precise) {
           return takeToken(this, pos, precise);
         },
-    
+
         getLineTokens: function(line, precise) {
           return takeToken(this, Pos(line), precise, true);
         },
-    
+
         getTokenTypeAt: function(pos) {
           pos = clipPos(this.doc, pos);
           var styles = getLineStyles(this, getLine(this.doc, pos.line));
@@ -7323,17 +7323,17 @@
           var cut = type ? type.indexOf("cm-overlay ") : -1;
           return cut < 0 ? type : cut == 0 ? null : type.slice(0, cut - 1);
         },
-    
+
         getModeAt: function(pos) {
           var mode = this.doc.mode;
           if (!mode.innerMode) return mode;
           return CodeMirror.innerMode(mode, this.getTokenAt(pos).state).mode;
         },
-    
+
         getHelper: function(pos, type) {
           return this.getHelpers(pos, type)[0];
         },
-    
+
         getHelpers: function(pos, type) {
           var found = [];
           if (!helpers.hasOwnProperty(type)) return found;
@@ -7357,13 +7357,13 @@
           }
           return found;
         },
-    
+
         getStateAfter: function(line, precise) {
           var doc = this.doc;
           line = clipLine(doc, line == null ? doc.first + doc.size - 1: line);
           return getStateBefore(this, line + 1, precise);
         },
-    
+
         cursorCoords: function(start, mode) {
           var pos, range = this.doc.sel.primary();
           if (start == null) pos = range.head;
@@ -7371,16 +7371,16 @@
           else pos = start ? range.from() : range.to();
           return cursorCoords(this, pos, mode || "page");
         },
-    
+
         charCoords: function(pos, mode) {
           return charCoords(this, clipPos(this.doc, pos), mode || "page");
         },
-    
+
         coordsChar: function(coords, mode) {
           coords = fromCoordSystem(this, coords, mode || "page");
           return coordsChar(this, coords.left, coords.top);
         },
-    
+
         lineAtHeight: function(height, mode) {
           height = fromCoordSystem(this, {top: height, left: 0}, mode || "page").top;
           return lineAtHeight(this.doc, height + this.display.viewOffset);
@@ -7398,10 +7398,10 @@
           return intoCoordSystem(this, lineObj, {top: 0, left: 0}, mode || "page").top +
             (end ? this.doc.height - heightAtLine(lineObj) : 0);
         },
-    
+
         defaultTextHeight: function() { return textHeight(this.display); },
         defaultCharWidth: function() { return charWidth(this.display); },
-    
+
         setGutterMarker: methodOp(function(line, gutterID, value) {
           return changeLine(this.doc, line, "gutter", function(line) {
             var markers = line.gutterMarkers || (line.gutterMarkers = {});
@@ -7410,7 +7410,7 @@
             return true;
           });
         }),
-    
+
         clearGutter: methodOp(function(gutterID) {
           var cm = this, doc = cm.doc, i = doc.first;
           doc.iter(function(line) {
@@ -7422,7 +7422,7 @@
             ++i;
           });
         }),
-    
+
         lineInfo: function(line) {
           if (typeof line == "number") {
             if (!isLine(this.doc, line)) return null;
@@ -7437,9 +7437,9 @@
                   textClass: line.textClass, bgClass: line.bgClass, wrapClass: line.wrapClass,
                   widgets: line.widgets};
         },
-    
+
         getViewport: function() { return {from: this.display.viewFrom, to: this.display.viewTo};},
-    
+
         addWidget: function(pos, node, scroll, vert, horiz) {
           var display = this.display;
           pos = cursorCoords(this, clipPos(this.doc, pos));
@@ -7474,18 +7474,18 @@
           if (scroll)
             scrollIntoView(this, left, top, left + node.offsetWidth, top + node.offsetHeight);
         },
-    
+
         triggerOnKeyDown: methodOp(onKeyDown),
         triggerOnKeyPress: methodOp(onKeyPress),
         triggerOnKeyUp: onKeyUp,
-    
+
         execCommand: function(cmd) {
           if (commands.hasOwnProperty(cmd))
             return commands[cmd].call(null, this);
         },
-    
+
         triggerElectric: methodOp(function(text) { triggerElectric(this, text); }),
-    
+
         findPosH: function(from, amount, unit, visually) {
           var dir = 1;
           if (amount < 0) { dir = -1; amount = -amount; }
@@ -7495,7 +7495,7 @@
           }
           return cur;
         },
-    
+
         moveH: methodOp(function(dir, unit) {
           var cm = this;
           cm.extendSelectionsBy(function(range) {
@@ -7505,7 +7505,7 @@
               return dir < 0 ? range.from() : range.to();
           }, sel_move);
         }),
-    
+
         deleteH: methodOp(function(dir, unit) {
           var sel = this.doc.sel, doc = this.doc;
           if (sel.somethingSelected())
@@ -7516,7 +7516,7 @@
               return dir < 0 ? {from: other, to: range.head} : {from: range.head, to: other};
             });
         }),
-    
+
         findPosV: function(from, amount, unit, goalColumn) {
           var dir = 1, x = goalColumn;
           if (amount < 0) { dir = -1; amount = -amount; }
@@ -7529,7 +7529,7 @@
           }
           return cur;
         },
-    
+
         moveV: methodOp(function(dir, unit) {
           var cm = this, doc = this.doc, goals = [];
           var collapse = !cm.display.shift && !doc.extend && doc.sel.somethingSelected();
@@ -7547,7 +7547,7 @@
           if (goals.length) for (var i = 0; i < doc.sel.ranges.length; i++)
             doc.sel.ranges[i].goalColumn = goals[i];
         }),
-    
+
         // Find the word at the given position (as returned by coordsChar).
         findWordAt: function(pos) {
           var doc = this.doc, line = getLine(doc, pos.line).text;
@@ -7565,19 +7565,19 @@
           }
           return new Range(Pos(pos.line, start), Pos(pos.line, end));
         },
-    
+
         toggleOverwrite: function(value) {
           if (value != null && value == this.state.overwrite) return;
           if (this.state.overwrite = !this.state.overwrite)
             addClass(this.display.cursorDiv, "CodeMirror-overwrite");
           else
             rmClass(this.display.cursorDiv, "CodeMirror-overwrite");
-    
+
           signal(this, "overwriteToggle", this, this.state.overwrite);
         },
         hasFocus: function() { return this.display.input.getField() == activeElt(); },
         isReadOnly: function() { return !!(this.options.readOnly || this.doc.cantEdit); },
-    
+
         scrollTo: methodOp(function(x, y) {
           if (x != null || y != null) resolveScrollToPos(this);
           if (x != null) this.curOp.scrollLeft = x;
@@ -7590,7 +7590,7 @@
                   width: scroller.scrollWidth - scrollGap(this) - this.display.barWidth,
                   clientHeight: displayHeight(this), clientWidth: displayWidth(this)};
         },
-    
+
         scrollIntoView: methodOp(function(range, margin) {
           if (range == null) {
             range = {from: this.doc.sel.primary().head, to: null};
@@ -7602,7 +7602,7 @@
           }
           if (!range.to) range.to = range.from;
           range.margin = margin || 0;
-    
+
           if (range.from.line != null) {
             resolveScrollToPos(this);
             this.curOp.scrollToPos = range;
@@ -7614,7 +7614,7 @@
             this.scrollTo(sPos.scrollLeft, sPos.scrollTop);
           }
         }),
-    
+
         setSize: methodOp(function(width, height) {
           var cm = this;
           function interpret(val) {
@@ -7632,9 +7632,9 @@
           cm.curOp.forceUpdate = true;
           signal(cm, "refresh", this);
         }),
-    
+
         operation: function(f){return runInOp(this, f);},
-    
+
         refresh: methodOp(function() {
           var oldHeight = this.display.cachedTextHeight;
           regChange(this);
@@ -7646,7 +7646,7 @@
             estimateLineHeights(this);
           signal(this, "refresh", this);
         }),
-    
+
         swapDoc: methodOp(function(doc) {
           var old = this.doc;
           old.cm = null;
@@ -7658,30 +7658,30 @@
           signalLater(this, "swapDoc", this, old);
           return old;
         }),
-    
+
         getInputField: function(){return this.display.input.getField();},
         getWrapperElement: function(){return this.display.wrapper;},
         getScrollerElement: function(){return this.display.scroller;},
         getGutterElement: function(){return this.display.gutters;}
       };
       eventMixin(CodeMirror);
-    
+
       // OPTION DEFAULTS
-    
+
       // The default configuration options.
       var defaults = CodeMirror.defaults = {};
       // Functions to run when options are changed.
       var optionHandlers = CodeMirror.optionHandlers = {};
-    
+
       function option(name, deflt, handle, notOnInit) {
         CodeMirror.defaults[name] = deflt;
         if (handle) optionHandlers[name] =
           notOnInit ? function(cm, val, old) {if (old != Init) handle(cm, val, old);} : handle;
       }
-    
+
       // Passed to option handlers when there is no old value.
       var Init = CodeMirror.Init = {toString: function(){return "CodeMirror.Init";}};
-    
+
       // These two are, on init, called from the constructor because they
       // have to be initialized before the editor can start at all.
       option("value", "", function(cm, val) {
@@ -7691,7 +7691,7 @@
         cm.doc.modeOption = val;
         loadMode(cm);
       }, true);
-    
+
       option("indentUnit", 2, loadMode, true);
       option("indentWithTabs", false);
       option("smartIndent", true);
@@ -7727,7 +7727,7 @@
       }, true);
       option("rtlMoveVisually", !windows);
       option("wholeLineUpdateBefore", true);
-    
+
       option("theme", "default", function(cm) {
         themeChanged(cm);
         guttersChanged(cm);
@@ -7739,7 +7739,7 @@
         if (next.attach) next.attach(cm, prev || null);
       });
       option("extraKeys", null);
-    
+
       option("lineWrapping", false, wrappingChanged, true);
       option("gutters", [], function(cm) {
         setGuttersForLineNumbers(cm.options);
@@ -7763,10 +7763,10 @@
       option("firstLineNumber", 1, guttersChanged, true);
       option("lineNumberFormatter", function(integer) {return integer;}, guttersChanged, true);
       option("showCursorWhenSelecting", false, updateSelection, true);
-    
+
       option("resetSelectionOnContextMenu", true);
       option("lineWiseCopyCut", true);
-    
+
       option("readOnly", false, function(cm, val) {
         if (val == "nocursor") {
           onBlur(cm);
@@ -7780,7 +7780,7 @@
       option("disableInput", false, function(cm, val) {if (!val) cm.display.input.reset();}, true);
       option("dragDrop", true, dragDropChanged);
       option("allowDropFileTypes", null);
-    
+
       option("cursorBlinkRate", 530);
       option("cursorScrollMargin", 0);
       option("cursorHeight", 1, updateSelection, true);
@@ -7797,17 +7797,17 @@
       option("moveInputWithCursor", true, function(cm, val) {
         if (!val) cm.display.input.resetPosition();
       });
-    
+
       option("tabindex", null, function(cm, val) {
         cm.display.input.getField().tabIndex = val || "";
       });
       option("autofocus", null);
-    
+
       // MODE DEFINITION AND QUERYING
-    
+
       // Known modes, by name and by MIME
       var modes = CodeMirror.modes = {}, mimeModes = CodeMirror.mimeModes = {};
-    
+
       // Extra arguments are stored as the mode's dependencies, which is
       // used by (legacy) mechanisms like loadmode.js to automatically
       // load a mode. (Preferred mechanism is the require/define calls.)
@@ -7817,11 +7817,11 @@
           mode.dependencies = Array.prototype.slice.call(arguments, 2);
         modes[name] = mode;
       };
-    
+
       CodeMirror.defineMIME = function(mime, spec) {
         mimeModes[mime] = spec;
       };
-    
+
       // Given a MIME type, a {name, ...options} config object, or a name
       // string, return a mode config object.
       CodeMirror.resolveMode = function(spec) {
@@ -7838,7 +7838,7 @@
         if (typeof spec == "string") return {name: spec};
         else return spec || {name: "null"};
       };
-    
+
       // Given a mode spec (anything that resolveMode accepts), find and
       // initialize an actual mode object.
       CodeMirror.getMode = function(options, spec) {
@@ -7858,16 +7858,16 @@
         if (spec.helperType) modeObj.helperType = spec.helperType;
         if (spec.modeProps) for (var prop in spec.modeProps)
           modeObj[prop] = spec.modeProps[prop];
-    
+
         return modeObj;
       };
-    
+
       // Minimal default mode.
       CodeMirror.defineMode("null", function() {
         return {token: function(stream) {stream.skipToEnd();}};
       });
       CodeMirror.defineMIME("text/plain", "null");
-    
+
       // This can be used to attach properties to mode objects from
       // outside the actual mode definition.
       var modeExtensions = CodeMirror.modeExtensions = {};
@@ -7875,9 +7875,9 @@
         var exts = modeExtensions.hasOwnProperty(mode) ? modeExtensions[mode] : (modeExtensions[mode] = {});
         copyObj(properties, exts);
       };
-    
+
       // EXTENSIONS
-    
+
       CodeMirror.defineExtension = function(name, func) {
         CodeMirror.prototype[name] = func;
       };
@@ -7885,10 +7885,10 @@
         Doc.prototype[name] = func;
       };
       CodeMirror.defineOption = option;
-    
+
       var initHooks = [];
       CodeMirror.defineInitHook = function(f) {initHooks.push(f);};
-    
+
       var helpers = CodeMirror.helpers = {};
       CodeMirror.registerHelper = function(type, name, value) {
         if (!helpers.hasOwnProperty(type)) helpers[type] = CodeMirror[type] = {_global: []};
@@ -7898,12 +7898,12 @@
         CodeMirror.registerHelper(type, name, value);
         helpers[type]._global.push({pred: predicate, val: value});
       };
-    
+
       // MODE STATE HANDLING
-    
+
       // Utility functions for working with state. Exported because nested
       // modes need to do this for their inner modes.
-    
+
       var copyState = CodeMirror.copyState = function(mode, state) {
         if (state === true) return state;
         if (mode.copyState) return mode.copyState(state);
@@ -7915,11 +7915,11 @@
         }
         return nstate;
       };
-    
+
       var startState = CodeMirror.startState = function(mode, a1, a2) {
         return mode.startState ? mode.startState(a1, a2) : true;
       };
-    
+
       // Given a mode and a state (for that mode), find the inner mode and
       // state at the position that the state refers to.
       CodeMirror.innerMode = function(mode, state) {
@@ -7931,9 +7931,9 @@
         }
         return info || {mode: mode, state: state};
       };
-    
+
       // STANDARD COMMANDS
-    
+
       // Commands are parameter-less actions that can be performed on an
       // editor, mostly used for keybindings.
       var commands = CodeMirror.commands = {
@@ -8091,12 +8091,12 @@
         openLine: function(cm) {cm.replaceSelection("\n", "start")},
         toggleOverwrite: function(cm) {cm.toggleOverwrite();}
       };
-    
-    
+
+
       // STANDARD KEYMAPS
-    
+
       var keyMap = CodeMirror.keyMap = {};
-    
+
       keyMap.basic = {
         "Left": "goCharLeft", "Right": "goCharRight", "Up": "goLineUp", "Down": "goLineDown",
         "End": "goLineEnd", "Home": "goLineStartSmart", "PageUp": "goPageUp", "PageDown": "goPageDown",
@@ -8137,9 +8137,9 @@
         fallthrough: ["basic", "emacsy"]
       };
       keyMap["default"] = mac ? keyMap.macDefault : keyMap.pcDefault;
-    
+
       // KEYMAP DISPATCH
-    
+
       function normalizeKeyName(name) {
         var parts = name.split(/-(?!$)/), name = parts[parts.length - 1];
         var alt, ctrl, shift, cmd;
@@ -8157,7 +8157,7 @@
         if (shift) name = "Shift-" + name;
         return name;
       }
-    
+
       // This is a kludge to keep keymaps mostly working as raw objects
       // (backwards compatibility) while at the same time support features
       // like normalization and multi-stroke key bindings. It compiles a
@@ -8169,7 +8169,7 @@
           var value = keymap[keyname];
           if (/^(name|fallthrough|(de|at)tach)$/.test(keyname)) continue;
           if (value == "...") { delete keymap[keyname]; continue; }
-    
+
           var keys = map(keyname.split(" "), normalizeKeyName);
           for (var i = 0; i < keys.length; i++) {
             var val, name;
@@ -8189,14 +8189,14 @@
         for (var prop in copy) keymap[prop] = copy[prop];
         return keymap;
       };
-    
+
       var lookupKey = CodeMirror.lookupKey = function(key, map, handle, context) {
         map = getKeyMap(map);
         var found = map.call ? map.call(key, context) : map[key];
         if (found === false) return "nothing";
         if (found === "...") return "multi";
         if (found != null && handle(found)) return "handled";
-    
+
         if (map.fallthrough) {
           if (Object.prototype.toString.call(map.fallthrough) != "[object Array]")
             return lookupKey(key, map.fallthrough, handle, context);
@@ -8206,14 +8206,14 @@
           }
         }
       };
-    
+
       // Modifier key presses don't count as 'real' key presses for the
       // purpose of keymap fallthrough.
       var isModifierKey = CodeMirror.isModifierKey = function(value) {
         var name = typeof value == "string" ? value : keyNames[value.keyCode];
         return name == "Ctrl" || name == "Alt" || name == "Shift" || name == "Mod";
       };
-    
+
       // Look up the name of a key as indicated by an event object.
       var keyName = CodeMirror.keyName = function(event, noShift) {
         if (presto && event.keyCode == 34 && event["char"]) return false;
@@ -8225,13 +8225,13 @@
         if (!noShift && event.shiftKey && base != "Shift") name = "Shift-" + name;
         return name;
       };
-    
+
       function getKeyMap(val) {
         return typeof val == "string" ? keyMap[val] : val;
       }
-    
+
       // FROMTEXTAREA
-    
+
       CodeMirror.fromTextArea = function(textarea, options) {
         options = options ? copyObj(options) : {};
         options.value = textarea.value;
@@ -8246,7 +8246,7 @@
           options.autofocus = hasFocus == textarea ||
             textarea.getAttribute("autofocus") != null && hasFocus == document.body;
         }
-    
+
         function save() {textarea.value = cm.getValue();}
         if (textarea.form) {
           on(textarea.form, "submit", save);
@@ -8263,7 +8263,7 @@
             } catch(e) {}
           }
         }
-    
+
         options.finishInit = function(cm) {
           cm.save = save;
           cm.getTextArea = function() { return textarea; };
@@ -8279,19 +8279,19 @@
             }
           };
         };
-    
+
         textarea.style.display = "none";
         var cm = CodeMirror(function(node) {
           textarea.parentNode.insertBefore(node, textarea.nextSibling);
         }, options);
         return cm;
       };
-    
+
       // STRING STREAM
-    
+
       // Fed to the mode parsers, provides helper functions to make
       // parsers more succinct.
-    
+
       var StringStream = CodeMirror.StringStream = function(string, tabSize) {
         this.pos = this.start = 0;
         this.string = string;
@@ -8299,7 +8299,7 @@
         this.lastColumnPos = this.lastColumnValue = 0;
         this.lineStart = 0;
       };
-    
+
       StringStream.prototype = {
         eol: function() {return this.pos >= this.string.length;},
         sol: function() {return this.pos == this.lineStart;},
@@ -8363,9 +8363,9 @@
           finally { this.lineStart -= n; }
         }
       };
-    
+
       // TEXTMARKERS
-    
+
       // Created with markText and setBookmark methods. A TextMarker is a
       // handle that can be used to clear or find a marked position in the
       // document. Line objects hold arrays (markedSpans) containing
@@ -8375,9 +8375,9 @@
       // The spans will have null for their from/to properties when the
       // marker continues beyond the start/end of the line. Markers have
       // links back to the lines they currently touch.
-    
+
       var nextMarkerId = 0;
-    
+
       var TextMarker = CodeMirror.TextMarker = function(doc, type) {
         this.lines = [];
         this.type = type;
@@ -8385,7 +8385,7 @@
         this.id = ++nextMarkerId;
       };
       eventMixin(TextMarker);
-    
+
       // Clear the marker.
       TextMarker.prototype.clear = function() {
         if (this.explicitlyCleared) return;
@@ -8416,7 +8416,7 @@
             cm.display.maxLineChanged = true;
           }
         }
-    
+
         if (min != null && cm && this.collapsed) regChange(cm, min, max + 1);
         this.lines.length = 0;
         this.explicitlyCleared = true;
@@ -8428,7 +8428,7 @@
         if (withOp) endOperation(cm);
         if (this.parent) this.parent.clear();
       };
-    
+
       // Find the position of the marker in the document. Returns a {from,
       // to} object by default. Side can be passed to get a specific side
       // -- 0 (both), -1 (left), or 1 (right). When lineObj is true, the
@@ -8451,7 +8451,7 @@
         }
         return from && {from: from, to: to};
       };
-    
+
       // Signals that the marker's widget changed, and surrounding layout
       // should be recomputed.
       TextMarker.prototype.changed = function() {
@@ -8474,7 +8474,7 @@
           }
         });
       };
-    
+
       TextMarker.prototype.attachLine = function(line) {
         if (!this.lines.length && this.doc.cm) {
           var op = this.doc.cm.curOp;
@@ -8490,12 +8490,12 @@
           (op.maybeHiddenMarkers || (op.maybeHiddenMarkers = [])).push(this);
         }
       };
-    
+
       // Collapsed markers have unique ids, in order to be able to order
       // them, which is needed for uniquely determining an outer marker
       // when they overlap (they may nest, but not partially overlap).
       var nextMarkerId = 0;
-    
+
       // Create a marker, wire it up to the right lines, and
       function markText(doc, from, to, options, type) {
         // Shared markers (across linked documents) are handled separately
@@ -8504,7 +8504,7 @@
         if (options && options.shared) return markTextShared(doc, from, to, options, type);
         // Ensure we are in an operation.
         if (doc.cm && !doc.cm.curOp) return operation(doc.cm, markText)(doc, from, to, options, type);
-    
+
         var marker = new TextMarker(doc, type), diff = cmp(from, to);
         if (options) copyObj(options, marker, false);
         // Don't connect empty markers unless clearWhenEmpty is false
@@ -8523,10 +8523,10 @@
             throw new Error("Inserting collapsed marker partially overlapping an existing one");
           sawCollapsedSpans = true;
         }
-    
+
         if (marker.addToHistory)
           addChangeToHistory(doc, {from: from, to: to, origin: "markText"}, doc.sel, NaN);
-    
+
         var curLine = from.line, cm = doc.cm, updateMaxLine;
         doc.iter(curLine, to.line + 1, function(line) {
           if (cm && marker.collapsed && !cm.options.lineWrapping && visualLine(line) == cm.display.maxLine)
@@ -8541,9 +8541,9 @@
         if (marker.collapsed) doc.iter(from.line, to.line + 1, function(line) {
           if (lineIsHidden(doc, line)) updateLineHeight(line, 0);
         });
-    
+
         if (marker.clearOnEnter) on(marker, "beforeCursorEnter", function() { marker.clear(); });
-    
+
         if (marker.readOnly) {
           sawReadOnlySpans = true;
           if (doc.history.done.length || doc.history.undone.length)
@@ -8565,9 +8565,9 @@
         }
         return marker;
       }
-    
+
       // SHARED TEXTMARKERS
-    
+
       // A shared marker spans multiple linked documents. It is
       // implemented as a meta-marker-object controlling multiple normal
       // markers.
@@ -8578,7 +8578,7 @@
           markers[i].parent = this;
       };
       eventMixin(SharedTextMarker);
-    
+
       SharedTextMarker.prototype.clear = function() {
         if (this.explicitlyCleared) return;
         this.explicitlyCleared = true;
@@ -8589,7 +8589,7 @@
       SharedTextMarker.prototype.find = function(side, lineObj) {
         return this.primary.find(side, lineObj);
       };
-    
+
       function markTextShared(doc, from, to, options, type) {
         options = copyObj(options);
         options.shared = false;
@@ -8604,12 +8604,12 @@
         });
         return new SharedTextMarker(markers, primary);
       }
-    
+
       function findSharedMarkers(doc) {
         return doc.findMarks(Pos(doc.first, 0), doc.clipPos(Pos(doc.lastLine())),
                              function(m) { return m.parent; });
       }
-    
+
       function copySharedMarkers(doc, markers) {
         for (var i = 0; i < markers.length; i++) {
           var marker = markers[i], pos = marker.find();
@@ -8621,7 +8621,7 @@
           }
         }
       }
-    
+
       function detachSharedMarkers(markers) {
         for (var i = 0; i < markers.length; i++) {
           var marker = markers[i], linked = [marker.primary.doc];;
@@ -8635,14 +8635,14 @@
           }
         }
       }
-    
+
       // TEXTMARKER SPANS
-    
+
       function MarkedSpan(marker, from, to) {
         this.marker = marker;
         this.from = from; this.to = to;
       }
-    
+
       // Search an array of spans for a span matching the given marker.
       function getMarkedSpanFor(spans, marker) {
         if (spans) for (var i = 0; i < spans.length; ++i) {
@@ -8662,7 +8662,7 @@
         line.markedSpans = line.markedSpans ? line.markedSpans.concat([span]) : [span];
         span.marker.attachLine(line);
       }
-    
+
       // Used for the algorithm that adjusts markers for a change in the
       // document. These functions cut an array of spans at a given
       // character position, returning an array of remaining chunks (or
@@ -8690,7 +8690,7 @@
         }
         return nw;
       }
-    
+
       // Given a change object, compute the new set of marker spans that
       // cover the line in which the change took place. Removes spans
       // entirely within the change, reconnects spans belonging to the
@@ -8702,12 +8702,12 @@
         var oldFirst = isLine(doc, change.from.line) && getLine(doc, change.from.line).markedSpans;
         var oldLast = isLine(doc, change.to.line) && getLine(doc, change.to.line).markedSpans;
         if (!oldFirst && !oldLast) return null;
-    
+
         var startCh = change.from.ch, endCh = change.to.ch, isInsert = cmp(change.from, change.to) == 0;
         // Get the spans that 'stick out' on both sides
         var first = markedSpansBefore(oldFirst, startCh, isInsert);
         var last = markedSpansAfter(oldLast, endCh, isInsert);
-    
+
         // Next, merge those two ends
         var sameLine = change.text.length == 1, offset = lst(change.text).length + (sameLine ? startCh : 0);
         if (first) {
@@ -8741,7 +8741,7 @@
         // Make sure we didn't create any zero-length spans
         if (first) first = clearEmptySpans(first);
         if (last && last != first) last = clearEmptySpans(last);
-    
+
         var newMarkers = [first];
         if (!sameLine) {
           // Fill gap with whole-line-spans
@@ -8756,7 +8756,7 @@
         }
         return newMarkers;
       }
-    
+
       // Remove spans that are empty and don't have a clearWhenEmpty
       // option of false.
       function clearEmptySpans(spans) {
@@ -8768,7 +8768,7 @@
         if (!spans.length) return null;
         return spans;
       }
-    
+
       // Used for un/re-doing changes from the history. Combines the
       // result of computing the existing spans with the set of spans that
       // existed in the history (so that deleting around a span and then
@@ -8778,7 +8778,7 @@
         var stretched = stretchSpansOverChange(doc, change);
         if (!old) return stretched;
         if (!stretched) return old;
-    
+
         for (var i = 0; i < old.length; ++i) {
           var oldCur = old[i], stretchCur = stretched[i];
           if (oldCur && stretchCur) {
@@ -8794,7 +8794,7 @@
         }
         return old;
       }
-    
+
       // Used to 'clip' out readOnly ranges when making a change.
       function removeReadOnlyRanges(doc, from, to) {
         var markers = null;
@@ -8823,7 +8823,7 @@
         }
         return parts;
       }
-    
+
       // Connect or disconnect spans from a line.
       function detachMarkedSpans(line) {
         var spans = line.markedSpans;
@@ -8838,12 +8838,12 @@
           spans[i].marker.attachLine(line);
         line.markedSpans = spans;
       }
-    
+
       // Helpers used when computing which overlapping collapsed span
       // counts as the larger one.
       function extraLeft(marker) { return marker.inclusiveLeft ? -1 : 0; }
       function extraRight(marker) { return marker.inclusiveRight ? 1 : 0; }
-    
+
       // Returns a number indicating which of two overlapping collapsed
       // spans is larger (and thus includes the other). Falls back to
       // comparing ids when the spans cover exactly the same range.
@@ -8857,7 +8857,7 @@
         if (toCmp) return toCmp;
         return b.id - a.id;
       }
-    
+
       // Find out whether a line ends or starts in a collapsed span. If
       // so, return the marker for that span.
       function collapsedSpanAtSide(line, start) {
@@ -8872,7 +8872,7 @@
       }
       function collapsedSpanAtStart(line) { return collapsedSpanAtSide(line, true); }
       function collapsedSpanAtEnd(line) { return collapsedSpanAtSide(line, false); }
-    
+
       // Test whether there exists a collapsed span that partially
       // overlaps (covers the start or end, but not both) of a new span.
       // Such overlap is not allowed.
@@ -8891,7 +8891,7 @@
             return true;
         }
       }
-    
+
       // A visual line is a line as drawn on the screen. Folding, for
       // example, can cause multiple logical lines to appear on the same
       // visual line. This finds the start of the visual line that the
@@ -8902,7 +8902,7 @@
           line = merged.find(-1, true).line;
         return line;
       }
-    
+
       // Returns an array of logical lines that continue the visual line
       // started by the argument, or undefined if there are no such lines.
       function visualLineContinued(line) {
@@ -8913,7 +8913,7 @@
         }
         return lines;
       }
-    
+
       // Get the line number of the start of the visual line that the
       // given line number is part of.
       function visualLineNo(doc, lineN) {
@@ -8931,7 +8931,7 @@
           line = merged.find(1, true).line;
         return lineNo(line) + 1;
       }
-    
+
       // Compute whether a line is hidden. Lines count as hidden when they
       // are part of a visual line that starts with another line, or when
       // they are entirely covered by collapsed, non-widget span.
@@ -8961,11 +8961,11 @@
               lineIsHiddenInner(doc, line, sp)) return true;
         }
       }
-    
+
       // LINE WIDGETS
-    
+
       // Line widgets are block elements displayed above or below a line.
-    
+
       var LineWidget = CodeMirror.LineWidget = function(doc, node, options) {
         if (options) for (var opt in options) if (options.hasOwnProperty(opt))
           this[opt] = options[opt];
@@ -8973,12 +8973,12 @@
         this.node = node;
       };
       eventMixin(LineWidget);
-    
+
       function adjustScrollWhenAboveVisible(cm, line, diff) {
         if (heightAtLine(line) < ((cm.curOp && cm.curOp.scrollTop) || cm.doc.scrollTop))
           addToScrollPos(cm, null, diff);
       }
-    
+
       LineWidget.prototype.clear = function() {
         var cm = this.doc.cm, ws = this.line.widgets, line = this.line, no = lineNo(line);
         if (no == null || !ws) return;
@@ -9002,7 +9002,7 @@
           adjustScrollWhenAboveVisible(cm, line, diff);
         });
       };
-    
+
       function widgetHeight(widget) {
         if (widget.height != null) return widget.height;
         var cm = widget.doc.cm;
@@ -9017,7 +9017,7 @@
         }
         return widget.height = widget.node.parentNode.offsetHeight;
       }
-    
+
       function addLineWidget(doc, handle, node, options) {
         var widget = new LineWidget(doc, node, options);
         var cm = doc.cm;
@@ -9037,9 +9037,9 @@
         });
         return widget;
       }
-    
+
       // LINE DATA STRUCTURE
-    
+
       // Line objects. These hold state related to a line, including
       // highlighting info (the styles array).
       var Line = CodeMirror.Line = function(text, markedSpans, estimateHeight) {
@@ -9049,7 +9049,7 @@
       };
       eventMixin(Line);
       Line.prototype.lineNo = function() { return lineNo(this); };
-    
+
       // Change the content (text, markers) of a line. Automatically
       // invalidates cached information and tries to re-estimate the
       // line's height.
@@ -9063,13 +9063,13 @@
         var estHeight = estimateHeight ? estimateHeight(line) : 1;
         if (estHeight != line.height) updateLineHeight(line, estHeight);
       }
-    
+
       // Detach a line from the document tree and its markers.
       function cleanUpLine(line) {
         line.parent = null;
         detachMarkedSpans(line);
       }
-    
+
       function extractLineClasses(type, output) {
         if (type) for (;;) {
           var lineClass = type.match(/(?:^|\s+)line-(background-)?(\S+)/);
@@ -9083,14 +9083,14 @@
         }
         return type;
       }
-    
+
       function callBlankLine(mode, state) {
         if (mode.blankLine) return mode.blankLine(state);
         if (!mode.innerMode) return;
         var inner = CodeMirror.innerMode(mode, state);
         if (inner.mode.blankLine) return inner.mode.blankLine(inner.state);
       }
-    
+
       function readToken(mode, stream, state, inner) {
         for (var i = 0; i < 10; i++) {
           if (inner) inner[0] = CodeMirror.innerMode(mode, state).mode;
@@ -9099,7 +9099,7 @@
         }
         throw new Error("Mode " + mode.name + " failed to advance stream.");
       }
-    
+
       // Utility for getTokenAt and getLineTokens
       function takeToken(cm, pos, precise, asArray) {
         function getObj(copy) {
@@ -9108,7 +9108,7 @@
                   type: style || null,
                   state: copy ? copyState(doc.mode, state) : state};
         }
-    
+
         var doc = cm.doc, mode = doc.mode, style;
         pos = clipPos(doc, pos);
         var line = getLine(doc, pos.line), state = getStateBefore(cm, pos.line, precise);
@@ -9121,7 +9121,7 @@
         }
         return asArray ? tokens : getObj();
       }
-    
+
       // Run the given mode's parser over a line, calling f for each token.
       function runMode(cm, text, mode, state, f, lineClasses, forceToEnd) {
         var flattenSpans = mode.flattenSpans;
@@ -9159,7 +9159,7 @@
           curStart = pos;
         }
       }
-    
+
       // Compute a style array (an array starting with a mode generation
       // -- for invalidation -- followed by pairs of end positions and
       // style strings), which is used to highlight the tokens on the
@@ -9172,7 +9172,7 @@
         runMode(cm, line.text, cm.doc.mode, state, function(end, style) {
           st.push(end, style);
         }, lineClasses, forceToEnd);
-    
+
         // Run overlays, adjust style array.
         for (var o = 0; o < cm.state.overlays.length; ++o) {
           var overlay = cm.state.overlays[o], i = 1, at = 0;
@@ -9198,10 +9198,10 @@
             }
           }, lineClasses);
         }
-    
+
         return {styles: st, classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null};
       }
-    
+
       function getLineStyles(cm, line, updateFrontier) {
         if (!line.styles || line.styles[0] != cm.state.modeGen) {
           var state = getStateBefore(cm, lineNo(line));
@@ -9214,7 +9214,7 @@
         }
         return line.styles;
       }
-    
+
       // Lightweight form of highlight -- proceed over this line and
       // update state, but don't save a style array. Used for lines that
       // aren't currently visible.
@@ -9228,7 +9228,7 @@
           stream.start = stream.pos;
         }
       }
-    
+
       // Convert a style as returned by a mode (either null, or a string
       // containing one or more styles) to a CSS style. This is cached,
       // and also looks for line-wide styles.
@@ -9239,7 +9239,7 @@
         return cache[style] ||
           (cache[style] = style.replace(/\S+/g, "cm-$&"));
       }
-    
+
       // Render the DOM representation of the text of a line. Also builds
       // up a 'line map', which points at the DOM nodes that represent
       // specific stretches of text, and is used by the measuring code.
@@ -9254,7 +9254,7 @@
                        col: 0, pos: 0, cm: cm,
                        splitSpaces: (ie || webkit) && cm.getOption("lineWrapping")};
         lineView.measure = {};
-    
+
         // Iterate over the logical lines that make up this visual line.
         for (var i = 0; i <= (lineView.rest ? lineView.rest.length : 0); i++) {
           var line = i ? lineView.rest[i - 1] : lineView.line, order;
@@ -9273,11 +9273,11 @@
             if (line.styleClasses.textClass)
               builder.textClass = joinClasses(line.styleClasses.textClass, builder.textClass || "");
           }
-    
+
           // Ensure at least a single node is present, for measuring.
           if (builder.map.length == 0)
             builder.map.push(0, 0, builder.content.appendChild(zeroWidthElement(cm.display.measure)));
-    
+
           // Store the map and a cache object for the current logical line
           if (i == 0) {
             lineView.measure.map = builder.map;
@@ -9287,28 +9287,28 @@
             (lineView.measure.caches || (lineView.measure.caches = [])).push({});
           }
         }
-    
+
         // See issue #2901
         if (webkit) {
           var last = builder.content.lastChild
           if (/\bcm-tab\b/.test(last.className) || (last.querySelector && last.querySelector(".cm-tab")))
             builder.content.className = "cm-tab-wrap-hack";
         }
-    
+
         signal(cm, "renderLine", cm, lineView.line, builder.pre);
         if (builder.pre.className)
           builder.textClass = joinClasses(builder.pre.className, builder.textClass || "");
-    
+
         return builder;
       }
-    
+
       function defaultSpecialCharPlaceholder(ch) {
         var token = elt("span", "\u2022", "cm-invalidchar");
         token.title = "\\u" + ch.charCodeAt(0).toString(16);
         token.setAttribute("aria-label", token.title);
         return token;
       }
-    
+
       // Build up the DOM representation for a single token, and add it to
       // the line map. Takes care to render special characters separately.
       function buildToken(builder, text, style, startStyle, endStyle, title, css) {
@@ -9368,14 +9368,14 @@
         }
         builder.content.appendChild(content);
       }
-    
+
       function splitSpaces(old) {
         var out = " ";
         for (var i = 0; i < old.length - 2; ++i) out += i % 2 ? " " : "\u00a0";
         out += " ";
         return out;
       }
-    
+
       // Work around nonsense dimensions being reported for stretches of
       // right-to-left text.
       function buildTokenBadBidi(inner, order) {
@@ -9396,7 +9396,7 @@
           }
         };
       }
-    
+
       function buildCollapsedSpan(builder, size, marker, ignoreWidget) {
         var widget = !ignoreWidget && marker.widgetNode;
         if (widget) builder.map.push(builder.pos, builder.pos + size, widget);
@@ -9411,7 +9411,7 @@
         }
         builder.pos += size;
       }
-    
+
       // Outputs a number of spans to make up a line, taking highlighting
       // and marked text into account.
       function insertLineContent(line, builder, styles) {
@@ -9421,7 +9421,7 @@
             builder.addToken(builder, allText.slice(at, at = styles[i]), interpretTokenStyle(styles[i+1], builder.cm.options));
           return;
         }
-    
+
         var len = allText.length, pos = 0, i = 1, text = "", style, css;
         var nextChange = 0, spanStyle, spanEndStyle, spanStartStyle, title, collapsed;
         for (;;) {
@@ -9451,7 +9451,7 @@
             }
             if (endStyles) for (var j = 0; j < endStyles.length; j += 2)
               if (endStyles[j + 1] == nextChange) spanEndStyle += " " + endStyles[j]
-    
+
             if (!collapsed || collapsed.from == pos) for (var j = 0; j < foundBookmarks.length; ++j)
               buildCollapsedSpan(builder, 0, foundBookmarks[j]);
             if (collapsed && (collapsed.from || 0) == pos) {
@@ -9462,7 +9462,7 @@
             }
           }
           if (pos >= len) break;
-    
+
           var upto = Math.min(len, nextChange);
           while (true) {
             if (text) {
@@ -9481,9 +9481,9 @@
           }
         }
       }
-    
+
       // DOCUMENT DATA STRUCTURE
-    
+
       // By default, updates that start and end at the beginning of a line
       // are treated specially, in order to make the association of line
       // widgets and marker elements with the text behave more intuitive.
@@ -9491,7 +9491,7 @@
         return change.from.ch == 0 && change.to.ch == 0 && lst(change.text) == "" &&
           (!doc.cm || doc.cm.options.wholeLineUpdateBefore);
       }
-    
+
       // Perform a change on the document data structure.
       function updateDoc(doc, change, markedSpans, estimateHeight) {
         function spansFor(n) {return markedSpans ? markedSpans[n] : null;}
@@ -9504,11 +9504,11 @@
             result.push(new Line(text[i], spansFor(i), estimateHeight));
           return result;
         }
-    
+
         var from = change.from, to = change.to, text = change.text;
         var firstLine = getLine(doc, from.line), lastLine = getLine(doc, to.line);
         var lastText = lst(text), lastSpans = spansFor(text.length - 1), nlines = to.line - from.line;
-    
+
         // Adjust the line structure
         if (change.full) {
           doc.insert(0, linesFor(0, text.length));
@@ -9539,10 +9539,10 @@
           if (nlines > 1) doc.remove(from.line + 1, nlines - 1);
           doc.insert(from.line + 1, added);
         }
-    
+
         signalLater(doc, "change", doc, change);
       }
-    
+
       // The document is represented as a BTree consisting of leaves, with
       // chunk of lines in them, and branches, with up to ten leaves or
       // other branch nodes below them. The top node is always a branch
@@ -9555,7 +9555,7 @@
       // and line object, and to find the total height of the document.
       //
       // See also http://marijnhaverbeke.nl/blog/codemirror-line-tree.html
-    
+
       function LeafChunk(lines) {
         this.lines = lines;
         this.parent = null;
@@ -9565,7 +9565,7 @@
         }
         this.height = height;
       }
-    
+
       LeafChunk.prototype = {
         chunkSize: function() { return this.lines.length; },
         // Remove the n lines at offset 'at'.
@@ -9595,7 +9595,7 @@
             if (op(this.lines[at])) return true;
         }
       };
-    
+
       function BranchChunk(children) {
         this.children = children;
         var size = 0, height = 0;
@@ -9608,7 +9608,7 @@
         this.height = height;
         this.parent = null;
       }
-    
+
       BranchChunk.prototype = {
         chunkSize: function() { return this.size; },
         removeInner: function(at, n) {
@@ -9696,12 +9696,12 @@
           }
         }
       };
-    
+
       var nextDocId = 0;
       var Doc = CodeMirror.Doc = function(text, mode, firstLine, lineSep) {
         if (!(this instanceof Doc)) return new Doc(text, mode, firstLine, lineSep);
         if (firstLine == null) firstLine = 0;
-    
+
         BranchChunk.call(this, [new LeafChunk([new Line("", null)])]);
         this.first = firstLine;
         this.scrollTop = this.scrollLeft = 0;
@@ -9715,12 +9715,12 @@
         this.modeOption = mode;
         this.lineSep = lineSep;
         this.extend = false;
-    
+
         if (typeof text == "string") text = this.splitLines(text);
         updateDoc(this, {from: start, to: start, text: text});
         setSelection(this, simpleSelection(start), sel_dontScroll);
       };
-    
+
       Doc.prototype = createObj(BranchChunk.prototype, {
         constructor: Doc,
         // Iterate over the document. Supports two forms -- with only one
@@ -9731,7 +9731,7 @@
           if (op) this.iterN(from - this.first, to - from, op);
           else this.iterN(this.first, this.first + this.size, from);
         },
-    
+
         // Non-public interface for adding and removing lines.
         insert: function(at, lines) {
           var height = 0;
@@ -9739,10 +9739,10 @@
           this.insertInner(at - this.first, lines, height);
         },
         remove: function(at, n) { this.removeInner(at - this.first, n); },
-    
+
         // From here, the methods are part of the public interface. Most
         // are also available from CodeMirror (editor) instances.
-    
+
         getValue: function(lineSep) {
           var lines = getLines(this, this.first, this.first + this.size);
           if (lineSep === false) return lines;
@@ -9764,23 +9764,23 @@
           if (lineSep === false) return lines;
           return lines.join(lineSep || this.lineSeparator());
         },
-    
+
         getLine: function(line) {var l = this.getLineHandle(line); return l && l.text;},
-    
+
         getLineHandle: function(line) {if (isLine(this, line)) return getLine(this, line);},
         getLineNumber: function(line) {return lineNo(line);},
-    
+
         getLineHandleVisualStart: function(line) {
           if (typeof line == "number") line = getLine(this, line);
           return visualLine(line);
         },
-    
+
         lineCount: function() {return this.size;},
         firstLine: function() {return this.first;},
         lastLine: function() {return this.first + this.size - 1;},
-    
+
         clipPos: function(pos) {return clipPos(this, pos);},
-    
+
         getCursor: function(start) {
           var range = this.sel.primary(), pos;
           if (start == null || start == "head") pos = range.head;
@@ -9791,7 +9791,7 @@
         },
         listSelections: function() { return this.sel.ranges; },
         somethingSelected: function() {return this.sel.somethingSelected();},
-    
+
         setCursor: docMethodOp(function(line, ch, options) {
           setSimpleSelection(this, clipPos(this, typeof line == "number" ? Pos(line, ch || 0) : line), null, options);
         }),
@@ -9821,7 +9821,7 @@
           ranges.push(new Range(clipPos(this, anchor), clipPos(this, head || anchor)));
           setSelection(this, normalizeSelection(ranges, ranges.length - 1), options);
         }),
-    
+
         getSelection: function(lineSep) {
           var ranges = this.sel.ranges, lines;
           for (var i = 0; i < ranges.length; i++) {
@@ -9862,10 +9862,10 @@
         redo: docMethodOp(function() {makeChangeFromHistory(this, "redo");}),
         undoSelection: docMethodOp(function() {makeChangeFromHistory(this, "undo", true);}),
         redoSelection: docMethodOp(function() {makeChangeFromHistory(this, "redo", true);}),
-    
+
         setExtending: function(val) {this.extend = val;},
         getExtending: function() {return this.extend;},
-    
+
         historySize: function() {
           var hist = this.history, done = 0, undone = 0;
           for (var i = 0; i < hist.done.length; i++) if (!hist.done[i].ranges) ++done;
@@ -9873,7 +9873,7 @@
           return {undo: done, redo: undone};
         },
         clearHistory: function() {this.history = new History(this.history.maxGeneration);},
-    
+
         markClean: function() {
           this.cleanGeneration = this.changeGeneration(true);
         },
@@ -9885,7 +9885,7 @@
         isClean: function (gen) {
           return this.history.generation == (gen || this.cleanGeneration);
         },
-    
+
         getHistory: function() {
           return {done: copyHistoryArray(this.history.done),
                   undone: copyHistoryArray(this.history.undone)};
@@ -9895,7 +9895,7 @@
           hist.done = copyHistoryArray(histData.done.slice(0), null, true);
           hist.undone = copyHistoryArray(histData.undone.slice(0), null, true);
         },
-    
+
         addLineClass: docMethodOp(function(handle, where, cls) {
           return changeLine(this, handle, where == "gutter" ? "gutter" : "class", function(line) {
             var prop = where == "text" ? "textClass"
@@ -9924,12 +9924,12 @@
             return true;
           });
         }),
-    
+
         addLineWidget: docMethodOp(function(handle, node, options) {
           return addLineWidget(this, handle, node, options);
         }),
         removeLineWidget: function(widget) { widget.clear(); },
-    
+
         markText: function(from, to, options) {
           return markText(this, clipPos(this, from), clipPos(this, to), options, options && options.type || "range");
         },
@@ -9978,7 +9978,7 @@
           });
           return markers;
         },
-    
+
         posFromIndex: function(off) {
           var ch, lineNo = this.first, sepSize = this.lineSeparator().length;
           this.iter(function(line) {
@@ -9999,7 +9999,7 @@
           });
           return index;
         },
-    
+
         copy: function(copyHistory) {
           var doc = new Doc(getLines(this, this.first, this.first + this.size),
                             this.modeOption, this.first, this.lineSep);
@@ -10012,7 +10012,7 @@
           }
           return doc;
         },
-    
+
         linkedDoc: function(options) {
           if (!options) options = {};
           var from = this.first, to = this.first + this.size;
@@ -10045,29 +10045,29 @@
           }
         },
         iterLinkedDocs: function(f) {linkedDocs(this, f);},
-    
+
         getMode: function() {return this.mode;},
         getEditor: function() {return this.cm;},
-    
+
         splitLines: function(str) {
           if (this.lineSep) return str.split(this.lineSep);
           return splitLinesAuto(str);
         },
         lineSeparator: function() { return this.lineSep || "\n"; }
       });
-    
+
       // Public alias.
       Doc.prototype.eachLine = Doc.prototype.iter;
-    
+
       // Set up methods on CodeMirror's prototype to redirect to the editor's document.
       var dontDelegate = "iter insert remove copy getEditor constructor".split(" ");
       for (var prop in Doc.prototype) if (Doc.prototype.hasOwnProperty(prop) && indexOf(dontDelegate, prop) < 0)
         CodeMirror.prototype[prop] = (function(method) {
           return function() {return method.apply(this.doc, arguments);};
         })(Doc.prototype[prop]);
-    
+
       eventMixin(Doc);
-    
+
       // Call f for all linked documents.
       function linkedDocs(doc, f, sharedHistOnly) {
         function propagate(doc, skip, sharedHist) {
@@ -10082,7 +10082,7 @@
         }
         propagate(doc, null, true);
       }
-    
+
       // Attach a document to an editor.
       function attachDoc(cm, doc) {
         if (doc.cm) throw new Error("This document is already in use.");
@@ -10094,9 +10094,9 @@
         cm.options.mode = doc.modeOption;
         regChange(cm);
       }
-    
+
       // LINE UTILITIES
-    
+
       // Find the line object corresponding to the given line number.
       function getLine(doc, n) {
         n -= doc.first;
@@ -10110,7 +10110,7 @@
         }
         return chunk.lines[n];
       }
-    
+
       // Get the part of a document between two positions, as an array of
       // strings.
       function getBetween(doc, start, end) {
@@ -10130,14 +10130,14 @@
         doc.iter(from, to, function(line) { out.push(line.text); });
         return out;
       }
-    
+
       // Update the height of a line, propagating the height change
       // upwards to parent nodes.
       function updateLineHeight(line, height) {
         var diff = height - line.height;
         if (diff) for (var n = line; n; n = n.parent) n.height += diff;
       }
-    
+
       // Given a line object, find its line number by walking up through
       // its parent links.
       function lineNo(line) {
@@ -10151,7 +10151,7 @@
         }
         return no + cur.first;
       }
-    
+
       // Find the line at the given vertical position, using the height
       // information in the document tree.
       function lineAtHeight(chunk, h) {
@@ -10172,12 +10172,12 @@
         }
         return n + i;
       }
-    
-    
+
+
       // Find the height above the given line.
       function heightAtLine(lineObj) {
         lineObj = visualLine(lineObj);
-    
+
         var h = 0, chunk = lineObj.parent;
         for (var i = 0; i < chunk.lines.length; ++i) {
           var line = chunk.lines[i];
@@ -10193,7 +10193,7 @@
         }
         return h;
       }
-    
+
       // Get the bidi ordering for the given line (and cache it). Returns
       // false for lines that are fully left-to-right, and an array of
       // BidiSpan objects otherwise.
@@ -10202,9 +10202,9 @@
         if (order == null) order = line.order = bidiOrdering(line.text);
         return order;
       }
-    
+
       // HISTORY
-    
+
       function History(startGen) {
         // Arrays of change events and selections. Doing something adds an
         // event to done and clears undo. Undoing moves events from done
@@ -10219,7 +10219,7 @@
         // Used by the isClean() method
         this.generation = this.maxGeneration = startGen || 1;
       }
-    
+
       // Create a history change event from an updateDoc-style change
       // object.
       function historyChangeFromChange(doc, change) {
@@ -10228,7 +10228,7 @@
         linkedDocs(doc, function(doc) {attachLocalSpans(doc, histChange, change.from.line, change.to.line + 1);}, true);
         return histChange;
       }
-    
+
       // Pop all selection events off the end of a history array. Stop at
       // a change event.
       function clearSelectionEvents(array) {
@@ -10238,7 +10238,7 @@
           else break;
         }
       }
-    
+
       // Find the top change event in the history. Pop off selection
       // events that are in the way.
       function lastChangeEvent(hist, force) {
@@ -10252,7 +10252,7 @@
           return lst(hist.done);
         }
       }
-    
+
       // Register a change in the history. Merges changes that are within
       // a single operation, ore are close together with an origin that
       // allows merging (starting with "+") into a single event.
@@ -10260,7 +10260,7 @@
         var hist = doc.history;
         hist.undone.length = 0;
         var time = +new Date, cur;
-    
+
         if ((hist.lastOp == opId ||
              hist.lastOrigin == change.origin && change.origin &&
              ((change.origin.charAt(0) == "+" && doc.cm && hist.lastModTime > time - doc.cm.options.historyEventDelay) ||
@@ -10294,10 +10294,10 @@
         hist.lastModTime = hist.lastSelTime = time;
         hist.lastOp = hist.lastSelOp = opId;
         hist.lastOrigin = hist.lastSelOrigin = change.origin;
-    
+
         if (!last) signal(doc, "historyAdded");
       }
-    
+
       function selectionEventCanBeMerged(doc, origin, prev, sel) {
         var ch = origin.charAt(0);
         return ch == "*" ||
@@ -10306,14 +10306,14 @@
           prev.somethingSelected() == sel.somethingSelected() &&
           new Date - doc.history.lastSelTime <= (doc.cm ? doc.cm.options.historyEventDelay : 500);
       }
-    
+
       // Called whenever the selection changes, sets the new selection as
       // the pending selection in the history, and pushes the old pending
       // selection into the 'done' array when it was significantly
       // different (in number of selected ranges, emptiness, or time).
       function addSelectionToHistory(doc, sel, opId, options) {
         var hist = doc.history, origin = options && options.origin;
-    
+
         // A new event is started when the previous origin does not match
         // the current, or the origins don't allow matching. Origins
         // starting with * are always merged, those starting with + are
@@ -10325,20 +10325,20 @@
           hist.done[hist.done.length - 1] = sel;
         else
           pushSelectionToHistory(sel, hist.done);
-    
+
         hist.lastSelTime = +new Date;
         hist.lastSelOrigin = origin;
         hist.lastSelOp = opId;
         if (options && options.clearRedo !== false)
           clearSelectionEvents(hist.undone);
       }
-    
+
       function pushSelectionToHistory(sel, dest) {
         var top = lst(dest);
         if (!(top && top.ranges && top.equals(sel)))
           dest.push(sel);
       }
-    
+
       // Used to store marked span information in the history.
       function attachLocalSpans(doc, change, from, to) {
         var existing = change["spans_" + doc.id], n = 0;
@@ -10348,7 +10348,7 @@
           ++n;
         });
       }
-    
+
       // When un/re-doing restores text containing marked spans, those
       // that have been explicitly cleared should not be restored.
       function removeClearedSpans(spans) {
@@ -10359,7 +10359,7 @@
         }
         return !out ? spans : out.length ? out : null;
       }
-    
+
       // Retrieve and filter the old marked spans stored in a change event.
       function getOldSpans(doc, change) {
         var found = change["spans_" + doc.id];
@@ -10368,7 +10368,7 @@
           nw.push(removeClearedSpans(found[i]));
         return nw;
       }
-    
+
       // Used both to provide a JSON-safe object in .getHistory, and, when
       // detaching a document, to split the history in two
       function copyHistoryArray(events, newGroup, instantiateSel) {
@@ -10393,9 +10393,9 @@
         }
         return copy;
       }
-    
+
       // Rebasing/resetting history to deal with externally-sourced changes
-    
+
       function rebaseHistSelSingle(pos, from, to, diff) {
         if (to < pos.line) {
           pos.line += diff;
@@ -10404,7 +10404,7 @@
           pos.ch = 0;
         }
       }
-    
+
       // Tries to rebase an array of history events given a change in the
       // document. If the change touches the same lines as the event, the
       // event, and everything 'behind' it, is discarded. If the change is
@@ -10439,18 +10439,18 @@
           }
         }
       }
-    
+
       function rebaseHist(hist, change) {
         var from = change.from.line, to = change.to.line, diff = change.text.length - (to - from) - 1;
         rebaseHistArray(hist.done, from, to, diff);
         rebaseHistArray(hist.undone, from, to, diff);
       }
-    
+
       // EVENT UTILITIES
-    
+
       // Due to the fact that we still support jurassic IE versions, some
       // compatibility wrappers are needed.
-    
+
       var e_preventDefault = CodeMirror.e_preventDefault = function(e) {
         if (e.preventDefault) e.preventDefault();
         else e.returnValue = false;
@@ -10463,7 +10463,7 @@
         return e.defaultPrevented != null ? e.defaultPrevented : e.returnValue == false;
       }
       var e_stop = CodeMirror.e_stop = function(e) {e_preventDefault(e); e_stopPropagation(e);};
-    
+
       function e_target(e) {return e.target || e.srcElement;}
       function e_button(e) {
         var b = e.which;
@@ -10475,12 +10475,12 @@
         if (mac && e.ctrlKey && b == 1) b = 3;
         return b;
       }
-    
+
       // EVENT HANDLING
-    
+
       // Lightweight event framework. on/off also work on DOM nodes,
       // registering native DOM handlers.
-    
+
       var on = CodeMirror.on = function(emitter, type, f) {
         if (emitter.addEventListener)
           emitter.addEventListener(type, f, false);
@@ -10492,14 +10492,14 @@
           arr.push(f);
         }
       };
-    
+
       var noHandlers = []
       function getHandlers(emitter, type, copy) {
         var arr = emitter._handlers && emitter._handlers[type]
         if (copy) return arr && arr.length > 0 ? arr.slice() : noHandlers
         else return arr || noHandlers
       }
-    
+
       var off = CodeMirror.off = function(emitter, type, f) {
         if (emitter.removeEventListener)
           emitter.removeEventListener(type, f, false);
@@ -10511,16 +10511,16 @@
             if (handlers[i] == f) { handlers.splice(i, 1); break; }
         }
       };
-    
+
       var signal = CodeMirror.signal = function(emitter, type /*, values...*/) {
         var handlers = getHandlers(emitter, type, true)
         if (!handlers.length) return;
         var args = Array.prototype.slice.call(arguments, 2);
         for (var i = 0; i < handlers.length; ++i) handlers[i].apply(null, args);
       };
-    
+
       var orphanDelayedCallbacks = null;
-    
+
       // Often, we want to signal events at a point where we are in the
       // middle of some work, but don't want the handler to start calling
       // other methods on the editor, which might be in an inconsistent
@@ -10544,13 +10544,13 @@
         for (var i = 0; i < arr.length; ++i)
           list.push(bnd(arr[i]));
       }
-    
+
       function fireOrphanDelayed() {
         var delayed = orphanDelayedCallbacks;
         orphanDelayedCallbacks = null;
         for (var i = 0; i < delayed.length; ++i) delayed[i]();
       }
-    
+
       // The DOM events that CodeMirror handles can be overridden by
       // registering a (non-DOM) handler on the editor for the event name,
       // and preventDefault-ing the event in that handler.
@@ -10560,7 +10560,7 @@
         signal(cm, override || e.type, cm, e);
         return e_defaultPrevented(e) || e.codemirrorIgnore;
       }
-    
+
       function signalCursorActivity(cm) {
         var arr = cm._handlers && cm._handlers.cursorActivity;
         if (!arr) return;
@@ -10568,36 +10568,36 @@
         for (var i = 0; i < arr.length; ++i) if (indexOf(set, arr[i]) == -1)
           set.push(arr[i]);
       }
-    
+
       function hasHandler(emitter, type) {
         return getHandlers(emitter, type).length > 0
       }
-    
+
       // Add on and off methods to a constructor's prototype, to make
       // registering events on such objects more convenient.
       function eventMixin(ctor) {
         ctor.prototype.on = function(type, f) {on(this, type, f);};
         ctor.prototype.off = function(type, f) {off(this, type, f);};
       }
-    
+
       // MISC UTILITIES
-    
+
       // Number of pixels added to scroller and sizer to hide scrollbar
       var scrollerGap = 30;
-    
+
       // Returned or thrown by various protocols to signal 'I'm not
       // handling this'.
       var Pass = CodeMirror.Pass = {toString: function(){return "CodeMirror.Pass";}};
-    
+
       // Reused option objects for setSelection & friends
       var sel_dontScroll = {scroll: false}, sel_mouse = {origin: "*mouse"}, sel_move = {origin: "+move"};
-    
+
       function Delayed() {this.id = null;}
       Delayed.prototype.set = function(ms, f) {
         clearTimeout(this.id);
         this.id = setTimeout(f, ms);
       };
-    
+
       // Counts the column offset in a string, taking tabs into account.
       // Used mostly to find indentation.
       var countColumn = CodeMirror.countColumn = function(string, end, tabSize, startIndex, startValue) {
@@ -10614,7 +10614,7 @@
           i = nextTab + 1;
         }
       };
-    
+
       // The inverse of countColumn -- find the offset that corresponds to
       // a particular column.
       var findColumn = CodeMirror.findColumn = function(string, goal, tabSize) {
@@ -10630,22 +10630,22 @@
           if (col >= goal) return pos;
         }
       }
-    
+
       var spaceStrs = [""];
       function spaceStr(n) {
         while (spaceStrs.length <= n)
           spaceStrs.push(lst(spaceStrs) + " ");
         return spaceStrs[n];
       }
-    
+
       function lst(arr) { return arr[arr.length-1]; }
-    
+
       var selectInput = function(node) { node.select(); };
       if (ios) // Mobile Safari apparently has a bug where select() is broken.
         selectInput = function(node) { node.selectionStart = 0; node.selectionEnd = node.value.length; };
       else if (ie) // Suppress mysterious IE10 errors
         selectInput = function(node) { try { node.select(); } catch(_e) {} };
-    
+
       function indexOf(array, elt) {
         for (var i = 0; i < array.length; ++i)
           if (array[i] == elt) return i;
@@ -10656,9 +10656,9 @@
         for (var i = 0; i < array.length; i++) out[i] = f(array[i], i);
         return out;
       }
-    
+
       function nothing() {}
-    
+
       function createObj(base, props) {
         var inst;
         if (Object.create) {
@@ -10670,7 +10670,7 @@
         if (props) copyObj(props, inst);
         return inst;
       };
-    
+
       function copyObj(obj, target, overwrite) {
         if (!target) target = {};
         for (var prop in obj)
@@ -10678,12 +10678,12 @@
             target[prop] = obj[prop];
         return target;
       }
-    
+
       function bind(f) {
         var args = Array.prototype.slice.call(arguments, 1);
         return function(){return f.apply(null, args);};
       }
-    
+
       var nonASCIISingleCaseWordChar = /[\u00df\u0587\u0590-\u05f4\u0600-\u06ff\u3040-\u309f\u30a0-\u30ff\u3400-\u4db5\u4e00-\u9fcc\uac00-\ud7af]/;
       var isWordCharBasic = CodeMirror.isWordChar = function(ch) {
         return /\w/.test(ch) || ch > "\x80" &&
@@ -10694,12 +10694,12 @@
         if (helper.source.indexOf("\\w") > -1 && isWordCharBasic(ch)) return true;
         return helper.test(ch);
       }
-    
+
       function isEmpty(obj) {
         for (var n in obj) if (obj.hasOwnProperty(n) && obj[n]) return false;
         return true;
       }
-    
+
       // Extending unicode characters. A series of a non-extending char +
       // any number of extending chars is treated as a single unit as far
       // as editing and measuring is concerned. This is not fully correct,
@@ -10707,9 +10707,9 @@
       // of code points as a group.
       var extendingChars = /[\u0300-\u036f\u0483-\u0489\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u064b-\u065e\u0670\u06d6-\u06dc\u06de-\u06e4\u06e7\u06e8\u06ea-\u06ed\u0711\u0730-\u074a\u07a6-\u07b0\u07eb-\u07f3\u0816-\u0819\u081b-\u0823\u0825-\u0827\u0829-\u082d\u0900-\u0902\u093c\u0941-\u0948\u094d\u0951-\u0955\u0962\u0963\u0981\u09bc\u09be\u09c1-\u09c4\u09cd\u09d7\u09e2\u09e3\u0a01\u0a02\u0a3c\u0a41\u0a42\u0a47\u0a48\u0a4b-\u0a4d\u0a51\u0a70\u0a71\u0a75\u0a81\u0a82\u0abc\u0ac1-\u0ac5\u0ac7\u0ac8\u0acd\u0ae2\u0ae3\u0b01\u0b3c\u0b3e\u0b3f\u0b41-\u0b44\u0b4d\u0b56\u0b57\u0b62\u0b63\u0b82\u0bbe\u0bc0\u0bcd\u0bd7\u0c3e-\u0c40\u0c46-\u0c48\u0c4a-\u0c4d\u0c55\u0c56\u0c62\u0c63\u0cbc\u0cbf\u0cc2\u0cc6\u0ccc\u0ccd\u0cd5\u0cd6\u0ce2\u0ce3\u0d3e\u0d41-\u0d44\u0d4d\u0d57\u0d62\u0d63\u0dca\u0dcf\u0dd2-\u0dd4\u0dd6\u0ddf\u0e31\u0e34-\u0e3a\u0e47-\u0e4e\u0eb1\u0eb4-\u0eb9\u0ebb\u0ebc\u0ec8-\u0ecd\u0f18\u0f19\u0f35\u0f37\u0f39\u0f71-\u0f7e\u0f80-\u0f84\u0f86\u0f87\u0f90-\u0f97\u0f99-\u0fbc\u0fc6\u102d-\u1030\u1032-\u1037\u1039\u103a\u103d\u103e\u1058\u1059\u105e-\u1060\u1071-\u1074\u1082\u1085\u1086\u108d\u109d\u135f\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773\u17b7-\u17bd\u17c6\u17c9-\u17d3\u17dd\u180b-\u180d\u18a9\u1920-\u1922\u1927\u1928\u1932\u1939-\u193b\u1a17\u1a18\u1a56\u1a58-\u1a5e\u1a60\u1a62\u1a65-\u1a6c\u1a73-\u1a7c\u1a7f\u1b00-\u1b03\u1b34\u1b36-\u1b3a\u1b3c\u1b42\u1b6b-\u1b73\u1b80\u1b81\u1ba2-\u1ba5\u1ba8\u1ba9\u1c2c-\u1c33\u1c36\u1c37\u1cd0-\u1cd2\u1cd4-\u1ce0\u1ce2-\u1ce8\u1ced\u1dc0-\u1de6\u1dfd-\u1dff\u200c\u200d\u20d0-\u20f0\u2cef-\u2cf1\u2de0-\u2dff\u302a-\u302f\u3099\u309a\ua66f-\ua672\ua67c\ua67d\ua6f0\ua6f1\ua802\ua806\ua80b\ua825\ua826\ua8c4\ua8e0-\ua8f1\ua926-\ua92d\ua947-\ua951\ua980-\ua982\ua9b3\ua9b6-\ua9b9\ua9bc\uaa29-\uaa2e\uaa31\uaa32\uaa35\uaa36\uaa43\uaa4c\uaab0\uaab2-\uaab4\uaab7\uaab8\uaabe\uaabf\uaac1\uabe5\uabe8\uabed\udc00-\udfff\ufb1e\ufe00-\ufe0f\ufe20-\ufe26\uff9e\uff9f]/;
       function isExtendingChar(ch) { return ch.charCodeAt(0) >= 768 && extendingChars.test(ch); }
-    
+
       // DOM UTILITIES
-    
+
       function elt(tag, content, className, style) {
         var e = document.createElement(tag);
         if (className) e.className = className;
@@ -10718,7 +10718,7 @@
         else if (content) for (var i = 0; i < content.length; ++i) e.appendChild(content[i]);
         return e;
       }
-    
+
       var range;
       if (document.createRange) range = function(node, start, end, endNode) {
         var r = document.createRange();
@@ -10735,17 +10735,17 @@
         r.moveStart("character", start);
         return r;
       };
-    
+
       function removeChildren(e) {
         for (var count = e.childNodes.length; count > 0; --count)
           e.removeChild(e.firstChild);
         return e;
       }
-    
+
       function removeChildrenAndAdd(parent, e) {
         return removeChildren(parent).appendChild(e);
       }
-    
+
       var contains = CodeMirror.contains = function(parent, child) {
         if (child.nodeType == 3) // Android browser always returns false when child is a textnode
           child = child.parentNode;
@@ -10756,7 +10756,7 @@
           if (child == parent) return true;
         } while (child = child.parentNode);
       };
-    
+
       function activeElt() {
         var activeElement = document.activeElement;
         while (activeElement && activeElement.root && activeElement.root.activeElement)
@@ -10769,7 +10769,7 @@
         try { return document.activeElement; }
         catch(e) { return document.body; }
       };
-    
+
       function classTest(cls) { return new RegExp("(^|\\s)" + cls + "(?:$|\\s)\\s*"); }
       var rmClass = CodeMirror.rmClass = function(node, cls) {
         var current = node.className;
@@ -10789,13 +10789,13 @@
           if (as[i] && !classTest(as[i]).test(b)) b += " " + as[i];
         return b;
       }
-    
+
       // WINDOW-WIDE EVENTS
-    
+
       // These must be handled carefully, because naively registering a
       // handler for each editor will cause the editors to never be
       // garbage collected.
-    
+
       function forEachCodeMirror(f) {
         if (!document.body.getElementsByClassName) return;
         var byClass = document.body.getElementsByClassName("CodeMirror");
@@ -10804,7 +10804,7 @@
           if (cm) f(cm);
         }
       }
-    
+
       var globalsRegistered = false;
       function ensureGlobalHandlers() {
         if (globalsRegistered) return;
@@ -10825,9 +10825,9 @@
           forEachCodeMirror(onBlur);
         });
       }
-    
+
       // FEATURE DETECTION
-    
+
       // Detect drag-and-drop
       var dragAndDrop = function() {
         // There is *some* kind of drag-and-drop support in IE6-8, but I
@@ -10836,7 +10836,7 @@
         var div = elt('div');
         return "draggable" in div || "dragDrop" in div;
       }();
-    
+
       var zwspSupported;
       function zeroWidthElement(measure) {
         if (zwspSupported == null) {
@@ -10850,7 +10850,7 @@
         node.setAttribute("cm-text", "");
         return node;
       }
-    
+
       // Feature-detect IE's crummy client rect reporting for bidi text
       var badBidiRects;
       function hasBadBidiRects(measure) {
@@ -10861,7 +10861,7 @@
         var r1 = range(txt, 1, 2).getBoundingClientRect();
         return badBidiRects = (r1.right - r0.right < 3);
       }
-    
+
       // See if "".split is the broken IE version, if so, provide an
       // alternative way to split lines.
       var splitLinesAuto = CodeMirror.splitLines = "\n\nb".split(/\n/).length != 3 ? function(string) {
@@ -10881,7 +10881,7 @@
         }
         return result;
       } : function(string){return string.split(/\r\n?|\n/);};
-    
+
       var hasSelection = window.getSelection ? function(te) {
         try { return te.selectionStart != te.selectionEnd; }
         catch(e) { return false; }
@@ -10891,14 +10891,14 @@
         if (!range || range.parentElement() != te) return false;
         return range.compareEndPoints("StartToEnd", range) != 0;
       };
-    
+
       var hasCopyEvent = (function() {
         var e = elt("div");
         if ("oncopy" in e) return true;
         e.setAttribute("oncopy", "return;");
         return typeof e.oncopy == "function";
       })();
-    
+
       var badZoomedRects = null;
       function hasBadZoomedRects(measure) {
         if (badZoomedRects != null) return badZoomedRects;
@@ -10907,9 +10907,9 @@
         var fromRange = range(node, 0, 1).getBoundingClientRect();
         return badZoomedRects = Math.abs(normal.left - fromRange.left) > 1;
       }
-    
+
       // KEY NAMES
-    
+
       var keyNames = CodeMirror.keyNames = {
         3: "Enter", 8: "Backspace", 9: "Tab", 13: "Enter", 16: "Shift", 17: "Ctrl", 18: "Alt",
         19: "Pause", 20: "CapsLock", 27: "Esc", 32: "Space", 33: "PageUp", 34: "PageDown", 35: "End",
@@ -10928,9 +10928,9 @@
         // Function keys
         for (var i = 1; i <= 12; i++) keyNames[i + 111] = keyNames[i + 63235] = "F" + i;
       })();
-    
+
       // BIDI HELPERS
-    
+
       function iterateBidiSections(order, from, to, f) {
         if (!order) return f(from, to, "ltr");
         var found = false;
@@ -10943,17 +10943,17 @@
         }
         if (!found) f(from, to, "ltr");
       }
-    
+
       function bidiLeft(part) { return part.level % 2 ? part.to : part.from; }
       function bidiRight(part) { return part.level % 2 ? part.from : part.to; }
-    
+
       function lineLeft(line) { var order = getOrder(line); return order ? bidiLeft(order[0]) : 0; }
       function lineRight(line) {
         var order = getOrder(line);
         if (!order) return line.text.length;
         return bidiRight(lst(order));
       }
-    
+
       function lineStart(cm, lineN) {
         var line = getLine(cm.doc, lineN);
         var visual = visualLine(line);
@@ -10983,7 +10983,7 @@
         }
         return start;
       }
-    
+
       function compareBidiLevel(order, a, b) {
         var linedir = order[0].level;
         if (a == linedir) return true;
@@ -11010,14 +11010,14 @@
         }
         return found;
       }
-    
+
       function moveInLine(line, pos, dir, byUnit) {
         if (!byUnit) return pos + dir;
         do pos += dir;
         while (pos > 0 && isExtendingChar(line.text.charAt(pos)));
         return pos;
       }
-    
+
       // This is needed in order to move 'visually' through bi-directional
       // text -- i.e., pressing left should make the cursor go left, even
       // when in RTL text. The tricky part is the 'jumps', where RTL and
@@ -11028,7 +11028,7 @@
         if (!bidi) return moveLogically(line, start, dir, byUnit);
         var pos = getBidiPartAt(bidi, start), part = bidi[pos];
         var target = moveInLine(line, start, part.level % 2 ? -dir : dir, byUnit);
-    
+
         for (;;) {
           if (target > part.from && target < part.to) return target;
           if (target == part.from || target == part.to) {
@@ -11045,17 +11045,17 @@
           }
         }
       }
-    
+
       function moveLogically(line, start, dir, byUnit) {
         var target = start + dir;
         if (byUnit) while (target > 0 && isExtendingChar(line.text.charAt(target))) target += dir;
         return target < 0 || target > line.text.length ? null : target;
       }
-    
+
       // Bidirectional ordering algorithm
       // See http://unicode.org/reports/tr9/tr9-13.html for the algorithm
       // that this (partially) implements.
-    
+
       // One-char codes used for character types:
       // L (L):   Left-to-Right
       // R (R):   Right-to-Left
@@ -11071,7 +11071,7 @@
       // t (S):   Segment Separator
       // w (WS):  Whitespace
       // N (ON):  Other Neutrals
-    
+
       // Returns null if characters are ordered as they appear
       // (left-to-right), or an array of sections ({from, to, level}
       // objects) in the order in which they occur visually.
@@ -11089,23 +11089,23 @@
           else if (code == 0x200c) return "b";
           else return "L";
         }
-    
+
         var bidiRE = /[\u0590-\u05f4\u0600-\u06ff\u0700-\u08ac]/;
         var isNeutral = /[stwN]/, isStrong = /[LRr]/, countsAsLeft = /[Lb1n]/, countsAsNum = /[1n]/;
         // Browsers seem to always treat the boundaries of block elements as being L.
         var outerType = "L";
-    
+
         function BidiSpan(level, from, to) {
           this.level = level;
           this.from = from; this.to = to;
         }
-    
+
         return function(str) {
           if (!bidiRE.test(str)) return false;
           var len = str.length, types = [];
           for (var i = 0, type; i < len; ++i)
             types.push(type = charType(str.charCodeAt(i)));
-    
+
           // W1. Examine each non-spacing mark (NSM) in the level run, and
           // change the type of the NSM to the type of the previous
           // character. If the NSM is at the start of the level run, it will
@@ -11115,7 +11115,7 @@
             if (type == "m") types[i] = prev;
             else prev = type;
           }
-    
+
           // W2. Search backwards from each instance of a European number
           // until the first strong type (R, L, AL, or sor) is found. If an
           // AL is found, change the type of the European number to Arabic
@@ -11126,7 +11126,7 @@
             if (type == "1" && cur == "r") types[i] = "n";
             else if (isStrong.test(type)) { cur = type; if (type == "r") types[i] = "R"; }
           }
-    
+
           // W4. A single European separator between two European numbers
           // changes to a European number. A single common separator between
           // two numbers of the same type changes to that type.
@@ -11137,7 +11137,7 @@
                      (prev == "1" || prev == "n")) types[i] = prev;
             prev = type;
           }
-    
+
           // W5. A sequence of European terminators adjacent to European
           // numbers changes to all European numbers.
           // W6. Otherwise, separators and terminators change to Other
@@ -11152,7 +11152,7 @@
               i = end - 1;
             }
           }
-    
+
           // W7. Search backwards from each instance of a European number
           // until the first strong type (R, L, or sor) is found. If an L is
           // found, then change the type of the European number to L.
@@ -11161,7 +11161,7 @@
             if (cur == "L" && type == "1") types[i] = "L";
             else if (isStrong.test(type)) cur = type;
           }
-    
+
           // N1. A sequence of neutrals takes the direction of the
           // surrounding strong text if the text on both sides has the same
           // direction. European and Arabic numbers act as if they were R in
@@ -11178,7 +11178,7 @@
               i = end - 1;
             }
           }
-    
+
           // Here we depart from the documented algorithm, in order to avoid
           // building up an actual levels array. Since there are only three
           // levels (0, 1, 2) in an implementation that doesn't take
@@ -11217,22 +11217,22 @@
             order.unshift(new BidiSpan(1, order[0].to, order[0].to));
           if (order[0].level != lst(order).level)
             order.push(new BidiSpan(order[0].level, len, len));
-    
+
           return order;
         };
       })();
-    
+
       // THE END
-    
+
       CodeMirror.version = "5.15.2";
-    
+
       return CodeMirror;
     });
-    
+
     },{}],11:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"), require("../markdown/markdown"), require("../../addon/mode/overlay"));
@@ -11242,9 +11242,9 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
     "use strict";
-    
+
     var urlRE = /^((?:(?:aaas?|about|acap|adiumxtra|af[ps]|aim|apt|attachment|aw|beshare|bitcoin|bolo|callto|cap|chrome(?:-extension)?|cid|coap|com-eventbrite-attendee|content|crid|cvs|data|dav|dict|dlna-(?:playcontainer|playsingle)|dns|doi|dtn|dvb|ed2k|facetime|feed|file|finger|fish|ftp|geo|gg|git|gizmoproject|go|gopher|gtalk|h323|hcp|https?|iax|icap|icon|im|imap|info|ipn|ipp|irc[6s]?|iris(?:\.beep|\.lwz|\.xpc|\.xpcs)?|itms|jar|javascript|jms|keyparc|lastfm|ldaps?|magnet|mailto|maps|market|message|mid|mms|ms-help|msnim|msrps?|mtqp|mumble|mupdate|mvn|news|nfs|nih?|nntp|notes|oid|opaquelocktoken|palm|paparazzi|platform|pop|pres|proxy|psyc|query|res(?:ource)?|rmi|rsync|rtmp|rtsp|secondlife|service|session|sftp|sgn|shttp|sieve|sips?|skype|sm[bs]|snmp|soap\.beeps?|soldat|spotify|ssh|steam|svn|tag|teamspeak|tel(?:net)?|tftp|things|thismessage|tip|tn3270|tv|udp|unreal|urn|ut2004|vemmi|ventrilo|view-source|webcal|wss?|wtai|wyciwyg|xcon(?:-userid)?|xfire|xmlrpc\.beeps?|xmpp|xri|ymsgr|z39\.50[rs]?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]|\([^\s()<>]*\))+(?:\([^\s()<>]*\)|[^\s`*!()\[\]{};:'".,<>?«»“”‘’]))/i
-    
+
     CodeMirror.defineMode("gfm", function(config, modeConfig) {
       var codeDepth = 0;
       function blankLine(state) {
@@ -11268,7 +11268,7 @@
         },
         token: function(stream, state) {
           state.combineTokens = null;
-    
+
           // Hack to prevent formatting override inside code blocks (block and inline)
           if (state.codeBlock) {
             if (stream.match(/^```+/)) {
@@ -11343,7 +11343,7 @@
         },
         blankLine: blankLine
       };
-    
+
       var markdownConfig = {
         underscoresBreakWords: false,
         taskLists: true,
@@ -11355,16 +11355,16 @@
       }
       markdownConfig.name = "markdown";
       return CodeMirror.overlayMode(CodeMirror.getMode(config, markdownConfig), gfmOverlay);
-    
+
     }, "markdown");
-    
+
       CodeMirror.defineMIME("text/x-gfm", "gfm");
     });
-    
+
     },{"../../addon/mode/overlay":8,"../../lib/codemirror":10,"../markdown/markdown":12}],12:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"), require("../xml/xml"), require("../meta"));
@@ -11374,12 +11374,12 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
     "use strict";
-    
+
     CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
-    
+
       var htmlMode = CodeMirror.getMode(cmCfg, "text/html");
       var htmlModeMissing = htmlMode.name == "null"
-    
+
       function getMode(name) {
         if (CodeMirror.findModeByName) {
           var found = CodeMirror.findModeByName(name);
@@ -11388,37 +11388,37 @@
         var mode = CodeMirror.getMode(cmCfg, name);
         return mode.name == "null" ? null : mode;
       }
-    
+
       // Should characters that affect highlighting be highlighted separate?
       // Does not include characters that will be output (such as `1.` and `-` for lists)
       if (modeCfg.highlightFormatting === undefined)
         modeCfg.highlightFormatting = false;
-    
+
       // Maximum number of nested blockquotes. Set to 0 for infinite nesting.
       // Excess `>` will emit `error` token.
       if (modeCfg.maxBlockquoteDepth === undefined)
         modeCfg.maxBlockquoteDepth = 0;
-    
+
       // Should underscores in words open/close em/strong?
       if (modeCfg.underscoresBreakWords === undefined)
         modeCfg.underscoresBreakWords = true;
-    
+
       // Use `fencedCodeBlocks` to configure fenced code blocks. false to
       // disable, string to specify a precise regexp that the fence should
       // match, and true to allow three or more backticks or tildes (as
       // per CommonMark).
-    
+
       // Turn on task lists? ("- [ ] " and "- [x] ")
       if (modeCfg.taskLists === undefined) modeCfg.taskLists = false;
-    
+
       // Turn on strikethrough syntax
       if (modeCfg.strikethrough === undefined)
         modeCfg.strikethrough = false;
-    
+
       // Allow token types to be overridden by user-provided token types.
       if (modeCfg.tokenTypeOverrides === undefined)
         modeCfg.tokenTypeOverrides = {};
-    
+
       var tokenTypes = {
         header: "header",
         code: "comment",
@@ -11437,13 +11437,13 @@
         strong: "strong",
         strikethrough: "strikethrough"
       };
-    
+
       for (var tokenType in tokenTypes) {
         if (tokenTypes.hasOwnProperty(tokenType) && modeCfg.tokenTypeOverrides[tokenType]) {
           tokenTypes[tokenType] = modeCfg.tokenTypeOverrides[tokenType];
         }
       }
-    
+
       var hrRE = /^([*\-_])(?:\s*\1){2,}\s*$/
       ,   ulRE = /^[*\-+]\s+/
       ,   olRE = /^[0-9]+([.)])\s+/
@@ -11453,23 +11453,23 @@
       ,   textRE = /^[^#!\[\]*_\\<>` "'(~]+/
       ,   fencedCodeRE = new RegExp("^(" + (modeCfg.fencedCodeBlocks === true ? "~~~+|```+" : modeCfg.fencedCodeBlocks) +
                                     ")[ \\t]*([\\w+#\-]*)");
-    
+
       function switchInline(stream, state, f) {
         state.f = state.inline = f;
         return f(stream, state);
       }
-    
+
       function switchBlock(stream, state, f) {
         state.f = state.block = f;
         return f(stream, state);
       }
-    
+
       function lineIsEmpty(line) {
         return !line || !/\S/.test(line.string)
       }
-    
+
       // Blocks
-    
+
       function blankLine(state) {
         // Reset linkTitle state
         state.linkTitle = false;
@@ -11495,16 +11495,16 @@
         state.thisLine = null
         return null;
       }
-    
+
       function blockNormal(stream, state) {
-    
+
         var sol = stream.sol();
-    
+
         var prevLineIsList = state.list !== false,
             prevLineIsIndentedCode = state.indentedCode;
-    
+
         state.indentedCode = false;
-    
+
         if (prevLineIsList) {
           if (state.indentationDiff >= 0) { // Continued list
             if (state.indentationDiff < 4) { // Only adjust indentation if *not* a code block
@@ -11517,7 +11517,7 @@
             state.list = false;
           }
         }
-    
+
         var match = null;
         if (state.indentationDiff >= 4) {
           stream.skipToEnd();
@@ -11561,17 +11561,17 @@
           }
           state.indentation = stream.column() + stream.current().length;
           state.list = true;
-    
+
           // While this list item's marker's indentation
           // is less than the deepest list item's content's indentation,
           // pop the deepest list item indentation off the stack.
           while (state.listStack && stream.column() < state.listStack[state.listStack.length - 1]) {
             state.listStack.pop();
           }
-    
+
           // Add this list item's content's indentation to the stack
           state.listStack.push(state.indentation);
-    
+
           if (modeCfg.taskLists && stream.match(taskListRE, false)) {
             state.taskList = true;
           }
@@ -11588,10 +11588,10 @@
           state.code = -1
           return getType(state);
         }
-    
+
         return switchInline(stream, state, state.inline);
       }
-    
+
       function htmlBlock(stream, state) {
         var style = htmlMode.token(stream, state.htmlState);
         if (!htmlModeMissing) {
@@ -11606,7 +11606,7 @@
         }
         return style;
       }
-    
+
       function local(stream, state) {
         if (state.fencedChars && stream.match(state.fencedChars, false)) {
           state.localMode = state.localState = null;
@@ -11619,7 +11619,7 @@
           return tokenTypes.code;
         }
       }
-    
+
       function leavingLocal(stream, state) {
         stream.match(state.fencedChars);
         state.block = blockNormal;
@@ -11631,23 +11631,23 @@
         state.code = 0
         return returnType;
       }
-    
+
       // Inline
       function getType(state) {
         var styles = [];
-    
+
         if (state.formatting) {
           styles.push(tokenTypes.formatting);
-    
+
           if (typeof state.formatting === "string") state.formatting = [state.formatting];
-    
+
           for (var i = 0; i < state.formatting.length; i++) {
             styles.push(tokenTypes.formatting + "-" + state.formatting[i]);
-    
+
             if (state.formatting[i] === "header") {
               styles.push(tokenTypes.formatting + "-" + state.formatting[i] + "-" + state.header);
             }
-    
+
             // Add `formatting-quote` and `formatting-quote-#` for blockquotes
             // Add `error` instead if the maximum blockquote nesting depth is passed
             if (state.formatting[i] === "quote") {
@@ -11659,7 +11659,7 @@
             }
           }
         }
-    
+
         if (state.taskOpen) {
           styles.push("meta");
           return styles.length ? styles.join(' ') : null;
@@ -11668,7 +11668,7 @@
           styles.push("property");
           return styles.length ? styles.join(' ') : null;
         }
-    
+
         if (state.linkHref) {
           styles.push(tokenTypes.linkHref, "url");
         } else { // Only apply inline styles to non-url text
@@ -11678,12 +11678,12 @@
           if (state.linkText) { styles.push(tokenTypes.linkText); }
           if (state.code) { styles.push(tokenTypes.code); }
         }
-    
+
         if (state.header) { styles.push(tokenTypes.header, tokenTypes.header + "-" + state.header); }
-    
+
         if (state.quote) {
           styles.push(tokenTypes.quote);
-    
+
           // Add `quote-#` where the maximum for `#` is modeCfg.maxBlockquoteDepth
           if (!modeCfg.maxBlockquoteDepth || modeCfg.maxBlockquoteDepth >= state.quote) {
             styles.push(tokenTypes.quote + "-" + state.quote);
@@ -11691,7 +11691,7 @@
             styles.push(tokenTypes.quote + "-" + modeCfg.maxBlockquoteDepth);
           }
         }
-    
+
         if (state.list !== false) {
           var listMod = (state.listStack.length - 1) % 3;
           if (!listMod) {
@@ -11702,33 +11702,33 @@
             styles.push(tokenTypes.list3);
           }
         }
-    
+
         if (state.trailingSpaceNewLine) {
           styles.push("trailing-space-new-line");
         } else if (state.trailingSpace) {
           styles.push("trailing-space-" + (state.trailingSpace % 2 ? "a" : "b"));
         }
-    
+
         return styles.length ? styles.join(' ') : null;
       }
-    
+
       function handleText(stream, state) {
         if (stream.match(textRE, true)) {
           return getType(state);
         }
         return undefined;
       }
-    
+
       function inlineNormal(stream, state) {
         var style = state.text(stream, state);
         if (typeof style !== 'undefined')
           return style;
-    
+
         if (state.list) { // List marker (*, +, -, 1., etc)
           state.list = null;
           return getType(state);
         }
-    
+
         if (state.taskList) {
           var taskOpen = stream.match(taskListRE, true)[1] !== "x";
           if (taskOpen) state.taskOpen = true;
@@ -11737,20 +11737,20 @@
           state.taskList = false;
           return getType(state);
         }
-    
+
         state.taskOpen = false;
         state.taskClosed = false;
-    
+
         if (state.header && stream.match(/^#+$/, true)) {
           if (modeCfg.highlightFormatting) state.formatting = "header";
           return getType(state);
         }
-    
+
         // Get sol() value now, before character is consumed
         var sol = stream.sol();
-    
+
         var ch = stream.next();
-    
+
         // Matches link titles present on next line
         if (state.linkTitle) {
           state.linkTitle = false;
@@ -11764,7 +11764,7 @@
             return tokenTypes.linkHref;
           }
         }
-    
+
         // If this block is changed, it may need to be updated in GFM mode
         if (ch === '`') {
           var previousFormatting = state.formatting;
@@ -11785,7 +11785,7 @@
         } else if (state.code) {
           return getType(state);
         }
-    
+
         if (ch === '\\') {
           stream.next();
           if (modeCfg.highlightFormatting) {
@@ -11794,19 +11794,19 @@
             return type ? type + " " + formattingEscape : formattingEscape;
           }
         }
-    
+
         if (ch === '!' && stream.match(/\[[^\]]*\] ?(?:\(|\[)/, false)) {
           stream.match(/\[[^\]]*\]/);
           state.inline = state.f = linkHref;
           return tokenTypes.image;
         }
-    
+
         if (ch === '[' && stream.match(/[^\]]*\](\(.*\)| ?\[.*?\])/, false)) {
           state.linkText = true;
           if (modeCfg.highlightFormatting) state.formatting = "link";
           return getType(state);
         }
-    
+
         if (ch === ']' && state.linkText && stream.match(/\(.*?\)| ?\[.*?\]/, false)) {
           if (modeCfg.highlightFormatting) state.formatting = "link";
           var type = getType(state);
@@ -11814,7 +11814,7 @@
           state.inline = state.f = linkHref;
           return type;
         }
-    
+
         if (ch === '<' && stream.match(/^(https?|ftps?):\/\/(?:[^\\>]|\\.)+>/, false)) {
           state.f = state.inline = linkInline;
           if (modeCfg.highlightFormatting) state.formatting = "link";
@@ -11826,7 +11826,7 @@
           }
           return type + tokenTypes.linkInline;
         }
-    
+
         if (ch === '<' && stream.match(/^[^> \\]+@(?:[^\\>]|\\.)+>/, false)) {
           state.f = state.inline = linkInline;
           if (modeCfg.highlightFormatting) state.formatting = "link";
@@ -11838,7 +11838,7 @@
           }
           return type + tokenTypes.linkEmail;
         }
-    
+
         if (ch === '<' && stream.match(/^(!--|\w)/, false)) {
           var end = stream.string.indexOf(">", stream.pos);
           if (end != -1) {
@@ -11849,12 +11849,12 @@
           state.htmlState = CodeMirror.startState(htmlMode);
           return switchBlock(stream, state, htmlBlock);
         }
-    
+
         if (ch === '<' && stream.match(/^\/\w*?>/)) {
           state.md_inside = false;
           return "tag";
         }
-    
+
         var ignoreUnderscore = false;
         if (!modeCfg.underscoresBreakWords) {
           if (ch === '_' && stream.peek() !== '_' && stream.match(/(\w)/, false)) {
@@ -11898,7 +11898,7 @@
             }
           }
         }
-    
+
         if (modeCfg.strikethrough) {
           if (ch === '~' && stream.eatWhile(ch)) {
             if (state.strikethrough) {// Remove strikethrough
@@ -11921,7 +11921,7 @@
             }
           }
         }
-    
+
         if (ch === ' ') {
           if (stream.match(/ +$/, false)) {
             state.trailingSpace++;
@@ -11929,13 +11929,13 @@
             state.trailingSpaceNewLine = true;
           }
         }
-    
+
         return getType(state);
       }
-    
+
       function linkInline(stream, state) {
         var ch = stream.next();
-    
+
         if (ch === ">") {
           state.f = state.inline = inlineNormal;
           if (modeCfg.highlightFormatting) state.formatting = "link";
@@ -11947,12 +11947,12 @@
           }
           return type + tokenTypes.linkInline;
         }
-    
+
         stream.match(/^[^>]+/, true);
-    
+
         return tokenTypes.linkInline;
       }
-    
+
       function linkHref(stream, state) {
         // Check if space, and return NULL if so (to avoid marking the space)
         if(stream.eatSpace()){
@@ -11967,16 +11967,16 @@
         }
         return 'error';
       }
-    
+
       var linkRE = {
         ")": /^(?:[^\\\(\)]|\\.|\((?:[^\\\(\)]|\\.)*\))*?(?=\))/,
         "]": /^(?:[^\\\[\]]|\\.|\[(?:[^\\\[\\]]|\\.)*\])*?(?=\])/
       }
-    
+
       function getLinkHrefInside(endChar) {
         return function(stream, state) {
           var ch = stream.next();
-    
+
           if (ch === endChar) {
             state.f = state.inline = inlineNormal;
             if (modeCfg.highlightFormatting) state.formatting = "link-string";
@@ -11984,13 +11984,13 @@
             state.linkHref = false;
             return returnState;
           }
-    
+
           stream.match(linkRE[endChar])
           state.linkHref = true;
           return getType(state);
         };
       }
-    
+
       function footnoteLink(stream, state) {
         if (stream.match(/^([^\]\\]|\\.)*\]:/, false)) {
           state.f = footnoteLinkInside;
@@ -12001,7 +12001,7 @@
         }
         return switchInline(stream, state, inlineNormal);
       }
-    
+
       function footnoteLinkInside(stream, state) {
         if (stream.match(/^\]:/, true)) {
           state.f = state.inline = footnoteUrl;
@@ -12010,12 +12010,12 @@
           state.linkText = false;
           return returnType;
         }
-    
+
         stream.match(/^([^\]\\]|\\.)+/, true);
-    
+
         return tokenTypes.linkText;
       }
-    
+
       function footnoteUrl(stream, state) {
         // Check if space, and return NULL if so (to avoid marking the space)
         if(stream.eatSpace()){
@@ -12032,22 +12032,22 @@
         state.f = state.inline = inlineNormal;
         return tokenTypes.linkHref + " url";
       }
-    
+
       var mode = {
         startState: function() {
           return {
             f: blockNormal,
-    
+
             prevLine: null,
             thisLine: null,
-    
+
             block: blockNormal,
             htmlState: null,
             indentation: 0,
-    
+
             inline: inlineNormal,
             text: handleText,
-    
+
             formatting: false,
             linkText: false,
             linkHref: false,
@@ -12067,21 +12067,21 @@
             fencedChars: null
           };
         },
-    
+
         copyState: function(s) {
           return {
             f: s.f,
-    
+
             prevLine: s.prevLine,
             thisLine: s.thisLine,
-    
+
             block: s.block,
             htmlState: s.htmlState && CodeMirror.copyState(htmlMode, s.htmlState),
             indentation: s.indentation,
-    
+
             localMode: s.localMode,
             localState: s.localMode ? CodeMirror.copyState(s.localMode, s.localState) : null,
-    
+
             inline: s.inline,
             text: s.text,
             formatting: false,
@@ -12103,35 +12103,35 @@
             fencedChars: s.fencedChars
           };
         },
-    
+
         token: function(stream, state) {
-    
+
           // Reset state.formatting
           state.formatting = false;
-    
+
           if (stream != state.thisLine) {
             var forceBlankLine = state.header || state.hr;
-    
+
             // Reset state.header and state.hr
             state.header = 0;
             state.hr = false;
-    
+
             if (stream.match(/^\s*$/, true) || forceBlankLine) {
               blankLine(state);
               if (!forceBlankLine) return null
               state.prevLine = null
             }
-    
+
             state.prevLine = state.thisLine
             state.thisLine = stream
-    
+
             // Reset state.taskList
             state.taskList = false;
-    
+
             // Reset state.trailingSpace
             state.trailingSpace = 0;
             state.trailingSpaceNewLine = false;
-    
+
             state.f = state.block;
             var indentation = stream.match(/^\s*/, true)[0].replace(/\t/g, '    ').length;
             state.indentationDiff = Math.min(indentation - state.indentation, 4);
@@ -12140,30 +12140,30 @@
           }
           return state.f(stream, state);
         },
-    
+
         innerMode: function(state) {
           if (state.block == htmlBlock) return {state: state.htmlState, mode: htmlMode};
           if (state.localState) return {state: state.localState, mode: state.localMode};
           return {state: state, mode: mode};
         },
-    
+
         blankLine: blankLine,
-    
+
         getType: getType,
-    
+
         fold: "markdown"
       };
       return mode;
     }, "xml");
-    
+
     CodeMirror.defineMIME("text/x-markdown", "markdown");
-    
+
     });
-    
+
     },{"../../lib/codemirror":10,"../meta":13,"../xml/xml":14}],13:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../lib/codemirror"));
@@ -12173,7 +12173,7 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
       "use strict";
-    
+
       CodeMirror.modeInfo = [
         {name: "APL", mime: "text/apl", mode: "apl", ext: ["dyalog", "apl"]},
         {name: "PGP", mimes: ["application/pgp", "application/pgp-keys", "application/pgp-signature"], mode: "asciiarmor", ext: ["pgp"]},
@@ -12330,7 +12330,7 @@
         var info = CodeMirror.modeInfo[i];
         if (info.mimes) info.mime = info.mimes[0];
       }
-    
+
       CodeMirror.findModeByMIME = function(mime) {
         mime = mime.toLowerCase();
         for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
@@ -12340,7 +12340,7 @@
             if (info.mimes[j] == mime) return info;
         }
       };
-    
+
       CodeMirror.findModeByExtension = function(ext) {
         for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
           var info = CodeMirror.modeInfo[i];
@@ -12348,7 +12348,7 @@
             if (info.ext[j] == ext) return info;
         }
       };
-    
+
       CodeMirror.findModeByFileName = function(filename) {
         for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
           var info = CodeMirror.modeInfo[i];
@@ -12358,7 +12358,7 @@
         var ext = dot > -1 && filename.substring(dot + 1, filename.length);
         if (ext) return CodeMirror.findModeByExtension(ext);
       };
-    
+
       CodeMirror.findModeByName = function(name) {
         name = name.toLowerCase();
         for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
@@ -12369,11 +12369,11 @@
         }
       };
     });
-    
+
     },{"../lib/codemirror":10}],14:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     (function(mod) {
       if (typeof exports == "object" && typeof module == "object") // CommonJS
         mod(require("../../lib/codemirror"));
@@ -12383,7 +12383,7 @@
         mod(CodeMirror);
     })(function(CodeMirror) {
     "use strict";
-    
+
     var htmlConfig = {
       autoSelfClosers: {'area': true, 'base': true, 'br': true, 'col': true, 'command': true,
                         'embed': true, 'frame': true, 'hr': true, 'img': true, 'input': true,
@@ -12417,7 +12417,7 @@
       allowMissing: true,
       caseFold: true
     }
-    
+
     var xmlConfig = {
       autoSelfClosers: {},
       implicitlyClosed: {},
@@ -12427,23 +12427,23 @@
       allowMissing: false,
       caseFold: false
     }
-    
+
     CodeMirror.defineMode("xml", function(editorConf, config_) {
       var indentUnit = editorConf.indentUnit
       var config = {}
       var defaults = config_.htmlMode ? htmlConfig : xmlConfig
       for (var prop in defaults) config[prop] = defaults[prop]
       for (var prop in config_) config[prop] = config_[prop]
-    
+
       // Return variables for tokenizers
       var type, setStyle;
-    
+
       function inText(stream, state) {
         function chain(parser) {
           state.tokenize = parser;
           return parser(stream, state);
         }
-    
+
         var ch = stream.next();
         if (ch == "<") {
           if (stream.eat("!")) {
@@ -12485,7 +12485,7 @@
         }
       }
       inText.isInText = true;
-    
+
       function inTag(stream, state) {
         var ch = stream.next();
         if (ch == ">" || (ch == "/" && stream.eat(">"))) {
@@ -12510,7 +12510,7 @@
           return "word";
         }
       }
-    
+
       function inAttribute(quote) {
         var closure = function(stream, state) {
           while (!stream.eol()) {
@@ -12524,7 +12524,7 @@
         closure.isInAttribute = true;
         return closure;
       }
-    
+
       function inBlock(style, terminator) {
         return function(stream, state) {
           while (!stream.eol()) {
@@ -12557,7 +12557,7 @@
           return "meta";
         };
       }
-    
+
       function Context(state, tagName, startOfLine) {
         this.prev = state.context;
         this.tagName = tagName;
@@ -12583,7 +12583,7 @@
           popContext(state);
         }
       }
-    
+
       function baseState(type, stream, state) {
         if (type == "openTag") {
           state.tagStart = stream.column();
@@ -12622,7 +12622,7 @@
           return closeStateErr;
         }
       }
-    
+
       function closeState(type, _stream, state) {
         if (type != "endTag") {
           setStyle = "error";
@@ -12635,7 +12635,7 @@
         setStyle = "error";
         return closeState(type, stream, state);
       }
-    
+
       function attrState(type, _stream, state) {
         if (type == "word") {
           setStyle = "attribute";
@@ -12670,7 +12670,7 @@
         if (type == "string") return attrContinuedState;
         return attrState(type, stream, state);
       }
-    
+
       return {
         startState: function(baseIndent) {
           var state = {tokenize: inText,
@@ -12681,11 +12681,11 @@
           if (baseIndent != null) state.baseIndent = baseIndent
           return state
         },
-    
+
         token: function(stream, state) {
           if (!state.tagName && stream.sol())
             state.indented = stream.indentation();
-    
+
           if (stream.eatSpace()) return null;
           type = null;
           var style = state.tokenize(stream, state);
@@ -12697,7 +12697,7 @@
           }
           return style;
         },
-    
+
         indent: function(state, textAfter, fullLine) {
           var context = state.context;
           // Indent multi-line strings (e.g. css).
@@ -12744,28 +12744,28 @@
           if (context) return context.indent + indentUnit;
           else return state.baseIndent || 0;
         },
-    
+
         electricInput: /<\/[\s\w:]+>$/,
         blockCommentStart: "<!--",
         blockCommentEnd: "-->",
-    
+
         configuration: config.htmlMode ? "html" : "xml",
         helperType: config.htmlMode ? "html" : "xml",
-    
+
         skipAttribute: function(state) {
           if (state.state == attrValueState)
             state.state = attrState
         }
       };
     });
-    
+
     CodeMirror.defineMIME("text/xml", "xml");
     CodeMirror.defineMIME("application/xml", "xml");
     if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
       CodeMirror.defineMIME("text/html", {name: "xml", htmlMode: true});
-    
+
     });
-    
+
     },{"../../lib/codemirror":10}],15:[function(require,module,exports){
     exports.read = function (buffer, offset, isLE, mLen, nBytes) {
       var e, m
@@ -12776,19 +12776,19 @@
       var i = isLE ? (nBytes - 1) : 0
       var d = isLE ? -1 : 1
       var s = buffer[offset + i]
-    
+
       i += d
-    
+
       e = s & ((1 << (-nBits)) - 1)
       s >>= (-nBits)
       nBits += eLen
       for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-    
+
       m = e & ((1 << (-nBits)) - 1)
       e >>= (-nBits)
       nBits += mLen
       for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-    
+
       if (e === 0) {
         e = 1 - eBias
       } else if (e === eMax) {
@@ -12799,7 +12799,7 @@
       }
       return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
     }
-    
+
     exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
       var e, m, c
       var eLen = nBytes * 8 - mLen - 1
@@ -12809,9 +12809,9 @@
       var i = isLE ? 0 : (nBytes - 1)
       var d = isLE ? 1 : -1
       var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-    
+
       value = Math.abs(value)
-    
+
       if (isNaN(value) || value === Infinity) {
         m = isNaN(value) ? 1 : 0
         e = eMax
@@ -12830,7 +12830,7 @@
           e++
           c /= 2
         }
-    
+
         if (e + eBias >= eMax) {
           m = 0
           e = eMax
@@ -12842,23 +12842,23 @@
           e = 0
         }
       }
-    
+
       for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-    
+
       e = (e << mLen) | m
       eLen += mLen
       for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-    
+
       buffer[offset + i - d] |= s * 128
     }
-    
+
     },{}],16:[function(require,module,exports){
     var toString = {}.toString;
-    
+
     module.exports = Array.isArray || function (arr) {
       return toString.call(arr) == '[object Array]';
     };
-    
+
     },{}],17:[function(require,module,exports){
     (function (global){
     /**
@@ -12866,13 +12866,13 @@
      * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
      * https://github.com/chjj/marked
      */
-    
+
     ;(function() {
-    
+
     /**
      * Block-Level Grammar
      */
-    
+
     var block = {
       newline: /^\n+/,
       code: /^( {4}[^\n]+\n*)+/,
@@ -12889,35 +12889,35 @@
       paragraph: /^((?:[^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+)\n*/,
       text: /^[^\n]+/
     };
-    
+
     block.bullet = /(?:[*+-]|\d+\.)/;
     block.item = /^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;
     block.item = replace(block.item, 'gm')
       (/bull/g, block.bullet)
       ();
-    
+
     block.list = replace(block.list)
       (/bull/g, block.bullet)
       ('hr', '\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))')
       ('def', '\\n+(?=' + block.def.source + ')')
       ();
-    
+
     block.blockquote = replace(block.blockquote)
       ('def', block.def)
       ();
-    
+
     block._tag = '(?!(?:'
       + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code'
       + '|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo'
       + '|span|br|wbr|ins|del|img)\\b)\\w+(?!:/|[^\\w\\s@]*@)\\b';
-    
+
     block.html = replace(block.html)
       ('comment', /<!--[\s\S]*?-->/)
       ('closed', /<(tag)[\s\S]+?<\/\1>/)
       ('closing', /<tag(?:"[^"]*"|'[^']*'|[^'">])*?>/)
       (/tag/g, block._tag)
       ();
-    
+
     block.paragraph = replace(block.paragraph)
       ('hr', block.hr)
       ('heading', block.heading)
@@ -12926,48 +12926,48 @@
       ('tag', '<' + block._tag)
       ('def', block.def)
       ();
-    
+
     /**
      * Normal Block Grammar
      */
-    
+
     block.normal = merge({}, block);
-    
+
     /**
      * GFM Block Grammar
      */
-    
+
     block.gfm = merge({}, block.normal, {
       fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\s*\1 *(?:\n+|$)/,
       paragraph: /^/,
       heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
     });
-    
+
     block.gfm.paragraph = replace(block.paragraph)
       ('(?!', '(?!'
         + block.gfm.fences.source.replace('\\1', '\\2') + '|'
         + block.list.source.replace('\\1', '\\3') + '|')
       ();
-    
+
     /**
      * GFM + Tables Block Grammar
      */
-    
+
     block.tables = merge({}, block.gfm, {
       nptable: /^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/,
       table: /^ *\|(.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/
     });
-    
+
     /**
      * Block Lexer
      */
-    
+
     function Lexer(options) {
       this.tokens = [];
       this.tokens.links = {};
       this.options = options || marked.defaults;
       this.rules = block.normal;
-    
+
       if (this.options.gfm) {
         if (this.options.tables) {
           this.rules = block.tables;
@@ -12976,40 +12976,40 @@
         }
       }
     }
-    
+
     /**
      * Expose Block Rules
      */
-    
+
     Lexer.rules = block;
-    
+
     /**
      * Static Lex Method
      */
-    
+
     Lexer.lex = function(src, options) {
       var lexer = new Lexer(options);
       return lexer.lex(src);
     };
-    
+
     /**
      * Preprocessing
      */
-    
+
     Lexer.prototype.lex = function(src) {
       src = src
         .replace(/\r\n|\r/g, '\n')
         .replace(/\t/g, '    ')
         .replace(/\u00a0/g, ' ')
         .replace(/\u2424/g, '\n');
-    
+
       return this.token(src, true);
     };
-    
+
     /**
      * Lexing
      */
-    
+
     Lexer.prototype.token = function(src, top, bq) {
       var src = src.replace(/^ +$/gm, '')
         , next
@@ -13021,7 +13021,7 @@
         , space
         , i
         , l;
-    
+
       while (src) {
         // newline
         if (cap = this.rules.newline.exec(src)) {
@@ -13032,7 +13032,7 @@
             });
           }
         }
-    
+
         // code
         if (cap = this.rules.code.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13045,7 +13045,7 @@
           });
           continue;
         }
-    
+
         // fences (gfm)
         if (cap = this.rules.fences.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13056,7 +13056,7 @@
           });
           continue;
         }
-    
+
         // heading
         if (cap = this.rules.heading.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13067,18 +13067,18 @@
           });
           continue;
         }
-    
+
         // table no leading pipe (gfm)
         if (top && (cap = this.rules.nptable.exec(src))) {
           src = src.substring(cap[0].length);
-    
+
           item = {
             type: 'table',
             header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
             align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
             cells: cap[3].replace(/\n$/, '').split('\n')
           };
-    
+
           for (i = 0; i < item.align.length; i++) {
             if (/^ *-+: *$/.test(item.align[i])) {
               item.align[i] = 'right';
@@ -13090,16 +13090,16 @@
               item.align[i] = null;
             }
           }
-    
+
           for (i = 0; i < item.cells.length; i++) {
             item.cells[i] = item.cells[i].split(/ *\| */);
           }
-    
+
           this.tokens.push(item);
-    
+
           continue;
         }
-    
+
         // lheading
         if (cap = this.rules.lheading.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13110,7 +13110,7 @@
           });
           continue;
         }
-    
+
         // hr
         if (cap = this.rules.hr.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13119,54 +13119,54 @@
           });
           continue;
         }
-    
+
         // blockquote
         if (cap = this.rules.blockquote.exec(src)) {
           src = src.substring(cap[0].length);
-    
+
           this.tokens.push({
             type: 'blockquote_start'
           });
-    
+
           cap = cap[0].replace(/^ *> ?/gm, '');
-    
+
           // Pass `top` to keep the current
           // "toplevel" state. This is exactly
           // how markdown.pl works.
           this.token(cap, top, true);
-    
+
           this.tokens.push({
             type: 'blockquote_end'
           });
-    
+
           continue;
         }
-    
+
         // list
         if (cap = this.rules.list.exec(src)) {
           src = src.substring(cap[0].length);
           bull = cap[2];
-    
+
           this.tokens.push({
             type: 'list_start',
             ordered: bull.length > 1
           });
-    
+
           // Get each top-level item.
           cap = cap[0].match(this.rules.item);
-    
+
           next = false;
           l = cap.length;
           i = 0;
-    
+
           for (; i < l; i++) {
             item = cap[i];
-    
+
             // Remove the list item's bullet
             // so it is seen as the next token.
             space = item.length;
             item = item.replace(/^ *([*+-]|\d+\.) +/, '');
-    
+
             // Outdent whatever the
             // list item contains. Hacky.
             if (~item.indexOf('\n ')) {
@@ -13175,7 +13175,7 @@
                 ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')
                 : item.replace(/^ {1,4}/gm, '');
             }
-    
+
             // Determine whether the next list item belongs here.
             // Backpedal if it does not belong in this list.
             if (this.options.smartLists && i !== l - 1) {
@@ -13185,7 +13185,7 @@
                 i = l - 1;
               }
             }
-    
+
             // Determine whether item is loose or not.
             // Use: /(^|\n)(?! )[^\n]+\n\n(?!\s*$)/
             // for discount behavior.
@@ -13194,28 +13194,28 @@
               next = item.charAt(item.length - 1) === '\n';
               if (!loose) loose = next;
             }
-    
+
             this.tokens.push({
               type: loose
                 ? 'loose_item_start'
                 : 'list_item_start'
             });
-    
+
             // Recurse.
             this.token(item, false, bq);
-    
+
             this.tokens.push({
               type: 'list_item_end'
             });
           }
-    
+
           this.tokens.push({
             type: 'list_end'
           });
-    
+
           continue;
         }
-    
+
         // html
         if (cap = this.rules.html.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13229,7 +13229,7 @@
           });
           continue;
         }
-    
+
         // def
         if ((!bq && top) && (cap = this.rules.def.exec(src))) {
           src = src.substring(cap[0].length);
@@ -13239,18 +13239,18 @@
           };
           continue;
         }
-    
+
         // table (gfm)
         if (top && (cap = this.rules.table.exec(src))) {
           src = src.substring(cap[0].length);
-    
+
           item = {
             type: 'table',
             header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
             align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
             cells: cap[3].replace(/(?: *\| *)?\n$/, '').split('\n')
           };
-    
+
           for (i = 0; i < item.align.length; i++) {
             if (/^ *-+: *$/.test(item.align[i])) {
               item.align[i] = 'right';
@@ -13262,18 +13262,18 @@
               item.align[i] = null;
             }
           }
-    
+
           for (i = 0; i < item.cells.length; i++) {
             item.cells[i] = item.cells[i]
               .replace(/^ *\| *| *\| *$/g, '')
               .split(/ *\| */);
           }
-    
+
           this.tokens.push(item);
-    
+
           continue;
         }
-    
+
         // top-level paragraph
         if (top && (cap = this.rules.paragraph.exec(src))) {
           src = src.substring(cap[0].length);
@@ -13285,7 +13285,7 @@
           });
           continue;
         }
-    
+
         // text
         if (cap = this.rules.text.exec(src)) {
           // Top-level should never reach here.
@@ -13296,20 +13296,20 @@
           });
           continue;
         }
-    
+
         if (src) {
           throw new
             Error('Infinite loop on byte: ' + src.charCodeAt(0));
         }
       }
-    
+
       return this.tokens;
     };
-    
+
     /**
      * Inline-Level Grammar
      */
-    
+
     var inline = {
       escape: /^\\([\\`*{}\[\]()#+\-.!_>])/,
       autolink: /^<([^ >]+(@|:\/)[^ >]+)>/,
@@ -13325,38 +13325,38 @@
       del: noop,
       text: /^[\s\S]+?(?=[\\<!\[_*`]| {2,}\n|$)/
     };
-    
+
     inline._inside = /(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;
     inline._href = /\s*<?([\s\S]*?)>?(?:\s+['"]([\s\S]*?)['"])?\s*/;
-    
+
     inline.link = replace(inline.link)
       ('inside', inline._inside)
       ('href', inline._href)
       ();
-    
+
     inline.reflink = replace(inline.reflink)
       ('inside', inline._inside)
       ();
-    
+
     /**
      * Normal Inline Grammar
      */
-    
+
     inline.normal = merge({}, inline);
-    
+
     /**
      * Pedantic Inline Grammar
      */
-    
+
     inline.pedantic = merge({}, inline.normal, {
       strong: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
       em: /^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/
     });
-    
+
     /**
      * GFM Inline Grammar
      */
-    
+
     inline.gfm = merge({}, inline.normal, {
       escape: replace(inline.escape)('])', '~|])')(),
       url: /^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/,
@@ -13366,32 +13366,32 @@
         ('|', '|https?://|')
         ()
     });
-    
+
     /**
      * GFM + Line Breaks Inline Grammar
      */
-    
+
     inline.breaks = merge({}, inline.gfm, {
       br: replace(inline.br)('{2,}', '*')(),
       text: replace(inline.gfm.text)('{2,}', '*')()
     });
-    
+
     /**
      * Inline Lexer & Compiler
      */
-    
+
     function InlineLexer(links, options) {
       this.options = options || marked.defaults;
       this.links = links;
       this.rules = inline.normal;
       this.renderer = this.options.renderer || new Renderer;
       this.renderer.options = this.options;
-    
+
       if (!this.links) {
         throw new
           Error('Tokens array requires a `links` property.');
       }
-    
+
       if (this.options.gfm) {
         if (this.options.breaks) {
           this.rules = inline.breaks;
@@ -13402,33 +13402,33 @@
         this.rules = inline.pedantic;
       }
     }
-    
+
     /**
      * Expose Inline Rules
      */
-    
+
     InlineLexer.rules = inline;
-    
+
     /**
      * Static Lexing/Compiling Method
      */
-    
+
     InlineLexer.output = function(src, links, options) {
       var inline = new InlineLexer(links, options);
       return inline.output(src);
     };
-    
+
     /**
      * Lexing/Compiling
      */
-    
+
     InlineLexer.prototype.output = function(src) {
       var out = ''
         , link
         , text
         , href
         , cap;
-    
+
       while (src) {
         // escape
         if (cap = this.rules.escape.exec(src)) {
@@ -13436,7 +13436,7 @@
           out += cap[1];
           continue;
         }
-    
+
         // autolink
         if (cap = this.rules.autolink.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13452,7 +13452,7 @@
           out += this.renderer.link(href, null, text);
           continue;
         }
-    
+
         // url (gfm)
         if (!this.inLink && (cap = this.rules.url.exec(src))) {
           src = src.substring(cap[0].length);
@@ -13461,7 +13461,7 @@
           out += this.renderer.link(href, null, text);
           continue;
         }
-    
+
         // tag
         if (cap = this.rules.tag.exec(src)) {
           if (!this.inLink && /^<a /i.test(cap[0])) {
@@ -13477,7 +13477,7 @@
             : cap[0]
           continue;
         }
-    
+
         // link
         if (cap = this.rules.link.exec(src)) {
           src = src.substring(cap[0].length);
@@ -13489,7 +13489,7 @@
           this.inLink = false;
           continue;
         }
-    
+
         // reflink, nolink
         if ((cap = this.rules.reflink.exec(src))
             || (cap = this.rules.nolink.exec(src))) {
@@ -13506,75 +13506,75 @@
           this.inLink = false;
           continue;
         }
-    
+
         // strong
         if (cap = this.rules.strong.exec(src)) {
           src = src.substring(cap[0].length);
           out += this.renderer.strong(this.output(cap[2] || cap[1]));
           continue;
         }
-    
+
         // em
         if (cap = this.rules.em.exec(src)) {
           src = src.substring(cap[0].length);
           out += this.renderer.em(this.output(cap[2] || cap[1]));
           continue;
         }
-    
+
         // code
         if (cap = this.rules.code.exec(src)) {
           src = src.substring(cap[0].length);
           out += this.renderer.codespan(escape(cap[2], true));
           continue;
         }
-    
+
         // br
         if (cap = this.rules.br.exec(src)) {
           src = src.substring(cap[0].length);
           out += this.renderer.br();
           continue;
         }
-    
+
         // del (gfm)
         if (cap = this.rules.del.exec(src)) {
           src = src.substring(cap[0].length);
           out += this.renderer.del(this.output(cap[1]));
           continue;
         }
-    
+
         // text
         if (cap = this.rules.text.exec(src)) {
           src = src.substring(cap[0].length);
           out += this.renderer.text(escape(this.smartypants(cap[0])));
           continue;
         }
-    
+
         if (src) {
           throw new
             Error('Infinite loop on byte: ' + src.charCodeAt(0));
         }
       }
-    
+
       return out;
     };
-    
+
     /**
      * Compile Link
      */
-    
+
     InlineLexer.prototype.outputLink = function(cap, link) {
       var href = escape(link.href)
         , title = link.title ? escape(link.title) : null;
-    
+
       return cap[0].charAt(0) !== '!'
         ? this.renderer.link(href, title, this.output(cap[1]))
         : this.renderer.image(href, title, escape(cap[1]));
     };
-    
+
     /**
      * Smartypants Transformations
      */
-    
+
     InlineLexer.prototype.smartypants = function(text) {
       if (!this.options.smartypants) return text;
       return text
@@ -13593,18 +13593,18 @@
         // ellipses
         .replace(/\.{3}/g, '\u2026');
     };
-    
+
     /**
      * Mangle Links
      */
-    
+
     InlineLexer.prototype.mangle = function(text) {
       if (!this.options.mangle) return text;
       var out = ''
         , l = text.length
         , i = 0
         , ch;
-    
+
       for (; i < l; i++) {
         ch = text.charCodeAt(i);
         if (Math.random() > 0.5) {
@@ -13612,18 +13612,18 @@
         }
         out += '&#' + ch + ';';
       }
-    
+
       return out;
     };
-    
+
     /**
      * Renderer
      */
-    
+
     function Renderer(options) {
       this.options = options || {};
     }
-    
+
     Renderer.prototype.code = function(code, lang, escaped) {
       if (this.options.highlight) {
         var out = this.options.highlight(code, lang);
@@ -13632,13 +13632,13 @@
           code = out;
         }
       }
-    
+
       if (!lang) {
         return '<pre><code>'
           + (escaped ? code : escape(code, true))
           + '\n</code></pre>';
       }
-    
+
       return '<pre><code class="'
         + this.options.langPrefix
         + escape(lang, true)
@@ -13646,15 +13646,15 @@
         + (escaped ? code : escape(code, true))
         + '\n</code></pre>\n';
     };
-    
+
     Renderer.prototype.blockquote = function(quote) {
       return '<blockquote>\n' + quote + '</blockquote>\n';
     };
-    
+
     Renderer.prototype.html = function(html) {
       return html;
     };
-    
+
     Renderer.prototype.heading = function(text, level, raw) {
       return '<h'
         + level
@@ -13667,24 +13667,24 @@
         + level
         + '>\n';
     };
-    
+
     Renderer.prototype.hr = function() {
       return this.options.xhtml ? '<hr/>\n' : '<hr>\n';
     };
-    
+
     Renderer.prototype.list = function(body, ordered) {
       var type = ordered ? 'ol' : 'ul';
       return '<' + type + '>\n' + body + '</' + type + '>\n';
     };
-    
+
     Renderer.prototype.listitem = function(text) {
       return '<li>' + text + '</li>\n';
     };
-    
+
     Renderer.prototype.paragraph = function(text) {
       return '<p>' + text + '</p>\n';
     };
-    
+
     Renderer.prototype.table = function(header, body) {
       return '<table>\n'
         + '<thead>\n'
@@ -13695,11 +13695,11 @@
         + '</tbody>\n'
         + '</table>\n';
     };
-    
+
     Renderer.prototype.tablerow = function(content) {
       return '<tr>\n' + content + '</tr>\n';
     };
-    
+
     Renderer.prototype.tablecell = function(content, flags) {
       var type = flags.header ? 'th' : 'td';
       var tag = flags.align
@@ -13707,28 +13707,28 @@
         : '<' + type + '>';
       return tag + content + '</' + type + '>\n';
     };
-    
+
     // span level renderer
     Renderer.prototype.strong = function(text) {
       return '<strong>' + text + '</strong>';
     };
-    
+
     Renderer.prototype.em = function(text) {
       return '<em>' + text + '</em>';
     };
-    
+
     Renderer.prototype.codespan = function(text) {
       return '<code>' + text + '</code>';
     };
-    
+
     Renderer.prototype.br = function() {
       return this.options.xhtml ? '<br/>' : '<br>';
     };
-    
+
     Renderer.prototype.del = function(text) {
       return '<del>' + text + '</del>';
     };
-    
+
     Renderer.prototype.link = function(href, title, text) {
       if (this.options.sanitize) {
         try {
@@ -13749,7 +13749,7 @@
       out += '>' + text + '</a>';
       return out;
     };
-    
+
     Renderer.prototype.image = function(href, title, text) {
       var out = '<img src="' + href + '" alt="' + text + '"';
       if (title) {
@@ -13758,15 +13758,15 @@
       out += this.options.xhtml ? '/>' : '>';
       return out;
     };
-    
+
     Renderer.prototype.text = function(text) {
       return text;
     };
-    
+
     /**
      * Parsing & Compiling
      */
-    
+
     function Parser(options) {
       this.tokens = [];
       this.token = null;
@@ -13775,66 +13775,66 @@
       this.renderer = this.options.renderer;
       this.renderer.options = this.options;
     }
-    
+
     /**
      * Static Parse Method
      */
-    
+
     Parser.parse = function(src, options, renderer) {
       var parser = new Parser(options, renderer);
       return parser.parse(src);
     };
-    
+
     /**
      * Parse Loop
      */
-    
+
     Parser.prototype.parse = function(src) {
       this.inline = new InlineLexer(src.links, this.options, this.renderer);
       this.tokens = src.reverse();
-    
+
       var out = '';
       while (this.next()) {
         out += this.tok();
       }
-    
+
       return out;
     };
-    
+
     /**
      * Next Token
      */
-    
+
     Parser.prototype.next = function() {
       return this.token = this.tokens.pop();
     };
-    
+
     /**
      * Preview Next Token
      */
-    
+
     Parser.prototype.peek = function() {
       return this.tokens[this.tokens.length - 1] || 0;
     };
-    
+
     /**
      * Parse Text Tokens
      */
-    
+
     Parser.prototype.parseText = function() {
       var body = this.token.text;
-    
+
       while (this.peek().type === 'text') {
         body += '\n' + this.next().text;
       }
-    
+
       return this.inline.output(body);
     };
-    
+
     /**
      * Parse Current Token
      */
-    
+
     Parser.prototype.tok = function() {
       switch (this.token.type) {
         case 'space': {
@@ -13862,7 +13862,7 @@
             , cell
             , flags
             , j;
-    
+
           // header
           cell = '';
           for (i = 0; i < this.token.header.length; i++) {
@@ -13873,10 +13873,10 @@
             );
           }
           header += this.renderer.tablerow(cell);
-    
+
           for (i = 0; i < this.token.cells.length; i++) {
             row = this.token.cells[i];
-    
+
             cell = '';
             for (j = 0; j < row.length; j++) {
               cell += this.renderer.tablecell(
@@ -13884,48 +13884,48 @@
                 { header: false, align: this.token.align[j] }
               );
             }
-    
+
             body += this.renderer.tablerow(cell);
           }
           return this.renderer.table(header, body);
         }
         case 'blockquote_start': {
           var body = '';
-    
+
           while (this.next().type !== 'blockquote_end') {
             body += this.tok();
           }
-    
+
           return this.renderer.blockquote(body);
         }
         case 'list_start': {
           var body = ''
             , ordered = this.token.ordered;
-    
+
           while (this.next().type !== 'list_end') {
             body += this.tok();
           }
-    
+
           return this.renderer.list(body, ordered);
         }
         case 'list_item_start': {
           var body = '';
-    
+
           while (this.next().type !== 'list_item_end') {
             body += this.token.type === 'text'
               ? this.parseText()
               : this.tok();
           }
-    
+
           return this.renderer.listitem(body);
         }
         case 'loose_item_start': {
           var body = '';
-    
+
           while (this.next().type !== 'list_item_end') {
             body += this.tok();
           }
-    
+
           return this.renderer.listitem(body);
         }
         case 'html': {
@@ -13942,11 +13942,11 @@
         }
       }
     };
-    
+
     /**
      * Helpers
      */
-    
+
     function escape(html, encode) {
       return html
         .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
@@ -13955,7 +13955,7 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
     }
-    
+
     function unescape(html) {
       return html.replace(/&([#\w]+);/g, function(_, n) {
         n = n.toLowerCase();
@@ -13968,7 +13968,7 @@
         return '';
       });
     }
-    
+
     function replace(regex, opt) {
       regex = regex.source;
       opt = opt || '';
@@ -13980,15 +13980,15 @@
         return self;
       };
     }
-    
+
     function noop() {}
     noop.exec = noop;
-    
+
     function merge(obj) {
       var i = 1
         , target
         , key;
-    
+
       for (; i < arguments.length; i++) {
         target = arguments[i];
         for (key in target) {
@@ -13997,66 +13997,66 @@
           }
         }
       }
-    
+
       return obj;
     }
-    
-    
+
+
     /**
      * Marked
      */
-    
+
     function marked(src, opt, callback) {
       if (callback || typeof opt === 'function') {
         if (!callback) {
           callback = opt;
           opt = null;
         }
-    
+
         opt = merge({}, marked.defaults, opt || {});
-    
+
         var highlight = opt.highlight
           , tokens
           , pending
           , i = 0;
-    
+
         try {
           tokens = Lexer.lex(src, opt)
         } catch (e) {
           return callback(e);
         }
-    
+
         pending = tokens.length;
-    
+
         var done = function(err) {
           if (err) {
             opt.highlight = highlight;
             return callback(err);
           }
-    
+
           var out;
-    
+
           try {
             out = Parser.parse(tokens, opt);
           } catch (e) {
             err = e;
           }
-    
+
           opt.highlight = highlight;
-    
+
           return err
             ? callback(err)
             : callback(null, out);
         };
-    
+
         if (!highlight || highlight.length < 3) {
           return done();
         }
-    
+
         delete opt.highlight;
-    
+
         if (!pending) return done();
-    
+
         for (; i < tokens.length; i++) {
           (function(token) {
             if (token.type !== 'code') {
@@ -14073,7 +14073,7 @@
             });
           })(tokens[i]);
         }
-    
+
         return;
       }
       try {
@@ -14089,17 +14089,17 @@
         throw e;
       }
     }
-    
+
     /**
      * Options
      */
-    
+
     marked.options =
     marked.setOptions = function(opt) {
       merge(marked.defaults, opt);
       return marked;
     };
-    
+
     marked.defaults = {
       gfm: true,
       tables: true,
@@ -14117,24 +14117,24 @@
       renderer: new Renderer,
       xhtml: false
     };
-    
+
     /**
      * Expose
      */
-    
+
     marked.Parser = Parser;
     marked.parser = Parser.parse;
-    
+
     marked.Renderer = Renderer;
-    
+
     marked.Lexer = Lexer;
     marked.lexer = Lexer.lex;
-    
+
     marked.InlineLexer = InlineLexer;
     marked.inlineLexer = InlineLexer.output;
-    
+
     marked.parse = marked;
-    
+
     if (typeof module !== 'undefined' && typeof exports === 'object') {
       module.exports = marked;
     } else if (typeof define === 'function' && define.amd) {
@@ -14142,21 +14142,21 @@
     } else {
       this.marked = marked;
     }
-    
+
     }).call(function() {
       return this || (typeof window !== 'undefined' ? window : global);
     }());
-    
+
     }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
     },{}],18:[function(require,module,exports){
     (function (Buffer,__dirname){
     'use strict';
-    
+
     /**
-     * Typo is a JavaScript implementation of a spellchecker using hunspell-style 
+     * Typo is a JavaScript implementation of a spellchecker using hunspell-style
      * dictionaries.
      */
-    
+
     /**
      * Typo constructor.
      *
@@ -14182,25 +14182,25 @@
      *
      * @returns {Typo} A Typo object.
      */
-    
+
     var Typo = function (dictionary, affData, wordsData, settings) {
         settings = settings || {};
-        
+
         this.dictionary = null;
-        
+
         this.rules = {};
         this.dictionaryTable = {};
-        
+
         this.compoundRules = [];
         this.compoundRuleCodes = {};
-        
+
         this.replacementTable = [];
-        
-        this.flags = settings.flags || {}; 
-        
+
+        this.flags = settings.flags || {};
+
         if (dictionary) {
             this.dictionary = dictionary;
-            
+
             if (typeof window !== 'undefined' && 'chrome' in window && 'extension' in window.chrome && 'getURL' in window.chrome.extension) {
                 if (!affData) affData = this._readFile(chrome.extension.getURL("lib/typo/dictionaries/" + dictionary + "/" + dictionary + ".aff"));
                 if (!wordsData) wordsData = this._readFile(chrome.extension.getURL("lib/typo/dictionaries/" + dictionary + "/" + dictionary + ".dic"));
@@ -14214,51 +14214,51 @@
                 else {
                     var path = './dictionaries';
                 }
-                
+
                 if (!affData) affData = this._readFile(path + "/" + dictionary + "/" + dictionary + ".aff");
                 if (!wordsData) wordsData = this._readFile(path + "/" + dictionary + "/" + dictionary + ".dic");
             }
-            
+
             this.rules = this._parseAFF(affData);
-            
+
             // Save the rule codes that are used in compound rules.
             this.compoundRuleCodes = {};
-            
+
             for (var i = 0, _len = this.compoundRules.length; i < _len; i++) {
                 var rule = this.compoundRules[i];
-                
+
                 for (var j = 0, _jlen = rule.length; j < _jlen; j++) {
                     this.compoundRuleCodes[rule[j]] = [];
                 }
             }
-            
+
             // If we add this ONLYINCOMPOUND flag to this.compoundRuleCodes, then _parseDIC
             // will do the work of saving the list of words that are compound-only.
             if ("ONLYINCOMPOUND" in this.flags) {
                 this.compoundRuleCodes[this.flags.ONLYINCOMPOUND] = [];
             }
-            
+
             this.dictionaryTable = this._parseDIC(wordsData);
-            
-            // Get rid of any codes from the compound rule codes that are never used 
-            // (or that were special regex characters).  Not especially necessary... 
+
+            // Get rid of any codes from the compound rule codes that are never used
+            // (or that were special regex characters).  Not especially necessary...
             for (var i in this.compoundRuleCodes) {
                 if (this.compoundRuleCodes[i].length == 0) {
                     delete this.compoundRuleCodes[i];
                 }
             }
-            
+
             // Build the full regular expressions for each compound rule.
-            // I have a feeling (but no confirmation yet) that this method of 
+            // I have a feeling (but no confirmation yet) that this method of
             // testing for compound words is probably slow.
             for (var i = 0, _len = this.compoundRules.length; i < _len; i++) {
                 var ruleText = this.compoundRules[i];
-                
+
                 var expressionText = "";
-                
+
                 for (var j = 0, _jlen = ruleText.length; j < _jlen; j++) {
                     var character = ruleText[j];
-                    
+
                     if (character in this.compoundRuleCodes) {
                         expressionText += "(" + this.compoundRuleCodes[character].join("|") + ")";
                     }
@@ -14266,65 +14266,65 @@
                         expressionText += character;
                     }
                 }
-                
+
                 this.compoundRules[i] = new RegExp(expressionText, "i");
             }
         }
-        
+
         return this;
     };
-    
+
     Typo.prototype = {
         /**
          * Loads a Typo instance from a hash of all of the Typo properties.
          *
          * @param object obj A hash of Typo properties, probably gotten from a JSON.parse(JSON.stringify(typo_instance)).
          */
-        
+
         load : function (obj) {
             for (var i in obj) {
                 this[i] = obj[i];
             }
-            
+
             return this;
         },
-        
+
         /**
          * Read the contents of a file.
-         * 
+         *
          * @param {String} path The path (relative) to the file.
          * @param {String} [charset="ISO8859-1"] The expected charset of the file
          * @returns string The file data.
          */
-        
+
         _readFile : function (path, charset) {
             if (!charset) charset = "utf8";
-            
+
             if (typeof XMLHttpRequest !== 'undefined') {
                 var req = new XMLHttpRequest();
                 req.open("GET", path, false);
-            
+
                 if (req.overrideMimeType)
                     req.overrideMimeType("text/plain; charset=" + charset);
-            
+
                 req.send(null);
-                
+
                 return req.responseText;
             }
             else if (typeof require !== 'undefined') {
                 // Node.js
                 var fs = require("fs");
-                
+
                 try {
                     if (fs.existsSync(path)) {
                         var stats = fs.statSync(path);
-                        
+
                         var fileDescriptor = fs.openSync(path, 'r');
-                        
+
                         var buffer = new Buffer(stats.size);
-                        
+
                         fs.readSync(fileDescriptor, buffer, 0, buffer.length, null);
-                        
+
                         return buffer.toString(charset, 0, buffer.length);
                     }
                     else {
@@ -14336,56 +14336,56 @@
                 }
             }
         },
-        
+
         /**
          * Parse the rules out from a .aff file.
          *
          * @param {String} data The contents of the affix file.
          * @returns object The rules from the file.
          */
-        
+
         _parseAFF : function (data) {
             var rules = {};
-            
+
             // Remove comment lines
             data = this._removeAffixComments(data);
-            
+
             var lines = data.split("\n");
-            
+
             for (var i = 0, _len = lines.length; i < _len; i++) {
                 var line = lines[i];
-                
+
                 var definitionParts = line.split(/\s+/);
-                
+
                 var ruleType = definitionParts[0];
-                
+
                 if (ruleType == "PFX" || ruleType == "SFX") {
                     var ruleCode = definitionParts[1];
                     var combineable = definitionParts[2];
                     var numEntries = parseInt(definitionParts[3], 10);
-                    
+
                     var entries = [];
-                    
+
                     for (var j = i + 1, _jlen = i + 1 + numEntries; j < _jlen; j++) {
                         var line = lines[j];
-                        
+
                         var lineParts = line.split(/\s+/);
                         var charactersToRemove = lineParts[2];
-                        
+
                         var additionParts = lineParts[3].split("/");
-                        
+
                         var charactersToAdd = additionParts[0];
                         if (charactersToAdd === "0") charactersToAdd = "";
-                        
+
                         var continuationClasses = this.parseRuleCodes(additionParts[1]);
-                        
+
                         var regexToMatch = lineParts[4];
-                        
+
                         var entry = {};
                         entry.add = charactersToAdd;
-                        
+
                         if (continuationClasses.length > 0) entry.continuationClasses = continuationClasses;
-                        
+
                         if (regexToMatch !== ".") {
                             if (ruleType === "SFX") {
                                 entry.match = new RegExp(regexToMatch + "$");
@@ -14394,7 +14394,7 @@
                                 entry.match = new RegExp("^" + regexToMatch);
                             }
                         }
-                        
+
                         if (charactersToRemove != "0") {
                             if (ruleType === "SFX") {
                                 entry.remove = new RegExp(charactersToRemove  + "$");
@@ -14403,29 +14403,29 @@
                                 entry.remove = charactersToRemove;
                             }
                         }
-                        
+
                         entries.push(entry);
                     }
-                    
+
                     rules[ruleCode] = { "type" : ruleType, "combineable" : (combineable == "Y"), "entries" : entries };
-                    
+
                     i += numEntries;
                 }
                 else if (ruleType === "COMPOUNDRULE") {
                     var numEntries = parseInt(definitionParts[1], 10);
-                    
+
                     for (var j = i + 1, _jlen = i + 1 + numEntries; j < _jlen; j++) {
                         var line = lines[j];
-                        
+
                         var lineParts = line.split(/\s+/);
                         this.compoundRules.push(lineParts[1]);
                     }
-                    
+
                     i += numEntries;
                 }
                 else if (ruleType === "REP") {
                     var lineParts = line.split(/\s+/);
-                    
+
                     if (lineParts.length === 3) {
                         this.replacementTable.push([ lineParts[1], lineParts[2] ]);
                     }
@@ -14436,37 +14436,37 @@
                     // FLAG
                     // KEEPCASE
                     // NEEDAFFIX
-                    
+
                     this.flags[ruleType] = definitionParts[1];
                 }
             }
-            
+
             return rules;
         },
-        
+
         /**
          * Removes comment lines and then cleans up blank lines and trailing whitespace.
          *
          * @param {String} data The data from an affix file.
          * @return {String} The cleaned-up data.
          */
-        
+
         _removeAffixComments : function (data) {
             // Remove comments
             data = data.replace(/#.*$/mg, "");
-            
+
             // Trim each line
             data = data.replace(/^\s\s*/m, '').replace(/\s\s*$/m, '');
-            
+
             // Remove blank lines.
             data = data.replace(/\n{2,}/g, "\n");
-            
+
             // Trim the entire string
             data = data.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-            
+
             return data;
         },
-        
+
         /**
          * Parses the words out from the .dic file.
          *
@@ -14474,62 +14474,62 @@
          * @returns object The lookup table containing all of the words and
          *                 word forms from the dictionary.
          */
-        
+
         _parseDIC : function (data) {
             data = this._removeDicComments(data);
-            
+
             var lines = data.split("\n");
             var dictionaryTable = {};
-            
+
             function addWord(word, rules) {
                 // Some dictionaries will list the same word multiple times with different rule sets.
                 if (!(word in dictionaryTable) || typeof dictionaryTable[word] != 'object') {
                     dictionaryTable[word] = [];
                 }
-                
+
                 dictionaryTable[word].push(rules);
             }
-            
+
             // The first line is the number of words in the dictionary.
             for (var i = 1, _len = lines.length; i < _len; i++) {
                 var line = lines[i];
-                
+
                 var parts = line.split("/", 2);
-                
+
                 var word = parts[0];
-    
+
                 // Now for each affix rule, generate that form of the word.
                 if (parts.length > 1) {
                     var ruleCodesArray = this.parseRuleCodes(parts[1]);
-                    
+
                     // Save the ruleCodes for compound word situations.
                     if (!("NEEDAFFIX" in this.flags) || ruleCodesArray.indexOf(this.flags.NEEDAFFIX) == -1) {
                         addWord(word, ruleCodesArray);
                     }
-                    
+
                     for (var j = 0, _jlen = ruleCodesArray.length; j < _jlen; j++) {
                         var code = ruleCodesArray[j];
-                        
+
                         var rule = this.rules[code];
-                        
+
                         if (rule) {
                             var newWords = this._applyRule(word, rule);
-                            
+
                             for (var ii = 0, _iilen = newWords.length; ii < _iilen; ii++) {
                                 var newWord = newWords[ii];
-                                
+
                                 addWord(newWord, []);
-                                
+
                                 if (rule.combineable) {
                                     for (var k = j + 1; k < _jlen; k++) {
                                         var combineCode = ruleCodesArray[k];
-                                        
+
                                         var combineRule = this.rules[combineCode];
-                                        
+
                                         if (combineRule) {
                                             if (combineRule.combineable && (rule.type != combineRule.type)) {
                                                 var otherNewWords = this._applyRule(newWord, combineRule);
-                                                
+
                                                 for (var iii = 0, _iiilen = otherNewWords.length; iii < _iiilen; iii++) {
                                                     var otherNewWord = otherNewWords[iii];
                                                     addWord(otherNewWord, []);
@@ -14540,7 +14540,7 @@
                                 }
                             }
                         }
-                        
+
                         if (code in this.compoundRuleCodes) {
                             this.compoundRuleCodes[code].push(word);
                         }
@@ -14550,28 +14550,28 @@
                     addWord(word.trim(), []);
                 }
             }
-            
+
             return dictionaryTable;
         },
-        
-        
+
+
         /**
          * Removes comment lines and then cleans up blank lines and trailing whitespace.
          *
          * @param {String} data The data from a .dic file.
          * @return {String} The cleaned-up data.
          */
-        
+
         _removeDicComments : function (data) {
             // I can't find any official documentation on it, but at least the de_DE
             // dictionary uses tab-indented lines as comments.
-            
+
             // Remove comments
             data = data.replace(/^\t.*$/mg, "");
-            
+
             return data;
         },
-        
+
         parseRuleCodes : function (textCodes) {
             if (!textCodes) {
                 return [];
@@ -14581,18 +14581,18 @@
             }
             else if (this.flags.FLAG === "long") {
                 var flags = [];
-                
+
                 for (var i = 0, _len = textCodes.length; i < _len; i += 2) {
                     flags.push(textCodes.substr(i, 2));
                 }
-                
+
                 return flags;
             }
             else if (this.flags.FLAG === "num") {
                 return textCode.split(",");
             }
         },
-        
+
         /**
          * Applies an affix rule to a word.
          *
@@ -14600,41 +14600,41 @@
          * @param {Object} rule The affix rule.
          * @returns {String[]} The new words generated by the rule.
          */
-        
+
         _applyRule : function (word, rule) {
             var entries = rule.entries;
             var newWords = [];
-            
+
             for (var i = 0, _len = entries.length; i < _len; i++) {
                 var entry = entries[i];
-                
+
                 if (!entry.match || word.match(entry.match)) {
                     var newWord = word;
-                    
+
                     if (entry.remove) {
                         newWord = newWord.replace(entry.remove, "");
                     }
-                    
+
                     if (rule.type === "SFX") {
                         newWord = newWord + entry.add;
                     }
                     else {
                         newWord = entry.add + newWord;
                     }
-                    
+
                     newWords.push(newWord);
-                    
+
                     if ("continuationClasses" in entry) {
                         for (var j = 0, _jlen = entry.continuationClasses.length; j < _jlen; j++) {
                             var continuationRule = this.rules[entry.continuationClasses[j]];
-                            
+
                             if (continuationRule) {
                                 newWords = newWords.concat(this._applyRule(newWord, continuationRule));
                             }
                             /*
                             else {
                                 // This shouldn't happen, but it does, at least in the de_DE dictionary.
-                                // I think the author mistakenly supplied lower-case rule codes instead 
+                                // I think the author mistakenly supplied lower-case rule codes instead
                                 // of upper-case.
                             }
                             */
@@ -14642,10 +14642,10 @@
                     }
                 }
             }
-            
+
             return newWords;
         },
-        
+
         /**
          * Checks whether a word or a capitalization variant exists in the current dictionary.
          * The word is trimmed and several variations of capitalizations are checked.
@@ -14656,58 +14656,58 @@
          * @param {String} aWord The word to check.
          * @returns {Boolean}
          */
-        
+
         check : function (aWord) {
             // Remove leading and trailing whitespace
             var trimmedWord = aWord.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-            
+
             if (this.checkExact(trimmedWord)) {
                 return true;
             }
-            
+
             // The exact word is not in the dictionary.
             if (trimmedWord.toUpperCase() === trimmedWord) {
                 // The word was supplied in all uppercase.
                 // Check for a capitalized form of the word.
                 var capitalizedWord = trimmedWord[0] + trimmedWord.substring(1).toLowerCase();
-                
+
                 if (this.hasFlag(capitalizedWord, "KEEPCASE")) {
                     // Capitalization variants are not allowed for this word.
                     return false;
                 }
-                
+
                 if (this.checkExact(capitalizedWord)) {
                     return true;
                 }
             }
-            
+
             var lowercaseWord = trimmedWord.toLowerCase();
-            
+
             if (lowercaseWord !== trimmedWord) {
                 if (this.hasFlag(lowercaseWord, "KEEPCASE")) {
                     // Capitalization variants are not allowed for this word.
                     return false;
                 }
-                
+
                 // Check for a lowercase form
                 if (this.checkExact(lowercaseWord)) {
                     return true;
                 }
             }
-            
+
             return false;
         },
-        
+
         /**
          * Checks whether a word exists in the current dictionary.
          *
          * @param {String} word The word to check.
          * @returns {Boolean}
          */
-        
+
         checkExact : function (word) {
             var ruleCodes = this.dictionaryTable[word];
-            
+
             if (typeof ruleCodes === 'undefined') {
                 // Check if this might be a compound word.
                 if ("COMPOUNDMIN" in this.flags && word.length >= this.flags.COMPOUNDMIN) {
@@ -14717,7 +14717,7 @@
                         }
                     }
                 }
-                
+
                 return false;
             }
             else if (typeof ruleCodes === 'object') { // this.dictionary['hasOwnProperty'] will be a function.
@@ -14726,11 +14726,11 @@
                         return true;
                     }
                 }
-                
+
                 return false;
             }
         },
-        
+
         /**
          * Looks up whether a given word is flagged with a given flag.
          *
@@ -14738,21 +14738,21 @@
          * @param {String} flag The flag in question.
          * @return {Boolean}
          */
-         
+
         hasFlag : function (word, flag, wordFlags) {
             if (flag in this.flags) {
                 if (typeof wordFlags === 'undefined') {
                     var wordFlags = Array.prototype.concat.apply([], this.dictionaryTable[word]);
                 }
-                
+
                 if (wordFlags && wordFlags.indexOf(this.flags[flag]) !== -1) {
                     return true;
                 }
             }
-            
+
             return false;
         },
-        
+
         /**
          * Returns a list of suggestions for a misspelled word.
          *
@@ -14763,138 +14763,138 @@
          * @param {Number} [limit=5] The maximum number of suggestions to return.
          * @returns {String[]} The array of suggestions.
          */
-        
+
         alphabet : "",
-        
+
         suggest : function (word, limit) {
             if (!limit) limit = 5;
-            
+
             if (this.check(word)) return [];
-            
+
             // Check the replacement table.
             for (var i = 0, _len = this.replacementTable.length; i < _len; i++) {
                 var replacementEntry = this.replacementTable[i];
-                
+
                 if (word.indexOf(replacementEntry[0]) !== -1) {
                     var correctedWord = word.replace(replacementEntry[0], replacementEntry[1]);
-                    
+
                     if (this.check(correctedWord)) {
                         return [ correctedWord ];
                     }
                 }
             }
-            
+
             var self = this;
             self.alphabet = "abcdefghijklmnopqrstuvwxyz";
-            
+
             /*
             if (!self.alphabet) {
                 // Use the alphabet as implicitly defined by the words in the dictionary.
                 var alphaHash = {};
-                
+
                 for (var i in self.dictionaryTable) {
                     for (var j = 0, _len = i.length; j < _len; j++) {
                         alphaHash[i[j]] = true;
                     }
                 }
-                
+
                 for (var i in alphaHash) {
                     self.alphabet += i;
                 }
-                
+
                 var alphaArray = self.alphabet.split("");
                 alphaArray.sort();
                 self.alphabet = alphaArray.join("");
             }
             */
-            
+
             function edits1(words) {
                 var rv = [];
-                
+
                 for (var ii = 0, _iilen = words.length; ii < _iilen; ii++) {
                     var word = words[ii];
-                    
+
                     var splits = [];
-                
+
                     for (var i = 0, _len = word.length + 1; i < _len; i++) {
                         splits.push([ word.substring(0, i), word.substring(i, word.length) ]);
                     }
-                
+
                     var deletes = [];
-                
+
                     for (var i = 0, _len = splits.length; i < _len; i++) {
                         var s = splits[i];
-                    
+
                         if (s[1]) {
                             deletes.push(s[0] + s[1].substring(1));
                         }
                     }
-                
+
                     var transposes = [];
-                
+
                     for (var i = 0, _len = splits.length; i < _len; i++) {
                         var s = splits[i];
-                    
+
                         if (s[1].length > 1) {
                             transposes.push(s[0] + s[1][1] + s[1][0] + s[1].substring(2));
                         }
                     }
-                
+
                     var replaces = [];
-                
+
                     for (var i = 0, _len = splits.length; i < _len; i++) {
                         var s = splits[i];
-                    
+
                         if (s[1]) {
                             for (var j = 0, _jlen = self.alphabet.length; j < _jlen; j++) {
                                 replaces.push(s[0] + self.alphabet[j] + s[1].substring(1));
                             }
                         }
                     }
-                
+
                     var inserts = [];
-                
+
                     for (var i = 0, _len = splits.length; i < _len; i++) {
                         var s = splits[i];
-                    
+
                         if (s[1]) {
                             for (var j = 0, _jlen = self.alphabet.length; j < _jlen; j++) {
                                 replaces.push(s[0] + self.alphabet[j] + s[1]);
                             }
                         }
                     }
-                
+
                     rv = rv.concat(deletes);
                     rv = rv.concat(transposes);
                     rv = rv.concat(replaces);
                     rv = rv.concat(inserts);
                 }
-                
+
                 return rv;
             }
-            
+
             function known(words) {
                 var rv = [];
-                
+
                 for (var i = 0; i < words.length; i++) {
                     if (self.check(words[i])) {
                         rv.push(words[i]);
                     }
                 }
-                
+
                 return rv;
             }
-            
+
             function correct(word) {
                 // Get the edit-distance-1 and edit-distance-2 forms of this word.
                 var ed1 = edits1([word]);
                 var ed2 = edits1(ed1);
-                
+
                 var corrections = known(ed1).concat(known(ed2));
-                
+
                 // Sort the edits based on how many different ways they were created.
                 var weighted_corrections = {};
-                
+
                 for (var i = 0, _len = corrections.length; i < _len; i++) {
                     if (!(corrections[i] in weighted_corrections)) {
                         weighted_corrections[corrections[i]] = 1;
@@ -14903,38 +14903,38 @@
                         weighted_corrections[corrections[i]] += 1;
                     }
                 }
-                
+
                 var sorted_corrections = [];
-                
+
                 for (var i in weighted_corrections) {
                     sorted_corrections.push([ i, weighted_corrections[i] ]);
                 }
-                
+
                 function sorter(a, b) {
                     if (a[1] < b[1]) {
                         return -1;
                     }
-                    
+
                     return 1;
                 }
-                
+
                 sorted_corrections.sort(sorter).reverse();
-                
+
                 var rv = [];
-                
+
                 for (var i = 0, _len = Math.min(limit, sorted_corrections.length); i < _len; i++) {
                     if (!self.hasFlag(sorted_corrections[i][0], "NOSUGGEST")) {
                         rv.push(sorted_corrections[i][0]);
                     }
                 }
-                
+
                 return rv;
             }
-            
+
             return correct(word);
         }
     };
-    
+
     // Support for use as a node.js module.
     if (typeof module !== 'undefined') {
         module.exports = Typo;
@@ -14943,20 +14943,20 @@
     },{"buffer":3,"fs":2}],19:[function(require,module,exports){
     // CodeMirror, copyright (c) by Marijn Haverbeke and others
     // Distributed under an MIT license: http://codemirror.net/LICENSE
-    
+
     var CodeMirror = require("codemirror");
-    
+
     CodeMirror.commands.tabAndIndentMarkdownList = function (cm) {
         var ranges = cm.listSelections();
         var pos = ranges[0].head;
         var eolState = cm.getStateAfter(pos.line);
         var inList = eolState.list !== false;
-    
+
         if (inList) {
             cm.execCommand("indentMore");
             return;
         }
-    
+
         if (cm.options.indentWithTabs) {
             cm.execCommand("insertTab");
         }
@@ -14965,18 +14965,18 @@
             cm.replaceSelection(spaces);
         }
     };
-    
+
     CodeMirror.commands.shiftTabAndUnindentMarkdownList = function (cm) {
         var ranges = cm.listSelections();
         var pos = ranges[0].head;
         var eolState = cm.getStateAfter(pos.line);
         var inList = eolState.list !== false;
-    
+
         if (inList) {
             cm.execCommand("indentLess");
             return;
         }
-    
+
         if (cm.options.indentWithTabs) {
             cm.execCommand("insertTab");
         }
@@ -14985,7 +14985,7 @@
             cm.replaceSelection(spaces);
         }
     };
-    
+
     },{"codemirror":10}],20:[function(require,module,exports){
     /*global require,module*/
     "use strict";
@@ -15001,11 +15001,11 @@
     require("codemirror/mode/xml/xml.js");
     var CodeMirrorSpellChecker = require("codemirror-spell-checker");
     var marked = require("marked");
-    
-    
+
+
     // Some variables
     var isMac = /Mac/.test(navigator.platform);
-    
+
     // Mapping of actions that can be bound to keyboard shortcuts or toolbar buttons
     var bindings = {
         "toggleBold": toggleBold,
@@ -15031,7 +15031,7 @@
         "toggleSideBySide": toggleSideBySide,
         "toggleFullScreen": toggleFullScreen
     };
-    
+
     var shortcuts = {
         "toggleBold": "Cmd-B",
         "toggleItalic": "Cmd-I",
@@ -15048,7 +15048,7 @@
         "toggleSideBySide": "F9",
         "toggleFullScreen": "F11"
     };
-    
+
     var getBindingName = function(f) {
         for(var key in bindings) {
             if(bindings[key] === f) {
@@ -15057,7 +15057,7 @@
         }
         return null;
     };
-    
+
     var isMobile = function() {
         var check = false;
         (function(a) {
@@ -15065,8 +15065,8 @@
         })(navigator.userAgent || navigator.vendor || window.opera);
         return check;
     };
-    
-    
+
+
     /**
      * Fix shortcut. Mac use Command, others use Ctrl.
      */
@@ -15078,8 +15078,8 @@
         }
         return name;
     }
-    
-    
+
+
     /**
      * Create icon element for toolbar.
      */
@@ -15087,42 +15087,42 @@
         options = options || {};
         var el = document.createElement("a");
         enableTooltips = (enableTooltips == undefined) ? true : enableTooltips;
-    
+
         if(options.title && enableTooltips) {
             el.title = createTootlip(options.title, options.action, shortcuts);
-    
+
             if(isMac) {
                 el.title = el.title.replace("Ctrl", "⌘");
                 el.title = el.title.replace("Alt", "⌥");
             }
         }
-    
+
         el.tabIndex = -1;
         el.className = options.className;
         return el;
     }
-    
+
     function createSep() {
         var el = document.createElement("i");
         el.className = "separator";
         el.innerHTML = "|";
         return el;
     }
-    
+
     function createTootlip(title, action, shortcuts) {
         var actionName;
         var tooltip = title;
-    
+
         if(action) {
             actionName = getBindingName(action);
             if(shortcuts[actionName]) {
                 tooltip += " (" + fixShortcut(shortcuts[actionName]) + ")";
             }
         }
-    
+
         return tooltip;
     }
-    
+
     /**
      * The state of CodeMirror at the given position.
      */
@@ -15130,9 +15130,9 @@
         pos = pos || cm.getCursor("start");
         var stat = cm.getTokenAt(pos);
         if(!stat.type) return {};
-    
+
         var types = stat.type.split(" ");
-    
+
         var ret = {},
             data, text;
         for(var i = 0; i < types.length; i++) {
@@ -15166,11 +15166,11 @@
         }
         return ret;
     }
-    
-    
+
+
     // Saved overflow setting
     var saved_overflow = "";
-    
+
     /**
      * Toggle full screen of the editor.
      */
@@ -15178,8 +15178,8 @@
         // Set fullscreen
         var cm = editor.codemirror;
         cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-    
-    
+
+
         // Prevent scrolling on body during fullscreen active
         if(cm.getOption("fullScreen")) {
             saved_overflow = document.body.style.overflow;
@@ -15187,64 +15187,64 @@
         } else {
             document.body.style.overflow = saved_overflow;
         }
-    
-    
+
+
         // Update toolbar class
         var wrap = cm.getWrapperElement();
-    
+
         if(!/fullscreen/.test(wrap.previousSibling.className)) {
             wrap.previousSibling.className += " fullscreen";
         } else {
             wrap.previousSibling.className = wrap.previousSibling.className.replace(/\s*fullscreen\b/, "");
         }
-    
-    
+
+
         // Update toolbar button
         var toolbarButton = editor.toolbarElements.fullscreen;
-    
+
         if(!/active/.test(toolbarButton.className)) {
             toolbarButton.className += " active";
         } else {
             toolbarButton.className = toolbarButton.className.replace(/\s*active\s*/g, "");
         }
-    
-    
+
+
         // Hide side by side if needed
         var sidebyside = cm.getWrapperElement().nextSibling;
         if(/editor-preview-active-side/.test(sidebyside.className))
             toggleSideBySide(editor);
     }
-    
-    
+
+
     /**
      * Action for toggling bold.
      */
     function toggleBold(editor) {
         _toggleBlock(editor, "bold", editor.options.blockStyles.bold);
     }
-    
-    
+
+
     /**
      * Action for toggling italic.
      */
     function toggleItalic(editor) {
         _toggleBlock(editor, "italic", editor.options.blockStyles.italic);
     }
-    
-    
+
+
     /**
      * Action for toggling strikethrough.
      */
     function toggleStrikethrough(editor) {
         _toggleBlock(editor, "strikethrough", "~~");
     }
-    
+
     /**
      * Action for toggling code block.
      */
     function toggleCodeBlock(editor) {
         var fenceCharsToInsert = editor.options.blockStyles.code;
-    
+
         function fencing_line(line) {
             /* return true, if this is a ``` or ~~~ line */
             if(typeof line !== "object") {
@@ -15252,12 +15252,12 @@
             }
             return line.styles && line.styles[2] && line.styles[2].indexOf("formatting-code-block") !== -1;
         }
-    
+
         function token_state(token) {
             // base goes an extra level deep when mode backdrops are used, e.g. spellchecker on
             return token.state.base.base || token.state.base;
         }
-    
+
         function code_type(cm, line_num, line, firstTok, lastTok) {
             /*
              * Return "single", "indented", "fenced" or false
@@ -15287,7 +15287,7 @@
                 return "single";
             }
         }
-    
+
         function insertFencingAtSelection(cm, cur_start, cur_end, fenceCharsToInsert) {
             var start_line_sel = cur_start.line + 1,
                 end_line_sel = cur_end.line + 1,
@@ -15311,7 +15311,7 @@
                 ch: 0
             });
         }
-    
+
         var cm = editor.codemirror,
             cur_start = cm.getCursor("start"),
             cur_end = cm.getCursor("end"),
@@ -15322,7 +15322,7 @@
             line = cm.getLineHandle(cur_start.line),
             is_code = code_type(cm, cur_start.line, line, tok);
         var block_start, block_end, lineCount;
-    
+
         if(is_code === "single") {
             // similar to some SimpleMDE _toggleBlock logic
             var start = line.text.slice(0, cur_start.ch).replace("`", ""),
@@ -15343,7 +15343,7 @@
         } else if(is_code === "fenced") {
             if(cur_start.line !== cur_end.line || cur_start.ch !== cur_end.ch) {
                 // use selection
-    
+
                 // find the fenced line so we know what type it is (tilde, backticks, number of them)
                 for(block_start = cur_start.line; block_start >= 0; block_start--) {
                     line = cm.getLineHandle(block_start);
@@ -15508,7 +15508,7 @@
                     ch: 0
                 });
             }
-    
+
             for(var i = block_start; i <= block_end; i++) {
                 cm.indentLine(i, "subtract"); // TODO: this doesn't get tracked in the history, so can't be undone :(
             }
@@ -15524,7 +15524,7 @@
             }
         }
     }
-    
+
     /**
      * Action for toggling blockquote.
      */
@@ -15532,7 +15532,7 @@
         var cm = editor.codemirror;
         _toggleLine(cm, "quote");
     }
-    
+
     /**
      * Action for toggling heading size: normal -> h1 -> h2 -> h3 -> h4 -> h5 -> h6 -> normal
      */
@@ -15540,7 +15540,7 @@
         var cm = editor.codemirror;
         _toggleHeading(cm, "smaller");
     }
-    
+
     /**
      * Action for toggling heading size: normal -> h6 -> h5 -> h4 -> h3 -> h2 -> h1 -> normal
      */
@@ -15548,7 +15548,7 @@
         var cm = editor.codemirror;
         _toggleHeading(cm, "bigger");
     }
-    
+
     /**
      * Action for toggling heading size 1
      */
@@ -15556,7 +15556,7 @@
         var cm = editor.codemirror;
         _toggleHeading(cm, undefined, 1);
     }
-    
+
     /**
      * Action for toggling heading size 2
      */
@@ -15564,7 +15564,7 @@
         var cm = editor.codemirror;
         _toggleHeading(cm, undefined, 2);
     }
-    
+
     /**
      * Action for toggling heading size 3
      */
@@ -15572,8 +15572,8 @@
         var cm = editor.codemirror;
         _toggleHeading(cm, undefined, 3);
     }
-    
-    
+
+
     /**
      * Action for toggling ul.
      */
@@ -15581,8 +15581,8 @@
         var cm = editor.codemirror;
         _toggleLine(cm, "unordered-list");
     }
-    
-    
+
+
     /**
      * Action for toggling ol.
      */
@@ -15590,7 +15590,7 @@
         var cm = editor.codemirror;
         _toggleLine(cm, "ordered-list");
     }
-    
+
     /**
      * Action for clean block (remove headline, list, blockquote code, markers)
      */
@@ -15598,7 +15598,7 @@
         var cm = editor.codemirror;
         _cleanBlock(cm);
     }
-    
+
     /**
      * Action for drawing a link.
      */
@@ -15615,7 +15615,7 @@
         }
         _replaceSelection(cm, stat.link, options.insertTexts.link, url);
     }
-    
+
     /**
      * Action for drawing an img.
      */
@@ -15632,7 +15632,7 @@
         }
         _replaceSelection(cm, stat.image, options.insertTexts.image, url);
     }
-    
+
     /**
      * Action for drawing a table.
      */
@@ -15642,7 +15642,7 @@
         var options = editor.options;
         _replaceSelection(cm, stat.table, options.insertTexts.table);
     }
-    
+
     /**
      * Action for drawing a horizontal rule.
      */
@@ -15652,8 +15652,8 @@
         var options = editor.options;
         _replaceSelection(cm, stat.image, options.insertTexts.horizontalRule);
     }
-    
-    
+
+
     /**
      * Undo action.
      */
@@ -15662,8 +15662,8 @@
         cm.undo();
         cm.focus();
     }
-    
-    
+
+
     /**
      * Redo action.
      */
@@ -15672,8 +15672,8 @@
         cm.redo();
         cm.focus();
     }
-    
-    
+
+
     /**
      * Toggle side by side preview
      */
@@ -15702,7 +15702,7 @@
             wrapper.className += " CodeMirror-sided";
             useSideBySideListener = true;
         }
-    
+
         // Hide normal preview if active
         var previewNormal = wrapper.lastChild;
         if(/editor-preview-active/.test(previewNormal.className)) {
@@ -15714,27 +15714,27 @@
             toolbar.className = toolbar.className.replace(/\s*active\s*/g, "");
             toolbar_div.className = toolbar_div.className.replace(/\s*disabled-for-preview*/g, "");
         }
-    
+
         var sideBySideRenderingFunction = function() {
             preview.innerHTML = editor.options.previewRender(editor.value(), preview);
         };
-    
+
         if(!cm.sideBySideRenderingFunction) {
             cm.sideBySideRenderingFunction = sideBySideRenderingFunction;
         }
-    
+
         if(useSideBySideListener) {
             preview.innerHTML = editor.options.previewRender(editor.value(), preview);
             cm.on("update", cm.sideBySideRenderingFunction);
         } else {
             cm.off("update", cm.sideBySideRenderingFunction);
         }
-    
+
         // Refresh to fix selection being off (#309)
         cm.refresh();
     }
-    
-    
+
+
     /**
      * Preview action.
      */
@@ -15770,17 +15770,17 @@
             }
         }
         preview.innerHTML = editor.options.previewRender(editor.value(), preview);
-    
+
         // Turn off side by side if needed
         var sidebyside = cm.getWrapperElement().nextSibling;
         if(/editor-preview-active-side/.test(sidebyside.className))
             toggleSideBySide(editor);
     }
-    
+
     function _replaceSelection(cm, active, startEnd, url) {
         if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
             return;
-    
+
         var text;
         var start = startEnd[0];
         var end = startEnd[1];
@@ -15800,7 +15800,7 @@
         } else {
             text = cm.getSelection();
             cm.replaceSelection(start + text + end);
-    
+
             startPoint.ch += start.length;
             if(startPoint !== endPoint) {
                 endPoint.ch += start.length;
@@ -15809,19 +15809,19 @@
         cm.setSelection(startPoint, endPoint);
         cm.focus();
     }
-    
-    
+
+
     function _toggleHeading(cm, direction, size) {
         if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
             return;
-    
+
         var startPoint = cm.getCursor("start");
         var endPoint = cm.getCursor("end");
         for(var i = startPoint.line; i <= endPoint.line; i++) {
             (function(i) {
                 var text = cm.getLine(i);
                 var currHeadingLevel = text.search(/[^#]/);
-    
+
                 if(direction !== undefined) {
                     if(currHeadingLevel <= 0) {
                         if(direction == "bigger") {
@@ -15867,7 +15867,7 @@
                         }
                     }
                 }
-    
+
                 cm.replaceRange(text, {
                     line: i,
                     ch: 0
@@ -15879,12 +15879,12 @@
         }
         cm.focus();
     }
-    
-    
+
+
     function _toggleLine(cm, name) {
         if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
             return;
-    
+
         var stat = getState(cm);
         var startPoint = cm.getCursor("start");
         var endPoint = cm.getCursor("end");
@@ -15917,22 +15917,22 @@
         }
         cm.focus();
     }
-    
+
     function _toggleBlock(editor, type, start_chars, end_chars) {
         if(/editor-preview-active/.test(editor.codemirror.getWrapperElement().lastChild.className))
             return;
-    
+
         end_chars = (typeof end_chars === "undefined") ? start_chars : end_chars;
         var cm = editor.codemirror;
         var stat = getState(cm);
-    
+
         var text;
         var start = start_chars;
         var end = end_chars;
-    
+
         var startPoint = cm.getCursor("start");
         var endPoint = cm.getCursor("end");
-    
+
         if(stat[type]) {
             text = cm.getLine(startPoint.line);
             start = text.slice(0, startPoint.ch);
@@ -15954,7 +15954,7 @@
                 line: startPoint.line,
                 ch: 99999999999999
             });
-    
+
             if(type == "bold" || type == "strikethrough") {
                 startPoint.ch -= 2;
                 if(startPoint !== endPoint) {
@@ -15978,27 +15978,27 @@
                 text = text.split("~~").join("");
             }
             cm.replaceSelection(start + text + end);
-    
+
             startPoint.ch += start_chars.length;
             endPoint.ch = startPoint.ch + text.length;
         }
-    
+
         cm.setSelection(startPoint, endPoint);
         cm.focus();
     }
-    
+
     function _cleanBlock(cm) {
         if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
             return;
-    
+
         var startPoint = cm.getCursor("start");
         var endPoint = cm.getCursor("end");
         var text;
-    
+
         for(var line = startPoint.line; line <= endPoint.line; line++) {
             text = cm.getLine(line);
             text = text.replace(/^[ ]*([# ]+|\*|\-|[> ]+|[0-9]+(.|\)))[ ]*/, "");
-    
+
             cm.replaceRange(text, {
                 line: line,
                 ch: 0
@@ -16008,7 +16008,7 @@
             });
         }
     }
-    
+
     // Merge the properties of one object into another.
     function _mergeProperties(target, source) {
         for(var property in source) {
@@ -16026,19 +16026,19 @@
                 }
             }
         }
-    
+
         return target;
     }
-    
+
     // Merge an arbitrary number of objects into one.
     function extend(target) {
         for(var i = 1; i < arguments.length; i++) {
             target = _mergeProperties(target, arguments[i]);
         }
-    
+
         return target;
     }
-    
+
     /* The right word count in respect for CJK. */
     function wordCount(data) {
         var pattern = /[a-zA-Z0-9_\u0392-\u03c9\u0410-\u04F9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g;
@@ -16054,7 +16054,7 @@
         }
         return count;
     }
-    
+
     var toolbarBuiltInButtons = {
         "bold": {
             name: "bold",
@@ -16228,64 +16228,64 @@
             title: "Redo"
         }
     };
-    
+
     var insertTexts = {
         link: ["[", "](#url#)"],
         image: ["![](", "#url#)"],
         table: ["", "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n\n"],
         horizontalRule: ["", "\n\n-----\n\n"]
     };
-    
+
     var promptTexts = {
         link: "URL for the link:",
         image: "URL of the image:"
     };
-    
+
     var blockStyles = {
         "bold": "**",
         "code": "```",
         "italic": "*"
     };
-    
+
     /**
      * Interface of SimpleMDE.
      */
     function SimpleMDE(options) {
         // Handle options parameter
         options = options || {};
-    
-    
+
+
         // Used later to refer to it"s parent
         options.parent = this;
-    
-    
+
+
         // Check if Font Awesome needs to be auto downloaded
         var autoDownloadFA = true;
-    
+
         if(options.autoDownloadFontAwesome === false) {
             autoDownloadFA = false;
         }
-    
+
         if(options.autoDownloadFontAwesome !== true) {
             var styleSheets = document.styleSheets;
             for(var i = 0; i < styleSheets.length; i++) {
                 if(!styleSheets[i].href)
                     continue;
-    
+
                 if(styleSheets[i].href.indexOf("//maxcdn.bootstrapcdn.com/font-awesome/") > -1) {
                     autoDownloadFA = false;
                 }
             }
         }
-    
+
         if(autoDownloadFA) {
             var link = document.createElement("link");
             link.rel = "stylesheet";
             link.href = "https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css";
             document.getElementsByTagName("head")[0].appendChild(link);
         }
-    
-    
+
+
         // Find the textarea to use
         if(options.element) {
             this.element = options.element;
@@ -16294,35 +16294,35 @@
             console.log("SimpleMDE: Error. No element was found.");
             return;
         }
-    
-    
+
+
         // Handle toolbar
         if(options.toolbar === undefined) {
             // Initialize
             options.toolbar = [];
-    
-    
+
+
             // Loop over the built in buttons, to get the preferred order
             for(var key in toolbarBuiltInButtons) {
                 if(toolbarBuiltInButtons.hasOwnProperty(key)) {
                     if(key.indexOf("separator-") != -1) {
                         options.toolbar.push("|");
                     }
-    
+
                     if(toolbarBuiltInButtons[key].default === true || (options.showIcons && options.showIcons.constructor === Array && options.showIcons.indexOf(key) != -1)) {
                         options.toolbar.push(key);
                     }
                 }
             }
         }
-    
-    
+
+
         // Handle status bar
         if(!options.hasOwnProperty("status")) {
             options.status = ["autosave", "lines", "words", "cursor"];
         }
-    
-    
+
+
         // Add default preview rendering function
         if(!options.previewRender) {
             options.previewRender = function(plainText) {
@@ -16330,43 +16330,43 @@
                 return this.parent.markdown(plainText);
             };
         }
-    
-    
+
+
         // Set default options for parsing config
         options.parsingConfig = extend({
             highlightFormatting: true // needed for toggleCodeBlock to detect types of code
         }, options.parsingConfig || {});
-    
-    
+
+
         // Merging the insertTexts, with the given options
         options.insertTexts = extend({}, insertTexts, options.insertTexts || {});
-    
-    
+
+
         // Merging the promptTexts, with the given options
         options.promptTexts = promptTexts;
-    
-    
+
+
         // Merging the blockStyles, with the given options
         options.blockStyles = extend({}, blockStyles, options.blockStyles || {});
-    
-    
+
+
         // Merging the shortcuts, with the given options
         options.shortcuts = extend({}, shortcuts, options.shortcuts || {});
-    
-    
+
+
         // Change unique_id to uniqueId for backwards compatibility
         if(options.autosave != undefined && options.autosave.unique_id != undefined && options.autosave.unique_id != "")
             options.autosave.uniqueId = options.autosave.unique_id;
-    
-    
+
+
         // Update this options
         this.options = options;
-    
-    
+
+
         // Auto render
         this.render();
-    
-    
+
+
         // The codemirror component is only available after rendering
         // so, the setter for the initialValue can only run after
         // the element has been rendered
@@ -16374,7 +16374,7 @@
             this.value(options.initialValue);
         }
     }
-    
+
     /**
      * Default markdown render.
      */
@@ -16382,33 +16382,33 @@
         if(marked) {
             // Initialize
             var markedOptions = {};
-    
-    
+
+
             // Update options
             if(this.options && this.options.renderingConfig && this.options.renderingConfig.singleLineBreaks === false) {
                 markedOptions.breaks = false;
             } else {
                 markedOptions.breaks = true;
             }
-    
+
             if(this.options && this.options.renderingConfig && this.options.renderingConfig.codeSyntaxHighlighting === true && window.hljs) {
                 markedOptions.highlight = function(code) {
                     return window.hljs.highlightAuto(code).value;
                 };
             }
-    
+
             //Fix XSS Issues (https://github.com/sparksuite/simplemde-markdown-editor/pull/742/files#diff-aa20377e55cff06cc109e9516f34b18bf336bf58eef25d91bc334bbdc4b20094)
             markedOptions.sanitize = true;
 
             // Set options
             marked.setOptions(markedOptions);
-    
-    
+
+
             // Return
             return marked(text);
         }
     };
-    
+
     /**
      * Render editor to the given element.
      */
@@ -16416,18 +16416,18 @@
         if(!el) {
             el = this.element || document.getElementsByTagName("textarea")[0];
         }
-    
+
         if(this._rendered && this._rendered === el) {
             // Already rendered.
             return;
         }
-    
+
         this.element = el;
         var options = this.options;
-    
+
         var self = this;
         var keyMaps = {};
-    
+
         for(var key in options.shortcuts) {
             // null stands for "do not bind this command"
             if(options.shortcuts[key] !== null && bindings[key] !== null) {
@@ -16438,29 +16438,29 @@
                 })(key);
             }
         }
-    
+
         keyMaps["Enter"] = "newlineAndIndentContinueMarkdownList";
         keyMaps["Tab"] = "tabAndIndentMarkdownList";
         keyMaps["Shift-Tab"] = "shiftTabAndUnindentMarkdownList";
         keyMaps["Esc"] = function(cm) {
             if(cm.getOption("fullScreen")) toggleFullScreen(self);
         };
-    
+
         document.addEventListener("keydown", function(e) {
             e = e || window.event;
-    
+
             if(e.keyCode == 27) {
                 if(self.codemirror.getOption("fullScreen")) toggleFullScreen(self);
             }
         }, false);
-    
+
         var mode, backdrop;
         if(options.spellChecker !== false) {
             mode = "spell-checker";
             backdrop = options.parsingConfig;
             backdrop.name = "gfm";
             backdrop.gitHubSpice = false;
-    
+
             CodeMirrorSpellChecker({
                 codeMirrorInstance: CodeMirror
             });
@@ -16469,7 +16469,7 @@
             mode.name = "gfm";
             mode.gitHubSpice = false;
         }
-    
+
         this.codemirror = CodeMirror.fromTextArea(el, {
             mode: mode,
             backdrop: backdrop,
@@ -16485,16 +16485,16 @@
             placeholder: options.placeholder || el.getAttribute("placeholder") || "",
             styleSelectedText: (options.styleSelectedText != undefined) ? options.styleSelectedText : true
         });
-    
+
         if(options.forceSync === true) {
             var cm = this.codemirror;
             cm.on("change", function() {
                 cm.save();
             });
         }
-    
+
         this.gui = {};
-    
+
         if(options.toolbar !== false) {
             this.gui.toolbar = this.createToolbar();
         }
@@ -16504,19 +16504,19 @@
         if(options.autosave != undefined && options.autosave.enabled === true) {
             this.autosave();
         }
-    
+
         this.gui.sideBySide = this.createSideBySide();
-    
+
         this._rendered = this.element;
-    
-    
+
+
         // Fixes CodeMirror bug (#344)
         var temp_cm = this.codemirror;
         setTimeout(function() {
             temp_cm.refresh();
         }.bind(temp_cm), 0);
     };
-    
+
     // Safari, in Private Browsing Mode, looks like it supports localStorage but all calls to setItem throw QuotaExceededError. We're going to detect this and set a variable accordingly.
     function isLocalStorageAvailable() {
         if(typeof localStorage === "object") {
@@ -16529,36 +16529,36 @@
         } else {
             return false;
         }
-    
+
         return true;
     }
-    
+
     SimpleMDE.prototype.autosave = function() {
         if(isLocalStorageAvailable()) {
             var simplemde = this;
-    
+
             if(this.options.autosave.uniqueId == undefined || this.options.autosave.uniqueId == "") {
                 console.log("SimpleMDE: You must set a uniqueId to use the autosave feature");
                 return;
             }
-    
+
             if(simplemde.element.form != null && simplemde.element.form != undefined) {
                 simplemde.element.form.addEventListener("submit", function() {
                     localStorage.removeItem("smde_" + simplemde.options.autosave.uniqueId);
                 });
             }
-    
+
             if(this.options.autosave.loaded !== true) {
                 if(typeof localStorage.getItem("smde_" + this.options.autosave.uniqueId) == "string" && localStorage.getItem("smde_" + this.options.autosave.uniqueId) != "") {
                     this.codemirror.setValue(localStorage.getItem("smde_" + this.options.autosave.uniqueId));
                     this.options.autosave.foundSavedValue = true;
                 }
-    
+
                 this.options.autosave.loaded = true;
             }
-    
+
             localStorage.setItem("smde_" + this.options.autosave.uniqueId, simplemde.value());
-    
+
             var el = document.getElementById("autosaved");
             if(el != null && el != undefined && el != "") {
                 var d = new Date();
@@ -16574,10 +16574,10 @@
                     h = 12;
                 }
                 m = m < 10 ? "0" + m : m;
-    
+
                 el.innerHTML = "Autosaved: " + h + ":" + m + " " + dd;
             }
-    
+
             this.autosaveTimeoutId = setTimeout(function() {
                 simplemde.autosave();
             }, this.options.autosave.delay || 10000);
@@ -16585,31 +16585,31 @@
             console.log("SimpleMDE: localStorage not available, cannot autosave");
         }
     };
-    
+
     SimpleMDE.prototype.clearAutosavedValue = function() {
         if(isLocalStorageAvailable()) {
             if(this.options.autosave == undefined || this.options.autosave.uniqueId == undefined || this.options.autosave.uniqueId == "") {
                 console.log("SimpleMDE: You must set a uniqueId to clear the autosave value");
                 return;
             }
-    
+
             localStorage.removeItem("smde_" + this.options.autosave.uniqueId);
         } else {
             console.log("SimpleMDE: localStorage not available, cannot autosave");
         }
     };
-    
+
     SimpleMDE.prototype.createSideBySide = function() {
         var cm = this.codemirror;
         var wrapper = cm.getWrapperElement();
         var preview = wrapper.nextSibling;
-    
+
         if(!preview || !/editor-preview-side/.test(preview.className)) {
             preview = document.createElement("div");
             preview.className = "editor-preview-side";
             wrapper.parentNode.insertBefore(preview, wrapper.nextSibling);
         }
-    
+
         // Syncs scroll  editor -> preview
         var cScroll = false;
         var pScroll = false;
@@ -16624,7 +16624,7 @@
             var move = (preview.scrollHeight - preview.clientHeight) * ratio;
             preview.scrollTop = move;
         });
-    
+
         // Syncs scroll  preview -> editor
         preview.onscroll = function() {
             if(pScroll) {
@@ -16639,10 +16639,10 @@
         };
         return preview;
     };
-    
+
     SimpleMDE.prototype.createToolbar = function(items) {
         items = items || this.options.toolbar;
-    
+
         if(!items || items.length === 0) {
             return;
         }
@@ -16652,43 +16652,43 @@
                 items[i] = toolbarBuiltInButtons[items[i]];
             }
         }
-    
+
         var bar = document.createElement("div");
         bar.className = "editor-toolbar";
-    
+
         var self = this;
-    
+
         var toolbarData = {};
         self.toolbar = items;
-    
+
         for(i = 0; i < items.length; i++) {
             if(items[i].name == "guide" && self.options.toolbarGuideIcon === false)
                 continue;
-    
+
             if(self.options.hideIcons && self.options.hideIcons.indexOf(items[i].name) != -1)
                 continue;
-    
+
             // Fullscreen does not work well on mobile devices (even tablets)
             // In the future, hopefully this can be resolved
             if((items[i].name == "fullscreen" || items[i].name == "side-by-side") && isMobile())
                 continue;
-    
-    
+
+
             // Don't include trailing separators
             if(items[i] === "|") {
                 var nonSeparatorIconsFollow = false;
-    
+
                 for(var x = (i + 1); x < items.length; x++) {
                     if(items[x] !== "|" && (!self.options.hideIcons || self.options.hideIcons.indexOf(items[x].name) == -1)) {
                         nonSeparatorIconsFollow = true;
                     }
                 }
-    
+
                 if(!nonSeparatorIconsFollow)
                     continue;
             }
-    
-    
+
+
             // Create the icon and append to the toolbar
             (function(item) {
                 var el;
@@ -16697,7 +16697,7 @@
                 } else {
                     el = createIcon(item, self.options.toolbarTips, self.options.shortcuts);
                 }
-    
+
                 // bind events, special for info
                 if(item.action) {
                     if(typeof item.action === "function") {
@@ -16710,18 +16710,18 @@
                         el.target = "_blank";
                     }
                 }
-    
+
                 toolbarData[item.name || item] = el;
                 bar.appendChild(el);
             })(items[i]);
         }
-    
+
         self.toolbarElements = toolbarData;
-    
+
         var cm = this.codemirror;
         cm.on("cursorActivity", function() {
             var stat = getState(cm);
-    
+
             for(var key in toolbarData) {
                 (function(key) {
                     var el = toolbarData[key];
@@ -16733,34 +16733,34 @@
                 })(key);
             }
         });
-    
+
         var cmWrapper = cm.getWrapperElement();
         cmWrapper.parentNode.insertBefore(bar, cmWrapper);
         return bar;
     };
-    
+
     SimpleMDE.prototype.createStatusbar = function(status) {
         // Initialize
         status = status || this.options.status;
         var options = this.options;
         var cm = this.codemirror;
-    
-    
+
+
         // Make sure the status variable is valid
         if(!status || status.length === 0)
             return;
-    
-    
+
+
         // Set up the built-in items
         var items = [];
         var i, onUpdate, defaultValue;
-    
+
         for(i = 0; i < status.length; i++) {
             // Reset some values
             onUpdate = undefined;
             defaultValue = undefined;
-    
-    
+
+
             // Handle if custom or not
             if(typeof status[i] === "object") {
                 items.push({
@@ -16770,7 +16770,7 @@
                 });
             } else {
                 var name = status[i];
-    
+
                 if(name === "words") {
                     defaultValue = function(el) {
                         el.innerHTML = wordCount(cm.getValue());
@@ -16800,7 +16800,7 @@
                         }
                     };
                 }
-    
+
                 items.push({
                     className: name,
                     defaultValue: defaultValue,
@@ -16808,30 +16808,30 @@
                 });
             }
         }
-    
-    
+
+
         // Create element for the status bar
         var bar = document.createElement("div");
         bar.className = "editor-statusbar";
-    
-    
+
+
         // Create a new span for each item
         for(i = 0; i < items.length; i++) {
             // Store in temporary variable
             var item = items[i];
-    
-    
+
+
             // Create span element
             var el = document.createElement("span");
             el.className = item.className;
-    
-    
+
+
             // Ensure the defaultValue is a function
             if(typeof item.defaultValue === "function") {
                 item.defaultValue(el);
             }
-    
-    
+
+
             // Ensure the onUpdate is a function
             if(typeof item.onUpdate === "function") {
                 // Create a closure around the span of the current action, then execute the onUpdate handler
@@ -16841,19 +16841,19 @@
                     };
                 }(el, item)));
             }
-    
-    
+
+
             // Append the item to the status bar
             bar.appendChild(el);
         }
-    
-    
+
+
         // Insert the status bar into the DOM
         var cmWrapper = this.codemirror.getWrapperElement();
         cmWrapper.parentNode.insertBefore(bar, cmWrapper.nextSibling);
         return bar;
     };
-    
+
     /**
      * Get or set the text content.
      */
@@ -16865,8 +16865,8 @@
             return this;
         }
     };
-    
-    
+
+
     /**
      * Bind static methods for exports.
      */
@@ -16892,7 +16892,7 @@
     SimpleMDE.togglePreview = togglePreview;
     SimpleMDE.toggleSideBySide = toggleSideBySide;
     SimpleMDE.toggleFullScreen = toggleFullScreen;
-    
+
     /**
      * Bind instance methods for exports.
      */
@@ -16962,39 +16962,39 @@
     SimpleMDE.prototype.toggleFullScreen = function() {
         toggleFullScreen(this);
     };
-    
+
     SimpleMDE.prototype.isPreviewActive = function() {
         var cm = this.codemirror;
         var wrapper = cm.getWrapperElement();
         var preview = wrapper.lastChild;
-    
+
         return /editor-preview-active/.test(preview.className);
     };
-    
+
     SimpleMDE.prototype.isSideBySideActive = function() {
         var cm = this.codemirror;
         var wrapper = cm.getWrapperElement();
         var preview = wrapper.nextSibling;
-    
+
         return /editor-preview-active-side/.test(preview.className);
     };
-    
+
     SimpleMDE.prototype.isFullscreenActive = function() {
         var cm = this.codemirror;
-    
+
         return cm.getOption("fullScreen");
     };
-    
+
     SimpleMDE.prototype.getState = function() {
         var cm = this.codemirror;
-    
+
         return getState(cm);
     };
-    
+
     SimpleMDE.prototype.toTextArea = function() {
         var cm = this.codemirror;
         var wrapper = cm.getWrapperElement();
-    
+
         if(wrapper.parentNode) {
             if(this.gui.toolbar) {
                 wrapper.parentNode.removeChild(this.gui.toolbar);
@@ -17006,16 +17006,16 @@
                 wrapper.parentNode.removeChild(this.gui.sideBySide);
             }
         }
-    
+
         cm.toTextArea();
-    
+
         if(this.autosaveTimeoutId) {
             clearTimeout(this.autosaveTimeoutId);
             this.autosaveTimeoutId = undefined;
             this.clearAutosavedValue();
         }
     };
-    
+
     module.exports = SimpleMDE;
     },{"./codemirror/tablist":19,"codemirror":10,"codemirror-spell-checker":4,"codemirror/addon/display/fullscreen.js":5,"codemirror/addon/display/placeholder.js":6,"codemirror/addon/edit/continuelist.js":7,"codemirror/addon/mode/overlay.js":8,"codemirror/addon/selection/mark-selection.js":9,"codemirror/mode/gfm/gfm.js":11,"codemirror/mode/markdown/markdown.js":12,"codemirror/mode/xml/xml.js":14,"marked":17}]},{},[20])(20)
     });

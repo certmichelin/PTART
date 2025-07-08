@@ -7,18 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0011_label_deprecated'),
+        ("ptart", "0011_label_deprecated"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='end_date',
+            model_name="project",
+            name="end_date",
             field=models.DateField(null=True),
         ),
         migrations.AddField(
-            model_name='project',
-            name='start_date',
+            model_name="project",
+            name="start_date",
             field=models.DateField(null=True),
         ),
     ]

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0018_attackscenario_body_svg'),
+        ("ptart", "0018_attackscenario_body_svg"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='client',
-            field=models.CharField(default='', max_length=200),
+            model_name="project",
+            name="client",
+            field=models.CharField(default="", max_length=200),
         ),
     ]

@@ -35,7 +35,7 @@
 \usepackage{iftex}
 \usepackage{ifthen}
 \usepackage[utf8]{inputenc}
-\usepackage{lipsum} 
+\usepackage{lipsum}
 \usepackage{listings}
 \usepackage{lmodern}
 \usepackage{longtable}
@@ -45,7 +45,7 @@
 \usepackage[parfill]{parskip}
 \usepackage[final]{pdfpages}
 \usepackage{pgf-pie}
-\usepackage{pgfplots}   
+\usepackage{pgfplots}
 \usepackage{placeins}
 \usepackage{rotating}
 \usepackage{tabularx}
@@ -80,11 +80,11 @@
 %-----------------------------------------------------%
 % Docstyle                                            %
 %-----------------------------------------------------%
-\BLOCK{ if project.client }   
+\BLOCK{ if project.client }
 	\lhead{\project\ - \client}
-\BLOCK{ else } 
+\BLOCK{ else }
 	\lhead{\project}
-\BLOCK{ endif } 
+\BLOCK{ endif }
 \rhead{\teamname}
 \lfoot{\today}
 \cfoot{\color{red}{\classification}}
@@ -129,12 +129,12 @@
 
 %badge
 \newtcbox{\badge}[1][red]{
-	on line, 
+	on line,
 	arc=2pt,
 	colback=#1!50!black,
 	colframe=#1!50!black,
 	fontupper=\color{white},
-	boxrule=1pt, 
+	boxrule=1pt,
 	boxsep=0pt,
 	left=4pt,
 	right=4pt,
@@ -233,7 +233,7 @@
 
 %-----------------------------------------------------%
 % End of Docstyle                                     %
-%-----------------------------------------------------%                                          
+%-----------------------------------------------------%
 %-----------------------------------------------------%
 % Begin Document                                      %
 %-----------------------------------------------------%
@@ -246,13 +246,13 @@
 %-----------------------------------------------------%
 \begin{titlepage}
 	\begin{center}
-		
+
 		\vspace{0.25cm}
 		\begin{figure}[H]
 			\centering
 			\includegraphics[width=\textwidth/3]{\logopath}
 		\end{figure}
-		
+
 		% Title
 		\HRule\\[0.2cm]
 		{\huge\bfseries\doctitle : \\ \project}
@@ -264,16 +264,16 @@
 		\BLOCK{ if project.client }
 			\Large{Client:}
 			\LARGE{\textbf{\client}}
-			\vfill   
-		\BLOCK{ endif } 
+			\vfill
+		\BLOCK{ endif }
 		% End of Client name
-		
+
 		% Team Name
 		\Large{Conducted by:}
 		\LARGE{\textbf{\teamname}}
 		\vfill
 		% End of Team Name
-		
+
 		% Date
 		\BLOCK{ if project.start_date and project.end_date }
 			\Large{From \VAR{ project.start_date } to \VAR{ project.end_date }}
@@ -282,7 +282,7 @@
 		\BLOCK{ endif }
 		\vfill
 		% End of Date
-		
+
 		% Pentesters.
 		Auditor(s):
 		\begin{center}
@@ -316,10 +316,10 @@
 		% End of Reviewers.
 
 		\includegraphics[width=\textwidth/4]{\companylogo}
-				
+
 		% % Bottom of the page
 		{\footnotesize {\color{red}{\classification}}}
-		
+
 	\end{center}
 \end{titlepage}
 %-----------------------------------------------------%
@@ -345,7 +345,7 @@
 		\subsection{Executive Summary}
 		\VAR{ project.executive_summary | mdtolatex }
 		\newpage
-	\BLOCK{ endif } 
+	\BLOCK{ endif }
 	%-----------------------------------------------------%
 	% End of Executive Summary                            %
 	%-----------------------------------------------------%
@@ -358,7 +358,7 @@
 		\BLOCK{ if project.engagement_overview }
 			\paragraph{Engagement Overview}
 			\VAR{ project.engagement_overview | mdtolatex }
-		\BLOCK{ endif } 
+		\BLOCK{ endif }
 
 		\BLOCK{ if project.scope }
 		\paragraph{Scope of Engagement}
@@ -368,28 +368,28 @@
 					\item \VAR{ line | escape }
 				\BLOCK{ endfor }
 			\end{itemize}
-		\BLOCK{ endif } 
+		\BLOCK{ endif }
 		\newpage
-	\BLOCK{ endif } 
+	\BLOCK{ endif }
 	%-----------------------------------------------------%
 	% End of Scope                                        %
 	%-----------------------------------------------------%
-\BLOCK{ endif } 
+\BLOCK{ endif }
 
 %-----------------------------------------------------%
 % Methodologies                                         %
 %-----------------------------------------------------%
 \BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
 	\section{Testing Methodology}
-	 
+
 	\BLOCK{ for methodology in project.methodologies.all() }
 		\subsection{\VAR{ methodology.name | escape }}
-		
+
 		\VAR{ methodology.description | mdtolatex }
 	\BLOCK{ endfor }
 
 	\newpage
-\BLOCK{ endif } 
+\BLOCK{ endif }
 %-----------------------------------------------------%
 % End of Methodologies                                %
 %-----------------------------------------------------%
@@ -407,14 +407,14 @@
 				{\setlength{\extrarowheight}{2pt}%
 				\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
 						\BLOCK{ for hit in assessment.displayable_hits() }
-						\hline 
+						\hline
 						\BLOCK{ if project.cvss_type == 3 }
 						\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss3-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss3-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss3-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss3-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss3-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss3-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
 						\BLOCK{ else }
 						\badge[bc-badge-p\VAR{ hit.severity }]{P\VAR{ hit.severity }} & \VAR{ hit.get_unique_id()} & \VAR{hit.title | escape } & \BLOCK{ if hit.get_cvss_value() == "---" }\badge[cvss4-badge-secondary]{ N.C }\BLOCK{ elif hit.get_cvss_value() <= 0 }\badge[cvss4-badge-secondary]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 4.0 }\badge[cvss4-badge-success]{\VAR{ hit.get_cvss_value()}}	\BLOCK{ elif hit.get_cvss_value() <= 7.0 }\badge[cvss4-badge-warning]{\VAR{ hit.get_cvss_value()}}\BLOCK{ elif hit.get_cvss_value() <= 9.0 }	\badge[cvss4-badge-danger]{\VAR{ hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss4-badge-dark]{\VAR{ hit.get_cvss_value()}}\BLOCK{ endif } & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\VAR{ hit.get_fix_complexity_str()}}\\
 						\BLOCK{ endif }
 						\BLOCK{ endfor }
-						\hline 	
+						\hline
 				\end{tabularx}}
 			\end{table}
 		\BLOCK{ endif }
@@ -450,7 +450,7 @@
 		\begin{tikzpicture}
 			\pie
 			[
-				rotate=180, 
+				rotate=180,
 				after number=,
 				/tikz/nodes={text=black, font=\normalfont},
 				/tikz/every pin/.style={align=center, text=black, font=\normalfont},
@@ -459,7 +459,7 @@
 			]
 			{
 				\BLOCK{ for key, value in project.labels_statistics().items() }
-					\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }  
+					\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }
 				\BLOCK{ endfor }
 			}
 		\end{tikzpicture}
@@ -473,7 +473,7 @@
 		\begin{tikzpicture}
 			\pie
 			[
-				rotate=180, 
+				rotate=180,
 				after number=,
 				/tikz/nodes={text=black, font=\normalfont},
 				/tikz/every pin/.style={align=center, text=black, font=\normalfont},
@@ -482,7 +482,7 @@
 			]
 			{
 				\BLOCK{ for key, value in project.cwes_statistics().items() }
-					\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }  
+					\BLOCK{ if loop.index == 1 }\VAR{ value|string + '/' + key }\BLOCK{  else }\VAR{ ',' + value|string + '/' + key }\BLOCK{ endif }
 				\BLOCK{ endfor }
 			}
 		\end{tikzpicture}
@@ -503,9 +503,9 @@
 	\BLOCK{ for recommendation in project.recommendation_set.all() }
 		\subsection{\VAR{ recommendation.name | escape }}
 		\VAR{ recommendation.body | mdtolatex }
-	\BLOCK{ endfor } 
+	\BLOCK{ endfor }
 	\newpage
-\BLOCK{ endif } 
+\BLOCK{ endif }
 %-----------------------------------------------------%
 % End of Recommendations                              %
 %-----------------------------------------------------%
@@ -525,7 +525,7 @@
 					\centering
 					{\setlength{\extrarowheight}{2pt}%
 					\begin{tabular}{| l | p{12cm} |}
-						\hline 
+						\hline
 						Severity & \badge[bc-badge-p\VAR{ hit.severity }]{\footnotesize P\VAR{ hit.severity }}\\
 						\hline
 						\BLOCK{ if project.cvss_type == 3 }
@@ -561,22 +561,22 @@
 						\hline
 						CVSSv4 String &  {\small \VAR{ hit.get_cvss_string() }} \\
 						\BLOCK{ endif }
-						\hline 
+						\hline
 						Fix Complexity & \badge[fix-complexity-\VAR{ hit.fix_complexity }]{\footnotesize \VAR{ hit.get_fix_complexity_str()}} \\
-						\hline 
+						\hline
 						Asset & \VAR{ hit.asset | escape  } \\
-						\hline 
+						\hline
 						CWE(s) &  \BLOCK{ for cwe in hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe.print_cwe() | escape }}\BLOCK{ endfor } \\
 						\hline
-						Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\	
-						\hline 
+						Label(s) &  \BLOCK{ for label in hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\
+						\hline
 						Reference(s) & \BLOCK{ if hit.hitreference_set.all() and hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
-						\hline 
+						\hline
 					\end{tabular}}
 				\end{table}
 
 				\VAR{ hit.body | mdtolatexhit }
-			
+
 				\BLOCK{ for screenshot in hit.get_not_injected_screenshots() }
 					\begin{figure}[H]
 						\centering
@@ -646,29 +646,29 @@
 
 		\BLOCK{ if retestcampaign.retesthit_set.all()|length > 0 }
 			\subsubsection{Observations}
-			
+
 			\begin{table}[H]
 				\centering
 				{\setlength{\extrarowheight}{2pt}%
 				\begin{tabularx}{\textwidth}{| l | l | X | l | l |}
 						\BLOCK{ for retest in retestcampaign.retesthit_set.all() }
-						\hline 
+						\hline
 						\BLOCK{ if project.cvss_type == 3 }
 						\badge[bc-badge-p\VAR{ retest.hit.severity }]{P\VAR{ retest.hit.severity }} & \VAR{ retest.hit.get_unique_id()} & \VAR{retest.hit.title | escape } & \BLOCK{ if retest.hit.get_cvss_value() == "---" }\badge[cvss3-badge-secondary]{ N.C }\BLOCK{ elif retest.hit.get_cvss_value() <= 0 }\badge[cvss3-badge-secondary]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ elif retest.hit.get_cvss_value() <= 4.0 }\badge[cvss3-badge-success]{\VAR{ retest.hit.get_cvss_value()}}	\BLOCK{ elif retest.hit.get_cvss_value() <= 7.0 }\badge[cvss3-badge-warning]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ elif retest.hit.get_cvss_value() <= 9.0 }	\badge[cvss3-badge-danger]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss3-badge-dark]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ endif } & \badge[retest-status-\VAR{ retest.status }]{\VAR{ retest.get_status_display()}}\\
 						\BLOCK{ else }
 						\badge[bc-badge-p\VAR{ retest.hit.severity }]{P\VAR{ retest.hit.severity }} & \VAR{ retest.hit.get_unique_id()} & \VAR{retest.hit.title | escape } & \BLOCK{ if retest.hit.get_cvss_value() == "---" }\badge[cvss4-badge-secondary]{ N.C }\BLOCK{ elif retest.hit.get_cvss_value() <= 0 }\badge[cvss4-badge-secondary]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ elif retest.hit.get_cvss_value() <= 4.0 }\badge[cvss4-badge-success]{\VAR{ retest.hit.get_cvss_value()}}	\BLOCK{ elif retest.hit.get_cvss_value() <= 7.0 }\badge[cvss4-badge-warning]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ elif retest.hit.get_cvss_value() <= 9.0 }	\badge[cvss4-badge-danger]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ else }\badge[cvss4-badge-dark]{\VAR{ retest.hit.get_cvss_value()}}\BLOCK{ endif } & \badge[retest-status-\VAR{ retest.status }]{\VAR{ retest.get_status_display()}}\\
 						\BLOCK{ endif }
 						\BLOCK{ endfor }
-						\hline 	
+						\hline
 				\end{tabularx}}
 			\end{table}
-				
+
 			\begin{figure}[H]
 				\centering
 				\begin{tikzpicture}
 					\pie
 					[
-						rotate=90, 
+						rotate=90,
 						after number=,
 						/tikz/nodes={text=black, font=\normalfont},
 						/tikz/every pin/.style={align=center, text=black, font=\normalfont},
@@ -677,17 +677,17 @@
 						color={retest-status-NT, retest-status-NA, retest-status-NF, retest-status-PF, retest-status-F}
 					]
 					{
-						\VAR{retestcampaign.get_not_tested_hits()|length}/Not Tested,  
-						\VAR{retestcampaign.get_not_applicable_hits()|length}/Not Applicable, 
-						\VAR{retestcampaign.get_not_fixed_hits()|length}/Not Fixed, 
-						\VAR{retestcampaign.get_partially_fixed_hits()|length}/Partially Fixed,  
-						\VAR{retestcampaign.get_fixed_hits()|length}/Fixed  
+						\VAR{retestcampaign.get_not_tested_hits()|length}/Not Tested,
+						\VAR{retestcampaign.get_not_applicable_hits()|length}/Not Applicable,
+						\VAR{retestcampaign.get_not_fixed_hits()|length}/Not Fixed,
+						\VAR{retestcampaign.get_partially_fixed_hits()|length}/Partially Fixed,
+						\VAR{retestcampaign.get_fixed_hits()|length}/Fixed
 					}
 				\end{tikzpicture}
 				\caption{Statistics of the retest campaign}
 			\end{figure}
 		\BLOCK{ endif }
-		
+
 
 		\BLOCK{ for retest_hit in retestcampaign.retesthit_set.all() }
 
@@ -697,7 +697,7 @@
 					\centering
 					{\setlength{\extrarowheight}{2pt}%
 					\begin{tabular}{| l | p{12cm} |}
-						\hline 
+						\hline
 						Severity & \badge[bc-badge-p\VAR{ retest_hit.hit.severity }]{\footnotesize P\VAR{ retest_hit.hit.severity }}\\
 						\hline
 						\BLOCK{ if project.cvss_type == 3 }
@@ -735,15 +735,15 @@
 						\BLOCK{ endif }
 						\hline
 						Status & \badge[retest-status-\VAR{ retest_hit.status }]{\footnotesize \VAR{ retest_hit.get_status_display()}} \\
-						\hline  
+						\hline
 						Fix Complexity & \badge[fix-complexity-\VAR{ retest_hit.hit.fix_complexity }]{\footnotesize \VAR{ retest_hit.hit.get_fix_complexity_str()}} \\
-						\hline 
+						\hline
 						Asset & \VAR{ retest_hit.hit.asset | escape  } \\
-						\hline 
+						\hline
 						CWE(s) &  \BLOCK{ for cwe in retest_hit.hit.cwes.all() } \badge[cwe]{\footnotesize \VAR{ cwe.print_cwe() | escape }}\BLOCK{ endfor } \\
-						\hline 
-						Label(s) &  \BLOCK{ for label in retest_hit.hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\	
-						\hline 
+						\hline
+						Label(s) &  \BLOCK{ for label in retest_hit.hit.labels.all() } \badge[label-color-\VAR{ label.id }]{\footnotesize \VAR{ label.title }}\BLOCK{ endfor } \\
+						\hline
 						Reference(s) & \BLOCK{ if retest_hit.hit.hitreference_set.all() and retest_hit.hit.hitreference_set.all()|length > 0 } \begin{itemize} \BLOCK{ for reference in retest_hit.hit.hitreference_set.all() } \item \VAR{ reference.name | escape } - \VAR{ reference.url | escape } \BLOCK{ endfor } \end{itemize} \BLOCK{ endif } \\
 						\hline
 					\end{tabular}}
@@ -759,7 +759,7 @@
 					\end{figure}
 				\BLOCK{ endfor }
 		\BLOCK{ endfor }
-		
+
 		\BLOCK{ if retestcampaign.conclusion }
 			\subsubsection{Conclusion}
 			\VAR{ retestcampaign.conclusion | mdtolatex }
@@ -786,17 +786,17 @@
 	\BLOCK{ for host in project.host_set.all() }
 		\subsection{\VAR{ host.ip } - \VAR{host.hostname | escape }}
 
-		\BLOCK{ if host.os }   
+		\BLOCK{ if host.os }
 			\begin{table}[H]
 				\centering
 				{\setlength{\extrarowheight}{2pt}%
 					\begin{tabular}{| l | p{12cm} |}
-						\hline 
+						\hline
 						OS & \VAR{host.os | escape }\\
-						\hline 
+						\hline
 				\end{tabular}}
 			\end{table}
-		\BLOCK{ endif } 
+		\BLOCK{ endif }
 
 		\VAR{host.notes | mdtolatex}
 
@@ -807,13 +807,13 @@
 				\centering
 				{\setlength{\extrarowheight}{2pt}%
 					\begin{tabular}{| l | p{12cm} |}
-						\hline 
+						\hline
 						Name & \VAR{service.name | escape }\\
 						\hline
 						Version & \VAR{service.version | escape }\\
-						\hline 
+						\hline
 						Banner & \VAR{service.banner | escape }\\
-						\hline  
+						\hline
 				\end{tabular}}
 			\end{table}
 		\BLOCK{ endfor }
@@ -832,25 +832,25 @@
 			\BLOCK{ for tool in project.tools.all() }
 				\VAR{ tool.name | escape } & \VAR{ tool.url | escape }\\
 				\hline
-			\BLOCK{ endfor } 
+			\BLOCK{ endfor }
 		\end{tabular}}
 	\end{table}
 	\newpage
-\BLOCK{ endif } 
+\BLOCK{ endif }
 
 \BLOCK{ if project.cwes_used()|length > 0 }
 \section{Common Weakness Enumeration (CWE) Details : \VAR{ project.cwes.version | escape }}
-	 
+
 \BLOCK{ for cwe in project.cwes_used() }
 	\subsection{\VAR{ cwe.print_cwe() | escape }}
 	\VAR{ cwe.description | escape }
 	\VAR{ cwe.extended_description | escape }
 \BLOCK{ endfor }
-\BLOCK{ endif } 
-	
+\BLOCK{ endif }
+
 \BLOCK{ if project.methodologies.all() and project.methodologies.all()|length > 0 }
 	\section{Testing Methodology Details}
-	 
+
 	\BLOCK{ for methodology in project.methodologies.all() }
 		\subsection{\VAR{ methodology.name | escape }}
 		\BLOCK{ for module in methodology.module_set.all()}
@@ -860,14 +860,14 @@
 			\BLOCK{ for case in module.case_set.all()}
 				\paragraph{\VAR{ case.name | escape }}
 				\VAR{ case.description | mdtolatex }
-				
+
 				\url{\VAR{ case.reference }}
 			\BLOCK{ endfor }
 		\BLOCK{ endfor }
 	\BLOCK{ endfor }
 
 	\newpage
-\BLOCK{ endif } 
+\BLOCK{ endif }
 
 \listoffigures
 %-----------------------------------------------------%

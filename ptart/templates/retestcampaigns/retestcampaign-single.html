@@ -29,7 +29,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Hits to assign &nbsp; <button id="selectAllHitBtn" class="btn btn-sm btn-outline-success">Select All</button></label>
                     {% for hit in retestcampaign.get_unassigned_hits %}
@@ -41,17 +41,17 @@
                         </div>
                     {% endfor %}
                 </div>
-               
+
                 <div class="form-group">
                     <label>Introduction</label>
                     <textarea class="form-control" rows="5" id="introduction" style="resize:vertical">{{ retestcampaign.introduction }}</textarea>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Conclusion</label>
                     <textarea class="form-control" rows="5" id="conclusion" style="resize:vertical">{{ retestcampaign.conclusion }}</textarea>
                 </div>
-                
+
                 <input id="id" type="hidden" value="{{ retestcampaign.id }}" />
                 <input id="projectId" type="hidden" value="{{ retestcampaign.project.id }}" />
 
@@ -76,7 +76,7 @@
     {% if retestcampaign.start_date %}
         $('#startdate').datepicker('setDate', new Date('{{retestcampaign.start_date|date:"Y-m-d"}}'));
     {% endif %}
-    
+
     {% if retestcampaign.end_date %}
         $('#enddate').datepicker('setDate', new Date('{{retestcampaign.end_date|date:"Y-m-d"}}'));
     {% endif %}

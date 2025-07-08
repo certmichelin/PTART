@@ -3,7 +3,7 @@
 // jquery.paste_image_reader.js
 
 //This code is incomplete. You need to develop the pasteImageReader which apply the result to DOM/
-//Exemple : 
+//Exemple :
 // $("html").pasteImageReader(function (results) {
 //     var dataURL = results.dataURL;
 //     $("#screenshotData").text(dataURL);
@@ -198,7 +198,7 @@ function buildContextMenuForScreenshots(screenshotBlockId, screenshotId, order, 
         $.contextMenu({
             selector: '#' + screenshotBlockId,
             items: {
-                "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (order == 0), callback: function(key, options) {       
+                "up": {name: "Move Up", icon: "fa-arrow-up", disabled: (order == 0), callback: function(key, options) {
                     moveUpCallback(screenshotBlockId, screenshotId, order - 1);
                 }},
                 "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
@@ -206,7 +206,7 @@ function buildContextMenuForScreenshots(screenshotBlockId, screenshotId, order, 
                 }}
             }
         });
-    }); 
+    });
 }
 
 function screenshotMoveUpCallback(screenshotBlockId, screenshotId, order) {
@@ -219,7 +219,7 @@ function screenshotMoveUpCallback(screenshotBlockId, screenshotId, order) {
 
     //Change the order in the DOM.
     moveUpScreenshot(screenshotBlockId);
-    
+
     //Update Context menu.
     currentBlock.contextMenu('destroy');
     previousBlock.contextMenu('destroy');
@@ -239,7 +239,7 @@ function screenshotMoveDownCallback(screenshotBlockId, screenshotId, order) {
 
     //Change the order in the DOM.
     moveDownScreenshot(screenshotBlockId);
-    
+
     //Update Context menu.
     currentBlock.contextMenu('destroy');
     nextBlock.contextMenu('destroy');
@@ -273,4 +273,3 @@ function activeBootstapMenuForScreenshots(moveUpCallback, moveDownCallback) {
         buildContextMenuForScreenshots($(this).attr('id'), $(this).attr('data-screenshot-id'), parseInt($(this).attr('data-screenshot-order'), 10), $('.screenshot').length, moveUpCallback, moveDownCallback);
     });
 }
-

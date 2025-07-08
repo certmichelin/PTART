@@ -2,26 +2,38 @@
 
 from django.db import migrations, models
 
+
 def init_hit_status(apps, schema_editor):
-    Hit = apps.get_model('ptart', 'Hit')
+    Hit = apps.get_model("ptart", "Hit")
     for hit in Hit.objects.all():
-        if hit.displayable :
-            hit.status = 'V'
+        if hit.displayable:
+            hit.status = "V"
         else:
-            hit.status = 'H'
+            hit.status = "H"
         hit.save()
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0036_retestscreenshot'),
+        ("ptart", "0036_retestscreenshot"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hit',
-            name='status',
-            field=models.CharField(choices=[('D', 'Draft'), ('R', 'To Review'), ('F', 'To Fix'), ('V', 'Validated'), ('H', 'Hidden')], default='D', max_length=1),
+            model_name="hit",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("D", "Draft"),
+                    ("R", "To Review"),
+                    ("F", "To Fix"),
+                    ("V", "Validated"),
+                    ("H", "Hidden"),
+                ],
+                default="D",
+                max_length=1,
+            ),
         ),
-        migrations.RunPython(init_hit_status)
+        migrations.RunPython(init_hit_status),
     ]

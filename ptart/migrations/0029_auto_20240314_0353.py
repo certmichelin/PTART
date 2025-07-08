@@ -8,48 +8,138 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0028_alter_asset_management'),
+        ("ptart", "0028_alter_asset_management"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Cvss4',
+            name="Cvss4",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('attack_vector', models.CharField(choices=[('N', 'Network'), ('A', 'Adjacent'), ('L', 'Local'), ('P', 'Physical')], max_length=1)),
-                ('attack_complexity', models.CharField(choices=[('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('attack_requirements', models.CharField(choices=[('N', 'None'), ('P', 'Present')], max_length=1)),
-                ('privilege_required', models.CharField(choices=[('N', 'None'), ('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('user_interaction', models.CharField(choices=[('N', 'None'), ('P', 'Passive'), ('A', 'Active')], max_length=1)),
-                ('confidentiality', models.CharField(choices=[('N', 'None'), ('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('integrity', models.CharField(choices=[('N', 'None'), ('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('availability', models.CharField(choices=[('N', 'None'), ('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('subsequent_confidentiality', models.CharField(choices=[('N', 'None'), ('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('subsequent_integrity', models.CharField(choices=[('N', 'None'), ('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('subsequent_availability', models.CharField(choices=[('N', 'None'), ('L', 'Low'), ('H', 'High')], max_length=1)),
-                ('decimal_value', models.DecimalField(decimal_places=1, default=-1.0, max_digits=3)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "attack_vector",
+                    models.CharField(
+                        choices=[
+                            ("N", "Network"),
+                            ("A", "Adjacent"),
+                            ("L", "Local"),
+                            ("P", "Physical"),
+                        ],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "attack_complexity",
+                    models.CharField(
+                        choices=[("L", "Low"), ("H", "High")], max_length=1
+                    ),
+                ),
+                (
+                    "attack_requirements",
+                    models.CharField(
+                        choices=[("N", "None"), ("P", "Present")], max_length=1
+                    ),
+                ),
+                (
+                    "privilege_required",
+                    models.CharField(
+                        choices=[("N", "None"), ("L", "Low"), ("H", "High")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "user_interaction",
+                    models.CharField(
+                        choices=[("N", "None"), ("P", "Passive"), ("A", "Active")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "confidentiality",
+                    models.CharField(
+                        choices=[("N", "None"), ("L", "Low"), ("H", "High")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "integrity",
+                    models.CharField(
+                        choices=[("N", "None"), ("L", "Low"), ("H", "High")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "availability",
+                    models.CharField(
+                        choices=[("N", "None"), ("L", "Low"), ("H", "High")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "subsequent_confidentiality",
+                    models.CharField(
+                        choices=[("N", "None"), ("L", "Low"), ("H", "High")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "subsequent_integrity",
+                    models.CharField(
+                        choices=[("N", "None"), ("L", "Low"), ("H", "High")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "subsequent_availability",
+                    models.CharField(
+                        choices=[("N", "None"), ("L", "Low"), ("H", "High")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "decimal_value",
+                    models.DecimalField(decimal_places=1, default=-1.0, max_digits=3),
+                ),
             ],
             options={
-                'ordering': ('decimal_value',),
+                "ordering": ("decimal_value",),
             },
         ),
         migrations.AlterModelOptions(
-            name='hit',
-            options={'ordering': ('severity', '-cvss3', '-cvss4', 'title')},
+            name="hit",
+            options={"ordering": ("severity", "-cvss3", "-cvss4", "title")},
         ),
         migrations.RenameField(
-            model_name='hit',
-            old_name='cvss',
-            new_name='cvss3',
+            model_name="hit",
+            old_name="cvss",
+            new_name="cvss3",
         ),
         migrations.AddField(
-            model_name='project',
-            name='cvss_type',
-            field=models.IntegerField(default=3, validators=[django.core.validators.MinValueValidator(3), django.core.validators.MaxValueValidator(4)]),
+            model_name="project",
+            name="cvss_type",
+            field=models.IntegerField(
+                default=3,
+                validators=[
+                    django.core.validators.MinValueValidator(3),
+                    django.core.validators.MaxValueValidator(4),
+                ],
+            ),
         ),
         migrations.AddField(
-            model_name='hit',
-            name='cvss4',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, to='ptart.cvss4'),
+            model_name="hit",
+            name="cvss4",
+            field=models.OneToOneField(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="ptart.cvss4",
+            ),
         ),
     ]

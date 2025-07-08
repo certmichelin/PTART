@@ -7,7 +7,7 @@
 
         {% include '_include/html/header.html' with item='Methodology' sub_icon='fa fa-cubes' sub_url='/methodologies/' sub_text='Methodologies' active_icon='' active_text=methodology.name %}
         {% include "_include/html/messages.html" %}
-        
+
         <div class="row">
             <div class="col-lg-12">
 
@@ -37,14 +37,14 @@
     {% include '_include/js/deleteItem.html' with item='Methodology' ajax_function='ajaxDeleteMethodology' %}
     <script>
         activeMarkdown("description");
-   
+
         /**
         * Item updation success callback.
         */
         function itemUpdationSuccess(data) {
             success($("#messages"), "Methodology was Updated!");
         }
-    
+
         /**
          * Update item.
          */

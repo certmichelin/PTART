@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0009_project_scope'),
+        ("ptart", "0009_project_scope"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='archived',
+            model_name="project",
+            name="archived",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -7,17 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0042_hit_cwes'),
+        ("ptart", "0042_hit_cwes"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='cwes',
-            options={'ordering': ('version',)},
+            name="cwes",
+            options={"ordering": ("version",)},
         ),
         migrations.AlterField(
-            model_name='project',
-            name='cwes',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='ptart.cwes'),
+            model_name="project",
+            name="cwes",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.PROTECT, to="ptart.cwes"
+            ),
         ),
     ]

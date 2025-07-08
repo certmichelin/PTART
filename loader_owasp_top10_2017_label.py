@@ -11,9 +11,9 @@ django.setup()
 
 from ptart.models import Label
 
-owasp_file = open('data/owasp_top10_2017_label.json', 'r')
+owasp_file = open("data/owasp_top10_2017_label.json", "r")
 label_json = json.load(owasp_file)
-for label in label_json['labels']:
+for label in label_json["labels"]:
     new_label = Label(title=label["title"], color=label["color"])
     new_label.save()
 print("OWASP 2017 Top 10 labels has been imported !")

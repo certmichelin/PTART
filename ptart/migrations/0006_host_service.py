@@ -7,37 +7,67 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0005_comment'),
+        ("ptart", "0005_comment"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Host',
+            name="Host",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('hostname', models.CharField(default='', max_length=100)),
-                ('ip', models.CharField(default='', max_length=100)),
-                ('os', models.CharField(default='', max_length=100)),
-                ('notes', models.CharField(default='', max_length=1000)),
-                ('project', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.Project')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("hostname", models.CharField(default="", max_length=100)),
+                ("ip", models.CharField(default="", max_length=100)),
+                ("os", models.CharField(default="", max_length=100)),
+                ("notes", models.CharField(default="", max_length=1000)),
+                (
+                    "project",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ptart.Project",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('hostname',),
+                "ordering": ("hostname",),
             },
         ),
         migrations.CreateModel(
-            name='Service',
+            name="Service",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('port', models.IntegerField(default=0)),
-                ('protocol', models.CharField(default='', max_length=200)),
-                ('name', models.CharField(default='', max_length=200)),
-                ('version', models.CharField(default='', max_length=100)),
-                ('banner', models.CharField(default='', max_length=1000)),
-                ('host', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.Host')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("port", models.IntegerField(default=0)),
+                ("protocol", models.CharField(default="", max_length=200)),
+                ("name", models.CharField(default="", max_length=200)),
+                ("version", models.CharField(default="", max_length=100)),
+                ("banner", models.CharField(default="", max_length=1000)),
+                (
+                    "host",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ptart.Host",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('port',),
+                "ordering": ("port",),
             },
         ),
     ]

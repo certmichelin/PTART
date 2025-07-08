@@ -7,20 +7,35 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0015_template_owner'),
+        ("ptart", "0015_template_owner"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AttackScenario',
+            name="AttackScenario",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('scenario', models.TextField(blank=True, default='')),
-                ('project', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.project')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("scenario", models.TextField(blank=True, default="")),
+                (
+                    "project",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ptart.project",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('name',),
+                "ordering": ("name",),
             },
         ),
     ]

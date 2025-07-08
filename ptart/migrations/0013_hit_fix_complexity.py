@@ -7,13 +7,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0012_project_date'),
+        ("ptart", "0012_project_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='hit',
-            name='fix_complexity',
-            field=models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(3)]),
+            model_name="hit",
+            name="fix_complexity",
+            field=models.IntegerField(
+                default=0,
+                validators=[
+                    django.core.validators.MinValueValidator(0),
+                    django.core.validators.MaxValueValidator(3),
+                ],
+            ),
         ),
     ]

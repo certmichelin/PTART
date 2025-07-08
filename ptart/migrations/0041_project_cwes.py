@@ -4,26 +4,31 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 """ Add CWE 4.16 to all project by default """
+
+
 def init_cwes_field(apps, schema_editor):
-    Project = apps.get_model('ptart', 'Project')
-    CWEs = apps.get_model('ptart', 'CWEs')
+    Project = apps.get_model("ptart", "Project")
+    CWEs = apps.get_model("ptart", "CWEs")
     cwes = CWEs.objects.filter(version="v4.16").first()
 
     for project in Project.objects.all():
         project.cwes = cwes
         project.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0040_alter_cwe_options'),
+        ("ptart", "0040_alter_cwe_options"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='cwes',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='ptart.cwes'),
+            model_name="project",
+            name="cwes",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.SET_NULL, to="ptart.cwes"
+            ),
         ),
         migrations.RunPython(init_cwes_field),
     ]

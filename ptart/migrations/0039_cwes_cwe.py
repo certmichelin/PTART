@@ -5,60 +5,98 @@ import django.db.models.deletion
 import xml.etree.ElementTree as ET
 
 """ Insert CWEs and CWEs from XML file """
+
+
 def create_cwe_from_xml(apps, schema_editor):
-    CWE = apps.get_model('ptart', 'CWE')
-    CWEs = apps.get_model('ptart', 'CWEs')
+    CWE = apps.get_model("ptart", "CWE")
+    CWEs = apps.get_model("ptart", "CWEs")
     cwes = CWEs(version="v4.16")
     cwes.save()
-    
-    tree = ET.parse('data/cwec_v4.16.xml')
+
+    tree = ET.parse("data/cwec_v4.16.xml")
     weaknesses = tree.getroot().find("{http://cwe.mitre.org/cwe-7}Weaknesses")
     for weakness in weaknesses:
-        
-        extended_description = ""
-        if weakness.find("{http://cwe.mitre.org/cwe-7}Extended_Description") is not None:
-            extended_description = weakness.find("{http://cwe.mitre.org/cwe-7}Extended_Description").text
-            if extended_description is None:
-                extended_description = weakness.find("{http://cwe.mitre.org/cwe-7}Extended_Description").find("{http://www.w3.org/1999/xhtml}p").text
 
-        cwe = CWE(cwes=cwes, 
-                  cwe_id=weakness.attrib['ID'], 
-                  name=weakness.attrib['Name'], 
-                  description=weakness.find("{http://cwe.mitre.org/cwe-7}Description").text, 
-                  extended_description=extended_description)
+        extended_description = ""
+        if (
+            weakness.find("{http://cwe.mitre.org/cwe-7}Extended_Description")
+            is not None
+        ):
+            extended_description = weakness.find(
+                "{http://cwe.mitre.org/cwe-7}Extended_Description"
+            ).text
+            if extended_description is None:
+                extended_description = (
+                    weakness.find("{http://cwe.mitre.org/cwe-7}Extended_Description")
+                    .find("{http://www.w3.org/1999/xhtml}p")
+                    .text
+                )
+
+        cwe = CWE(
+            cwes=cwes,
+            cwe_id=weakness.attrib["ID"],
+            name=weakness.attrib["Name"],
+            description=weakness.find("{http://cwe.mitre.org/cwe-7}Description").text,
+            extended_description=extended_description,
+        )
         cwe.save()
     print(": {} CWEs imported !".format(len(weaknesses)))
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0038_remove_hit_displayable'),
+        ("ptart", "0038_remove_hit_displayable"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CWEs',
+            name="CWEs",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('version', models.CharField(max_length=200)),
-                ('deprecated', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("version", models.CharField(max_length=200)),
+                ("deprecated", models.BooleanField(default=False)),
             ],
             options={
-                'ordering': ('pk',),
+                "ordering": ("pk",),
             },
         ),
         migrations.CreateModel(
-            name='CWE',
+            name="CWE",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cwe_id', models.IntegerField()),
-                ('name', models.CharField(max_length=500)),
-                ('description', models.TextField(blank=True, default='')),
-                ('extended_description', models.TextField(blank=True, default='')),
-                ('cwes', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='ptart.cwes')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("cwe_id", models.IntegerField()),
+                ("name", models.CharField(max_length=500)),
+                ("description", models.TextField(blank=True, default="")),
+                ("extended_description", models.TextField(blank=True, default="")),
+                (
+                    "cwes",
+                    models.ForeignKey(
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ptart.cwes",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('pk',),
+                "ordering": ("pk",),
             },
         ),
         migrations.RunPython(create_cwe_from_xml),

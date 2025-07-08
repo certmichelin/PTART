@@ -6,25 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ptart', '0023_recommendation'),
+        ("ptart", "0023_recommendation"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Tool',
+            name="Tool",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('url', models.CharField(max_length=500)),
-                ('deprecated', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("url", models.CharField(max_length=500)),
+                ("deprecated", models.BooleanField(default=False)),
             ],
             options={
-                'ordering': ('pk',),
+                "ordering": ("pk",),
             },
         ),
         migrations.AddField(
-            model_name='project',
-            name='tools',
-            field=models.ManyToManyField(to='ptart.Tool'),
+            model_name="project",
+            name="tools",
+            field=models.ManyToManyField(to="ptart.Tool"),
         ),
     ]

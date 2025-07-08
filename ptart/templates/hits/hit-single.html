@@ -102,13 +102,13 @@
                 <!-- Reference Area -->
                 <div class="panel panel-default">
                     <div class="panel-body">
-                
+
                         <div class="row">
                             <div class="col-lg-12">
                                 <h4>References</h4>
                             </div>
                         </div>
-                            
+
                         <div id="references">
                             {% for reference in hit.hitreference_set.all %}
                             <div id="reference_{{reference.id}}">
@@ -123,7 +123,7 @@
                         </div>
                 {% if editable == True %}
                     <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#addReferenceModal">Add a reference</button>
-                    
+
                     <!-- Add a hit reference modal -->
                     <div class="modal fade" id="addReferenceModal" tabindex="-1" role="dialog">
                         <div class="modal-dialog" role="document">
@@ -156,13 +156,13 @@
                 <!-- Comment area -->
                 <div class="panel panel-default">
                     <div class="panel-body">
-                
+
                         <div class="row">
                             <div class="col-lg-12">
                                 <h4>Comments</h4>
                             </div>
                         </div>
-                            
+
                         <div id="comments">
                             {% for comment in hit.comment_set.all %}
                             <div id="comment_{{comment.id}}" class="speech-bubble">
@@ -174,10 +174,10 @@
                             </div>
                             {% endfor %}
                         </div>
-                
+
                         {% if editable == True %}
                         <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#addCommentModal">Add a comment</button>
-                        
+
                         <!-- Add a comment modal -->
                         <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog">
                             <div class="modal-dialog" role="document">
@@ -255,7 +255,7 @@
     /* --------------------------------------------------------------------------------------------------- */
     /* ------------------------------------------ Hit Update --------------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
-    
+
     /**
      * Hit updation success callback.
      */
@@ -460,7 +460,7 @@
 
         //Change the order in the DOM.
         moveUpScreenshot(currentBlockId);
-       
+
         //Update Context menu.
         currentBlock.contextMenu('destroy');
         previousBlock.contextMenu('destroy');
@@ -484,7 +484,7 @@
 
         //Change the order in the DOM.
         moveDownScreenshot(currentBlockId);
-       
+
         //Update Context menu.
         currentBlock.contextMenu('destroy');
         nextBlock.contextMenu('destroy');

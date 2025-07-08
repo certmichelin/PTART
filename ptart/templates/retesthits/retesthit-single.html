@@ -12,8 +12,8 @@
         <div class="row min-vh-100">
             <iframe class="col-lg-6" src="/hit/{{ retesthit.hit.id }}?embedded=True" style="border: none;"></iframe>
             <div class="col-lg-6">
-                <h5>Retest</h5>            
-                
+                <h5>Retest</h5>
+
                 <div class="form-group">
                     <label>Status</label>
                     <select id="status" class="form-control">
@@ -29,7 +29,7 @@
                     <label>Body</label>
                     <textarea class="form-control" rows="5" id="body" style="resize:vertical">{{ retesthit.body }}</textarea>
                 </div>
-                                
+
                 <input id="id" type="hidden" value="{{ retesthit.id }}" />
                 <input id="campaignId" type="hidden" value="{{ retesthit.retest_campaign.id }}" />
                 <input id="hitId" type="hidden" value="{{ retesthit.hit.id }}" />
@@ -38,7 +38,7 @@
                 <button id="updateBtn" class="btn btn-outline-primary mb-3">Update</button>
                 <button id="delBtn" class="btn btn-outline-danger mb-3">Delete</button>
                 {% endif %}
-                
+
                 {% include "_include/html/screenshots.html" %}
             </div>
         </div>
@@ -51,7 +51,7 @@
 <script>
     activeMarkdown("body");
     $('#status option[value={{retesthit.status}}]').attr('selected', 'selected');
-   
+
     /**
      * Retest Hit updation success callback.
      */
@@ -148,7 +148,7 @@
 
         //Change the order in the DOM.
         moveUpScreenshot(currentBlockId);
-       
+
         //Update Context menu.
         currentBlock.contextMenu('destroy');
         previousBlock.contextMenu('destroy');
@@ -172,7 +172,7 @@
 
         //Change the order in the DOM.
         moveDownScreenshot(currentBlockId);
-       
+
         //Update Context menu.
         currentBlock.contextMenu('destroy');
         nextBlock.contextMenu('destroy');
