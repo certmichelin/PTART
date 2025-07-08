@@ -34,4 +34,3 @@ jobs:
         push: true
         tags: deddobifu/ptart:${{ steps.vars.outputs.tag }}
         platforms: linux/amd64,linux/arm64
-
