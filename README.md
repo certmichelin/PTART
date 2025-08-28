@@ -99,14 +99,15 @@ Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser
 
 ## Installation
 
-**Preparing PTART environment :**
+**Preparing PTART dev environment :**
 
 Python requires Python 3.12 and a few more packages. The simplest way to set up PTART is using [venv](https://docs.python.org/3/library/venv.html).
 
-1. Clone the project and go to the new directory.
-2. Create a new virtual environment and installing dependencies: `python3.12 -m venv venv`.
+1. Clone the project and go to the app directory.
+2. Create a new virtual environment and installing dependencies: `python3.12 -m venv .venv`.
 3. Install pandoc (`brew install pandoc` or get the package from [Github](https://github.com/jgm/pandoc/releases)), PTARTv3 was tested with pandoc-3.2.X version, older versions are not supported.
-4. Run the virtual environment: `source venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 failed to be installed try `sudo apt get install libpq-dev` or `brew install postgresql`, if rlPyCairo failed to be install, try `sudo apt install libcairo2-dev` or `brew install cairo pkg-config`)
+4. Run the virtual environment: `source .venv/bin/activate` and install dependencies `pip install -r requirements.txt` (If psycopg2 failed to be installed try `sudo apt get install libpq-dev` or `brew install postgresql`, if rlPyCairo failed to be install, try `sudo apt install libcairo2-dev` or `brew install cairo pkg-config`)
+5. Start a sample postgres db :  `docker run -d --name ptart_db -e POSTGRES_USER=ptart -e POSTGRES_PASSWORD=ptart -e POSTGRES_DB=ptart -p 5432:5432 postgres:15`
 5. Create the database: `python manage.py migrate`
 6. Create the super user: `python manage.py createsuperuser`
 7. (Optional) Initiate PTART with integrated loaders.
