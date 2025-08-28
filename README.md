@@ -86,9 +86,9 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 ```java
 // Your First Program
 class HelloWorld {
-	public static void main(String[] args) {
-		System.out.println("Hello, World!");
-	}
+   public static void main(String[] args) {
+      System.out.println("Hello, World!");
+   }
 }
 ```
 
@@ -98,12 +98,17 @@ In order to enable, the `Chat GPT` console, you just need to enter your api key 
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/15.png)
 
-## Quick setup using Docker.
+## Quick setup using Docker Compose
 
 You could easily instatiate a demo version by using our docker version.
 
-```
-docker run -p 8000:8000 -it deddobifu/ptart:3.0.0
+```bash
+cp .env.template .env
+docker compose up -d
+
+# Init PTART.
+docker compose exec ptart-server python manage.py migrate
+docker compose exec ptart-server python manage.py createsuperuser
 ```
 
 Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser and use admin/admin to connect.
