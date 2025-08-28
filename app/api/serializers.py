@@ -161,35 +161,40 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        instance.pentesters.clear()
-        pentesters = self.initial_data.get("pentesters")
-        for pentester in pentesters:
-            pentester_instance = User.objects.get(pk=pentester)
-            instance.pentesters.add(pentester_instance)
+        if "pentesters" in self.initial_data:
+            pentesters = self.initial_data.get("pentesters")
+            instance.pentesters.clear()
+            for pentester in pentesters:
+                pentester_instance = User.objects.get(pk=pentester)
+                instance.pentesters.add(pentester_instance)
 
-        instance.reviewers.clear()
-        reviewers = self.initial_data.get("reviewers")
-        for reviewer in reviewers:
-            reviewer_instance = User.objects.get(pk=reviewer)
-            instance.reviewers.add(reviewer_instance)
+        if "reviewers" in self.initial_data:
+            reviewers = self.initial_data.get("reviewers")
+            instance.reviewers.clear()
+            for reviewer in reviewers:
+                reviewer_instance = User.objects.get(pk=reviewer)
+                instance.reviewers.add(reviewer_instance)
 
-        instance.viewers.clear()
-        viewers = self.initial_data.get("viewers")
-        for viewer in viewers:
-            viewer_instance = User.objects.get(pk=viewer)
-            instance.viewers.add(viewer_instance)
+        if "viewers" in self.initial_data:
+            viewers = self.initial_data.get("viewers")
+            instance.viewers.clear()
+            for viewer in viewers:
+                viewer_instance = User.objects.get(pk=viewer)
+                instance.viewers.add(viewer_instance)
 
-        instance.tools.clear()
-        tools = self.initial_data.get("tools")
-        for tool in tools:
-            tool_instance = Tool.objects.get(pk=tool)
-            instance.tools.add(tool_instance)
+        if "tools" in self.initial_data:
+            tools = self.initial_data.get("tools")
+            instance.tools.clear()
+            for tool in tools:
+                tool_instance = Tool.objects.get(pk=tool)
+                instance.tools.add(tool_instance)
 
-        instance.methodologies.clear()
-        methodologies = self.initial_data.get("methodologies")
-        for methodology in methodologies:
-            methodology_instance = Methodology.objects.get(pk=methodology)
-            instance.methodologies.add(methodology_instance)
+        if "methodologies" in self.initial_data:
+            methodologies = self.initial_data.get("methodologies")
+            instance.methodologies.clear()
+            for methodology in methodologies:
+                methodology_instance = Methodology.objects.get(pk=methodology)
+                instance.methodologies.add(methodology_instance)
 
         if "cwes" in self.initial_data:
             cwes = self.initial_data.get("cwes")
@@ -312,20 +317,23 @@ class HitSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        instance.labels.clear()
-        labels = self.initial_data.get("labels")
-        for label in labels:
-            label_instance = Label.objects.get(pk=label)
-            instance.labels.add(label_instance)
+        if "labels" in self.initial_data:
+            labels = self.initial_data.get("labels")
+            instance.labels.clear()
+            for label in labels:
+                label_instance = Label.objects.get(pk=label)
+                instance.labels.add(label_instance)
 
-        instance.cwes.clear()
-        cwes = self.initial_data.get("cwes")
-        for cwe in cwes:
-            cwe_instance = CWE.objects.get(pk=cwe)
-            instance.cwes.add(cwe_instance)
+        if "cwes" in self.initial_data:
+            cwes = self.initial_data.get("cwes")
+            instance.cwes.clear()
+            for cwe in cwes:
+                cwe_instance = CWE.objects.get(pk=cwe)
+                instance.cwes.add(cwe_instance)
 
-        assessment = self.initial_data.get("assessment")
-        instance.assessment = Assessment.objects.get(pk=assessment)
+        if "assessment" in self.initial_data:
+            assessment = self.initial_data.get("assessment")
+            instance.assessment = Assessment.objects.get(pk=assessment)
 
         instance.__dict__.update(**validated_data)
         instance.save()
@@ -496,7 +504,9 @@ class RetestHitSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         """Update only the status and the body of the retest hit"""
-        instance.body = validated_data.get("body")
-        instance.status = validated_data.get("status")
+        if "body" in self.initial_data:
+            instance.body = validated_data.get("body")
+        if "status" in self.initial_data:
+            instance.status = validated_data.get("status")
         instance.save()
         return instance
