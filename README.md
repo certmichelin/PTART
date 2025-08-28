@@ -92,7 +92,7 @@ class HelloWorld {
 }
 ```
 
-##### Chat GPT
+### Chat GPT
 
 In order to enable, the `Chat GPT` console, you just need to enter your api key in settings.py upon `CHATGPT_API_KEY` key.
 
@@ -113,7 +113,7 @@ docker compose exec ptart-server python loader_cwes_4.17.py
 docker compose exec ptart-server python loader_owasp_testing_guide.py
 ```
 
-Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser and use admin/admin to connect.
+Access [http://localhost:8000/](http://localhost:8000/) on your favorite browser !!
 
 ## How to DEV
 
