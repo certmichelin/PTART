@@ -109,6 +109,8 @@ docker compose up -d
 # Init PTART.
 docker compose exec ptart-server python manage.py migrate
 docker compose exec ptart-server python manage.py createsuperuser
+docker compose exec ptart-server python loader_cwes_4.17.py 
+docker compose exec ptart-server python loader_owasp_testing_guide.py
 ```
 
 Access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) on your favorite browser and use admin/admin to connect.
