@@ -10,10 +10,10 @@ __pycache__/
 .idea
 
 #PTART files
-db.sqlite3
-screenshots/*.png
-screenshots_retest/*.png
-attachments/*.ptart
+data/db.sqlite3
+data/screenshots/*.png
+data/screenshots_retest/*.png
+data/attachments/*.ptart
 
 # C extensions
 *.so

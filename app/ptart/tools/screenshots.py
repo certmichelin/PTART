@@ -1,6 +1,8 @@
 import os
 import re
 
+from django.conf import settings
+
 # -----------------------------------------------------------------------------#
 screenshot_pattern = re.compile(r"!\[ptart_screenshot\]\((.*?)\)")
 # -----------------------------------------------------------------------------#
@@ -28,6 +30,7 @@ def get_screenshot_raw_data(screenshot):
     if url.startswith(".") is False:
         url = "." + url
     try:
+        url = os.path.join(settings.MEDIA_ROOT, url)
         with open(url, "rb") as img_f:
             result = img_f.read()
     except FileNotFoundError:
@@ -41,6 +44,7 @@ def delete_screenshot_file(screenshot):
     if url.startswith(".") is False:
         url = "." + url
     try:
+        url = os.path.join(settings.MEDIA_ROOT, url)
         os.remove(url)
     except FileNotFoundError:
         pass

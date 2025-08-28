@@ -4,6 +4,7 @@ import re
 
 from cvss import CVSS3, CVSS4
 from datetime import datetime
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -963,6 +964,7 @@ class Attachment(models.Model):
         url = self.attachment.url
         if url.startswith(".") is False:
             url = "." + url
+        url = os.path.join(settings.MEDIA_ROOT, url)
         with open(url, "rb") as file_f:
             encoded_string = base64.b64encode(file_f.read())
         return "data:application/octet;base64,%s" % (encoded_string.decode("utf-8"))
@@ -973,6 +975,7 @@ class Attachment(models.Model):
         url = self.attachment.url
         if url.startswith(".") is False:
             url = "." + url
+        url = os.path.join(settings.MEDIA_ROOT, url)
         with open(url, "rb") as file_f:
             result = file_f.read()
         return result
@@ -982,6 +985,7 @@ class Attachment(models.Model):
         url = self.attachment.url
         if url.startswith(".") is False:
             url = "." + url
+        url = os.path.join(settings.MEDIA_ROOT, url)
         os.remove(url)
         super(Attachment, self).delete()
 

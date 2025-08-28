@@ -1,5 +1,5 @@
 FROM python:3.12.4-alpine3.20
-EXPOSE 8000
+EXPOSE 8888
 
 #Install dependencies
 RUN apk add --no-cache \
@@ -25,17 +25,9 @@ RUN ARCH=$(uname -m) && \
 
 #Install PTART.
 RUN mkdir /opt/ptart
-ADD . /opt/ptart
+ADD app /opt/ptart
 WORKDIR /opt/ptart
 RUN pip install -r requirements.txt
-RUN cp .env.template .env
 
-#Configure PTART
-RUN python manage.py migrate
-RUN python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')"
-RUN python loader_common_templates.py
-RUN python loader_owasp_top10_2021_label.py
-RUN python loader_common_tools.py
-RUN python loader_owasp_testing_guide.py
-
-CMD ["python","manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["gunicorn", "ptart.wsgi"]
+CMD ["-b" ,"0.0.0.0:8888"]

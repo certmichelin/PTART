@@ -14,3 +14,4 @@ qrcode==7.4.2
 requests==2.32.3
 rlPyCairo==0.3.0
 svglib==1.4.1
+gunicorn==23.0.0

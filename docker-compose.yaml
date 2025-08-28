@@ -1,0 +1,41 @@
+# PTART DOCKER COMPOSE
+---
+services:
+  ptart-server:
+    image: deddobifu/ptart:4.0.0
+    env_file:
+      - .env
+    volumes:
+      - staticfiles:/opt/ptart/ptart/static/
+      - medias:/opt/media
+
+  ptart-nginx:
+    image: nginx:bookworm
+    ports:
+        - "8000:80"
+    volumes:
+      - ./docker/conf/:/etc/nginx/conf.d/:ro
+      - staticfiles:/var/www/ptart/static/:ro
+
+  ptart-db:
+    image: postgres:${POSTGRES_VERSION:-15}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ptart}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ptart}
+      POSTGRES_DB: ptart
+      PGDATA: /var/lib/postgreqsql/data
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - postgres-db:/var/lib/postgreqsql/data
+
+volumes:
+    postgres-db:
+    staticfiles:
+    medias:
+
+    
