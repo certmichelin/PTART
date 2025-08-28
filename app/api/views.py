@@ -2189,7 +2189,9 @@ def item(request, pk, class_name, serializer_name):
             else:
                 response = Response(status=status.HTTP_403_FORBIDDEN)
         elif request.method == "PUT" or request.method == "PATCH":
-            serializer = serializer_name(item, data=request.data, partial=(request.method == "PATCH"))
+            serializer = serializer_name(
+                item, data=request.data, partial=(request.method == "PATCH")
+            )
             if serializer.is_valid():
                 if item.is_user_can_edit(request.user):
                     serializer.save()
@@ -2200,6 +2202,7 @@ def item(request, pk, class_name, serializer_name):
                 response = Response(
                     serializer.errors, status=status.HTTP_400_BAD_REQUEST
                 )
+
         elif request.method == "DELETE":
             if item.is_user_can_edit(request.user):
                 response = Response(
