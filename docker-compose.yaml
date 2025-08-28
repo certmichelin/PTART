@@ -2,7 +2,7 @@
 ---
 services:
   ptart-server:
-    image: ptart3
+    image: ptart4
     env_file:
       - .env
     volumes:

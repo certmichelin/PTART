@@ -38,50 +38,50 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 
 ## Screenshots
 
-##### PTART main page
+### PTART main page
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/3.PNG)
 
-##### Create a new hit
+### Create a new hit
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/1.PNG)
 
-##### Simply paste a screenshot to add it!
+### Simply paste a screenshot to add it!
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/2.PNG)
 
-##### Automatic LaTeX report creation
+### Automatic LaTeX report creation
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/12.PNG)
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/11.PNG)
 
-##### Automatic Excel report creation
+### Automatic Excel report creation
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/13.PNG)
 
-##### Automatic HTML report creation
+### Automatic HTML report creation
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/5.PNG)
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/6.PNG)
 
-##### Comments in your presentation
+### Comments in your presentation
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/8.PNG)
 
-##### Asset management
+### Asset management
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/9.PNG)
 
-##### Attack Scenario
+### Attack Scenario
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/10.PNG)
 
-##### Retest Campaign
+### Retest Campaign
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/14.png)
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/16.png)
 
-##### Syntax highlight
+### Syntax highlight
 
 ```java
 // Your First Program
