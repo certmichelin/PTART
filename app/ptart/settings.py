@@ -163,3 +163,6 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # API Key for ChatGPT
 CHATGPT_API_KEY = str(os.getenv("CHATGPT_API_KEY"))
+
+# Attachments, Screenshots locations.
+MEDIA_ROOT = os.path.abspath(str(os.getenv("MEDIA_ROOT")))
