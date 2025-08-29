@@ -46,6 +46,7 @@
                                         <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
                                         <br/>
                                         <a class="btn btn-outline-danger" href="/hits/new/?projectId={{project.id}}" role="button">Create Hit</a>
+                                        <button class="btn btn-outline-warning" data-toggle="modal" data-target="#updateHitsModal">Bulk Update Hit Status</button>
                                         <a class="btn btn-outline-success" href="/flags/new/?projectId={{project.id}}" role="button">Create Flag</a>
                                         <a class="btn btn-outline-danger" href="/attackscenario/new/?projectId={{project.id}}" role="button">Create Attack Scenario</a>
                                         <a class="btn btn-outline-success" href="/recommendation/new/?projectId={{project.id}}" role="button">Create Recommendation</a>
@@ -58,6 +59,8 @@
                 </h1>
             </div>
         </div>
+
+        {% include "_include/html/messages.html" %}
 
         <!-- Details modal -->
         <div class="modal fade" id="detailsModal" tabindex="-1" role="dialog">
@@ -91,6 +94,66 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update hits modal -->
+        <div class="modal fade" id="updateHitsModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Bulk Update Hits</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div id="updateMessages" class="col-lg-12"></div>
+                        </div>
+                        <form id="updateHitsForm" >
+                            <div class="form-group">
+                                <label for="newStatus">New Status</label>
+                                <select class="form-control" id="newStatus" required>
+                                    <option value="" disabled selected>Select new status</option>
+                                    <option value="D">Draft</option>
+                                    <option value="R">To Review</option>
+                                    <option value="F">To Fix</option>
+                                    <option value="V">Validated</option>
+                                    <option value="H">Hidden</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="hitSelection">Select Hits to update &nbsp; <button id="selectAllHitBtn" class="btn btn-sm btn-outline-success" type="button">Select All</button></label>
+                                <div id="hitSelection" style="height: 300px; overflow-y: scroll; border: 1px solid #ced4da; padding: 10px;">
+                                    {% for hit in project.hits %}
+                                    <div class="form-check">
+                                        <input class="form-check-input hit" type="checkbox" value="" hit_id="{{ hit.id }}" id="unassigne_hit{{ hit.id }}">
+                                        <label class="form-check-label" for="unassigne_hit{{ hit.id }}">
+                                            {% if hit.status == "D" %}
+                                                <i class="fa fa-info-circle" style="color: blue;" data-toggle="tooltip" data-placement="left" title="Draft"></i>
+                                            {% elif hit.status == "R" %}
+                                                <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="To Review"></i>
+                                            {% elif hit.status == "F" %}
+                                                <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="To Fix"></i>
+                                            {% elif hit.status == "V" %}
+                                                <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Validated"></i>
+                                            {% else %}
+                                                <i class="fa fa-eye-slash" style="color: gray;" data-toggle="tooltip" data-placement="left" title="Hidden"></i>
+                                            {% endif %}
+                                            {{ hit.get_unique_id }} - {{ hit.title }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="updateHitStatusBtn" class="btn btn-outline-primary">Update Hits</button>
                     </div>
                 </div>
             </div>
@@ -308,7 +371,7 @@
 
         <!-- Retest Campaign summary table-->
         {% if project.retestcampaign_set.all %}
-            <div class="row mb-4"">
+            <div class="row mb-4">
                 <div class="col-lg-12">
                     <h3><i class="fa fa-flask"></i> Retest Campaigns</h3>
                     <table class="table table-bordered table-hover table-striped">
@@ -375,5 +438,60 @@
         $("#svgPreview").html($("#" + svgId).html());
         $('#attackScenarioPreviewModal').modal();
     }
+
+    /**
+     * Select all hits.
+     */
+     $('#selectAllHitBtn').on('click', function () {
+        $('.hit').prop('checked', true);
+    });
+
+    /**
+     * Update hit status in bulk.
+     */
+    $('#updateHitStatusBtn').on('click', function () {
+        var newStatus = $('#newStatus').val();
+        if (!newStatus) {
+            error($("#updateMessages"), "Please select a new status.");
+            return;
+        }
+        var hits = [];
+        $('.hit:checked').each(function() {
+            hits.push($(this).attr('hit_id'));
+        });
+        if (hits.length === 0) {
+            error($("#updateMessages"), "Please select at least one hit.");
+            return;
+        }
+        waitingDialog.show();
+        setTimeout(bulkUpdateHits, 100, hits, newStatus);
+    });
+
+    function bulkUpdateHits(hits, newStatus) {
+        var hitsProcessed = 0;
+        var hitsToProcess = hits.length;
+
+        function hitUpdateSuccess(data) {
+            success($("#messages"), "Hit updated with success!");
+            hitsProcessed++;
+            if (hitsProcessed === hitsToProcess) {
+                waitingDialog.hide();
+                location.reload();
+            }
+        }
+        function hitUpdateFailure(data) {
+            error($("#messages"), "Hit was not updated!");
+            hitsProcessed++;
+            if (hitsProcessed === hitsToProcess) {
+                waitingDialog.hide();
+                location.reload();
+            }
+        }
+
+        for (var i = 0; i < hits.length; i++) {
+            ajaxUpdateHitStatus(hitUpdateSuccess, hitUpdateFailure, hits[i], newStatus);
+        }
+    }
+
 </script>
 {% endblock %}

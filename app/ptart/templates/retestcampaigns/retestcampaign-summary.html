@@ -16,6 +16,7 @@
                     <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
                     {% if editable == True %}
                         <a class="btn btn-outline-primary pull-right" href="/retestcampaign/{{retestcampaign.id}}" role="button">Edit This Campaign</a>
+                        <button class="btn btn-outline-warning" data-toggle="modal" data-target="#updateHitsModal" style="margin-right: 10px;">Bulk Update Hit Status</button>
                     {% endif %}
                 </h1>
             </div>
@@ -48,6 +49,60 @@
                 </div>
             </div>
         </div>
+
+        <!-- Update Hits modal -->
+        <div class="modal fade" id="updateHitsModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Bulk Update Hit Status</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div id="updateMessages" class="col-lg-12"></div>
+                        </div>
+                        <form id="updateHitsForm" >
+                            <div class="form-group">
+                                <label for="newStatus">Select Status:</label>
+                                <select class="form-control" id="newStatus" name="newStatus" required>
+                                    <option value="" disabled selected>Select status</option>
+                                    <option value="NT">Not Tested</option>
+                                    <option value="NA">N/A</option>
+                                    <option value="NF">Not Fixed</option>
+                                    <option value="PF">Partially Fixed</option>
+                                    <option value="F">Fixed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="hitSelection">Select Hits to update &nbsp; <button id="selectAllHitBtn" class="btn btn-sm btn-outline-success" type="button">Select All</button></label>
+                                <div id="hitSelection" style="height: 300px; overflow-y: scroll; border: 1px solid #ced4da; padding: 10px;">
+                                    {% for retesthit in retestcampaign.get_retest_hits %}
+                                    <div class="form-check">
+                                        <input class="form-check-input retesthit" type="checkbox" value="" retesthit_id="{{ retesthit.id }}" hit_id="{{ retesthit.hit.id }}" campaign_id="{{ retestcampaign.id }}" id="unassigne_hit{{ retesthit.id }}">
+                                        <label class="form-check-label" for="unassigne_hit{{ retesthit.id }}">
+                                            <span class="retesthit-status-badge retesthit-status-badge-{{ retesthit.status }}">
+                                                {{ retesthit.get_status_display }}
+                                            </span>
+                                            {{ retesthit.hit.get_unique_id }} - {{ retesthit.hit.title }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-outline-primary" id="updateHitsBtn">Update Hits</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include "_include/html/messages.html" %}
 
         <!-- Campaign summary table-->
             <div class="row mb-4">
@@ -133,5 +188,64 @@
             }
         });
     {% endif %}
+
+    /**
+     * Select all hits.
+     */
+    $('#selectAllHitBtn').on('click', function () {
+        $('.retesthit').prop('checked', true);
+    });
+
+    /**
+     * Update hit status in bulk.
+     */
+    $('#updateHitsBtn').on('click', function () {
+        var newStatus = $('#newStatus').val();
+        if (!newStatus) {
+            error($("#updateMessages"), "Please select a new status.");
+            return;
+        }
+        var hits = [];
+        $('.retesthit:checked').each(function() {
+            hits.push({
+                retesthit: $(this).attr('retesthit_id'),
+                hit: $(this).attr('hit_id'),
+                retest_campaign: $(this).attr('campaign_id'),
+            });
+        });
+        if (hits.length === 0) {
+            error($("#updateMessages"), "Please select at least one hit.");
+            return;
+        }
+        waitingDialog.show();
+        setTimeout(bulkUpdateHits, 100, hits, newStatus);
+    });
+
+    function bulkUpdateHits(hits, newStatus) {
+        var hitsProcessed = 0;
+        var hitsToProcess = hits.length;
+
+        function hitUpdateSuccess(data) {
+            success($("#messages"), "Hit updated with success!");
+            hitsProcessed++;
+            if (hitsProcessed === hitsToProcess) {
+                waitingDialog.hide();
+                location.reload();
+            }
+        }
+        function hitUpdateFailure(data) {
+            error($("#messages"), "Hit was not updated!");
+            hitsProcessed++;
+            if (hitsProcessed === hitsToProcess) {
+                waitingDialog.hide();
+                location.reload();
+            }
+        }
+
+        for (var i = 0; i < hits.length; i++) {
+            ajaxUpdateRetestHitStatus(hitUpdateSuccess, hitUpdateFailure, hits[i], newStatus);
+        }
+    }
+
 </script>
 {% endblock %}

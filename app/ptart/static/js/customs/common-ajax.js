@@ -196,6 +196,24 @@ function ajaxUpdateHit(successFunction, errorFunction, id, severity, title, asse
 }
 
 /**
+* Update a hit status.
+*
+* @param {*} successFunction Function to call in case of ajax success.
+* @param {*} errorFunction Function to call in case of ajax failure.
+* @param {*} id Hit id.
+* @param {*} status Hit status.
+*/
+function ajaxUpdateHitStatus(successFunction, errorFunction, id, status) {
+    $.ajax({
+        url: "/api/hit/" + id + "/",
+        data: '{"status":' + JSON.stringify(status) + '}',
+        type: 'PATCH',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Delete a hit.
  *
  * @param {*} successFunction Function to call in case of ajax success.
@@ -1355,6 +1373,29 @@ function ajaxUpdateRetestHit(successFunction, errorFunction, id, body, status, h
         error: errorFunction
     });
 }
+
+/**
+ * Update a retest hit status.
+ *
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Retest Hit id.
+ * @param {*} status Hit status.
+ */
+function ajaxUpdateRetestHitStatus(successFunction, errorFunction, retesthit, status) {
+    $.ajax({
+        url: "/api/retesthit/" + retesthit.retesthit + "/",
+        data: JSON.stringify({
+            "status": status,
+            "hit": retesthit.hit,
+            "retest_campaign": retesthit.retest_campaign
+        }),
+        type: 'PATCH',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
 
 /**
  * Delete a retest hit.

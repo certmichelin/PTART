@@ -1141,6 +1141,10 @@ class RetestCampaign(models.Model):
     def __str__(self):
         return self.name
 
+    def get_retest_hits(self):
+        """Return all retest hits for the retest campaign."""
+        return self.retesthit_set.all()
+
     def get_unassigned_hits(self):
         """Return all unassigned hits for the retest campaign."""
         assigned_hits = self.get_assigned_hits()
