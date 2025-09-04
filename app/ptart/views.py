@@ -818,6 +818,7 @@ def generate_totp(request, detail=True):
                     {
                         "otp": base64.b64encode(stream.getvalue()).decode("utf-8"),
                         "key": device.key,
+                        "b32key": base64.b32encode(device.bin_key).decode("utf-8"),
                     },
                 )
 
