@@ -7,6 +7,7 @@ from django_otp.models import Device
 
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
+from django.conf import settings
 
 import base64
 
@@ -75,6 +76,7 @@ def index(request):
         "assessments_count": assessments_count,
         "hits_count": hits_count,
         "open_flags_count": open_flags_count,
+        "version": getattr(settings, "VERSION", ""),
     }
     return generate_render(request, "index.html", context)
 
