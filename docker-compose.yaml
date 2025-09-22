@@ -2,7 +2,7 @@
 ---
 services:
   ptart-server:
-    image: deddobifu/ptart:4.0.0
+    image: deddobifu/ptart:4.0.3
     env_file:
       - .env
     volumes:
@@ -30,6 +30,8 @@ services:
       interval: 10s
       retries: 5
       start_period: 5s
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-db:/var/lib/postgreqsql/data
 
