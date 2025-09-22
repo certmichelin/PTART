@@ -267,6 +267,7 @@
      */
     function HostCreationSuccess(data) {
         success($("#messages"), "Host was Created");
+
         //Create host according to the result.
         var card = $('<div>', { id: "host_" + data.id, class: "card mb-3" });
         var cardHeader = $('<div>', { class: "card-header" });
@@ -331,10 +332,10 @@
         $("#hostParent").append(card);
 
         $("#newHostModal").modal('toggle');
-        $("#newHostIP").val();
-        $("#newHostHostname").val();
-        $("#newHostOS").val();
-        newHostNotesSimpleMDE.value();
+        $("#newHostIP").val("");
+        $("#newHostHostname").val("");
+        $("#newHostOS").val("");
+        newHostNotesSimpleMDE.value("");
     }
 
     /**
@@ -411,12 +412,12 @@
         $("#host" + data.host + "Body").append(block);
 
         $("#newServiceModal").modal('toggle');
-        $("#newServicePort").val();
-        $("#newServiceProtocol").val();
-        $("#newServiceName").val();
-        $("#newServiceVersion").val();
-        $("#newServiceBanner").val();
-        $("#newServiceHostId").val();
+        $("#newServicePort").val("");
+        $("#newServiceProtocol").val("");
+        $("#newServiceName").val("");
+        $("#newServiceVersion").val("");
+        $("#newServiceBanner").val("");
+        $("#newServiceHostId").val("");
     }
 
     /**
