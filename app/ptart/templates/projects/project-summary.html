@@ -44,6 +44,7 @@
                                         <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset Management</a>
                                         <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}" role="button">Create Assessment</a>
                                         <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
+                                        <button class="btn btn-outline-success" data-toggle="modal" data-target="#projectOverviewModal">Project overview</button>
                                         <br/>
                                         <a class="btn btn-outline-danger" href="/hits/new/?projectId={{project.id}}" role="button">Create Hit</a>
                                         <button class="btn btn-outline-warning" data-toggle="modal" data-target="#updateHitsModal">Bulk Update Hit Status</button>
@@ -158,6 +159,165 @@
                 </div>
             </div>
         </div>
+
+        <!-- Project overview modal -->
+        <div class="modal fade" id="projectOverviewModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Project overview</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-lg-12">
+                            <h3>{{ project.name }}</h3>
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Scope</th>
+                                        <th class="text-center">Engagement Overview</th>
+                                        <th class="text-center">Executive Summary</th>
+                                        <th class="text-center">Conclusion</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if project.scope and "TODO" not in project.scope %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% elif "TODO" in project.scope %}
+                                            <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if project.overview and "TODO" not in project.overview %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% elif "TODO" in project.overview %}
+                                            <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if project.executive_summary and "TODO" not in project.executive_summary %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% elif "TODO" in project.executive_summary %}
+                                            <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if project.conclusion and "TODO" not in project.conclusion %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% elif "TODO" in project.conclusion %}
+                                            <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-lg-12">
+                            {% for assessment in project.assessment_set.all %}
+                            <h3><i class="fa fa-cube"></i> {{ assessment.name }}</h3>
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th class="text-center">Asset</th>
+                                        <th class="text-center">Body</th>
+                                        <th class="text-center">Remediation</th>
+                                        <th class="text-center">CVSS</th>
+                                        <th class="text-center">Screenshots</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for hit in assessment.hit_set.all %}
+                                    <tr>
+                                        <td>
+                                            <a href="/hit/{{ hit.id }}/">
+                                                {{ hit.title }}
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if hit.asset and "TODO" not in hit.asset %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% elif "TODO" in hit.asset %}
+                                            <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if hit.body and "TODO" not in hit.asset %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% elif "TODO" in hit.body %}
+                                            <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if hit.remediation and "TODO" not in hit.remediation %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% elif "TODO" in hit.remediation %}
+                                            <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if hit.get_cvss_value != '---' %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="">
+                                            {% if hit.get_not_injected_screenshots.count %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
+                                            {{ hit.get_not_injected_screenshots.count }}
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Assesments summary table-->
         <div class="row mb-4">
