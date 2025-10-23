@@ -1,4 +1,4 @@
-FROM python:3.12.4-alpine3.20
+FROM python:3.13.9-alpine3.22
 EXPOSE 8888
 
 #Install dependencies
