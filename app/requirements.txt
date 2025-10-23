@@ -5,8 +5,8 @@ django-tables2==2.7.0
 django-otp==1.5.0
 cvss==3.1
 Jinja2==3.1.4
-psycopg2==2.9.3
-Pillow==9.2.0
+psycopg2==2.9.11
+Pillow==10.4.0
 pypandoc==1.13
 python-dotenv==1.0.1
 openpyxl==3.0.10
@@ -15,3 +15,4 @@ requests==2.32.3
 rlPyCairo==0.3.0
 svglib==1.4.1
 gunicorn==23.0.0
+standard-imghdr==3.13.0
