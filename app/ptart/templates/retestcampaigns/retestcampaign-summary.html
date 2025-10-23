@@ -14,10 +14,11 @@
                 <h1 class="page-header">
                     {{ retestcampaign.name }}
                     <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
+                    <button class="btn btn-outline-info" data-toggle="modal" data-target="#retestCampaignOverviewModal" style="margin-right: 10px;">Restest Campaign Overview</button>
                     {% if editable == True %}
+                    <div class="btn-group" role="group">
                         <a class="btn btn-outline-primary pull-right" href="/retestcampaign/{{retestcampaign.id}}" role="button">Edit This Campaign</a>
                         <button class="btn btn-outline-warning" data-toggle="modal" data-target="#updateHitsModal" style="margin-right: 10px;">Bulk Update Hit Status</button>
-                        <button class="btn btn-outline-warning" data-toggle="modal" data-target="#retestCampaignOverviewModal" style="margin-right: 10px;">Restest Campaign Overview</button>
                     {% endif %}
                 </h1>
             </div>

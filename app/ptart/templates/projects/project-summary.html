@@ -42,16 +42,16 @@
                                     <div class="text-center" style="position: relative; top: 0;">
                                         <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#detailsModal">Details</button>
                                         <a class="btn btn-outline-info" href="/project/{{project.id}}/assets" role="button">Asset Management</a>
+                                        <button class="btn btn-outline-info" data-toggle="modal" data-target="#projectOverviewModal">Project overview</button>
                                         <a class="btn btn-outline-warning" href="/assessments/new?projectId={{project.id}}" role="button">Create Assessment</a>
                                         <a class="btn btn-outline-primary pull-right" href="/project/{{project.id}}" role="button">Edit This Project</a>
-                                        <button class="btn btn-outline-success" data-toggle="modal" data-target="#projectOverviewModal">Project overview</button>
                                         <br/>
                                         <a class="btn btn-outline-danger" href="/hits/new/?projectId={{project.id}}" role="button">Create Hit</a>
-                                        <button class="btn btn-outline-warning" data-toggle="modal" data-target="#updateHitsModal">Bulk Update Hit Status</button>
                                         <a class="btn btn-outline-success" href="/flags/new/?projectId={{project.id}}" role="button">Create Flag</a>
                                         <a class="btn btn-outline-danger" href="/attackscenario/new/?projectId={{project.id}}" role="button">Create Attack Scenario</a>
                                         <a class="btn btn-outline-success" href="/recommendation/new/?projectId={{project.id}}" role="button">Create Recommendation</a>
                                         <a class="btn btn-outline-primary" href="/retestcampaigns/new/?projectId={{project.id}}" role="button">Create Retest Campaign</a>
+                                        <button class="btn btn-outline-warning" data-toggle="modal" data-target="#updateHitsModal">Bulk Update Hit Status</button>
                                     </div>
                                 {% endif %}
                             {% endif %}
