@@ -137,9 +137,9 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="">
-                                            {% if retestcampaign.introduction and "TODO" not in retestcampaign.introduction %}
+                                            {% if retestcampaign.conclusion and "TODO" not in retestcampaign.conclusion %}
                                             <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
-                                            {% elif "TODO" in retestcampaign.introduction %}
+                                            {% elif "TODO" in retestcampaign.conclusion %}
                                             <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
                                             {% else %}
                                             <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
@@ -158,6 +158,7 @@
                                         <th>Title</th>
                                         <th class="text-center">Body</th>
                                         <th class="text-center">Screenshots</th>
+                                        <th class="text-center">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -170,7 +171,7 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="">
-                                            {% if retesthit.body and "TODO" not in retesthit.asset %}
+                                            {% if retesthit.body and "TODO" not in retesthit.body %}
                                             <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
                                             {% elif "TODO" in retesthit.body %}
                                             <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
@@ -186,6 +187,15 @@
                                             {{ retesthit.get_not_injected_screenshots.count }}
                                             {% else %}
                                             <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
+                                            {% endif %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="">
+                                            {% if retesthit.status != 'NT' %}
+                                            <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Tested"></i>
+                                            {% else %}
+                                            <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Not Tested"></i>
                                             {% endif %}
                                             </span>
                                         </td>
