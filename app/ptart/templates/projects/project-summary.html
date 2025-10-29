@@ -195,9 +195,9 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="">
-                                            {% if project.overview and "TODO" not in project.overview %}
+                                            {% if project.engagement_overview and "TODO" not in project.engagement_overview %}
                                             <i class="fa fa-check-circle" style="color: green;" data-toggle="tooltip" data-placement="left" title="Filled"></i>
-                                            {% elif "TODO" in project.overview %}
+                                            {% elif "TODO" in project.engagement_overview %}
                                             <i class="fa fa-exclamation-triangle" style="color: orange;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
                                             {% else %}
                                             <i class="fa fa-times-circle" style="color: red;" data-toggle="tooltip" data-placement="left" title="Empty"></i>
