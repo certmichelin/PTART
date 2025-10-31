@@ -1,0 +1,49 @@
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterInput = document.getElementById('filterContent');
+    const table = document.querySelector('table');
+
+    const filterColumnName = "{{ filterColumnName|default:'' }}";
+    
+    filterInput.addEventListener('keyup', function() {
+        const filterValue = this.value.toLowerCase();
+        const rows = table.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            let shouldShow = false;
+            
+            if (filterColumnName) {
+                const headerCells = table.querySelectorAll('thead th');
+                let targetColumnIndex = -1;
+                
+                headerCells.forEach((cell, index) => {
+                    if (cell.textContent.trim().toLowerCase() === filterColumnName.toLowerCase()) {
+                        targetColumnIndex = index;
+                    }
+                });
+                
+                if (targetColumnIndex !== -1) {
+                    const targetCell = row.cells[targetColumnIndex];
+                    if (targetCell) {
+                        const text = targetCell.textContent.toLowerCase();
+                        shouldShow = text.includes(filterValue);
+                    }
+                } else {
+                    shouldShow = true;
+                }
+            } else {
+                for (let i = 0; i < row.cells.length; i++) {
+                    const cell = row.cells[i];
+                    if (cell && cell.textContent.toLowerCase().includes(filterValue)) {
+                        shouldShow = true;
+                        break;
+                    }
+                }
+            }
+            
+            row.style.display = shouldShow || filterValue === '' ? '' : 'none';
+        });
+    });
+});
+</script>

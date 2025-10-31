@@ -6,7 +6,7 @@
     <div class="container-fluid">
         {% include '_include/html/header.html' with item='Archived Projects' active_text='Archived' %}
         {% include "_include/html/messages.html" %}
-        {% include '_include/html/list.html' %}
+        {% include '_include/html/list.html' with filterColumnName="Name" filterListEnable=True %}
     </div>
 </div>
 {% endblock %}

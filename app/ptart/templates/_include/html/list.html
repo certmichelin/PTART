@@ -3,6 +3,17 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-body">
+                {% if filterListEnable %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="filterContent" class="form-label mb-0">Filter :</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text" class="form-control" id="filterContent" placeholder="{% if filterColumnName %}Search by {{ filterColumnName }}{% else %}Search...{% endif %}">
+                    </div>
+                </div>
+                {% endif %}
+                
                 {% if count > 0 %}
                 {% render_table table %}
                     {% if not nodelete %}
@@ -15,3 +26,8 @@
         </div>
     </div>
 </div>
+
+
+{% if filterListEnable %}
+    {% include '../js/filterList.html' with filterColumnName=filterColumnName %}
+{% endif %}
