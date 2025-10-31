@@ -21,9 +21,7 @@ from openpyxl import Workbook, styles
 from openpyxl.styles import Alignment
 from openpyxl.writer.excel import save_virtual_workbook
 
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
-
+import cairosvg
 import jinja2
 import os
 import pypandoc
@@ -1608,14 +1606,23 @@ def project_latex(request, pk):
                 tempPngFilename = "{}_{}_{}.png".format(
                     project.id, attackscenario.id, random.randint(0, 10000)
                 )
-                f = open(tempSvgFilename, "a")
-                f.write(attackscenario.svg)
-                f.close()
-                drawing = svg2rlg(tempSvgFilename)
-                renderPM.drawToFile(drawing, tempPngFilename, fmt="PNG")
+                
+                with open(tempSvgFilename,"w") as tempSvgFile:
+                    tempSvgFile.write(attackscenario.svg)
+                    tempSvgFile.close()
+                    
+                pngContent = cairosvg.svg2png(
+                    url=tempSvgFilename
+                )
+                
+                with open(tempPngFilename,"wb") as tempPngFile:
+                    tempPngFile.write(pngContent)
+                    tempPngFile.close()
+                    
                 zf.write(
                     tempPngFilename, "attackscenarios/{}.png".format(attackscenario.id)
                 )
+                
                 os.remove(tempSvgFilename)
                 os.remove(tempPngFilename)
 
