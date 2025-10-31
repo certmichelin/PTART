@@ -2,7 +2,7 @@
 ---
 services:
   ptart-server:
-    image: deddobifu/ptart:4.0.6
+    image: deddobifu/ptart:4.0.7
     env_file:
       - .env
     volumes:
