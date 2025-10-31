@@ -16,3 +16,4 @@ rlPyCairo==0.3.0
 svglib==1.4.1
 gunicorn==23.0.0
 standard-imghdr==3.13.0
+cairosvg==2.8.2
