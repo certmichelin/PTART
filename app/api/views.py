@@ -21,6 +21,7 @@ from openpyxl import Workbook, styles
 from openpyxl.styles import Alignment
 from openpyxl.writer.excel import save_virtual_workbook
 
+import cairosvg
 import jinja2
 import os
 import pypandoc
@@ -28,7 +29,6 @@ import random
 import re
 import requests
 import zipfile
-import cairosvg
 
 from ptart.models import (
     Flag,
