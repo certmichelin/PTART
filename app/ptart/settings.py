@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "ptart",
+    "crispy_forms",
+    "django_bootstrap5",
+    "django_filters",
     "django_tables2",
     "django_otp",
     "django_otp.plugins.otp_totp",
@@ -75,6 +78,7 @@ MIDDLEWARE = [
     "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "ptart.urls"
@@ -166,3 +170,7 @@ CHATGPT_API_KEY = str(os.getenv("CHATGPT_API_KEY"))
 
 # Attachments, Screenshots locations.
 MEDIA_ROOT = os.path.abspath(str(os.getenv("MEDIA_ROOT")))
+
+# CRIPSY dependencies
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["bootstrap4"]
+CRISPY_TEMPLATE_PACK = "bootstrap4"

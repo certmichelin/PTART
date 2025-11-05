@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-
+from django_filters import FilterSet
 from django_otp.decorators import otp_required
 from django_otp.models import Device
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
@@ -50,6 +52,9 @@ from .tables import (
     ToolTable,
 )
 
+from .filters import (
+    ProjectFilter
+)
 
 @otp_required
 def index(request):
@@ -90,25 +95,50 @@ def token_management(request):
 
     return generate_render(request, "token/management.html", context)
 
-
 @otp_required
 def projects_all(request):
-    return generic_all(
-        request,
-        Project.get_viewable(request.user),
-        ProjectTable,
-        "projects/projects-list.html",
+    project_filter = ProjectFilter(
+        request.GET, 
+        queryset=Project.get_viewable(request.user)
     )
+    qs = project_filter.qs
+    table = ProjectTable(qs)
+    RequestConfig(request).configure(table)
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        html = render_to_string("_include/html/list.html", {"table": table, "nodelete": True}, request=request)
+        return JsonResponse({"table_html": html})
+
+    context = {
+        "table": table,
+        "count": qs.count(),
+        "filter": project_filter,
+    }
+    return generate_render(request, "projects/projects-list.html", context)
+
 
 
 @otp_required
 def archives_all(request):
-    return generic_all(
-        request,
-        Project.get_archived_viewable(request.user),
-        ProjectTable,
-        "archives/archives-list.html",
+    
+    archives_filter = ProjectFilter(
+        request.GET, 
+        queryset=Project.get_archived_viewable(request.user)
     )
+    qs = archives_filter.qs
+    table = ProjectTable(qs)
+    RequestConfig(request).configure(table)
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        html = render_to_string("_include/html/list.html", {"table": table, "nodelete": True}, request=request)
+        return JsonResponse({"table_html": html})
+
+    context = {
+        "table": table,
+        "count": qs.count(),
+        "filter": archives_filter,
+    }
+    return generate_render(request, "archives/archives-list.html", context)
 
 
 @otp_required
