@@ -1,49 +1,27 @@
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const filterInput = document.getElementById('filterContent');
-    const table = document.querySelector('table');
+const form = document.getElementById('filterForm');
+const tableContainer = document.getElementById('tableContainer');
+let timer = null;
 
-    const filterColumnName = "{{ filterColumnName|default:'' }}";
-    
-    filterInput.addEventListener('keyup', function() {
-        const filterValue = this.value.toLowerCase();
-        const rows = table.querySelectorAll('tbody tr');
-        
-        rows.forEach(row => {
-            let shouldShow = false;
-            
-            if (filterColumnName) {
-                const headerCells = table.querySelectorAll('thead th');
-                let targetColumnIndex = -1;
-                
-                headerCells.forEach((cell, index) => {
-                    if (cell.textContent.trim().toLowerCase() === filterColumnName.toLowerCase()) {
-                        targetColumnIndex = index;
-                    }
-                });
-                
-                if (targetColumnIndex !== -1) {
-                    const targetCell = row.cells[targetColumnIndex];
-                    if (targetCell) {
-                        const text = targetCell.textContent.toLowerCase();
-                        shouldShow = text.includes(filterValue);
-                    }
-                } else {
-                    shouldShow = true;
-                }
-            } else {
-                for (let i = 0; i < row.cells.length; i++) {
-                    const cell = row.cells[i];
-                    if (cell && cell.textContent.toLowerCase().includes(filterValue)) {
-                        shouldShow = true;
-                        break;
-                    }
-                }
-            }
-            
-            row.style.display = shouldShow || filterValue === '' ? '' : 'none';
-        });
-    });
+form.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', triggerFilter);
+    el.addEventListener('change', triggerFilter);
 });
+
+function triggerFilter() {
+    clearTimeout(timer);
+    timer = setTimeout(applyFilter, 300);
+}
+
+function applyFilter() {
+    const params = new URLSearchParams(new FormData(form));
+    fetch(window.location.pathname + "?" + params.toString(), {
+        headers: {"X-Requested-With": "XMLHttpRequest"}
+    })
+    .then(r => r.json())
+    .then(data => {
+        tableContainer.innerHTML = data.table_html;
+    });
+}
 </script>
