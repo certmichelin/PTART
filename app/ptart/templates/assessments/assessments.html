@@ -5,10 +5,11 @@
 <div id="page-wrapper">
     <div class="container-fluid">
 
-        {% include '_include/html/header.html' with item='New Assessment' active_icon='fa fa-cube' active_text='Assessments' %}
+        {% include '_include/html/header.html' with active_icon='fa fa-cube' active_text='Assessments' %}
         {% include "_include/html/messages.html" %}
 
         <!-- Assessment creation form -->
+        <h3>New Assessment &nbsp;<button class="btn btn-sm btn-outline-danger" onclick="document.location = document.referrer"><i class="fa fa-undo"></i> Go Back</button></h3>
         <div class="row">
             <div class="col-lg-12">
                 {% if not projects %}
