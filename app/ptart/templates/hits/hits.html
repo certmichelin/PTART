@@ -219,13 +219,6 @@
     function hitCreationSuccess(data) {
         hitId = data.id;
 
-        //Assign CVSS.
-        {% if cvss_type == 3 %}
-        addCVSSv31ToHit(data.id);
-        {% else %}
-        addCVSSv4ToHit(data.id);
-        {% endif %}
-
         //Upload screenshots and attachment
         screenshotsToUpload = $('.screenshot_gallery').length;
         attachmentsToUpload = $('.attachment_gallery').length;
@@ -346,8 +339,22 @@
                 mdRemediation.value(mdRemediation.value().replaceAll(convertIdToMarkdown(String(key)), convertIdToMarkdown(String(value))));
             });
             //Update hit with new body and remediation.
-            ajaxUpdateHit(cleanFields, commonFailure, hitId, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#cwes").select2("val"), $("#assessment").val());
+            ajaxUpdateHit(assignCVSSSuccess, commonFailure, hitId, $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), 'D', $("#fix_complexity").val(), $("#labels").select2("val"), $("#cwes").select2("val"), $("#assessment").val());
         }
+    }
+
+    /**
+     * CVSS assignment success callback.
+     */
+    function assignCVSSSuccess(data) {
+        //Assign CVSS.
+        {% if cvss_type == 3 %}
+        addCVSSv31ToHit(hitId);
+        {% else %}
+        addCVSSv4ToHit(hitId);
+        {% endif %}
+
+        cleanFields();
     }
 
     /**
@@ -359,7 +366,13 @@
         $("#asset").val("");
         mdBody.value("");
         mdRemediation.value("");
+
+        {% if cvss_type == 3 %}
         clearCVSS3();
+        {% else %}
+        clearCVSS4();
+        {% endif %}
+        
         $("#screenshots").empty();
         $("#attachments").empty();
         $("#references").empty();
