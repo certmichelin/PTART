@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from ptart.tools.screenshots import (
     delete_screenshot_file,
     get_screenshot_raw_data,
@@ -792,6 +794,7 @@ class Hit(models.Model):
                     return self.cvss4.get_cvss_string()
 
     def delete(self, *args, **kwargs):
+        #Pretty useless as ON DELETE CASCADE did not use to delete the cvss objects
         if self.cvss3:
             self.cvss3.delete()
         if self.cvss4:
@@ -801,8 +804,8 @@ class Hit(models.Model):
     class Meta:
         ordering = (
             "severity",
-            "-cvss3",
-            "-cvss4",
+            models.F("cvss3").desc(nulls_last=True),
+            models.F("cvss4").desc(nulls_last=True),
             "title",
         )
 
@@ -1386,3 +1389,11 @@ class Service(models.Model):
 
     class Meta:
         ordering = ("port",)
+
+@receiver(post_delete, sender=Hit)
+def delete_cvss3_on_hit_delete(sender, instance, **kwargs):
+    """Signals to delete CVSS objects when Hit is deleted."""
+    if instance.cvss3:
+        instance.cvss3.delete()
+    if instance.cvss4:
+        instance.cvss4.delete()
