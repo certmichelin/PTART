@@ -105,7 +105,10 @@
                 {% if "CHATGPT_API_KEY"|getsetting != "" and "CHATGPT_API_KEY"|getsetting != "NotConfigured"  %}
                     <a href="#chatgptModal" class="btn btn-outline-light" data-backdrop="false" data-toggle="modal">Chat GPT</a>&nbsp;&nbsp;
                 {% endif %}
-                <a href="/accounts/logout/" class="btn btn-outline-success"><i class="fa fa-power-off"></i> Log Out</a>
+                <a href="#" class="btn btn-outline-success" onclick="document.getElementById('logoutForm').submit()"><i class="fa fa-power-off"></i> Log Out</a>
+                <form id="logoutForm" action="/accounts/logout/" method="post" style="display:none;">
+                    {% csrf_token %}
+                </form>
             </div>
         </nav>
 
