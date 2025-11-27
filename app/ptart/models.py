@@ -804,8 +804,8 @@ class Hit(models.Model):
     class Meta:
         ordering = (
             "severity",
-            models.F("cvss3").desc(nulls_last=True),
-            models.F("cvss4").desc(nulls_last=True),
+            models.F("cvss3__decimal_value").desc(nulls_last=True),
+            models.F("cvss4__decimal_value").desc(nulls_last=True),
             "title",
         )
 
