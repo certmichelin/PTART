@@ -402,7 +402,13 @@ def retestscreenshots(request):
 @ptart_authentication
 @api_view(["GET"])
 def users(request):
-    return items(request, User, UserSerializer)
+    response = None
+    userList = User.objects.filter(is_active=True)
+    if request.method == "GET":
+        response = Response(
+            UserSerializer(userList, many=True).data
+        )
+    return response
 
 @csrf_exempt
 @ptart_authentication
