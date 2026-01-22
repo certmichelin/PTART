@@ -45,6 +45,7 @@ urlpatterns = [
     re_path(r"^project/(?P<pk>[0-9]+)/xlsx$", views.project_xlsx),
     re_path(r"^project/(?P<pk>[0-9]+)/latex$", views.project_latex),
     re_path(r"^project/(?P<pk>[0-9]+)/json$", views.project_json),
+    re_path(r"^project/(?P<pk>[0-9]+)/report$", views.project_slides),
     re_path(r"^projects/$", views.projects),
     re_path(r"^template/(?P<pk>[0-9]+)/$", views.template),
     re_path(r"^templates/$", views.templates),

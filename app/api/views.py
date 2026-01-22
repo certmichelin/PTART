@@ -11,9 +11,9 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, renderer_classes
 from rest_framework.decorators import api_view
-from rest_framework.renderers import BaseRenderer
+from rest_framework.renderers import BaseRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
@@ -88,6 +88,53 @@ from .serializers import (
     RetestScreenshotSerializer,
 )
 
+#
+# Image renderer for Screenshots.
+#
+class ImageRenderer(BaseRenderer):
+    def render(self, data, media_type="image/png", renderer_context=None):
+        return data
+
+#
+# JSON renderer for Burp config file.
+#
+class JsonRenderer(BaseRenderer):
+    def render(self, data, media_type="application/json", renderer_context=None):
+        return data
+
+
+#
+# Binary renderer for Attachments.
+#
+class BinaryRenderer(BaseRenderer):
+    def render(
+        self, data, media_type="application/octet-stream", renderer_context=None
+    ):
+        return data
+
+#
+# Xlsx renderer for Excel reports.
+#
+class XlsxRenderer(BaseRenderer):
+    media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    format_suffix = "xlsx"
+
+    def render(
+        self, data, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", renderer_context=None
+    ):
+        return data
+
+#
+# Zip renderer for LaTeX reports.
+#
+class ZipRenderer(BaseRenderer):
+    media_type = "application/zip"
+    format_suffix = "zip"
+
+    def render(
+        self, data, media_type="application/zip", renderer_context=None
+    ):
+        return data
 
 @csrf_exempt
 @ptart_authentication
@@ -858,7 +905,8 @@ def project_burp_configuration(request, pk):
 
 @csrf_exempt
 @ptart_authentication
-@action(methods=["GET"], detail=True)
+@api_view(http_method_names=["GET"])
+@renderer_classes([XlsxRenderer])
 def project_xlsx(request, pk):
     response = None
     try:
@@ -1524,19 +1572,12 @@ def project_xlsx(request, pk):
                     retestcampaign_ws.auto_filter.ref = "A4:H{}".format(line)
 
             # Prepare HTTP response.
-            response = Response(save_virtual_workbook(wb))
-            response.content_type = (
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            response = HttpResponse(save_virtual_workbook(wb),
+                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
             response["Content-Disposition"] = (
                 "attachment; filename=" + project.name + ".xlsx"
             )
-            response.accepted_renderer = BinaryRenderer()
-            response.accepted_media_type = (
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-            response.renderer_context = {}
-
             wb.close()
         else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
@@ -1547,7 +1588,8 @@ def project_xlsx(request, pk):
 
 @csrf_exempt
 @ptart_authentication
-@action(methods=["GET"], detail=True)
+@api_view(http_method_names=["GET"])
+@renderer_classes([ZipRenderer])
 def project_latex(request, pk):
     response = None
     try:
@@ -1739,9 +1781,6 @@ def project_latex(request, pk):
             response["Content-Disposition"] = (
                 "attachment; filename=" + project.name + ".zip"
             )
-            response.accepted_renderer = BinaryRenderer()
-            response.accepted_media_type = "application/zip"
-            response.renderer_context = {}
         else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
@@ -1751,7 +1790,7 @@ def project_latex(request, pk):
 
 @csrf_exempt
 @ptart_authentication
-@action(methods=["GET"], detail=True)
+@api_view(http_method_names=["GET"])
 def project_json(request, pk):
     response = None
     try:
@@ -1930,6 +1969,37 @@ def project_json(request, pk):
         else:
             response = Response(status=status.HTTP_403_FORBIDDEN)
     except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
+
+
+@csrf_exempt
+@ptart_authentication
+@api_view(http_method_names=["GET"])
+@renderer_classes([TemplateHTMLRenderer])
+def project_slides(request, pk):
+    """
+    Generate a reveal.js HTML presentation for a project.
+    Returns a standalone HTML file that can be opened in a browser.
+    Add ?print-pdf to the URL when opening the file to enable PDF generation mode.
+    """
+    response = None
+    try:
+        project = Project.objects.get(pk=pk)
+        if project.is_user_can_view(request.user):
+            from django.template.loader import render_to_string
+
+            # Render the reveal.js template with the project context
+            html_content = render_to_string(
+                "projects/project-report.html",
+                {"project": project}
+            )
+
+            # Prepare HTTP response with HTML content
+            response = HttpResponse(html_content, content_type="text/html")
+        else:
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Project.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
 
@@ -2246,29 +2316,3 @@ def items(request, class_name, serializer_name):
             response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return response
-
-
-#
-# Image renderer for Screenshots.
-#
-class ImageRenderer(BaseRenderer):
-    def render(self, data, media_type="image/png", renderer_context=None):
-        return data
-
-
-#
-# JSON renderer for Burp config file.
-#
-class JsonRenderer(BaseRenderer):
-    def render(self, data, media_type="application/json", renderer_context=None):
-        return data
-
-
-#
-# Binary renderer for Attachments.
-#
-class BinaryRenderer(BaseRenderer):
-    def render(
-        self, data, media_type="application/octet-stream", renderer_context=None
-    ):
-        return data
