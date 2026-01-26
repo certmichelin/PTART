@@ -56,6 +56,7 @@ from ptart.models import (
     RetestCampaign,
     RetestHit,
     RetestScreenshot,
+    User,
 )
 
 from api.decorators import ptart_authentication
@@ -86,6 +87,7 @@ from .serializers import (
     RetestCampaignSerializer,
     RetestHitSerializer,
     RetestScreenshotSerializer,
+    UserSerializer
 )
 
 
@@ -396,6 +398,17 @@ def retestscreenshot(request, pk):
 def retestscreenshots(request):
     return items(request, RetestScreenshot, RetestScreenshotSerializer)
 
+@csrf_exempt
+@ptart_authentication
+@api_view(["GET"])
+def users(request):
+    response = None
+    userList = User.objects.filter(is_active=True)
+    if request.method == "GET":
+        response = Response(
+            UserSerializer(userList, many=True).data
+        )
+    return response
 
 @csrf_exempt
 @ptart_authentication

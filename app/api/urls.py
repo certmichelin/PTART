@@ -76,5 +76,6 @@ urlpatterns = [
     ),
     re_path(r"^retestscreenshot/png/(?P<pk>[0-9]+)/$", views.retestscreenshot_raw),
     re_path(r"^retestscreenshots/$", views.retestscreenshots),
+    re_path(r"^users/$", views.users),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
