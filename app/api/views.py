@@ -534,27 +534,21 @@ def screenshot_order(request, pk, order):
 
 
 @csrf_exempt
+@api_view(["GET"])
 @ptart_authentication
-@action(methods=["GET"], detail=True)
 def screenshot_raw(request, pk):
-    response = None
     try:
         item = Screenshot.objects.get(pk=pk)
         if item.is_user_can_view(request.user):
             raw_data = item.get_raw_data()
             if raw_data is not None:
-                response = Response(raw_data)
+                return HttpResponse(raw_data, content_type="image/png")
             else:
-                response = Response(status=status.HTTP_404_NOT_FOUND)
+                return HttpResponse(status=404)
         else:
-            response = Response(status=status.HTTP_403_FORBIDDEN)
+            return HttpResponse(status=403)
     except Screenshot.DoesNotExist:
-        response = Response(status=status.HTTP_404_NOT_FOUND)
-
-    response.accepted_renderer = ImageRenderer()
-    response.accepted_media_type = "image/png"
-    response.renderer_context = {}
-    return response
+        return HttpResponse(status=404)
 
 
 @csrf_exempt
@@ -602,51 +596,39 @@ def retestscreenshot_order(request, pk, order):
 
 
 @csrf_exempt
+@api_view(["GET"])
 @ptart_authentication
-@action(methods=["GET"], detail=True)
 def retestscreenshot_raw(request, pk):
-    response = None
     try:
         item = RetestScreenshot.objects.get(pk=pk)
         if item.is_user_can_view(request.user):
             raw_data = item.get_raw_data()
             if raw_data is not None:
-                response = Response(raw_data)
+                return HttpResponse(raw_data, content_type="image/png")
             else:
-                response = Response(status=status.HTTP_404_NOT_FOUND)
+                return HttpResponse(status=404)
         else:
-            response = Response(status=status.HTTP_403_FORBIDDEN)
+            return HttpResponse(status=403)
     except RetestScreenshot.DoesNotExist:
-        response = Response(status=status.HTTP_404_NOT_FOUND)
-
-    response.accepted_renderer = ImageRenderer()
-    response.accepted_media_type = "image/png"
-    response.renderer_context = {}
-    return response
+        return HttpResponse(status=404)
 
 
 @csrf_exempt
+@api_view(["GET"])
 @ptart_authentication
-@action(methods=["GET"], detail=True)
 def attachment_raw(request, pk):
-    response = None
     try:
         item = Attachment.objects.get(pk=pk)
         if item.is_user_can_view(request.user):
-            response = Response(item.get_raw_data())
-            response.content_type = "application/octet-stream"
+            response = HttpResponse(item.get_raw_data(), content_type="application/octet-stream")
             response["Content-Disposition"] = (
                 "attachment; filename=" + item.attachment_name
             )
+            return response
         else:
-            response = Response(status=status.HTTP_403_FORBIDDEN)
+            return HttpResponse(status=403)
     except Attachment.DoesNotExist:
-        response = Response(status=status.HTTP_404_NOT_FOUND)
-
-    response.accepted_renderer = BinaryRenderer()
-    response.accepted_media_type = "application/octet-stream"
-    response.renderer_context = {}
-    return response
+        return HttpResponse(status=404)
 
 
 @csrf_exempt
