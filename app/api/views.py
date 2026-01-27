@@ -544,11 +544,11 @@ def screenshot_raw(request, pk):
             if raw_data is not None:
                 return HttpResponse(raw_data, content_type="image/png")
             else:
-                return HttpResponse(status=404)
+                return HttpResponse(status=status.HTTP_404_NOT_FOUND)
         else:
-            return HttpResponse(status=403)
+            return HttpResponse(status=status.HTTP_403_FORBIDDEN)
     except Screenshot.DoesNotExist:
-        return HttpResponse(status=404)
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
 
 @csrf_exempt
@@ -606,11 +606,11 @@ def retestscreenshot_raw(request, pk):
             if raw_data is not None:
                 return HttpResponse(raw_data, content_type="image/png")
             else:
-                return HttpResponse(status=404)
+                return HttpResponse(status=status.HTTP_404_NOT_FOUND)
         else:
-            return HttpResponse(status=403)
+            return HttpResponse(status=status.HTTP_403_FORBIDDEN)
     except RetestScreenshot.DoesNotExist:
-        return HttpResponse(status=404)
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
 
 @csrf_exempt
@@ -626,9 +626,9 @@ def attachment_raw(request, pk):
             )
             return response
         else:
-            return HttpResponse(status=403)
+            return HttpResponse(status=status.HTTP_403_FORBIDDEN)
     except Attachment.DoesNotExist:
-        return HttpResponse(status=404)
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
 
 
 @csrf_exempt
