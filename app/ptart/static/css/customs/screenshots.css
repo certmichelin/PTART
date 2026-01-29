@@ -1,4 +1,15 @@
 .screenshot_data {
-    margin-bottom: 5px;
-    width: 100%
+        margin-bottom: 5px;
+        width: 100%
+    }
+.screenshot-wrapper .edit-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 10;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
 }

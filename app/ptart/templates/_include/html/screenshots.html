@@ -1,217 +1,133 @@
+{% load static %}
+
 <div class="panel panel-default">
-  <div class="panel-body">
+    <div class="panel-body">
 
-    <div class="row mb-3">
-      <div class="col-lg-12">
-        <h4>Screenshots</h4>
-      </div>
-    </div>
-
-    <input id="screenshotMaxId" name="screenshotMaxId" type="hidden" value="0" />
-
-    <style>
-      .screenshot-wrapper { position: relative; display: inline-block; }
-      .screenshot-wrapper .edit-btn {
-        position: absolute; top: 6px; right: 6px;
-        z-index: 10;
-        padding: 4px 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: #fff;
-        cursor: pointer;
-      }
-    </style>
-
-    <!-- Screenshot Gallery -->
-    <div id="screenshots" class="d-flex flex-wrap gap-2">
-
-      {# HIT screenshots #}
-      {% for screenshot in hit.screenshot_set.all %}
-      <div class="screenshot-wrapper"
-           draggable="true"
-           ondragstart="dragScreenshotStart(event)"
-           ondragend="dragScreenshotStop(event)">
-
-        <a id="screenshot_link_{{screenshot.id}}"
-           href="/api/screenshot/png/{{screenshot.pk}}/"
-           data-toggle="tooltip"
-           data-placement="left"
-           title="{{screenshot.caption}}"
-           data-fancybox="gallery"
-           data-screenshot-id="{{screenshot.id}}"
-           data-screenshot-order="{{screenshot.order}}"
-           data-type="hit">
-          <img id="screenshot_{{screenshot.id}}"
-               alt="Screenshot not found"
-               class="screenshot_data screenshot_gallery"
-               src="/api/screenshot/png/{{screenshot.pk}}/" />
-        </a>
-
-        {% if editable %}
-        <button class="edit-btn edit-screenshot-btn"
-                type="button"
-                data-img-id="{{ screenshot.id }}"
-                data-type="hit">
-          Edit / Annotate
-        </button>
-        {% endif %}
-      </div>
-      {% endfor %}
-
-      {# RETEST screenshots #}
-      {% for screenshot in retesthit.retestscreenshot_set.all %}
-      <div class="screenshot-wrapper"
-           draggable="true"
-           ondragstart="dragScreenshotStart(event)"
-           ondragend="dragScreenshotStop(event)">
-
-        <a id="screenshot_link_{{screenshot.id}}"
-           href="/api/retestscreenshot/png/{{screenshot.pk}}/"
-           data-toggle="tooltip"
-           data-placement="left"
-           title="{{screenshot.caption}}"
-           data-fancybox="gallery"
-           data-screenshot-id="{{screenshot.id}}"
-           data-screenshot-order="{{screenshot.order}}"
-           data-type="retest">
-          <img id="screenshot_{{screenshot.id}}"
-               alt="Screenshot not found"
-               class="screenshot_data screenshot_gallery"
-               src="/api/retestscreenshot/png/{{screenshot.pk}}/" />
-        </a>
-
-        {% if editable %}
-        <button class="edit-btn edit-screenshot-btn"
-                type="button"
-                data-img-id="{{ screenshot.id }}"
-                data-type="retest">
-          Edit / Annotate
-        </button>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-
-    <!-- Action Buttons Row -->
-    {% if editable %}
-    <div class="mt-3 d-flex gap-2">
-      <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#pushScreenshotModal">
-        Add Screenshot
-      </button>
-
-      <button id="deleteZone"
-              type="button"
-              class="btn btn-outline-danger"
-              ondrop="dropDeleteScreenshot(event)"
-              ondragover="allowDrop(event)">
-        Delete Screenshot Zone
-      </button>
-
-      <div class="btn-group">
-
-        <div class="dropdown-menu">
-          {% for screenshot in hit.screenshot_set.all %}
-          <a class="dropdown-item edit-screenshot"
-             href="#"
-             data-img-id="{{ screenshot.id }}"
-             data-type="hit">
-            #{{ screenshot.id }} - {{ screenshot.caption }}
-          </a>
-          {% endfor %}
-
-          {% for screenshot in retesthit.retestscreenshot_set.all %}
-          <a class="dropdown-item edit-screenshot"
-             href="#"
-             data-img-id="{{ screenshot.id }}"
-             data-type="retest">
-            #{{ screenshot.id }} - {{ screenshot.caption }}
-          </a>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-    {% endif %}
-
-    <!-- Push Screenshot Modal -->
-    <div class="modal fade" id="pushScreenshotModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Add a screenshot</h5>
-            <button type="button" class="close" onclick="resetScreenshotModal()">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
-            <div id="uploadMessage" class="row">
-              <div class="col-lg-12">
-                <h3>Paste your screenshot here!</h3>
-              </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <h4>Screenshots</h4>
             </div>
-
-            <div class="row">
-              <div class="col-lg-12">
-                <img id="screenshot" class="screenshot_data" src="" />
-              </div>
-            </div>
-
-            <input type="hidden" id="screenshotData" />
-            <input type="text" id="screenshotCaption" style="width:100%" placeholder="Caption of screenshot" value="" />
-          </div>
-
-          <div class="modal-footer">
-            <button id="addScreenshotBtn" type="submit" class="btn btn-outline-primary" onclick="addScreenshot()">
-              Add
-            </button>
-            <button type="button" class="btn btn-outline-secondary" onclick="resetScreenshotModal()">
-              Close
-            </button>
-          </div>
         </div>
-      </div>
-    </div>
 
-  </div>
+        <input id="screenshotMaxId" name="screenshotMaxId" type="hidden" value="0" />
+
+
+        <div id="screenshots">
+            {% for screenshot in hit.screenshot_set.all %}
+                <div class="screenshot-wrapper">
+                    <a id="screenshot_link_{{screenshot.id}}" href="/api/screenshot/png/{{screenshot.pk}}/" class="screenshot"
+                    ondragstart="dragScreenshotStart(event)" ondragend="dragScreenshotStop(event)"
+                    data-toggle="tooltip" data-placement="left" title="{{screenshot.caption}}" data-fancybox="gallery" data-screenshot-id="{{screenshot.id}}" data-screenshot-order="{{screenshot.order}}"
+                    data-type="hit">
+                        <img id="screenshot_{{screenshot.id}}" alt="Screenshot not found" class="screenshot_data screenshot_gallery" src="/api/screenshot/png/{{screenshot.pk}}/" />
+                    </a>
+
+                    {% if editable == True %}
+                    <button class="edit-btn edit-screenshot-btn"
+                            type="button"
+                            draggable="false"
+                            onmousedown="event.stopPropagation()"
+                            data-img-id="{{ screenshot.id }}"
+                            data-type="hit">
+                        Edit / Annotate
+                    </button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% for screenshot in retesthit.retestscreenshot_set.all %}
+                <div class="screenshot-wrapper">
+                    <a id="screenshot_link_{{screenshot.id}}" href="/api/retestscreenshot/png/{{screenshot.pk}}/" class="screenshot"
+                    ondragstart="dragScreenshotStart(event)" ondragend="dragScreenshotStop(event)"
+                    data-toggle="tooltip" data-placement="left" title="{{screenshot.caption}}" data-fancybox="gallery" data-screenshot-id="{{screenshot.id}}" data-screenshot-order="{{screenshot.order}}"
+                    data-type="retest">
+                        <img id="screenshot_{{screenshot.id}}" alt="Screenshot not found" class="screenshot_data screenshot_gallery" src="/api/retestscreenshot/png/{{screenshot.pk}}/" />
+                    </a>
+
+                    {% if editable == True %}
+                    <button class="edit-btn edit-screenshot-btn"
+                            type="button"
+                            draggable="false"
+                            onmousedown="event.stopPropagation()"
+                            data-img-id="{{ screenshot.id }}"
+                            data-type="retest">
+                        Edit / Annotate
+                    </button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if editable == True %}
+        <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#pushScreenshotModal">Add a screenshot</button>
+        <button id="deleteZone" type="button" class="btn btn-outline-danger mb-4" ondrop="dropDeleteScreenshot(event)" ondragover="allowDrop(event)">Delete Screenshot Zone</button>
+
+
+        <!-- Push screenshot modal -->
+        <div class="modal fade" id="pushScreenshotModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add a screenshot</h5>
+                        <button type="button" class="close" onclick="resetScreenshotModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="uploadMessage" class="row">
+                            <div class="col-lg-12">
+                                <h3>Paste your screenshot here!</h3>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <img id="screenshot" class="screenshot_data" src="" />
+                            </div>
+                        </div>
+                        <input type="hidden" id="screenshotData" />
+                        <input type="text" id="screenshotCaption" style="width: 100%" placeholder="Caption of screenshot" value="" />
+                    </div>
+                    <div class="modal-footer">
+                        <button id="addScreenshotBtn" type="submit" class="btn btn-outline-primary" onclick="addScreenshot()">Add</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetScreenshotModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
 
-<!-- marker.js 2 (required for MarkerArea + render/state) -->
-<script src="https://unpkg.com/markerjs2/markerjs2.js"></script>
+<script src="{% static 'js/plugins/markerjs/markerjs.umd.js' %}"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".edit-screenshot-btn").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    document.querySelectorAll(".edit-screenshot-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-      const id = btn.dataset.imgId;
-      const img = document.getElementById(`screenshot_${id}`);
-      if (!img) return;
+            const id = btn.dataset.imgId;
+            const img = document.getElementById(`screenshot_${id}`);
+            if (!img) return;
 
-      // wait until the image is fully loaded (keeps markerjs2 happy)
-      if (!img.complete) {
-        await new Promise((resolve, reject) => {
-          img.onload = () => resolve();
-          img.onerror = () => reject(new Error("Image failed to load"));
+            if (!img.complete) {
+                await new Promise((resolve, reject) => {
+                    img.onload = () => resolve();
+                    img.onerror = () => reject(new Error("Image failed to load"));
+                });
+            }
+
+            const markerArea = new markerjs.MarkerArea(img);
+            markerArea.targetRoot = document.body;
+
+            markerArea.onrender = (event) => {
+                img.src = event.dataUrl;
+                const link = document.getElementById(`screenshot_link_${id}`);
+                if (link) link.href = event.dataUrl;
+            };
+
+            markerArea.show();
         });
-      }
-
-      const markerArea = new markerjs2.MarkerArea(img);
-
-      // ✅ big + centered (full viewport overlay)
-      markerArea.targetRoot = document.body;
-
-      // optional quality improvement
-      markerArea.renderAtNaturalSize = true;
-
-      markerArea.addEventListener("render", (event) => {
-        img.src = event.dataUrl;
-        const link = document.getElementById(`screenshot_link_${id}`);
-        if (link) link.href = event.dataUrl;
-      });
-
-      markerArea.show();
     });
-  });
 });
 </script>
