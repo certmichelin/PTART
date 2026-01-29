@@ -58,6 +58,10 @@
 \usepackage{wrapfig}
 \usepackage{xcolor}
 \usepackage{xurl}
+\usepackage{xparse}
+
+\providecommand{\pandocbounded}[1]{\adjustbox{max width=\linewidth}{#1}}
+
 %-----------------------------------------------------%
 % End of Package import                               %
 %-----------------------------------------------------%
@@ -237,6 +241,22 @@
 %-----------------------------------------------------%
 % Begin Document                                      %
 %-----------------------------------------------------%
+\NewDocumentCommand{\mermaidinclude}{m}{%
+  \begin{figure}[H]
+    \centering
+    \IfFileExists{./mermaid/#1.pdf}{%
+      \includegraphics[max width=\textwidth]{./mermaid/#1.pdf}%
+    }{%
+      \IfFileExists{./mermaid/#1.png}{%
+        \includegraphics[max width=\textwidth]{./mermaid/#1.png}%
+      }{%
+        \begin{tcolorbox}[colback=shadecolor,colframe=red,boxrule=0.8pt,arc=2pt,title=Mermaid diagram rendering failed]
+        Missing Mermaid diagram image for id: \texttt{#1}
+        \end{tcolorbox}
+      }%
+    }%
+  \end{figure}%
+}
 \begin{document}
 \title{\doctitle}
 \pagenumbering{arabic}

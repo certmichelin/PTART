@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %} {{ retesthit.retest_campaign.name }} | PTART{% endblock %}
-{% load addstr %}
+{% load addstr static %}
 
 {% block page %}
 <div id="page-wrapper">
@@ -30,6 +30,12 @@
                     <textarea class="form-control" rows="5" id="body" style="resize:vertical">{{ retesthit.body }}</textarea>
                 </div>
 
+                <!-- ✅ Secure preview (Markdown + Mermaid) -->
+                <div class="form-group">
+                    <label>Rendered Body Preview</label>
+                    <div class="markdown-body" id="retest-body-preview"></div>
+                </div>
+
                 <input id="id" type="hidden" value="{{ retesthit.id }}" />
                 <input id="campaignId" type="hidden" value="{{ retesthit.retest_campaign.id }}" />
                 <input id="hitId" type="hidden" value="{{ retesthit.hit.id }}" />
@@ -48,9 +54,60 @@
 
 {% block extra_foot %}
 {% include '_include/js/deleteItem.html' with item='RetestHit' ajax_function='ajaxDeleteRetestHit' redirect="/retestcampaign/"|addstr:retesthit.retest_campaign.id|addstr:"/summary" %}
+
+<style>
+  .mermaid-error {
+    background: #2b2b2b;
+    color: #ffdddd;
+    padding: 10px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+  }
+
+  /* ✅ Masque les previews internes des éditeurs markdown (évite le texte parasite) */
+  .md-preview,
+  .md-editor-preview,
+  .editor-preview,
+  .editor-preview-active,
+  .wmd-preview,
+  .toastui-editor-md-preview {
+    display: none !important;
+  }
+</style>
+
 <script>
     activeMarkdown("body");
     $('#status option[value={{retesthit.status}}]').attr('selected', 'selected');
+
+    /* ✅ FIX robuste: cacher la preview interne du markdown editor (autour de Body) */
+    function hideRetestBodyEditorInternalPreview() {
+        var bodyTextarea = document.getElementById("body");
+        if (!bodyTextarea) return;
+
+        var root = bodyTextarea.closest(".form-group") || bodyTextarea.parentElement;
+        if (!root) return;
+
+        var selectors = [
+            ".md-preview",
+            ".md-editor-preview",
+            ".editor-preview",
+            ".editor-preview-active",
+            ".wmd-preview",
+            ".toastui-editor-md-preview"
+        ];
+
+        selectors.forEach(function(sel){
+            root.querySelectorAll(sel).forEach(function(el){
+                el.style.display = "none";
+            });
+        });
+    }
+
+    window.addEventListener("DOMContentLoaded", function () {
+        setTimeout(hideRetestBodyEditorInternalPreview, 0);
+        setTimeout(hideRetestBodyEditorInternalPreview, 200);
+        setTimeout(hideRetestBodyEditorInternalPreview, 800);
+    });
 
     /**
      * Retest Hit updation success callback.
@@ -74,10 +131,7 @@
     /* --------------------------------------------------------------------------------------------------- */
     apiRoute = "/api/retestscreenshot/png/";
 
-    /**
-     * Override addScreenshot from screenshot.js in order to upload the file on the fly.
-     */
-     function addScreenshot() {
+    function addScreenshot() {
         var dataURL = $("#screenshotData").val()
         var caption = $("#screenshotCaption").val()
         if (dataURL !== "") {
@@ -87,18 +141,12 @@
         }
     }
 
-    /**
-     * Override dropDeleteScreenshot from screenshot.js in order to delete the file on the fly.
-     */
     function dropDeleteScreenshot(ev) {
         ev.preventDefault();
         id = convertMarkdownToId(ev.dataTransfer.getData("text"));
         ajaxDeleteRetestScreenshot(screenshotDeletionSuccess, commonFailure, id);
     }
 
-    /**
-     * Screenshot creation success callback.
-     */
     function screenshotCreationSuccess(data) {
         createScreenshot(data.id, "/api/retestscreenshot/png/" + data.id + "/", data.caption, data.order);
         buildContextMenuForScreenshots("screenshot_link_" + data.id, data.id, data.order, $('.screenshot').length, screenshotMoveUpCallback,screenshotMoveDownCallback);
@@ -110,12 +158,8 @@
         resetScreenshotModal();
     }
 
-    /**
-     * Screenshot deletion success callback.
-     */
     function screenshotDeletionSuccess(data) {
         removeScreenshot(data.id);
-        //Apply reordering on UI.
         var count = $('.screenshot').length;
 
         $(".screenshot").each(function() {
@@ -124,7 +168,6 @@
                 var newOrder = order - 1;
                 $(this).attr('data-screenshot-order', newOrder);
 
-                //Rebuild context menu.
                 $(this).contextMenu('destroy');
                 buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),newOrder,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
             } else if (order == (data.order - 1)) {
@@ -134,22 +177,16 @@
         });
     }
 
-    /**
-     * Callback to take in account reordering of screenshots.
-     */
     function screenshotMoveUpSuccess(data) {
         var currentBlockId = "screenshot_link_" + data.id;
         var currentBlock = $("#" + currentBlockId);
         var previousBlock = currentBlock.prev('.screenshot');
 
-        //Change data-order attribute for both elements.
         currentBlock.attr('data-screenshot-order', data.order);
         previousBlock.attr('data-screenshot-order', data.order + 1);
 
-        //Change the order in the DOM.
         moveUpScreenshot(currentBlockId);
 
-        //Update Context menu.
         currentBlock.contextMenu('destroy');
         previousBlock.contextMenu('destroy');
 
@@ -158,22 +195,16 @@
         buildContextMenuForScreenshots(previousBlock.attr('id'),previousBlock.attr('data-screenshot-id'),parseInt(previousBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
     }
 
-    /**
-     * Callback to take in account reordering of screenshots.
-     */
      function screenshotMoveDownSuccess(data) {
         var currentBlockId = "screenshot_link_" + data.id;
         var currentBlock = $("#" + currentBlockId);
         var nextBlock = currentBlock.next('.screenshot');
 
-        //Change data-order attribute for both elements.
         currentBlock.attr('data-screenshot-order', data.order);
         nextBlock.attr('data-screenshot-order', data.order - 1);
 
-        //Change the order in the DOM.
         moveDownScreenshot(currentBlockId);
 
-        //Update Context menu.
         currentBlock.contextMenu('destroy');
         nextBlock.contextMenu('destroy');
 
@@ -190,4 +221,74 @@
         ajaxReorderRetestScreenshot(screenshotMoveDownSuccess, commonFailure, screenshotId, order);
     }
 </script>
+
+<script src="{% static 'js/plugins/marked/marked.min.js' %}"></script>
+<script src="{% static 'js/plugins/dompurify/purify.min.js' %}"></script>
+<script src="{% static 'js/plugins/mermaid/mermaid.min.js' %}"></script>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "strict",
+    htmlLabels: false
+  });
+
+  function renderMarkdownWithMermaid(rawText, targetEl) {
+    if (!targetEl) return;
+
+    const unsafeHtml = marked.parse(rawText ?? "");
+
+    const safeHtml = DOMPurify.sanitize(unsafeHtml, {
+      USE_PROFILES: { html: true },
+      FORBID_TAGS: ["style", "script", "iframe", "object", "embed"],
+      FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover"]
+    });
+
+    targetEl.innerHTML = safeHtml;
+
+    const codeBlocks = targetEl.querySelectorAll("pre > code.language-mermaid, pre > code.lang-mermaid");
+    codeBlocks.forEach(codeEl => {
+      const pre = codeEl.parentElement;
+      const mermaidDiv = document.createElement("div");
+      mermaidDiv.className = "mermaid";
+      mermaidDiv.textContent = codeEl.textContent || "";
+      pre.replaceWith(mermaidDiv);
+    });
+
+    const mermaidNodes = targetEl.querySelectorAll(".mermaid");
+    mermaidNodes.forEach((node) => {
+      const src = node.textContent || "";
+      try {
+        mermaid.parse(src);
+        mermaid.run({ nodes: [node] });
+      } catch (e) {
+        const err = document.createElement("pre");
+        err.className = "mermaid-error";
+        err.textContent = "Mermaid diagram error:\n" + (e?.message || String(e));
+        node.replaceWith(err);
+      }
+    });
+  }
+
+  function refreshRetestPreview() {
+    renderMarkdownWithMermaid(
+      document.getElementById("body")?.value,
+      document.getElementById("retest-body-preview")
+    );
+  }
+
+  window.addEventListener("DOMContentLoaded", function () {
+    refreshRetestPreview();
+
+    let t;
+    const el = document.getElementById("body");
+    if (el) {
+      el.addEventListener("input", () => {
+        clearTimeout(t);
+        t = setTimeout(refreshRetestPreview, 250);
+      });
+    }
+  });
+</script>
+
 {% endblock %}

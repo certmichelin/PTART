@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load addstr %}
+{% load addstr static %}
 
 {% block title %} {{ hit.title }} | PTART{% endblock %}
 
@@ -44,14 +44,27 @@
                     <label>Asset</label>
                     <input id="asset" class="form-control" value="{{ hit.asset }}" autocomplete="off" />
                 </div>
+
                 <div class="form-group">
                     <label>Body</label>
                     <textarea id="body" class="form-control" style="resize:vertical" rows="10">{{ hit.body }}</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>Rendered Body Preview</label>
+                    <div class="markdown-body" id="body-preview"></div>
+                </div>
+
                 <div class="form-group">
                     <label>Remediation</label>
                     <textarea id="remediation" class="form-control" style="resize:vertical" rows="10">{{ hit.remediation }}</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>Rendered Remediation Preview</label>
+                    <div class="markdown-body" id="remediation-preview"></div>
+                </div>
+
                 <div class="form-group">
                     <label>Fix complexity</label>
                     <select class="form-control" id="fix_complexity">
@@ -92,6 +105,7 @@
                 <button id="delBtn" class="btn btn-outline-danger mb-4">Delete</button>
                 {% endif %}
             </div>
+
             <div class="col-lg-5">
                 {% if cvss_type == 3 %}
                 {% include "_include/html/cvss3.html" %}
@@ -121,6 +135,7 @@
                             </div>
                             {% endfor %}
                         </div>
+
                 {% if editable == True %}
                     <button type="button" class="btn btn-outline-info mb-4" data-toggle="modal" data-target="#addReferenceModal">Add a reference</button>
 
@@ -148,7 +163,6 @@
                         </div>
                     </div>
                 {% endif %}
-
 
                 {% include "_include/html/attachments.html" %}
                 {% include "_include/html/screenshots.html" %}
@@ -202,14 +216,25 @@
     </div>
 </div>
 {% endblock %}
+
 {% block extra_foot %}
 {% include '_include/js/deleteItem.html' with item='Hit' ajax_function='ajaxDeleteHit' %}
-<script type="text/javascript">
 
+<style>
+  .mermaid-error {
+    background: #2b2b2b;
+    color: #ffdddd;
+    padding: 10px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+  }
+</style>
+
+<script type="text/javascript">
     /* --------------------------------------------------------------------------------------------------- */
     /* ------------------------------------------ Init Page ---------------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
-    /* Select the current status, severity and fix complexity */$
+    /* Select the current status, severity and fix complexity */
     $('#status option[value={{hit.status}}]').attr('selected', 'selected');
     $('#severity option[value={{hit.severity}}]').attr('selected', 'selected');
     $('#fix_complexity option[value={{hit.fix_complexity}}]').attr('selected', 'selected');
@@ -222,6 +247,7 @@
     loadCVSS4ButtonsState("{{hit.cvss4.attack_vector}}", "{{hit.cvss4.attack_complexity}}", "{{hit.cvss4.attack_requirements}}", "{{hit.cvss4.privilege_required}}", "{{hit.cvss4.user_interaction}}", "{{hit.cvss4.confidentiality}}", "{{hit.cvss4.integrity}}", "{{hit.cvss4.availability}}", "{{hit.cvss4.subsequent_confidentiality}}", "{{hit.cvss4.subsequent_integrity}}", "{{hit.cvss4.subsequent_availability}}");
     {% endif %}
 
+    // Keep existing behavior (if PTART uses this for other UI), harmless:
     activeMarkdown("body");
     activeMarkdown("remediation");
 
@@ -256,16 +282,10 @@
     /* ------------------------------------------ Hit Update --------------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
 
-    /**
-     * Hit updation success callback.
-     */
     function hitUpdationSuccess(data) {
         success($("#messages"), "Hit was Updated!");
     }
 
-    /**
-     * Update hit.
-     */
     $('#updateBtn').on('click', function () {
         cleanMessagesContainer($("#messages"));
         ajaxUpdateHit(hitUpdationSuccess, commonFailure, $("#id").val(), $("#severity").val(), $("#title").val(), $("#asset").val(), $("#body").val(), $("#remediation").val(), $("#status").val(), $("#fix_complexity").val(), $("#labels").select2("val"), $("#cwes").select2("val"), $("#assessment").val());
@@ -276,14 +296,7 @@
         {% endif %}
     });
 
-    /* --------------------------------------------------------------------------------------------------- */
-    /* ----------------------------------------- CVSS Actions -------------------------------------------- */
-    /* --------------------------------------------------------------------------------------------------- */
-
-    /**
-     * Hit CVSS deletion callback
-     */
-     function cvssDeletionSuccess(data) {
+    function cvssDeletionSuccess(data) {
         {% if cvss_type == 3 %}
         addCVSSv31ToHit($("#id").val());
         {% else %}
@@ -295,10 +308,7 @@
     /* ----------------------------------------Reference Actions ----------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
 
-    /**
-     * Add a reference.
-     */
-     function addReference(){
+    function addReference(){
         var newReferenceName = $("#newReferenceName").val();
         var newReferenceUrl = $("#newReferenceUrl").val();
         if (newReferenceName !== "") {
@@ -312,17 +322,11 @@
         }
     }
 
-    /**
-     * Delete a reference
-     */
-     function deleteReference(id){
+    function deleteReference(id){
         ajaxDeleteHitReference(referenceDeletionSuccess, commonFailure, id);
     }
 
-    /**
-     * Reference creation success callback.
-     */
-     function referenceCreationSuccess(data) {
+    function referenceCreationSuccess(data) {
         $('#references').append(
             $('<div>', {
                 id: "reference_" + data.id,
@@ -332,10 +336,7 @@
         $("#newReferenceUrl").val("");
     }
 
-    /**
-     * Reference deletion success callback.
-     */
-     function referenceDeletionSuccess(data) {
+    function referenceDeletionSuccess(data) {
         $("#reference_" + data.id).remove();
     }
 
@@ -343,9 +344,6 @@
     /* ---------------------------------------- Comments Actions ----------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
 
-    /**
-     * Add a comment.
-     */
     function addComment(){
         var commentText = $("#commentText").val();
         if (commentText !== "") {
@@ -355,17 +353,11 @@
         }
     }
 
-    /**
-     * Delete a comment
-     */
     function deleteComment(id){
         ajaxDeleteComment(commentDeletionSuccess, commonFailure, id);
     }
 
-    /**
-     * Comment creation success callback.
-     */
-     function commentCreationSuccess(data) {
+    function commentCreationSuccess(data) {
         $('#comments').append(
             $('<div>', {
                 id: "comment_" + data.id,
@@ -375,10 +367,7 @@
         $("#commentText").val("");
     }
 
-    /**
-     * Comment deletion success callback.
-     */
-     function commentDeletionSuccess(data) {
+    function commentDeletionSuccess(data) {
         $("#comment_" + data.id).remove();
     }
 
@@ -386,9 +375,6 @@
     /* --------------------------------------- Screenshots Actions --------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
 
-    /**
-     * Override addScreenshot from screenshot.js in order to upload the file on the fly.
-     */
     function addScreenshot() {
         var dataURL = $("#screenshotData").val()
         var caption = $("#screenshotCaption").val()
@@ -399,18 +385,12 @@
         }
     }
 
-    /**
-     * Override dropDeleteScreenshot from screenshot.js in order to delete the file on the fly.
-     */
     function dropDeleteScreenshot(ev) {
         ev.preventDefault();
         id = convertMarkdownToId(ev.dataTransfer.getData("text"));
         ajaxDeleteScreenshot(screenshotDeletionSuccess, commonFailure, id);
     }
 
-    /**
-     * Screenshot creation success callback.
-     */
     function screenshotCreationSuccess(data) {
         createScreenshot(data.id, "/api/screenshot/png/" + data.id + "/", data.caption, data.order);
         buildContextMenuForScreenshots("screenshot_link_" + data.id, data.id, data.order, $('.screenshot').length, screenshotMoveUpCallback,screenshotMoveDownCallback);
@@ -422,12 +402,8 @@
         resetScreenshotModal();
     }
 
-    /**
-     * Screenshot deletion success callback.
-     */
     function screenshotDeletionSuccess(data) {
         removeScreenshot(data.id);
-        //Apply reordering on UI.
         var count = $('.screenshot').length;
 
         $(".screenshot").each(function() {
@@ -436,7 +412,6 @@
                 var newOrder = order - 1;
                 $(this).attr('data-screenshot-order', newOrder);
 
-                //Rebuild context menu.
                 $(this).contextMenu('destroy');
                 buildContextMenuForScreenshots($(this).attr('id'),$(this).attr('data-screenshot-id'),newOrder,count,screenshotMoveUpCallback,screenshotMoveDownCallback);
             } else if (order == (data.order - 1)) {
@@ -446,22 +421,16 @@
         });
     }
 
-    /**
-     * Callback to take in account reordering of screenshots.
-     */
     function screenshotMoveUpSuccess(data) {
         var currentBlockId = "screenshot_link_" + data.id;
         var currentBlock = $("#" + currentBlockId);
         var previousBlock = currentBlock.prev('.screenshot');
 
-        //Change data-order attribute for both elements.
         currentBlock.attr('data-screenshot-order', data.order);
         previousBlock.attr('data-screenshot-order', data.order + 1);
 
-        //Change the order in the DOM.
         moveUpScreenshot(currentBlockId);
 
-        //Update Context menu.
         currentBlock.contextMenu('destroy');
         previousBlock.contextMenu('destroy');
 
@@ -470,22 +439,16 @@
         buildContextMenuForScreenshots(previousBlock.attr('id'),previousBlock.attr('data-screenshot-id'),parseInt(previousBlock.attr('data-screenshot-order'), 10),count,screenshotMoveUpCallback,screenshotMoveDownCallback);
     }
 
-    /**
-     * Callback to take in account reordering of screenshots.
-     */
-     function screenshotMoveDownSuccess(data) {
+    function screenshotMoveDownSuccess(data) {
         var currentBlockId = "screenshot_link_" + data.id;
         var currentBlock = $("#" + currentBlockId);
         var nextBlock = currentBlock.next('.screenshot');
 
-        //Change data-order attribute for both elements.
         currentBlock.attr('data-screenshot-order', data.order);
         nextBlock.attr('data-screenshot-order', data.order - 1);
 
-        //Change the order in the DOM.
         moveDownScreenshot(currentBlockId);
 
-        //Update Context menu.
         currentBlock.contextMenu('destroy');
         nextBlock.contextMenu('destroy');
 
@@ -506,9 +469,6 @@
     /* --------------------------------------- Attachments Actions --------------------------------------- */
     /* --------------------------------------------------------------------------------------------------- */
 
-    /**
-     * Override openAttachment from attachment.js in order to upload the file on the fly.
-     */
     function openAttachment() {
         var input = event.target;
         var reader = new FileReader();
@@ -519,27 +479,136 @@
         reader.readAsDataURL(input.files[0]);
     }
 
-    /**
-     * Attachment creation success callback.
-     */
     function attachmentCreationSuccess(data) {
-        //Add attachment to the list.
         $('#attachments').append($('<div>', { class: "mb-2" }).append($('<i>', { class: "far fa-file" })).append($('<a>', { id: "attachment_link_" + data.id, href: "/api/attachment/raw/" + data.id}).text(" " + data.attachment_name + " ")).append($('<i>', { class: "fa fa-close", onclick: "deleteAttachment(" + data.id + ")"})));
         $('#AttachmentUpload').val('')
     }
 
-    /**
-     * Delete Attachment.
-     */
     function deleteAttachment(id) {
         ajaxDeleteAttachment(attachmentDeletionSuccess, commonFailure, id);
     }
 
-    /**
-     * Attachment deletion success callback.
-     */
     function attachmentDeletionSuccess(data) {
         removeAttachment(data.id);
     }
 </script>
+
+<script src="{% static 'js/plugins/marked/marked.min.js' %}"></script>
+<script src="{% static 'js/plugins/dompurify/purify.min.js' %}"></script>
+<script src="{% static 'js/plugins/mermaid/mermaid.min.js' %}"></script>
+
+<script>
+  // --------------------------------------------------
+  // Mermaid init
+  // --------------------------------------------------
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "strict",
+    htmlLabels: false
+  });
+
+  function sanitizeMarkdownToHtml(rawText) {
+    const unsafeHtml = marked.parse(rawText ?? "");
+    return DOMPurify.sanitize(unsafeHtml, {
+      USE_PROFILES: { html: true },
+      FORBID_TAGS: ["style", "script", "iframe", "object", "embed"],
+      FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover"]
+    });
+  }
+
+  function uid() {
+    return "mmd_" + Math.random().toString(16).slice(2) + "_" + Date.now();
+  }
+
+  function convertMermaidCodeBlocks(container) {
+    const codeBlocks = container.querySelectorAll("pre > code.language-mermaid, pre > code.lang-mermaid");
+    codeBlocks.forEach((codeEl) => {
+      const pre = codeEl.parentElement;
+      const mermaidDiv = document.createElement("div");
+      mermaidDiv.className = "mermaid";
+      mermaidDiv.textContent = codeEl.textContent || "";
+      if (!mermaidDiv.id) mermaidDiv.id = uid();
+      pre.replaceWith(mermaidDiv);
+    });
+  }
+
+  function renderMermaidInside(targetEl) {
+    const mermaidNodes = targetEl.querySelectorAll(".mermaid");
+    mermaidNodes.forEach((node) => {
+      if (node.getAttribute("data-mmd-rendered") === "true") return;
+
+      const src = (node.textContent || "").trim();
+      if (!src) return;
+
+      if (!node.id) node.id = uid();
+
+      try {
+        mermaid.parse(src);
+        mermaid.run({ nodes: [node] }).then(() => {
+          node.setAttribute("data-mmd-rendered", "true");
+        }).catch((e) => {
+          const err = document.createElement("pre");
+          err.className = "mermaid-error";
+          err.textContent = "Mermaid diagram error:\n" + (e?.message || String(e));
+          node.replaceWith(err);
+        });
+      } catch (e) {
+        const err = document.createElement("pre");
+        err.className = "mermaid-error";
+        err.textContent = "Mermaid diagram error:\n" + (e?.message || String(e));
+        node.replaceWith(err);
+      }
+    });
+  }
+
+  // IMPORTANT: render per-target (prevents “switching”)
+  function renderMarkdownWithMermaid(rawText, targetEl) {
+    if (!targetEl) return;
+
+    
+    const hash = String(rawText ?? "");
+    if (targetEl.getAttribute("data-md-hash") === hash) {
+      renderMermaidInside(targetEl);
+      return;
+    }
+
+    targetEl.innerHTML = sanitizeMarkdownToHtml(rawText);
+    convertMermaidCodeBlocks(targetEl);
+    renderMermaidInside(targetEl);
+
+    targetEl.setAttribute("data-md-hash", hash);
+  }
+
+  function refreshPreviews() {
+    renderMarkdownWithMermaid(
+      document.getElementById("body")?.value,
+      document.getElementById("body-preview")
+    );
+
+    renderMarkdownWithMermaid(
+      document.getElementById("remediation")?.value,
+      document.getElementById("remediation-preview")
+    );
+  }
+
+  window.addEventListener("DOMContentLoaded", function () {
+    refreshPreviews();
+
+    // refresh on input
+    const debouncedRefresh = (() => {
+      let t;
+      return () => {
+        clearTimeout(t);
+        t = setTimeout(refreshPreviews, 250);
+      };
+    })();
+
+    ["body", "remediation"].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", debouncedRefresh);
+    });
+  });
+</script>
+
 {% endblock %}
