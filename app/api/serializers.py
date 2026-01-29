@@ -107,14 +107,22 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        """Validate the fact that at least one pentester is present on the project"""
-        if (
-            "pentesters" not in self.initial_data
-            or len(self.initial_data["pentesters"]) == 0
-        ):
-            raise serializers.ValidationError(
-                {"pentesters": "At least one pentester is required"}
-            )
+        if self.instance is None:
+            """Validate the fact that at least one pentester is present on the project on creation"""
+            if (
+                "pentesters" not in self.initial_data
+                or len(self.initial_data["pentesters"]) == 0
+            ):
+                raise serializers.ValidationError(
+                    {"pentesters": "At least one pentester is required"}
+                )
+        else:
+            """ Validate the fact that at least one pentester is present on the project on update"""
+            if ((not self.instance.pentesters.exists() and "pentesters" not in self.initial_data)
+                    or ("pentesters" in self.initial_data and len(self.initial_data["pentesters"]) == 0)):
+                raise serializers.ValidationError(
+                    {"pentesters": "At least one pentester is required"}
+                )
         return data
 
     @transaction.atomic
