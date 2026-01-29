@@ -30,6 +30,7 @@ from ptart.models import (
     RetestHit,
     RetestScreenshot,
 )
+from ptart.tools.screenshots import delete_screenshot_file
 from .tools import FileField
 
 
@@ -383,6 +384,17 @@ class ScreenshotSerializer(serializers.ModelSerializer):
             order=hit.screenshot_set.count(),
         )
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        new_screenshot = validated_data.pop("screenshot", None)
+        if new_screenshot is not None:
+            delete_screenshot_file(instance.screenshot)
+            instance.screenshot = new_screenshot
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
 
 class RetestScreenshotSerializer(serializers.ModelSerializer):
     screenshot = Base64ImageField()
@@ -402,6 +414,17 @@ class RetestScreenshotSerializer(serializers.ModelSerializer):
             retest_hit=retest_hit,
             order=retest_hit.retestscreenshot_set.count(),
         )
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        new_screenshot = validated_data.pop("screenshot", None)
+        if new_screenshot is not None:
+            delete_screenshot_file(instance.screenshot)
+            instance.screenshot = new_screenshot
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class AttachmentSerializer(serializers.ModelSerializer):

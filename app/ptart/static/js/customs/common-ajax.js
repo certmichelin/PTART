@@ -447,6 +447,26 @@ function ajaxUploadScreenshot(successFunction, errorFunction, data, caption, hit
 }
 
 /**
+ * Update a screenshot image for a hit.
+ *
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} data Base64 image to upload.
+ * @param {*} caption Image caption.
+ * @param {*} screenshotId Screenshot id.
+ * @param {*} hitId Hit id.
+ */
+function ajaxUpdateScreenshot(successFunction, errorFunction, data, caption, screenshotId, hitId) {
+    $.ajax({
+        url: "/api/screenshot/" + screenshotId + "/",
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "hit": ' + JSON.stringify(hitId) + ' }',
+        type: 'PUT',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Delete a screenshot.
  *
  * @param {*} successFunction Function to call in case of ajax success.
@@ -494,6 +514,26 @@ function ajaxUploadRetestScreenshot(successFunction, errorFunction, data, captio
         url: "/api/retestscreenshots/",
         data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "retest_hit": ' + JSON.stringify(retestHitId) + ' }',
         type: 'POST',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Update a screenshot image for a retest hit.
+ *
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} data Base64 image to upload.
+ * @param {*} caption Image caption.
+ * @param {*} screenshotId Screenshot id.
+ * @param {*} retestHitId Retest hit id.
+ */
+function ajaxUpdateRetestScreenshot(successFunction, errorFunction, data, caption, screenshotId, retestHitId) {
+    $.ajax({
+        url: "/api/retestscreenshot/" + screenshotId + "/",
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "retest_hit": ' + JSON.stringify(retestHitId) + ' }',
+        type: 'PUT',
         success: successFunction,
         error: errorFunction
     });
