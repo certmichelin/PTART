@@ -1629,15 +1629,18 @@ def project_latex(request, pk):
                         ##Screenshots are stored in the zip file.
                         raw_data = screenshot.get_raw_data()
                         if raw_data is not None:
-                            zf.writestr(f"screenshots/{screenshot.id}.png", raw_data)
+                            zf.writestr(
+                                "screenshots/{}.png".format(screenshot.id), raw_data
+                            )
                         else:
                             with open("reports/resources/default_image.png", "rb") as file:
                                 zf.writestr(f"screenshots/{screenshot.id}.png", file.read())
 
-            # Retrieve Screenshots for retest campaigns.
+            # Retrieve Screenshots for retest campaignes.
             for retestcampaign in project.retestcampaign_set.all():
                 for retest_hit in retestcampaign.retesthit_set.all():
                     for screenshot in retest_hit.retestscreenshot_set.all():
+                        ##Screenshots are stored in the zip file.
                         raw_data = screenshot.get_raw_data()
                         if raw_data is not None:
                             zf.writestr(f"screenshots_retest/{screenshot.id}.png", raw_data)
@@ -1645,7 +1648,7 @@ def project_latex(request, pk):
                             with open("reports/resources/default_image.png", "rb") as file:
                                 zf.writestr(f"screenshots_retest/{screenshot.id}.png", file.read())
 
-            # Retrieve AttackScenarios (SVG -> PNG).
+            # Retrieve AttackScenarios.
             for attackscenario in project.attackscenario_set.all():
                 tempSvgFilename = f"{project.id}_{attackscenario.id}_{random.randint(0, 10000)}.svg"
                 tempPngFilename = f"{project.id}_{attackscenario.id}_{random.randint(0, 10000)}.png"
@@ -1653,18 +1656,18 @@ def project_latex(request, pk):
                 with open(tempSvgFilename, "w", encoding="utf-8") as tempSvgFile:
                     tempSvgFile.write(attackscenario.svg)
 
-                pngContent = cairosvg.svg2png(url=tempSvgFilename)
+                pngContent = cairosvg.svg2png(
+                    url=tempSvgFilename
+                )
 
-                with open(tempPngFilename, "wb") as tempPngFile:
+                with open(tempPngFilename,"wb") as tempPngFile:
                     tempPngFile.write(pngContent)
 
                 zf.write(tempPngFilename, f"attackscenarios/{attackscenario.id}.png")
                 os.remove(tempSvgFilename)
                 os.remove(tempPngFilename)
 
-            # ------------------------------------------------------------
             # Add resources for LaTeX
-            # ------------------------------------------------------------
             zf.write("reports/resources/companylogo.png", "resources/companylogo.png")
             zf.write("reports/resources/logo.png", "resources/logo.png")
 
@@ -1686,6 +1689,7 @@ def project_latex(request, pk):
                     loader=jinja2.FileSystemLoader(os.path.abspath(".")),
                 )
 
+                # Filters that has been used in the LaTex Report.
                 escape_tex_table = {
                     "&": r"\&",
                     "%": r"\%",
@@ -1729,13 +1733,17 @@ def project_latex(request, pk):
                         matches = screenshot_pattern.findall(latex) or []
                         if matches:
                             latex = latex.replace("\n\\begin{figure}\n\\centering", "")
-                            latex = latex.replace("\\caption{ptart\\_screenshot}\n\\end{figure}\n", "")
+                            latex = latex.replace(
+                                "\\caption{ptart\\_screenshot}\n\\end{figure}\n", ""
+                            )
 
                             for match in matches:
                                 if f"./{folder}/" not in match and f"/{folder}/" not in match:
                                     continue
                                 try:
-                                    item = screenshot_class.objects.get(pk=match.split("/")[-2])
+                                    item = screenshot_class.objects.get(
+                                        pk=match.split("/")[-2]
+                                    )
                                     if item.is_user_can_view(request.user):
                                         graphic = f"""
                                                     \\begin{{figure}}[H]
@@ -1760,6 +1768,7 @@ def project_latex(request, pk):
                 def markdown_to_latex_retesthit(md):
                     return markdown_to_latex_common(md, "screenshots_retest", RetestScreenshot, context_name="retest_md")
 
+                # End of filters.
                 env.filters["mdtolatex"] = markdown_to_latex
                 env.filters["mdtolatexhit"] = markdown_to_latex_hit
                 env.filters["mdtolatexretesthit"] = markdown_to_latex_retesthit
@@ -1813,7 +1822,9 @@ def project_json(request, pk):
                 "cvss_type": project.cvss_type,
                 "cwe_version": project.cwes.version,
                 "tools": [tool.name for tool in project.tools.all()],
-                "methodologies": [methodology.name for methodology in project.methodologies.all()],
+                "methodologies": [
+                    methodology.name for methodology in project.methodologies.all()
+                ],
                 "pentesters": [
                     {
                         "username": pentester.username,
@@ -1844,28 +1855,48 @@ def project_json(request, pk):
                                 "fix_complexity": hit.fix_complexity,
                                 "cvss_vector": (
                                     (
-                                        hit.cvss3.get_cvss_string() if hit.cvss3 is not None else ""
+                                        hit.cvss3.get_cvss_string()
+                                        if hit.cvss3 is not None
+                                        else ""
                                     )
                                     if project.cvss_type == 3
                                     else (
-                                        hit.cvss4.get_cvss_string() if hit.cvss4 is not None else ""
+                                        hit.cvss4.get_cvss_string()
+                                        if hit.cvss4 is not None
+                                        else ""
                                     )
                                 ),
                                 "cvss_score": (
                                     (
-                                        hit.cvss3.decimal_value if hit.cvss3 is not None else ""
+                                        hit.cvss3.decimal_value
+                                        if hit.cvss3 is not None
+                                        else ""
                                     )
                                     if project.cvss_type == 3
                                     else (
-                                        hit.cvss4.decimal_value if hit.cvss4 is not None else ""
+                                        hit.cvss4.decimal_value
+                                        if hit.cvss4 is not None
+                                        else ""
                                     )
                                 ),
-                                "added": hit.added,
-                                "labels": [label_hit.title for label_hit in hit.labels.all()],
-                                "cwes": [cwe_hit.export() for cwe_hit in hit.cwes.all()],
-                                "screenshots": [screenshot.export() for screenshot in hit.screenshot_set.all()],
-                                "attachments": [attachment.export() for attachment in hit.attachment_set.all()],
-                                "references": [reference.export() for reference in hit.hitreference_set.all()],
+                                "labels": [
+                                    label_hit.title for label_hit in hit.labels.all()
+                                ],
+                                "cwes": [
+                                    cwe_hit.export() for cwe_hit in hit.cwes.all()
+                                ],
+                                "screenshots": [
+                                    screenshot.export()
+                                    for screenshot in hit.screenshot_set.all()
+                                ],
+                                "attachments": [
+                                    attachment.export()
+                                    for attachment in hit.attachment_set.all()
+                                ],
+                                "references": [
+                                    reference.export()
+                                    for reference in hit.hitreference_set.all()
+                                ],
                             }
                             for hit in assessment.displayable_hits()
                         ],
@@ -1919,8 +1950,14 @@ def project_json(request, pk):
                                         )
                                     ),
                                     "added": retesthit.hit.added,
-                                    "labels": [label_hit.title for label_hit in retesthit.hit.labels.all()],
-                                    "cwes": [cwe_hit.export() for cwe_hit in retesthit.hit.cwes.all()],
+                                    "labels": [
+                                        label_hit.title
+                                        for label_hit in retesthit.hit.labels.all()
+                                    ],
+                                    "cwes": [
+                                        cwe_hit.export()
+                                        for cwe_hit in retesthit.hit.cwes.all()
+                                    ],
                                 },
                                 "screenshots": [
                                     screenshot.export()
@@ -1934,9 +1971,12 @@ def project_json(request, pk):
                 ],
             }
 
+            # Prepare HTTP response.
             response = JsonResponse(data=data)
             response.content_type = "application/json"
-            response["Content-Disposition"] = "attachment; filename=" + project.name + ".json"
+            response["Content-Disposition"] = (
+                "attachment; filename=" + project.name + ".json"
+            )
             response.accepted_media_type = "application/json"
             response.renderer_context = {}
         else:
