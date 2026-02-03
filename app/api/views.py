@@ -21,9 +21,6 @@ from openpyxl import Workbook, styles
 from openpyxl.styles import Alignment
 from openpyxl.writer.excel import save_virtual_workbook
 
-import tempfile
-import subprocess
-import shutil
 import cairosvg
 import jinja2
 import os
@@ -1592,72 +1589,9 @@ def project_latex(request, pk):
     response = None
     try:
         project = Project.objects.get(pk=pk)
-        if not project.is_user_can_view(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        import io
-        zip_buffer = io.BytesIO()
-
-       
-        mermaid_block_re = re.compile(r"```mermaid\s*\n([\s\S]*?)\n```", re.IGNORECASE)
-
-        def _which(cmd: str):
-            try:
-                return shutil.which(cmd)
-            except Exception:
-                return None
-
-        MMDC = _which("mmdc")
-        tmp_dir = tempfile.mkdtemp(prefix="ptart_mermaid_")
-        mermaid_cache = {} 
-
-        def _render_mermaid_to_png(diagram_src: str, base_name: str, zf: zipfile.ZipFile) -> str | None:
-            src_key = (diagram_src or "").strip()
-            if not src_key:
-                return None
-
-            if src_key in mermaid_cache:
-                return mermaid_cache[src_key]
-
-            if MMDC is None:
-                return None
-
-            safe_base = re.sub(r"[^a-zA-Z0-9_\-]+", "_", base_name)[:80]
-            rnd = random.randint(0, 10_000_000)
-            in_path = os.path.join(tmp_dir, f"{safe_base}_{rnd}.mmd")
-            out_path = os.path.join(tmp_dir, f"{safe_base}_{rnd}.png")
-
-            with open(in_path, "w", encoding="utf-8") as f:
-                f.write(src_key)
-
-            cmd = [MMDC, "-i", in_path, "-o", out_path, "-b", "transparent", "--scale", "1"]
-
-            try:
-                subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            except subprocess.CalledProcessError:
-                return None
-
-            zip_png_path = f"mermaid/{os.path.basename(out_path)}"
-            zf.write(out_path, zip_png_path)
-            mermaid_cache[src_key] = zip_png_path
-            return zip_png_path
-
-        def _replace_mermaid_blocks_in_markdown(md: str, context_name: str, zf: zipfile.ZipFile) -> str:
-            if not md:
-                return md
-
-            def _sub(match: re.Match) -> str:
-                diagram = match.group(1) or ""
-                zip_png = _render_mermaid_to_png(diagram, context_name, zf)
-                if zip_png is None:
-                    return "\n\n```text\n[Mermaid diagram not rendered: missing mmdc or render error]\n```\n\n"
-
-                return f"\n\n![](./{zip_png}){{width=10%}}\n\n"
-
-            return mermaid_block_re.sub(_sub, md)
-
-
-        with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        if project.is_user_can_view(request.user):
+            response = HttpResponse()
+            zf = zipfile.ZipFile(response, "w")
 
             # Retrieve Screenshots.
             for assessment in project.assessment_set.all():
@@ -1670,8 +1604,14 @@ def project_latex(request, pk):
                                 "screenshots/{}.png".format(screenshot.id), raw_data
                             )
                         else:
-                            with open("reports/resources/default_image.png", "rb") as file:
-                                zf.writestr(f"screenshots/{screenshot.id}.png", file.read())
+                            with open(
+                                "reports/resources/default_image.png", "rb"
+                            ) as file:
+                                default_image_data = file.read()
+                                zf.writestr(
+                                    "screenshots/{}.png".format(screenshot.id),
+                                    default_image_data,
+                                )
 
             # Retrieve Screenshots for retest campaignes.
             for retestcampaign in project.retestcampaign_set.all():
@@ -1680,27 +1620,46 @@ def project_latex(request, pk):
                         ##Screenshots are stored in the zip file.
                         raw_data = screenshot.get_raw_data()
                         if raw_data is not None:
-                            zf.writestr(f"screenshots_retest/{screenshot.id}.png", raw_data)
+                            zf.writestr(
+                                "screenshots_retest/{}.png".format(screenshot.id),
+                                raw_data,
+                            )
                         else:
-                            with open("reports/resources/default_image.png", "rb") as file:
-                                zf.writestr(f"screenshots_retest/{screenshot.id}.png", file.read())
+                            with open(
+                                "reports/resources/default_image.png", "rb"
+                            ) as file:
+                                default_image_data = file.read()
+                                zf.writestr(
+                                    "screenshots_retest/{}.png".format(screenshot.id),
+                                    default_image_data,
+                                )
 
             # Retrieve AttackScenarios.
             for attackscenario in project.attackscenario_set.all():
-                tempSvgFilename = f"{project.id}_{attackscenario.id}_{random.randint(0, 10000)}.svg"
-                tempPngFilename = f"{project.id}_{attackscenario.id}_{random.randint(0, 10000)}.png"
-
-                with open(tempSvgFilename, "w", encoding="utf-8") as tempSvgFile:
+                # SVG must be converted to PNG to facilitate integration in LaTeX report.
+                tempSvgFilename = "{}_{}_{}.svg".format(
+                    project.id, attackscenario.id, random.randint(0, 10000)
+                )
+                tempPngFilename = "{}_{}_{}.png".format(
+                    project.id, attackscenario.id, random.randint(0, 10000)
+                )
+                
+                with open(tempSvgFilename,"w") as tempSvgFile:
                     tempSvgFile.write(attackscenario.svg)
-
+                    tempSvgFile.close()
+                    
                 pngContent = cairosvg.svg2png(
                     url=tempSvgFilename
                 )
-
+                
                 with open(tempPngFilename,"wb") as tempPngFile:
                     tempPngFile.write(pngContent)
-
-                zf.write(tempPngFilename, f"attackscenarios/{attackscenario.id}.png")
+                    tempPngFile.close()
+                    
+                zf.write(
+                    tempPngFilename, "attackscenarios/{}.png".format(attackscenario.id)
+                )
+                
                 os.remove(tempSvgFilename)
                 os.remove(tempPngFilename)
 
@@ -1708,10 +1667,9 @@ def project_latex(request, pk):
             zf.write("reports/resources/companylogo.png", "resources/companylogo.png")
             zf.write("reports/resources/logo.png", "resources/logo.png")
 
-            # ------------------------------------------------------------
-            # Generate Latex report (Jinja + Pandoc)
-            # ------------------------------------------------------------
-            with open("reports/report_latex.tex", encoding="utf-8") as file_:
+            # Generate Latex report.
+            # Custom environment is used to avoid syntax conflict between Jinja & LaTex
+            with open("reports/report_latex.tex") as file_:
                 env = jinja2.Environment(
                     block_start_string="\\BLOCK{",
                     block_end_string="}",
@@ -1737,106 +1695,92 @@ def project_latex(request, pk):
                     "^": r"\^{}",
                     "\\": r"\textbackslash{}",
                 }
-                tex_regex = re.compile("|".join(re.escape(k) for k in sorted(escape_tex_table.keys(), key=lambda x: -len(x))))
+                tex_regex = re.compile(
+                    "|".join(
+                        re.escape(str(key))
+                        for key in sorted(
+                            escape_tex_table.keys(), key=lambda item: -len(item)
+                        )
+                    )
+                )
                 screenshot_pattern = re.compile(r"(\\pandocbounded\{.*?\}\})")
 
                 def tex_escape(text):
-                    return tex_regex.sub(lambda m: escape_tex_table[m.group()], text or "")
+                    return tex_regex.sub(
+                        lambda match: escape_tex_table[match.group()], text
+                    )
 
-                def markdown_to_latex_common(md, folder, screenshot_class, context_name="md"):
-                    # Replace Mermaid blocks BEFORE pandoc
-                    md = _replace_mermaid_blocks_in_markdown(md or "", context_name, zf)
-
+                def markdown_to_latex_common(md, folder, screenshot_class):
                     latex = pypandoc.convert_text(
                         md,
                         "latex",
                         format="md",
                         extra_args=["--wrap=preserve", "--highlight-style=tango"],
                     )
-
-                    # Traiter les images mermaid après conversion
-                    mermaid_pattern = re.compile(r'\\includegraphics\{\.\/mermaid\/([^}]+)\}')
-                    
-                    def replace_mermaid_image(match):
-                        filename = match.group(1)
-                        return f'''\\begin{{figure}}[H]
-                                \\centering
-                                \\includegraphics[max width=0.6\\textwidth]{{./mermaid/{filename}}}
-                                \\end{{figure}}'''
-                    
-                    latex = mermaid_pattern.sub(replace_mermaid_image, latex)
-
                     if folder is not None:
-                        matches = screenshot_pattern.findall(latex) or []
-                        if matches:
+                        matches = screenshot_pattern.findall(latex)
+                        if matches is not None and len(matches) > 0:
+                            # Clean the markdown from the screenshots.
                             latex = latex.replace("\n\\begin{figure}\n\\centering", "")
                             latex = latex.replace(
                                 "\\caption{ptart\\_screenshot}\n\\end{figure}\n", ""
                             )
-
                             for match in matches:
-                                if f"./{folder}/" not in match and f"/{folder}/" not in match:
-                                    continue
                                 try:
                                     item = screenshot_class.objects.get(
                                         pk=match.split("/")[-2]
                                     )
                                     if item.is_user_can_view(request.user):
-                                        graphic = f"""
-                                                    \\begin{{figure}}[H]
-                                                    \\centering
-                                                    \\includegraphics[max width=\\textwidth]{{./{folder}/{item.id}.png}}
-                                                    \\caption{{{tex_escape(item.caption)}}}
-                                                    \\end{{figure}}
-                                                    """
+                                        graphic = """
+                                        \\begin{{figure}}[H]
+                                        \\centering
+                                        \\includegraphics[max width=\\textwidth]{{./{}/{}.png}}
+                                        \\caption{{{}}}
+                                        \\end{{figure}}
+                                        """.format(
+                                            folder, item.id, tex_escape(item.caption)
+                                        )
                                         latex = latex.replace(match, graphic)
                                     else:
                                         latex = latex.replace(match, "")
-                                except screenshot_class.DoesNotExist:
+                                except Screenshot.DoesNotExist as e:
                                     latex = latex.replace(match, "")
                     return latex
 
                 def markdown_to_latex(md):
-                    return markdown_to_latex_common(md, None, None, context_name="project_md")
+                    return markdown_to_latex_common(md, None, None)
 
                 def markdown_to_latex_hit(md):
-                    return markdown_to_latex_common(md, "screenshots", Screenshot, context_name="hit_md")
+                    return markdown_to_latex_common(md, "screenshots", Screenshot)
 
                 def markdown_to_latex_retesthit(md):
-                    return markdown_to_latex_common(md, "screenshots_retest", RetestScreenshot, context_name="retest_md")
+                    return markdown_to_latex_common(
+                        md, "screenshots_retest", RetestScreenshot
+                    )
 
                 # End of filters.
                 env.filters["mdtolatex"] = markdown_to_latex
                 env.filters["mdtolatexhit"] = markdown_to_latex_hit
                 env.filters["mdtolatexretesthit"] = markdown_to_latex_retesthit
                 env.filters["escape"] = tex_escape
-
                 template = env.from_string(file_.read())
                 zf.writestr(
-                    f"{project.name}".replace(" ", "_") + ".tex",
-                    template.render(project=project, labels=Label.get_viewable(request.user)),
+                    "{}.tex".format(project.name).replace(" ", "_"),
+                    template.render(
+                        project=project, labels=Label.get_viewable(request.user)
+                    ),
                 )
 
-        # Cleanup tmp dir
-        try:
-            shutil.rmtree(tmp_dir, ignore_errors=True)
-        except Exception:
-            pass
-
-        # IMPORTANT: get bytes AFTER zip is closed
-        zip_bytes = zip_buffer.getvalue()
-
-        response = Response(zip_bytes)
-        response["Content-Disposition"] = f'attachment; filename="{project.name}.zip"'
-        response["Content-Type"] = "application/zip"
-        response.accepted_renderer = BinaryRenderer()
-        response.accepted_media_type = "application/zip"
-        response.renderer_context = {}
-        return response
-
-    except Project.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
+            # Prepare HTTP response.
+            response.content_type = "application/zip"
+            response["Content-Disposition"] = (
+                "attachment; filename=" + project.name + ".zip"
+            )
+        else:
+            response = Response(status=status.HTTP_403_FORBIDDEN)
+    except Flag.DoesNotExist:
+        response = Response(status=status.HTTP_404_NOT_FOUND)
+    return response
 
 
 @csrf_exempt
@@ -1916,6 +1860,7 @@ def project_json(request, pk):
                                         else ""
                                     )
                                 ),
+                                "added": hit.added,
                                 "labels": [
                                     label_hit.title for label_hit in hit.labels.all()
                                 ],
@@ -2021,6 +1966,8 @@ def project_json(request, pk):
     except Flag.DoesNotExist:
         response = Response(status=status.HTTP_404_NOT_FOUND)
     return response
+
+
 @csrf_exempt
 @ptart_authentication
 @api_view(http_method_names=["GET"])
