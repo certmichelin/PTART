@@ -7,7 +7,11 @@ RUN apk add --no-cache \
     musl-dev \
     postgresql-dev \
     jpeg-dev \
-    cairo-dev
+    cairo-dev \
+    npm
+
+# Install mermaid-cli globally
+RUN npm install -g @mermaid-js/mermaid-cli
 
 # Install pandoc 3.2.1 manually based on architecture
 RUN ARCH=$(uname -m) && \
