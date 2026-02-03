@@ -48,7 +48,6 @@
 
 {% block extra_foot %}
 {% include '_include/js/deleteItem.html' with item='RetestHit' ajax_function='ajaxDeleteRetestHit' redirect="/retestcampaign/"|addstr:retesthit.retest_campaign.id|addstr:"/summary" %}
-
 <script>
     activeMarkdown("body");
     $('#status option[value={{retesthit.status}}]').attr('selected', 'selected');
