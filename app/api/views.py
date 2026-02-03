@@ -1738,17 +1738,18 @@ def project_latex(request, pk):
                         format="md",
                         extra_args=["--wrap=preserve", "--highlight-style=tango"],
                     )
-                    if folder is not None:
-                        matches = screenshot_pattern.findall(latex)
-                        if matches is not None and len(matches) > 0:
-                            # Clean the markdown from the screenshots.
-                            latex = latex.replace("\n\\begin{figure}\n\\centering", "")
-                            latex = latex.replace(
-                                "\\caption{ptart\\_screenshot}\n\\end{figure}\n", ""
-                            )
-                            for match in matches:
-                                try:
-                                    if "mermaid/mermaid" not in match :
+                    
+                    matches = screenshot_pattern.findall(latex)
+                    if matches is not None and len(matches) > 0:
+                        # Clean the markdown from the screenshots.
+                        latex = latex.replace("\n\\begin{figure}\n\\centering", "")
+                        latex = latex.replace(
+                            "\\caption{ptart\\_screenshot}\n\\end{figure}\n", ""
+                        )
+                        for match in matches:
+                            if "mermaid/mermaid" not in match :
+                                if folder is not None :
+                                    try:
                                         item = screenshot_class.objects.get(
                                             pk=match.split("/")[-2]
                                         )
@@ -1765,8 +1766,20 @@ def project_latex(request, pk):
                                             latex = latex.replace(match, graphic)
                                         else:
                                             latex = latex.replace(match, "")
-                                except Screenshot.DoesNotExist as e:
-                                    latex = latex.replace(match, "")
+                                    except Screenshot.DoesNotExist as e:
+                                        latex = latex.replace(match, "")
+                                else:
+                                    latex = latex.replace(match, "") 
+                            else:
+                                mermaid_id = match.split("/")[-1].replace("}", "")
+                                graphic = """
+                                \\begin{{figure}}[H]
+                                \\centering
+                                \\includegraphics[max width=\\textwidth]{{./mermaid/{}}}
+                                \\end{{figure}}
+                                """.format(
+                                    mermaid_id)
+                                latex = latex.replace(match, graphic)   
                     return latex
 
                 def markdown_to_latex(md):
