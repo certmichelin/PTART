@@ -390,8 +390,9 @@ class ScreenshotSerializer(serializers.ModelSerializer):
         if new_screenshot is not None:
             delete_screenshot_file(instance.screenshot)
             instance.screenshot = new_screenshot
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+        caption = validated_data.pop("caption", None)
+        if caption is not None:
+            instance.caption = caption
         instance.save()
         return instance
 
@@ -421,8 +422,9 @@ class RetestScreenshotSerializer(serializers.ModelSerializer):
         if new_screenshot is not None:
             delete_screenshot_file(instance.screenshot)
             instance.screenshot = new_screenshot
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+        caption = validated_data.pop("caption", None)
+        if caption is not None:
+            instance.caption = caption
         instance.save()
         return instance
 
