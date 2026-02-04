@@ -454,12 +454,11 @@ function ajaxUploadScreenshot(successFunction, errorFunction, data, caption, hit
  * @param {*} data Base64 image to upload.
  * @param {*} caption Image caption.
  * @param {*} screenshotId Screenshot id.
- * @param {*} hitId Hit id.
  */
-function ajaxUpdateScreenshot(successFunction, errorFunction, data, caption, screenshotId, hitId) {
+function ajaxUpdateScreenshot(successFunction, errorFunction, data, caption, screenshotId) {
     $.ajax({
         url: "/api/screenshot/" + screenshotId + "/",
-        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "hit": ' + JSON.stringify(hitId) + ' }',
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ' }',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
@@ -527,12 +526,11 @@ function ajaxUploadRetestScreenshot(successFunction, errorFunction, data, captio
  * @param {*} data Base64 image to upload.
  * @param {*} caption Image caption.
  * @param {*} screenshotId Screenshot id.
- * @param {*} retestHitId Retest hit id.
  */
-function ajaxUpdateRetestScreenshot(successFunction, errorFunction, data, caption, screenshotId, retestHitId) {
+function ajaxUpdateRetestScreenshot(successFunction, errorFunction, data, caption, screenshotId) {
     $.ajax({
         url: "/api/retestscreenshot/" + screenshotId + "/",
-        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ', "retest_hit": ' + JSON.stringify(retestHitId) + ' }',
+        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ' }',
         type: 'PUT',
         success: successFunction,
         error: errorFunction
