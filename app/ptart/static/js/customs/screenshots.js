@@ -2,14 +2,6 @@
 // MIT License
 // jquery.paste_image_reader.js
 
-//This code is incomplete. You need to develop the pasteImageReader which apply the result to DOM/
-//Exemple :
-// $("html").pasteImageReader(function (results) {
-//     var dataURL = results.dataURL;
-//     $("#screenshotData").text(dataURL);
-//     $("#screenshot").attr("src",dataURL);
-// });
-
 (function ($) {
     var defaults;
     $.event.fix =
@@ -272,4 +264,67 @@ function activeBootstapMenuForScreenshots(moveUpCallback, moveDownCallback) {
     $('.screenshot').each(function() {
         buildContextMenuForScreenshots($(this).attr('id'), $(this).attr('data-screenshot-id'), parseInt($(this).attr('data-screenshot-order'), 10), $('.screenshot').length, moveUpCallback, moveDownCallback);
     });
+}
+
+/* --------------------------------------------------------------------------------------------------- */
+/* ------------------------------- Default behavior for edit screenshots ----------------------------- */
+/* --------------------------------------------------------------------------------------------------- */
+/**
+ * Hit updation success callback.
+ */
+function screenshotUpdationSuccess(data) {
+    success($("#messages"), "Screenshot was Updated!");
+}
+
+/**
+ * Update hit screenshot with MarkerJS.
+ * 
+ * @param {*} id Screenshot ID.
+ */
+function editHitScreenshot(id) {    
+    var img = document.getElementById(id);
+            
+   var updateFn = function(event) {
+        img.src = event.dataUrl;
+        img.style.position = 'static';
+        ajaxUpdateScreenshot(screenshotUpdationSuccess, commonFailure, id.replace("screenshot_", ""), event.dataUrl, null);
+    };
+    
+    initMarkerJs(img, updateFn);
+}
+
+/**
+ * Update retest hit screenshot with MarkerJS.
+ * 
+ * @param {*} id Screenshot ID.
+ */
+function editRetestHitScreenshot(id) {    
+    var img = document.getElementById(id);
+            
+   var updateFn = function(event) {
+        img.src = event.dataUrl;
+        img.style.position = 'static';
+        ajaxUpdateRetestScreenshot(screenshotUpdationSuccess, commonFailure, id.replace("screenshot_", ""), event.dataUrl, null);
+    };
+    
+    initMarkerJs(img, updateFn);
+}
+
+/**
+ * Common function to initialize MarkerJS for both hit and retest hit screenshots.
+ * 
+ * @param {C} img Screenshot image element to edit.
+ * @param {*} updateFn Update function to apply the changes to the image after editing.
+ */
+function initMarkerJs(img, updateFn) {
+    const markerArea = new markerjs2.MarkerArea(img);
+    markerArea.settings.displayMode = 'inline';
+    markerArea.targetRoot = document.body;
+    
+    // Configure marker area to display in the center of the page
+    markerArea.settings.displayMode = 'popup';
+    markerArea.settings.popupTarget = document.body;
+
+    markerArea.addEventListener("render", updateFn);
+    markerArea.show();
 }

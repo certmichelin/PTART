@@ -451,14 +451,20 @@ function ajaxUploadScreenshot(successFunction, errorFunction, data, caption, hit
  *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Screenshot id.
  * @param {*} data Base64 image to upload.
  * @param {*} caption Image caption.
- * @param {*} screenshotId Screenshot id.
  */
-function ajaxUpdateScreenshot(successFunction, errorFunction, data, caption, screenshotId) {
+function ajaxUpdateScreenshot(successFunction, errorFunction, id, data, caption) {
+    var ajaxData = '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ' }'
+    if (data === null) {
+        ajaxData = '{"caption": ' + JSON.stringify(caption) + ' }'
+    } else if (caption === null) {
+        ajaxData = '{"screenshot": ' + JSON.stringify(data) + ' }'
+    }
     $.ajax({
-        url: "/api/screenshot/" + screenshotId + "/",
-        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ' }',
+        url: "/api/screenshot/" + id + "/",
+        data: ajaxData,
         type: 'PUT',
         success: successFunction,
         error: errorFunction
@@ -519,18 +525,24 @@ function ajaxUploadRetestScreenshot(successFunction, errorFunction, data, captio
 }
 
 /**
- * Update a screenshot image for a retest hit.
+ *  Update a screenshot image for a retest hit.
  *
  * @param {*} successFunction Function to call in case of ajax success.
  * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Screenshot id.
  * @param {*} data Base64 image to upload.
  * @param {*} caption Image caption.
- * @param {*} screenshotId Screenshot id.
  */
-function ajaxUpdateRetestScreenshot(successFunction, errorFunction, data, caption, screenshotId) {
+function ajaxUpdateRetestScreenshot(successFunction, errorFunction, id, data, caption) {
+    var ajaxData = '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ' }'
+    if (data === null) {
+        ajaxData = '{"caption": ' + JSON.stringify(caption) + ' }'
+    } else if (caption === null) {
+        ajaxData = '{"screenshot": ' + JSON.stringify(data) + ' }'
+    }
     $.ajax({
-        url: "/api/retestscreenshot/" + screenshotId + "/",
-        data: '{"screenshot": ' + JSON.stringify(data) + ', "caption": ' + JSON.stringify(caption) + ' }',
+        url: "/api/retestscreenshot/" + id + "/",
+        data: ajaxData,
         type: 'PUT',
         success: successFunction,
         error: errorFunction
