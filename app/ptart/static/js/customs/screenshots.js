@@ -145,8 +145,14 @@ function addScreenshot() {
 
 //Create screenshot in the screenshot container.
 function createScreenshot(id, dataURL, caption, order) {
-    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragScreenshotStart(event)", ondragend: "dragScreenshotStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
+    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", ondragstart: "dragScreenshotStart(event)", ondragend: "dragScreenshotStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
     $("#screenshot_link_" + id).tooltip();
+
+    $("#screenshot_" + id).on("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        editNewScreenshot("screenshot_" + id);
+    });
 }
 
 /* --------------------------------------------------------------------------------------------------- */
@@ -301,14 +307,26 @@ function editHitScreenshot(id) {
 function editRetestHitScreenshot(id) {    
     var img = document.getElementById(id);
             
-   var updateFn = function(event) {
+    var updateFn = function(event) {
         img.src = event.dataUrl;
         img.style.position = 'static';
         ajaxUpdateRetestScreenshot(screenshotUpdationSuccess, commonFailure, id.replace("screenshot_", ""), event.dataUrl, null);
     };
-    
+        
     initMarkerJs(img, updateFn);
 }
+
+function editNewScreenshot(id) {
+    var img = document.getElementById(id);
+            
+    var updateFn = function(event) {
+        img.src = event.dataUrl;
+        img.style.position = 'static';
+    };
+        
+    initMarkerJs(img, updateFn);
+}
+
 
 /**
  * Common function to initialize MarkerJS for both hit and retest hit screenshots.
@@ -325,6 +343,9 @@ function initMarkerJs(img, updateFn) {
     markerArea.settings.displayMode = 'popup';
     markerArea.settings.popupTarget = document.body;
 
+    // Add filled rectangle marker type
+    markerArea.availableMarkerTypes = markerArea.ALL_MARKER_TYPES;
+    
     markerArea.addEventListener("render", updateFn);
     markerArea.show();
 }
