@@ -90,6 +90,8 @@ from .serializers import (
     UserSerializer
 )
 
+from .tools import MermaidUtils
+
 #
 # Image renderer for Screenshots.
 #
@@ -1593,6 +1595,24 @@ def project_latex(request, pk):
             response = HttpResponse()
             zf = zipfile.ZipFile(response, "w")
 
+            # Retrieve all Mermaid elements and convert them to PNG.
+            MermaidUtils.process_mermaid_diagrams(project.engagement_overview, zf)
+            MermaidUtils.process_mermaid_diagrams(project.executive_summary, zf)
+            MermaidUtils.process_mermaid_diagrams(project.conclusion, zf)
+
+            for recommendation in project.recommendation_set.all():
+                MermaidUtils.process_mermaid_diagrams(recommendation.body, zf)
+
+            for hit in project.hits():
+                MermaidUtils.process_mermaid_diagrams(hit.body, zf)
+                MermaidUtils.process_mermaid_diagrams(hit.remediation, zf)
+
+            for retestcampaign in project.retestcampaign_set.all():
+                MermaidUtils.process_mermaid_diagrams(retestcampaign.introduction, zf)
+                MermaidUtils.process_mermaid_diagrams(retestcampaign.conclusion, zf)
+                for retest_hit in retestcampaign.retesthit_set.all():
+                    MermaidUtils.process_mermaid_diagrams(retest_hit.body, zf)
+
             # Retrieve Screenshots.
             for assessment in project.assessment_set.all():
                 for hit in assessment.displayable_hits():
@@ -1711,40 +1731,55 @@ def project_latex(request, pk):
                     )
 
                 def markdown_to_latex_common(md, folder, screenshot_class):
+                    md = MermaidUtils.replace_mermaid_diagram_by_md_images(md)
                     latex = pypandoc.convert_text(
                         md,
                         "latex",
                         format="md",
                         extra_args=["--wrap=preserve", "--highlight-style=tango"],
                     )
-                    if folder is not None:
-                        matches = screenshot_pattern.findall(latex)
-                        if matches is not None and len(matches) > 0:
-                            # Clean the markdown from the screenshots.
-                            latex = latex.replace("\n\\begin{figure}\n\\centering", "")
-                            latex = latex.replace(
-                                "\\caption{ptart\\_screenshot}\n\\end{figure}\n", ""
-                            )
-                            for match in matches:
-                                try:
-                                    item = screenshot_class.objects.get(
-                                        pk=match.split("/")[-2]
-                                    )
-                                    if item.is_user_can_view(request.user):
-                                        graphic = """
-                                        \\begin{{figure}}[H]
-                                        \\centering
-                                        \\includegraphics[max width=\\textwidth]{{./{}/{}.png}}
-                                        \\caption{{{}}}
-                                        \\end{{figure}}
-                                        """.format(
-                                            folder, item.id, tex_escape(item.caption)
+                    
+                    matches = screenshot_pattern.findall(latex)
+                    if matches is not None and len(matches) > 0:
+                        # Clean the markdown from the screenshots.
+                        latex = latex.replace("\n\\begin{figure}\n\\centering", "")
+                        latex = latex.replace(
+                            "\\caption{ptart\\_screenshot}\n\\end{figure}\n", ""
+                        )
+                        for match in matches:
+                            if "mermaid/mermaid" not in match :
+                                if folder is not None :
+                                    try:
+                                        item = screenshot_class.objects.get(
+                                            pk=match.split("/")[-2]
                                         )
-                                        latex = latex.replace(match, graphic)
-                                    else:
+                                        if item.is_user_can_view(request.user):
+                                            graphic = """
+                                            \\begin{{figure}}[H]
+                                            \\centering
+                                            \\includegraphics[max width=\\textwidth]{{./{}/{}.png}}
+                                            \\caption{{{}}}
+                                            \\end{{figure}}
+                                            """.format(
+                                                folder, item.id, tex_escape(item.caption)
+                                            )
+                                            latex = latex.replace(match, graphic)
+                                        else:
+                                            latex = latex.replace(match, "")
+                                    except Screenshot.DoesNotExist as e:
                                         latex = latex.replace(match, "")
-                                except Screenshot.DoesNotExist as e:
-                                    latex = latex.replace(match, "")
+                                else:
+                                    latex = latex.replace(match, "") 
+                            else:
+                                mermaid_id = match.split("/")[-1].replace("}", "")
+                                graphic = """
+                                \\begin{{figure}}[H]
+                                \\centering
+                                \\includegraphics[max width=\\textwidth]{{./mermaid/{}}}
+                                \\end{{figure}}
+                                """.format(
+                                    mermaid_id)
+                                latex = latex.replace(match, graphic)   
                     return latex
 
                 def markdown_to_latex(md):

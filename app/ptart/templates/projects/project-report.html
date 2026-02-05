@@ -221,6 +221,7 @@
     <script src="/static/js/plugins/hpcc/index.min.js"></script>
     <script src="/static/js/plugins/js-yaml/js-yaml.min.js"></script>
     <script src="/static/js/plugins/reveal/plugin/markdown/markdown.js"></script>
+    <script src="/static/js/plugins/reveal/plugin/mermaid/mermaid.js"></script>
     <script src="/static/js/plugins/reveal/plugin/notes/notes.js"></script>
     <script src="/static/js/customs/deciduous.js"></script>
     <script>
@@ -228,7 +229,7 @@
         // - https://github.com/hakimel/reveal.js#configuration
         // - https://github.com/hakimel/reveal.js#dependencies
         Reveal.initialize({
-            plugins: [RevealMarkdown, RevealNotes],
+            plugins: [RevealMarkdown, RevealNotes, RevealMermaid],
 
             markdown: {
                 sanitize: true
