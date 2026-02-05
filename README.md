@@ -50,6 +50,10 @@ A special thanks to [@pavanw3b](https://twitter.com/pavanw3b) for the [Sh00t!](h
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/2.PNG)
 
+### Integrated component to edit your screenshots!
+
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/17.PNG)
+
 ### Automatic LaTeX report creation
 
 ![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/12.PNG)
@@ -91,6 +95,21 @@ class HelloWorld {
    }
 }
 ```
+
+### Mermaid diagrams managed
+
+```mermaid
+sequenceDiagram
+    participant U as HitBody
+    participant A as API
+    participant DB as Base de données
+
+    U->>A: Requête
+    A->>DB: Lecture
+    DB-->>A: Données
+    A-->>U: Réponse
+```
+![enter image description here](https://raw.githubusercontent.com/certmichelin/PTART/master/docs/18.PNG)
 
 ### Chat GPT
 
