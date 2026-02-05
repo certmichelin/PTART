@@ -2,14 +2,6 @@
 // MIT License
 // jquery.paste_image_reader.js
 
-//This code is incomplete. You need to develop the pasteImageReader which apply the result to DOM/
-//Exemple :
-// $("html").pasteImageReader(function (results) {
-//     var dataURL = results.dataURL;
-//     $("#screenshotData").text(dataURL);
-//     $("#screenshot").attr("src",dataURL);
-// });
-
 (function ($) {
     var defaults;
     $.event.fix =
@@ -153,8 +145,24 @@ function addScreenshot() {
 
 //Create screenshot in the screenshot container.
 function createScreenshot(id, dataURL, caption, order) {
-    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", "data-fancybox": "gallery", ondragstart: "dragScreenshotStart(event)", ondragend: "dragScreenshotStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
+    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", ondragstart: "dragScreenshotStart(event)", ondragend: "dragScreenshotStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
     $("#screenshot_link_" + id).tooltip();
+
+    $("#screenshot_" + id).on("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        editNewScreenshot("screenshot_" + id);
+    });
+}
+
+//Update screenshot caption.
+function editScreenshotCaption() {
+    var id = $("#editScreenshotCaptionId").val();
+    var caption = $("#editScreenshotCaption").val();
+    $("#screenshot_" + id).attr('caption', caption);
+    $("#screenshot_link_" + id).attr('caption', caption);
+    $("#screenshot_link_" + id).attr('data-original-title', caption).tooltip('hide').tooltip('dispose').tooltip();
+    resetEditScreenshotCaptionModal();
 }
 
 /* --------------------------------------------------------------------------------------------------- */
@@ -203,6 +211,9 @@ function buildContextMenuForScreenshots(screenshotBlockId, screenshotId, order, 
                 }},
                 "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
                     moveDownCallback(screenshotBlockId, screenshotId, order + 1);
+                }},
+                "edit": {name: "Edit Caption", icon: "fa-edit", callback: function(key, options) {
+                    initEditScreenshotCaptionModal(screenshotId);
                 }}
             }
         });
@@ -272,4 +283,105 @@ function activeBootstapMenuForScreenshots(moveUpCallback, moveDownCallback) {
     $('.screenshot').each(function() {
         buildContextMenuForScreenshots($(this).attr('id'), $(this).attr('data-screenshot-id'), parseInt($(this).attr('data-screenshot-order'), 10), $('.screenshot').length, moveUpCallback, moveDownCallback);
     });
+}
+
+/* --------------------------------------------------------------------------------------------------- */
+/* ------------------------------- Default behavior for edit screenshots ----------------------------- */
+/* --------------------------------------------------------------------------------------------------- */
+/**
+ * Hit updation success callback.
+ */
+function screenshotUpdationSuccess(data) {
+    success($("#messages"), "Screenshot was Updated!");
+}
+
+/**
+ * Screenshot caption updation success callback.
+ */
+function screenshotCaptionUpdationSuccess(data) {
+    success($("#messages"), "Screenshot caption was Updated!");
+}
+
+/**
+ * Update hit screenshot with MarkerJS.
+ * 
+ * @param {*} id Screenshot ID.
+ */
+function editHitScreenshot(id) {    
+    var img = document.getElementById(id);
+            
+   var updateFn = function(event) {
+        img.src = event.dataUrl;
+        img.style.position = 'static';
+        ajaxUpdateScreenshot(screenshotUpdationSuccess, commonFailure, id.replace("screenshot_", ""), event.dataUrl, null);
+    };
+    
+    initMarkerJs(img, updateFn);
+}
+
+/**
+ * Update retest hit screenshot with MarkerJS.
+ * 
+ * @param {*} id Screenshot ID.
+ */
+function editRetestHitScreenshot(id) {    
+    var img = document.getElementById(id);
+            
+    var updateFn = function(event) {
+        img.src = event.dataUrl;
+        img.style.position = 'static';
+        ajaxUpdateRetestScreenshot(screenshotUpdationSuccess, commonFailure, id.replace("screenshot_", ""), event.dataUrl, null);
+    };
+        
+    initMarkerJs(img, updateFn);
+}
+
+function editNewScreenshot(id) {
+    var img = document.getElementById(id);
+            
+    var updateFn = function(event) {
+        img.src = event.dataUrl;
+        img.style.position = 'static';
+    };
+        
+    initMarkerJs(img, updateFn);
+}
+
+
+/**
+ * Common function to initialize MarkerJS for both hit and retest hit screenshots.
+ * 
+ * @param {C} img Screenshot image element to edit.
+ * @param {*} updateFn Update function to apply the changes to the image after editing.
+ */
+function initMarkerJs(img, updateFn) {
+    const markerArea = new markerjs2.MarkerArea(img);
+    markerArea.settings.displayMode = 'inline';
+    markerArea.targetRoot = document.body;
+    
+    // Configure marker area to display in the center of the page
+    markerArea.settings.displayMode = 'popup';
+    markerArea.settings.popupTarget = document.body;
+
+    // Add filled rectangle marker type
+    markerArea.availableMarkerTypes = markerArea.ALL_MARKER_TYPES;
+    
+    markerArea.addEventListener("render", updateFn);
+    markerArea.show();
+}
+
+//Init edit screenshot caption modal with current caption and screenshot.
+function initEditScreenshotCaptionModal(id) {
+    $("#editScreenshotCaptionId").val(id);
+    $("#editScreenshotCaption").val($("#screenshot_link_" + id).attr('data-original-title'));
+    $("#editScreenshotCaptionScreenshot").attr("src", $("#screenshot_" + id).attr('src'));
+    $("#editScreenshotCaptionModal").modal('toggle');
+}
+
+//Reset edit screenshot caption modal after caption update.
+function resetEditScreenshotCaptionModal() {
+    $("#editScreenshotCaptionModal").modal('toggle');
+    $("#editScreenshotCaption").val("");
+    $("#editScreenshotCaptionId").val("");
+    $("#editScreenshotCaptionScreenshot").attr("src", "");
 }
