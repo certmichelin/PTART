@@ -240,7 +240,7 @@ def hit_reference(request, pk):
 
 @csrf_exempt
 @ptart_authentication
-@api_view(["DELETE"])
+@api_view(["GET", "PATCH", "PUT", "DELETE"])
 def screenshot(request, pk):
     return item(request, pk, Screenshot, ScreenshotSerializer)
 
@@ -436,7 +436,7 @@ def retesthits(request):
 
 @csrf_exempt
 @ptart_authentication
-@api_view(["DELETE"])
+@api_view(["GET", "PATCH", "PUT", "DELETE"])
 def retestscreenshot(request, pk):
     return item(request, pk, RetestScreenshot, RetestScreenshotSerializer)
 

@@ -88,6 +88,19 @@
     }
 
     /**
+     * Override editScreenshotCaption from screenshot.js in order to edit the caption on the fly.
+     */
+    function editScreenshotCaption() {
+        var id = $("#editScreenshotCaptionId").val();
+        var caption = $("#editScreenshotCaption").val();
+        $("#screenshot_" + id).attr('caption', caption);
+        $("#screenshot_link_" + id).attr('caption', caption);
+        $("#screenshot_link_" + id).attr('data-original-title', caption).tooltip('hide').tooltip('dispose').tooltip();
+        ajaxUpdateRetestScreenshot(screenshotCaptionUpdationSuccess, commonFailure, id, null, caption);
+        resetEditScreenshotCaptionModal();
+    }
+
+    /**
      * Override dropDeleteScreenshot from screenshot.js in order to delete the file on the fly.
      */
     function dropDeleteScreenshot(ev) {

@@ -30,6 +30,7 @@ from ptart.models import (
     RetestHit,
     RetestScreenshot,
 )
+from ptart.tools.screenshots import delete_screenshot_file
 from .tools import FileField
 
 
@@ -373,7 +374,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):
-    screenshot = Base64ImageField()
+    screenshot = Base64ImageField(required=False)
 
     class Meta:
         model = Screenshot
@@ -391,9 +392,21 @@ class ScreenshotSerializer(serializers.ModelSerializer):
             order=hit.screenshot_set.count(),
         )
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        new_screenshot = validated_data.pop("screenshot", None)
+        if new_screenshot is not None:
+            delete_screenshot_file(instance.screenshot)
+            instance.screenshot = new_screenshot
+        caption = validated_data.pop("caption", None)
+        if caption is not None:
+            instance.caption = caption
+        instance.save()
+        return instance
+
 
 class RetestScreenshotSerializer(serializers.ModelSerializer):
-    screenshot = Base64ImageField()
+    screenshot = Base64ImageField(required=False)
 
     class Meta:
         model = RetestScreenshot
@@ -410,6 +423,18 @@ class RetestScreenshotSerializer(serializers.ModelSerializer):
             retest_hit=retest_hit,
             order=retest_hit.retestscreenshot_set.count(),
         )
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        new_screenshot = validated_data.pop("screenshot", None)
+        if new_screenshot is not None:
+            delete_screenshot_file(instance.screenshot)
+            instance.screenshot = new_screenshot
+        caption = validated_data.pop("caption", None)
+        if caption is not None:
+            instance.caption = caption
+        instance.save()
+        return instance
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
