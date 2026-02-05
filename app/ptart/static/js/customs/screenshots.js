@@ -155,6 +155,16 @@ function createScreenshot(id, dataURL, caption, order) {
     });
 }
 
+//Update screenshot caption.
+function editScreenshotCaption() {
+    var id = $("#editScreenshotCaptionId").val();
+    var caption = $("#editScreenshotCaption").val();
+    $("#screenshot_" + id).attr('caption', caption);
+    $("#screenshot_link_" + id).attr('caption', caption);
+    $("#screenshot_link_" + id).attr('data-original-title', caption).tooltip('hide').tooltip('dispose').tooltip();
+    resetEditScreenshotCaptionModal();
+}
+
 /* --------------------------------------------------------------------------------------------------- */
 /* ------------------------------- Default behavior for delete screenshot ---------------------------- */
 /* --------------------------------------------------------------------------------------------------- */
@@ -201,6 +211,9 @@ function buildContextMenuForScreenshots(screenshotBlockId, screenshotId, order, 
                 }},
                 "down": {name: "Move Down", icon: "fa-arrow-down", disabled: (order == count - 1), callback: function(key, options) {
                     moveDownCallback(screenshotBlockId, screenshotId, order + 1);
+                }},
+                "edit": {name: "Edit Caption", icon: "fa-edit", callback: function(key, options) {
+                    initEditScreenshotCaptionModal(screenshotId);
                 }}
             }
         });
@@ -283,6 +296,13 @@ function screenshotUpdationSuccess(data) {
 }
 
 /**
+ * Screenshot caption updation success callback.
+ */
+function screenshotCaptionUpdationSuccess(data) {
+    success($("#messages"), "Screenshot caption was Updated!");
+}
+
+/**
  * Update hit screenshot with MarkerJS.
  * 
  * @param {*} id Screenshot ID.
@@ -348,4 +368,20 @@ function initMarkerJs(img, updateFn) {
     
     markerArea.addEventListener("render", updateFn);
     markerArea.show();
+}
+
+//Init edit screenshot caption modal with current caption and screenshot.
+function initEditScreenshotCaptionModal(id) {
+    $("#editScreenshotCaptionId").val(id);
+    $("#editScreenshotCaption").val($("#screenshot_link_" + id).attr('data-original-title'));
+    $("#editScreenshotCaptionScreenshot").attr("src", $("#screenshot_" + id).attr('src'));
+    $("#editScreenshotCaptionModal").modal('toggle');
+}
+
+//Reset edit screenshot caption modal after caption update.
+function resetEditScreenshotCaptionModal() {
+    $("#editScreenshotCaptionModal").modal('toggle');
+    $("#editScreenshotCaption").val("");
+    $("#editScreenshotCaptionId").val("");
+    $("#editScreenshotCaptionScreenshot").attr("src", "");
 }

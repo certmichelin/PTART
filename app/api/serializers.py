@@ -366,7 +366,7 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class ScreenshotSerializer(serializers.ModelSerializer):
-    screenshot = Base64ImageField()
+    screenshot = Base64ImageField(required=False)
 
     class Meta:
         model = Screenshot
@@ -398,7 +398,7 @@ class ScreenshotSerializer(serializers.ModelSerializer):
 
 
 class RetestScreenshotSerializer(serializers.ModelSerializer):
-    screenshot = Base64ImageField()
+    screenshot = Base64ImageField(required=False)
 
     class Meta:
         model = RetestScreenshot

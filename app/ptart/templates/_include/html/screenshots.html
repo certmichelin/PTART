@@ -80,6 +80,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- Edit screenshot caption modal -->
+        <div class="modal fade" id="editScreenshotCaptionModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit screenshot caption</h5>
+                        <button type="button" class="close" onclick="resetEditScreenshotCaptionModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <img id="editScreenshotCaptionScreenshot" class="screenshot_data" src="" />
+                        </div>
+                        <div class="form-group">
+                            <label>Caption</label>
+                            <input id="editScreenshotCaption" class="form-control" placeholder="Screenshot caption"  autocomplete="off" />
+                        </div>
+                        <input type="hidden" id="editScreenshotCaptionId" />
+                    </div>
+                    <div class="modal-footer">
+                        <button id="editScreenshotCaptionBtn" type="submit" class="btn btn-outline-warning" onclick="editScreenshotCaption()">Edit</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetEditScreenshotCaptionModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endif %}
     </div>
 </div>
