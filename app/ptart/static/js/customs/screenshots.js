@@ -126,7 +126,7 @@ function addScreenshot() {
         $('#screenshotMaxId').val(parseInt(id) + 1);
 
         //add screenshot to gallery
-        createScreenshot(id, dataURL, caption, $('.screenshot').length);
+        createScreenshot(id, dataURL, caption, $('.screenshot').length, editNewScreenshot);
 
         //Build context menu for screenshots.
         buildContextMenuForScreenshots("screenshot_link_" + id, id, $('.screenshot').length - 1, $('.screenshot').length, screenshotMoveUpCallback, screenshotMoveDownCallback);
@@ -144,15 +144,44 @@ function addScreenshot() {
 }
 
 //Create screenshot in the screenshot container.
-function createScreenshot(id, dataURL, caption, order) {
-    $('#screenshots').append($('<a>', { id: "screenshot_link_" + id, href: dataURL, caption: caption, "data-screenshot-id" : id, "data-screenshot-order":order, class: "screenshot", ondragstart: "dragScreenshotStart(event)", ondragend: "dragScreenshotStop(event)", "data-toggle" : "tooltip",  "data-placement":"left" , "title" : caption}).append($('<img>', { id: "screenshot_" + id, src: dataURL, caption: caption, class: "screenshot_data screenshot_gallery"})));
-    $("#screenshot_link_" + id).tooltip();
-
-    $("#screenshot_" + id).on("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        editNewScreenshot("screenshot_" + id);
+function createScreenshot(id, dataURL, caption, order, ajax_fn) {
+    var $link = $('<a>', {
+        id: "screenshot_link_" + id,
+        caption: caption,
+        "data-screenshot-id": id,
+        "data-screenshot-order": order,
+        class: "screenshot",
+        "data-toggle": "tooltip",
+        "data-placement": "left",
+        title: caption
     });
+
+    $link.on("click", function(e) {
+        e.preventDefault();
+        ajax_fn("screenshot_" + id);
+    });
+
+
+    $link.on("dragstart", function(e) {
+        dragScreenshotStart(e);
+    });
+
+    $link.on("dragend", function(e) {
+        dragScreenshotStop(e);
+    });
+
+    $link.append(
+        $('<img>', {
+            id: "screenshot_" + id,
+            src: dataURL,
+            caption: caption,
+            class: "screenshot_data screenshot_gallery"
+        })
+    );
+
+    $('#screenshots').append($link);
+    
+    $("#screenshot_link_" + id).tooltip();
 }
 
 //Update screenshot caption.

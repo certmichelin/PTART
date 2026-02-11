@@ -113,7 +113,7 @@
      * Screenshot creation success callback.
      */
     function screenshotCreationSuccess(data) {
-        createScreenshot(data.id, "/api/retestscreenshot/png/" + data.id + "/", data.caption, data.order);
+        createScreenshot(data.id, "/api/retestscreenshot/png/" + data.id + "/", data.caption, data.order, editRetestHitScreenshot);
         buildContextMenuForScreenshots("screenshot_link_" + data.id, data.id, data.order, $('.screenshot').length, screenshotMoveUpCallback,screenshotMoveDownCallback);
         var previousBlock = $("#screenshot_link_" + data.id).prev('.screenshot');
         if (previousBlock.length) {
