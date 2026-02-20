@@ -335,27 +335,33 @@ class Project(models.Model):
 
     def get_viewable(user):
         """Returns all viewable & non-archived projects"""
-        return (
-            Project.objects.filter(
-                Q(pentesters__in=[user])
-                | Q(reviewers__in=[user])
-                | Q(viewers__in=[user])
+        if user.is_staff:
+            return Project.objects.filter(archived=False)
+        else :
+            return (
+                Project.objects.filter(
+                    Q(pentesters__in=[user])
+                    | Q(reviewers__in=[user])
+                    | Q(viewers__in=[user])
+                )
+                .filter(archived=False)
+                .distinct()
             )
-            .filter(archived=False)
-            .distinct()
-        )
 
     def get_archived_viewable(user):
         """Returns all viewable & non-archived projects"""
-        return (
-            Project.objects.filter(
-                Q(pentesters__in=[user])
-                | Q(reviewers__in=[user])
-                | Q(viewers__in=[user])
+        if user.is_staff:
+            return Project.objects.filter(archived=True)
+        else :
+            return (
+                Project.objects.filter(
+                    Q(pentesters__in=[user])
+                    | Q(reviewers__in=[user])
+                    | Q(viewers__in=[user])
+                )
+                .filter(archived=True)
+                .distinct()
             )
-            .filter(archived=True)
-            .distinct()
-        )
 
     def is_user_can_view(self, user):
         """Verify if the user have read access for this project"""
@@ -364,6 +370,7 @@ class Project(models.Model):
             user in self.pentesters.all()
             or user in self.reviewers.all()
             or user in self.viewers.all()
+            or user.is_staff
         ):
             result = True
         return result
@@ -371,7 +378,7 @@ class Project(models.Model):
     def is_user_can_edit(self, user):
         """Verify if the user have write access for this project"""
         result = False
-        if user in self.pentesters.all() or user in self.reviewers.all():
+        if user in self.pentesters.all() or user in self.reviewers.all() or user.is_staff:
             result = True
         return result
 
