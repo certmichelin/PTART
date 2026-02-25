@@ -146,11 +146,19 @@
     });
 
     /**
+     * Create retest campaign failure callback.
+     */
+    function createRetestCampaignFailure(data) {
+        waitingDialog.hide();
+        commonFailure(data);
+    }
+
+    /**
      * Create retest campaign.
      */
     function createRetestCampaign() {
         cleanMessagesContainer($("#messages"));
-        ajaxCreateRetestCampaign(campaignCreationSuccess, commonFailure, $("#name").val(), $("#introduction").val(), $("#conclusion").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#projectId").val());
+        ajaxCreateRetestCampaign(campaignCreationSuccess, createRetestCampaignFailure, $("#name").val(), $("#introduction").val(), $("#conclusion").val(), manageDate($('#startdate').val()), manageDate($('#enddate').val()), $("#projectId").val());
     }
 
     /**
