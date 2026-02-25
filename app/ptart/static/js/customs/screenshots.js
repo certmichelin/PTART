@@ -163,11 +163,11 @@ function createScreenshot(id, dataURL, caption, order, ajax_fn) {
 
 
     $link.on("dragstart", function(e) {
-        dragScreenshotStart(e);
+        dragScreenshotStart(e.originalEvent);
     });
 
     $link.on("dragend", function(e) {
-        dragScreenshotStop(e);
+        dragScreenshotStop(e.originalEvent);
     });
 
     $link.append(
