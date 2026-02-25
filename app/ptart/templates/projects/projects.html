@@ -90,7 +90,7 @@
                     <label>Pentesters</label>
                     <select class="js-states form-control" id="pentesters" multiple="multiple">
                         {% for usr in users %}
-                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                        <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -99,7 +99,7 @@
                     <label>Reviewers</label>
                     <select class="js-states form-control" id="reviewers" multiple="multiple">
                         {% for usr in users %}
-                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                        <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -108,7 +108,7 @@
                     <label>Viewers</label>
                     <select class="js-states form-control" id="viewers" multiple="multiple">
                         {% for usr in users %}
-                        <option value="{{ usr.id }}">{{ usr.username }}</option>
+                        <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})</option>
                         {% endfor %}
                     </select>
                 </div>

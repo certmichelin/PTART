@@ -91,9 +91,9 @@
                     <select class="js-states form-control" id="pentesters" multiple="multiple">
                         {% for usr in users %}
                             {% if usr.is_active == True %}
-                                <option value="{{ usr.id }}">{{ usr.username }}</option>
+                                <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})</option>
                             {% else %}
-                                <option value="{{ usr.id }}">{{ usr.username }} (inactive)</option>
+                                <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})(inactive)</option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -104,9 +104,9 @@
                     <select class="js-states form-control" id="reviewers" multiple="multiple">
                         {% for usr in users %}
                             {% if usr.is_active == True %}
-                                <option value="{{ usr.id }}">{{ usr.username }}</option>
+                                <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})</option>
                             {% else %}
-                                <option value="{{ usr.id }}">{{ usr.username }} (inactive)</option>
+                                <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }}) (inactive)</option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -117,9 +117,9 @@
                     <select class="js-states form-control" id="viewers" multiple="multiple">
                         {% for usr in users %}
                             {% if usr.is_active == True %}
-                                <option value="{{ usr.id }}">{{ usr.username }}</option>
+                                <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})</option>
                             {% else %}
-                                <option value="{{ usr.id }}">{{ usr.username }} (inactive)</option>
+                                <option value="{{ usr.id }}">{{ usr.username }} ({{ usr.first_name }} {{ usr.last_name }})(inactive)</option>
                             {% endif %}
                         {% endfor %}
                     </select>
