@@ -30,6 +30,8 @@ for weakness in weaknesses:
                 .find("{http://www.w3.org/1999/xhtml}p")
                 .text
             )
+        if extended_description is None:
+            extended_description = "No extended description provided for this CWE."
 
     cwe = CWE(
         cwes=cwes,
