@@ -1,0 +1,44 @@
+{
+    "labels": [
+        {
+            "title" : "A01:2025-Broken Access Control",
+            "color" : "#e6194B"
+        },
+        {
+            "title" : "A02:2025-Security Misconfiguration",
+            "color" : "#3cb44b"
+        },
+        {
+            "title" : "A03:2025-Software Supply Chain Failures",
+            "color" : "#ffe119"
+        },
+        {
+            "title" : "A04:2025-Cryptographic Failures",
+            "color" : "#4363d8"
+        },
+        {
+            "title" : "A05:2025-Injection",
+            "color" : "#f58231"
+        },
+        {
+            "title" : "A06:2025-Insecure Design",
+            "color" : "#42d4f4"
+        },
+        {
+            "title" : "A07:2025-Authentication Failures",
+            "color" : "#f032e6"
+        },
+        {
+            "title" : "A08:2025-Software or Data Integrity Failures",
+            "color" : "#fabebe"
+        },
+        {
+            "title" : "A09:2025-Security Logging & Alerting Failures",
+            "color" : "#469990"
+        },
+        {
+            "title" : "A10:2025-Mishandling of Exceptional Conditions",
+            "color" : "#e6beff"
+        }
+    ]
+}
