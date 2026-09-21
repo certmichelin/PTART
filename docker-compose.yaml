@@ -2,7 +2,9 @@
 ---
 services:
   ptart-server:
-    image: deddobifu/ptart:4.0.13
+    build:
+        context: .
+        dockerfile: Dockerfile
     env_file:
       - .env
     volumes:

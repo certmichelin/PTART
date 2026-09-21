@@ -214,6 +214,41 @@ function ajaxUpdateHitStatus(successFunction, errorFunction, id, status) {
 }
 
 /**
+ * Acquire (or refresh) the edit lock on a hit.
+ *
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure (409 = locked by someone else).
+ * @param {*} id Hit id.
+ */
+function ajaxLockHit(successFunction, errorFunction, id) {
+    $.ajax({
+        url: "/api/hit/" + id + "/lock/",
+        type: 'POST',
+        data: '{}',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
+ * Release the edit lock on a hit.
+ *
+ * @param {*} successFunction Function to call in case of ajax success.
+ * @param {*} errorFunction Function to call in case of ajax failure.
+ * @param {*} id Hit id.
+ * @param {*} force True to force-release a lock held by another user (staff only).
+ */
+function ajaxUnlockHit(successFunction, errorFunction, id, force) {
+    $.ajax({
+        url: "/api/hit/" + id + "/unlock/" + (force ? "?force=1" : ""),
+        type: 'POST',
+        data: '{}',
+        success: successFunction,
+        error: errorFunction
+    });
+}
+
+/**
  * Delete a hit.
  *
  * @param {*} successFunction Function to call in case of ajax success.

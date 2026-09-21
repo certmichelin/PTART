@@ -10,6 +10,15 @@
         {% include '_include/html/header.html' with item='' sub_icon='fa fa-cubes' sub_url="/project/"|addstr:hit.assessment.project.pk|addstr:"/summary" sub_text=hit.assessment.project third_icon='fa fa-cube' third_url="/assessment/"|addstr:hit.assessment.pk third_text=hit.assessment active_icon='' active_text=hit.title %}
         {% include "_include/html/messages.html" %}
 
+        {% if editable %}
+        <div id="lockBanner" class="alert alert-warning" style="display:none;">
+            <span id="lockBannerText"></span>
+            {% if can_force_unlock %}
+            <button id="forceUnlockBtn" class="btn btn-sm btn-outline-danger ml-2">Force unlock</button>
+            {% endif %}
+        </div>
+        {% endif %}
+
         <h5>{{ hit.get_unique_id }}</h5>
         <div class="row">
             <div class="col-lg-7">
@@ -222,8 +231,8 @@
     loadCVSS4ButtonsState("{{hit.cvss4.attack_vector}}", "{{hit.cvss4.attack_complexity}}", "{{hit.cvss4.attack_requirements}}", "{{hit.cvss4.privilege_required}}", "{{hit.cvss4.user_interaction}}", "{{hit.cvss4.confidentiality}}", "{{hit.cvss4.integrity}}", "{{hit.cvss4.availability}}", "{{hit.cvss4.subsequent_confidentiality}}", "{{hit.cvss4.subsequent_integrity}}", "{{hit.cvss4.subsequent_availability}}");
     {% endif %}
 
-    activeMarkdown("body");
-    activeMarkdown("remediation");
+    var bodyMDE = activeMarkdown("body");
+    var remediationMDE = activeMarkdown("remediation");
 
     var colorMap = new Map();
     {% for label in labels %}
@@ -251,6 +260,81 @@
     $('#cwes').select2().val(selectedCwes).trigger("change");
 
     activeBootstapMenuForScreenshots(screenshotMoveUpCallback,screenshotMoveDownCallback);
+
+    {% if editable %}
+    /* --------------------------------------------------------------------------------------------------- */
+    /* -------------------------------------------- Hit Lock ----------------------------------------------- */
+    /* --------------------------------------------------------------------------------------------------- */
+
+    var hitId = $("#id").val();
+    var hasLock = false;
+
+    function setEditingEnabled(enabled) {
+        $("#status, #severity, #title, #asset, #fix_complexity, #assessment").prop("disabled", !enabled);
+        $("#labels, #cwes").prop("disabled", !enabled);
+        bodyMDE.codemirror.setOption("readOnly", enabled ? false : "nocursor");
+        remediationMDE.codemirror.setOption("readOnly", enabled ? false : "nocursor");
+        $("#updateBtn, #delBtn").toggle(enabled);
+    }
+
+    function showLockBanner(username) {
+        $("#lockBannerText").text("This hit is currently being edited by " + username + ". Editing is disabled until they finish.");
+        $("#lockBanner").show();
+        setEditingEnabled(false);
+    }
+
+    function hideLockBanner() {
+        $("#lockBanner").hide();
+        setEditingEnabled(true);
+    }
+
+    /**
+     * Try to acquire (or refresh) the edit lock. Called on load and on a heartbeat interval
+     * so the lock stays alive while this tab remains open, and expires if it's closed.
+     */
+    function tryAcquireLock() {
+        ajaxLockHit(function () {
+            hasLock = true;
+            hideLockBanner();
+        }, function (xhr) {
+            hasLock = false;
+            var lockedBy = (xhr.responseJSON && xhr.responseJSON.locked_by) || "another user";
+            showLockBanner(lockedBy);
+        }, hitId);
+    }
+
+    {% if hit_locked_by_other %}
+    showLockBanner("{{ hit_locked_by|escapejs }}");
+    {% endif %}
+
+    tryAcquireLock();
+    setInterval(tryAcquireLock, 60000);
+
+    /**
+     * Release the lock when leaving the page. "beforeunload" alone misses
+     * back/forward navigation in several browsers (the page is restored from
+     * the bfcache instead of a real navigation), so "pagehide" is used too --
+     * it fires reliably in both cases. sendBeacon works from either.
+     */
+    function releaseLockOnLeave() {
+        if (hasLock) {
+            navigator.sendBeacon("/api/hit/" + hitId + "/unlock/");
+            hasLock = false;
+        }
+    }
+    $(window).on("beforeunload", releaseLockOnLeave);
+    $(window).on("pagehide", releaseLockOnLeave);
+
+    {% if can_force_unlock %}
+    $('#forceUnlockBtn').on('click', function () {
+        bootbox.confirm("Force unlock this hit? Any unsaved changes made by the other user may be lost.", function (confirmed) {
+            if (confirmed) {
+                ajaxUnlockHit(tryAcquireLock, commonFailure, hitId, true);
+            }
+        });
+    });
+    {% endif %}
+    {% endif %}
 
     /* --------------------------------------------------------------------------------------------------- */
     /* ------------------------------------------ Hit Update --------------------------------------------- */
