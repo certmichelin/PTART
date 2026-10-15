@@ -2,9 +2,10 @@
 ---
 services:
   ptart-server:
+    image: deddobifu/ptart:4.0.14
     build:
-        context: .
-        dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
@@ -14,7 +15,7 @@ services:
   ptart-nginx:
     image: nginx:bookworm
     ports:
-        - "8000:80"
+      - "8000:80"
     volumes:
       - ./docker/conf/:/etc/nginx/conf.d/:ro
       - staticfiles:/var/www/ptart/static/:ro
@@ -38,8 +39,6 @@ services:
       - postgres-db:/var/lib/postgreqsql/data
 
 volumes:
-    postgres-db:
-    staticfiles:
-    medias:
-
-    
+  postgres-db:
+  staticfiles:
+  medias:
