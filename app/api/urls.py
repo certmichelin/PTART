@@ -8,6 +8,8 @@ urlpatterns = [
     re_path(r"^flag/(?P<pk>[0-9]+)/complete/$", views.markFlagAsDone),
     re_path(r"^flags/$", views.flags),
     re_path(r"^hit/(?P<pk>[0-9]+)/$", views.hit),
+    re_path(r"^hit/(?P<pk>[0-9]+)/lock/$", views.hit_lock),
+    re_path(r"^hit/(?P<pk>[0-9]+)/unlock/$", views.hit_unlock),
     re_path(r"^hit/(?P<pk>[0-9]+)/cvss3/$", views.cvss3_hit),
     re_path(r"^hit/(?P<pk>[0-9]+)/cvss4/$", views.cvss4_hit),
     re_path(r"^hit/(?P<pk>[0-9]+)/comments/$", views.comments),

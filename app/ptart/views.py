@@ -385,6 +385,9 @@ def hit(request, hit_id):
                     "severities": Severity.values,
                     "editable": (hit.is_user_can_edit(request.user) and not embedded),
                     "embedded": embedded,
+                    "hit_locked_by_other": hit.is_locked_by_other(request.user),
+                    "hit_locked_by": hit.locked_by.username if hit.is_locked() else None,
+                    "can_force_unlock": request.user.is_staff,
                 },
             )
         else:

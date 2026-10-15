@@ -3,7 +3,8 @@ import os
 import re
 
 from cvss import CVSS3, CVSS4
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -725,6 +726,13 @@ class Hit(models.Model):
     labels = models.ManyToManyField(Label)
     cwes = models.ManyToManyField(CWE)
 
+    locked_by = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name="locked_hits"
+    )
+    locked_at = models.DateTimeField(null=True, blank=True)
+
+    LOCK_TIMEOUT = timedelta(minutes=5)
+
     def __str__(self):
         return self.title
 
@@ -743,6 +751,34 @@ class Hit(models.Model):
     def is_user_can_create(self, user):
         """Verify if the user can create this hit"""
         return self.assessment.is_user_can_edit(user)
+
+    def is_locked(self):
+        """Verify if the hit is currently locked for edition (lock not expired)."""
+        if self.locked_by_id is None or self.locked_at is None:
+            return False
+        return timezone.now() - self.locked_at < self.LOCK_TIMEOUT
+
+    def is_locked_by_other(self, user):
+        """Verify if the hit is currently locked by someone else."""
+        return self.is_locked() and self.locked_by_id != user.id
+
+    def acquire_lock(self, user):
+        """Acquire (or refresh) the edit lock for user. Returns False if held by someone else."""
+        if self.is_locked_by_other(user):
+            return False
+        self.locked_by = user
+        self.locked_at = timezone.now()
+        self.save(update_fields=["locked_by", "locked_at"])
+        return True
+
+    def release_lock(self, user, force=False):
+        """Release the edit lock. Only the lock owner can release it, unless force=True."""
+        if not force and self.locked_by_id != user.id:
+            return False
+        self.locked_by = None
+        self.locked_at = None
+        self.save(update_fields=["locked_by", "locked_at"])
+        return True
 
     def get_unique_id(self):
         """Return a pretty value of the ID, ex: PTART-2022-<id>"""

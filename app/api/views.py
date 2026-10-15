@@ -11,8 +11,9 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import action, renderer_classes
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.renderers import BaseRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -92,6 +93,14 @@ from .serializers import (
 
 from .tools import MermaidUtils
 
+
+# sendBeacon() can't set the X-CSRFToken header, and DRF enforces CSRF on its
+# own regardless of @csrf_exempt, so the unlock-on-page-leave call needs this.
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
+
+
 #
 # Image renderer for Screenshots.
 #
@@ -166,6 +175,46 @@ def hit(request, pk):
 @api_view(["GET", "POST"])
 def hits(request):
     return items(request, Hit, HitSerializer)
+
+
+@csrf_exempt
+@ptart_authentication
+@api_view(["POST"])
+def hit_lock(request, pk):
+    try:
+        obj = Hit.objects.get(pk=pk)
+    except Hit.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if not obj.is_user_can_edit(request.user):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    if obj.acquire_lock(request.user):
+        return Response({"locked_by": request.user.username, "locked_at": obj.locked_at})
+
+    return Response(
+        {"locked_by": obj.locked_by.username, "locked_at": obj.locked_at},
+        status=status.HTTP_409_CONFLICT,
+    )
+
+
+@csrf_exempt
+@ptart_authentication
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication, TokenAuthentication])
+def hit_unlock(request, pk):
+    try:
+        obj = Hit.objects.get(pk=pk)
+    except Hit.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    force = request.query_params.get("force") == "1"
+    if force and not request.user.is_staff:
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    if obj.release_lock(request.user, force=force):
+        return Response(status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 @csrf_exempt
@@ -2295,6 +2344,8 @@ def item(request, pk, class_name, serializer_name):
                 response = Response(serializer_name(item).data)
             else:
                 response = Response(status=status.HTTP_403_FORBIDDEN)
+        elif request.method in ("PUT", "PATCH", "DELETE") and hasattr(item, "is_locked_by_other") and item.is_locked_by_other(request.user):
+            response = Response(status=status.HTTP_423_LOCKED)
         elif request.method == "PUT" or request.method == "PATCH":
             serializer = serializer_name(
                 item, data=request.data, partial=(request.method == "PATCH")
