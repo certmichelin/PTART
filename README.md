@@ -134,6 +134,18 @@ docker compose exec ptart-server python loader_owasp_testing_guide.py
 
 Access [http://localhost:8000/](http://localhost:8000/) on your favorite browser !!
 
+## Full export and fresh-instance import
+
+Admins can use **Administration → Full export** to download migration data and
+referenced evidence as a ZIP. It includes a portable SQLite database generated
+from the active database, including PostgreSQL sources. On a fresh PTART instance,
+run `python manage.py migrate`, then `python manage.py import_archive /path/to/export.zip`
+before creating users or running catalog loaders. Import preserves IDs/accounts
+and refuses existing data; it does not merge or overwrite an instance.
+The archive contains credentials and must be handled as a secret backup.
+See [the export/import guide](docs/MIGRATION_EXPORT.md) for cutover, verification,
+limitations and test commands.
+
 ## How to DEV
 
 ### Preparing PTART
