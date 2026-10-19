@@ -63,6 +63,8 @@ urlpatterns = [
     re_path(r"^methodologies/new/$", views.methodologies_new),
     re_path(r"^methodology/([0-9]+)/$", views.methodology),
     re_path(r"^todo/$", views.my_todo),
+    re_path(r"^export/$", views.admin_export, name="admin-export"),
+    re_path(r"^export/download/$", views.admin_export_download, name="admin-export-download"),
     re_path(r"^otp/$", views.generate_totp),
     re_path(r"^token/$", views.token_management),
     re_path(r"^account/password/$", views.password_change),

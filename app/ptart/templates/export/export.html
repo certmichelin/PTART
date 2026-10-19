@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %} Full export | PTART{% endblock %}
+
+{% block page %}
+<div id="page-wrapper">
+    <div class="container-fluid">
+        {% include '_include/html/header.html' with item='' active_icon='fa fa-file-archive' active_text='Full export' %}
+        {% include "_include/html/messages.html" %}
+
+        {% if export_error %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Export refused.</strong> {{ export_error }}
+            Resolve the error on the server, then try again. No partial archive was downloaded.
+        </div>
+        {% endif %}
+
+        <div class="row pl-3">
+            <div class="col-lg-9">
+                <h3>Full export</h3>
+                <p>
+                    Creates a portable ZIP containing <code>legacy.sqlite3</code> and <code>media/</code>
+                    for migration. Includes users, password hashes,
+                    2FA seeds, raw API tokens, catalogs, team roles, archived projects, findings in
+                    every status, flags, assets, retests, screenshots and attachments.
+                    Primary keys and column names match the legacy database.
+                </p>
+                <div class="alert alert-warning" role="alert">
+                    <strong>This archive contains credentials.</strong> It includes password hashes,
+                    TOTP secrets and API token material. Store it like a database backup, transfer it
+                    over a trusted channel, and delete copies once the migration is verified.
+                </div>
+                <p>
+                    <strong>Pause all other writers and media edits before the final export.</strong>
+                    The database is read from one snapshot, but files on disk cannot be frozen.
+                    Generation runs synchronously and large installations may need increased server
+                    timeouts and temporary disk space for the database and ZIP.
+                </p>
+                <p>
+                    Missing evidence files or unapplied migrations refuse the export. A
+                    <code>manifest.json</code> lists row counts, column names and database/media
+                    SHA-256 checksums. This migration input is not a full Django restore backup:
+                    sessions, Django permissions, settings and generated reports are not included.
+                    On a fresh PTART instance, apply migrations then run
+                    <code>python manage.py import_archive /path/to/export.zip</code> on the server,
+                    before creating users or loading catalogs. Existing data is never merged or overwritten.
+                    See <code>docs/MIGRATION_EXPORT.md</code> for the procedure and limitations.
+                </p>
+                <form method="post" action="{% url 'admin-export-download' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fa fa-download"></i> Generate and download archive
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
