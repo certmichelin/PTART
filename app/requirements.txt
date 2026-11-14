@@ -1,5 +1,6 @@
 cairosvg==2.8.2
 crispy-bootstrap4==2025.6
+cryptography==50.0.2
 cvss==3.1
 Django==5.2.8
 django-bootstrap5==25.2

@@ -10,6 +10,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
+from contextlib import ExitStack
 
 from django.conf import settings
 from django.contrib.admin.models import LogEntry
@@ -18,6 +19,7 @@ from django.contrib.sessions.models import Session
 from django.core.management.color import no_style
 from django.db import connection, models, transaction
 from django.db.migrations.recorder import MigrationRecorder
+from django.views.decorators.debug import sensitive_variables
 
 from ptart import models as m
 from ptart.tools.admin_export import (
@@ -29,6 +31,7 @@ from ptart.tools.admin_export import (
     _pending_ptart_migrations,
     _safe_media_source,
 )
+from ptart.tools.archive_crypto import ArchiveCryptoError, decrypt_to_tempfile, is_encrypted
 
 MODELS = EXPORT_MODELS + EXPORT_THROUGH
 TABLES = {model._meta.db_table: model for model in MODELS}
@@ -270,7 +273,8 @@ def _install_media(directory, root, manifest, created):
                 shutil.copyfileobj(src, dst, 1024 * 1024)
 
 
-def import_archive(path):
+@sensitive_variables("passphrase")
+def import_archive(path, passphrase=None):
     """Validate completely, then import under one transaction; compensate media failures."""
     if connection.in_atomic_block:
         raise ArchiveImportError(
@@ -284,8 +288,20 @@ def import_archive(path):
     try:
         with tempfile.TemporaryDirectory(prefix="ptart-import-") as temp:
             directory = Path(temp)
-            with zipfile.ZipFile(path) as archive:
-                manifest = _unpack(archive, directory)
+            with open(path, "rb") as source_stream, ExitStack() as stack:
+                archive_stream = source_stream
+                if is_encrypted(source_stream):
+                    try:
+                        archive_stream = stack.enter_context(
+                            decrypt_to_tempfile(source_stream, passphrase)
+                        )
+                    except ArchiveCryptoError as error:
+                        raise ArchiveImportError(str(error)) from None
+                try:
+                    with zipfile.ZipFile(archive_stream) as archive:
+                        manifest = _unpack(archive, directory)
+                except zipfile.BadZipFile:
+                    raise ArchiveImportError("Unable to authenticate encrypted archive.") from None
             applied = MigrationRecorder(connection).applied_migrations()
             migrations = sorted(name for app, name in applied if app == "ptart")
             if manifest["source"]["latest_migration"] != (

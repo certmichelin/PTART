@@ -21,10 +21,12 @@ from django.db import connection, models, transaction
 from django.db.migrations.executor import MigrationExecutor
 from django.db.migrations.recorder import MigrationRecorder
 from django.utils import timezone
+from django.views.decorators.debug import sensitive_variables
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from rest_framework.authtoken.models import Token
 
 from ptart import models as m
+from ptart.tools.archive_crypto import encrypt_archive, valid_passphrase
 
 
 FORMAT = "ptart-legacy-export"
@@ -249,4 +251,23 @@ def export_to_tempfile(user):
         return temp, manifest
     except BaseException:
         temp.close()
+        raise
+
+
+@sensitive_variables("passphrase")
+def encrypted_export_to_tempfile(user, passphrase):
+    """Build the legacy ZIP privately, then return an encrypted private stream."""
+    if not valid_passphrase(passphrase, minimum=16):
+        raise ValueError("Invalid export passphrase.")
+    plaintext, manifest = export_to_tempfile(user)
+    encrypted = None
+    try:
+        with plaintext:
+            encrypted = tempfile.TemporaryFile()
+            encrypt_archive(plaintext, encrypted, passphrase)
+            encrypted.seek(0)
+        return encrypted, manifest
+    except BaseException:
+        if encrypted is not None:
+            encrypted.close()
         raise

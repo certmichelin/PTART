@@ -18,7 +18,7 @@
             <div class="col-lg-9">
                 <h3>Full export</h3>
                 <p>
-                    Creates a portable ZIP containing <code>legacy.sqlite3</code> and <code>media/</code>
+                    Creates an encrypted portable archive containing <code>legacy.sqlite3</code> and <code>media/</code>
                     for migration. Includes users, password hashes,
                     2FA seeds, raw API tokens, catalogs, team roles, archived projects, findings in
                     every status, flags, assets, retests, screenshots and attachments.
@@ -27,13 +27,15 @@
                 <div class="alert alert-warning" role="alert">
                     <strong>This archive contains credentials.</strong> It includes password hashes,
                     TOTP secrets and API token material. Store it like a database backup, transfer it
-                    over a trusted channel, and delete copies once the migration is verified.
+                    over a trusted channel, and delete copies once the migration is verified. The
+                    passphrase is sent to the server; use HTTPS, choose a strong passphrase, and
+                    transfer it separately from the archive.
                 </div>
                 <p>
                     <strong>Pause all other writers and media edits before the final export.</strong>
                     The database is read from one snapshot, but files on disk cannot be frozen.
                     Generation runs synchronously and large installations may need increased server
-                    timeouts and temporary disk space for the database and ZIP.
+                    timeouts and encrypted temporary storage for the plaintext database and ZIP.
                 </p>
                 <p>
                     Missing evidence files or unapplied migrations refuse the export. A
@@ -41,12 +43,24 @@
                     SHA-256 checksums. This migration input is not a full Django restore backup:
                     sessions, Django permissions, settings and generated reports are not included.
                     On a fresh PTART instance, apply migrations then run
-                    <code>python manage.py import_archive /path/to/export.zip</code> on the server,
-                    before creating users or loading catalogs. Existing data is never merged or overwritten.
-                    See <code>docs/MIGRATION_EXPORT.md</code> for the procedure and limitations.
+                    <code>python manage.py import_archive /path/to/export.ptartenc</code> from a
+                    terminal with encrypted temporary storage. Enter the passphrase at the no-echo
+                    prompt, before creating users or loading catalogs. Existing data is never merged or overwritten.
                 </p>
                 <form method="post" action="{% url 'admin-export-download' %}">
                     {% csrf_token %}
+                    <div class="form-group">
+                        <label for="passphrase">Archive passphrase (required)</label>
+                        <input class="form-control" type="password" id="passphrase" name="passphrase"
+                               autocomplete="new-password" minlength="16" maxlength="1024" required
+                               aria-describedby="passphrase-help">
+                        <small id="passphrase-help" class="form-text text-muted">At least 16 characters, at most 1024 UTF-8 bytes. Store it separately; it is required to import the archive.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="passphrase_confirm">Confirm archive passphrase (required)</label>
+                        <input class="form-control" type="password" id="passphrase_confirm" name="passphrase_confirm"
+                               autocomplete="new-password" minlength="16" maxlength="1024" required>
+                    </div>
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="fa fa-download"></i> Generate and download archive
                     </button>

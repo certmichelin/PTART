@@ -9,6 +9,7 @@ from django.http import FileResponse, JsonResponse
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.debug import sensitive_post_parameters, sensitive_variables
 
 from django_tables2 import RequestConfig
 from django.shortcuts import render, redirect
@@ -879,13 +880,29 @@ def admin_export(request):
 @otp_required
 @user_passes_test(lambda u: u.is_active and u.is_staff)
 @require_POST
+@sensitive_post_parameters("passphrase", "passphrase_confirm")
+@sensitive_variables("passphrase", "confirmation")
 def admin_export_download(request):
-    from ptart.tools.admin_export import ExportError, export_to_tempfile
+    from ptart.tools.admin_export import ExportError, encrypted_export_to_tempfile
+    from ptart.tools.archive_crypto import valid_passphrase
+
+    passphrase = request.POST.get("passphrase", "")
+    confirmation = request.POST.get("passphrase_confirm", "")
+    if not valid_passphrase(passphrase, minimum=16) or passphrase != confirmation:
+        return render(
+            request,
+            "export/export.html",
+            {
+                "export_error": "Enter matching passphrases of at least 16 characters and at most 1024 UTF-8 bytes.",
+                "menu_projects": Project.get_viewable(request.user),
+            },
+            status=400,
+        )
 
     try:
-        stream, manifest = export_to_tempfile(request.user)
+        stream, manifest = encrypted_export_to_tempfile(request.user, passphrase)
     except (ExportError, OSError) as error:
-        logger.warning("Full export failed for user %s", request.user.pk, exc_info=True)
+        logger.warning("Full export failed for user %s", request.user.pk)
         message = str(error) if isinstance(error, ExportError) else (
             "Cannot read media or write the archive. Check server storage permissions and free space."
         )
@@ -902,9 +919,9 @@ def admin_export_download(request):
         len(manifest["tables"]),
         manifest["media"]["count"],
     )
-    filename = "ptart-export-{}.zip".format(timezone.now().strftime("%Y%m%d-%H%M%S"))
+    filename = "ptart-export-{}.ptartenc".format(timezone.now().strftime("%Y%m%d-%H%M%S"))
     response = FileResponse(
-        stream, as_attachment=True, filename=filename, content_type="application/zip"
+        stream, as_attachment=True, filename=filename, content_type="application/octet-stream"
     )
     response["Cache-Control"] = "no-store"
     return response

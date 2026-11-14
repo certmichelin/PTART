@@ -136,15 +136,20 @@ Access [http://localhost:8000/](http://localhost:8000/) on your favorite browser
 
 ## Full export and fresh-instance import
 
-Admins can use **Administration → Full export** to download migration data and
-referenced evidence as a ZIP. It includes a portable SQLite database generated
-from the active database, including PostgreSQL sources. On a fresh PTART instance,
-run `python manage.py migrate`, then `python manage.py import_archive /path/to/export.zip`
-before creating users or running catalog loaders. Import preserves IDs/accounts
-and refuses existing data; it does not merge or overwrite an instance.
-The archive contains credentials and must be handled as a secret backup.
-See [the export/import guide](docs/MIGRATION_EXPORT.md) for cutover, verification,
-limitations and test commands.
+Admins can use **Administration → Full export** to download a passphrase-encrypted
+archive containing migration data and referenced evidence. Use HTTPS: the
+passphrase is sent to the server, which handles the plaintext export. Choose a
+strong passphrase and transfer it separately; losing it makes the archive
+unrecoverable. The archive contains a portable SQLite database generated from the
+active database, including PostgreSQL sources. The export temporarily stages
+plaintext database and archive data on the server: use encrypted temporary storage,
+and protect the archive as a secret backup even though it is encrypted.
+
+On a fresh PTART instance, run `python manage.py migrate`, then
+`python manage.py import_archive /path/to/export.ptartenc` from an interactive
+terminal; enter the passphrase at the no-echo prompt. Existing plaintext exports
+remain importable. Import preserves IDs/accounts and refuses existing data; it does
+not merge or overwrite an instance.
 
 ## How to DEV
 

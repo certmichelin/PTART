@@ -2,11 +2,17 @@ import hashlib
 import importlib
 import io
 import json
+import os
+import pty
 import sqlite3
 import tempfile
 import zipfile
 from pathlib import Path
 from unittest.mock import patch
+import warnings
+
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 
 from django.apps import apps
 from django.contrib.auth.models import User
@@ -71,6 +77,134 @@ class AdminImportTests(ExportFixtureMixin, TransactionTestCase):
         self.assertFalse(User.objects.exists())
         self.assertFalse(m.Project.objects.exists())
         self.assertEqual([p for p in self.destination.rglob("*") if p.is_file()], [])
+
+    def encrypted_fixture(self, passphrase="correct horse battery staple"):
+        header = b"PTARTENC\x01" + b"s" * 16 + b"n" * 12
+        key = Scrypt(salt=header[9:25], length=32, n=32768, r=8, p=1).derive(
+            passphrase.encode("utf-8")
+        )
+        return header + AESGCM(key).encrypt(header[25:37], self.original_zip, header)
+
+    def test_encrypted_command_imports_after_prompt(self):
+        self.archive_path.write_bytes(self.encrypted_fixture())
+        self.fresh_database()
+        with patch(
+            "ptart.management.commands.import_archive.prompt_passphrase",
+            return_value="correct horse battery staple",
+        ) as prompt:
+            self.run_import()
+        prompt.assert_called_once()
+        self.assertTrue(User.objects.filter(pk=self.admin.pk).exists())
+        self.assertEqual(
+            (self.destination / "screenshots/evidence.png").read_bytes(), b"test evidence"
+        )
+
+    def test_plaintext_command_does_not_prompt(self):
+        self.fresh_database()
+        with patch("ptart.management.commands.import_archive.prompt_passphrase") as prompt:
+            self.run_import()
+        prompt.assert_not_called()
+        self.assertTrue(User.objects.filter(pk=self.admin.pk).exists())
+
+    def test_wrong_password_tampering_and_truncation_never_unpack_or_mutate(self):
+        self.fresh_database()
+        original = self.encrypted_fixture()
+        corrupt_magic = bytearray(original)
+        corrupt_magic[0] ^= 1
+        corrupt_header = bytearray(original)
+        corrupt_header[10] ^= 1
+        corrupt_ciphertext = bytearray(original)
+        corrupt_ciphertext[40] ^= 1
+        corrupt_tag = bytearray(original)
+        corrupt_tag[-1] ^= 1
+        for data, passphrase in (
+            (original, "wrong password"),
+            (corrupt_magic, "correct horse battery staple"),
+            (corrupt_header, "correct horse battery staple"),
+            (corrupt_ciphertext, "correct horse battery staple"),
+            (corrupt_tag, "correct horse battery staple"),
+            (original[:8], "correct horse battery staple"),
+            (original[:9], "correct horse battery staple"),
+            (original[:40], "correct horse battery staple"),
+        ):
+            with self.subTest(length=len(data), passphrase=passphrase):
+                self.archive_path.write_bytes(data)
+                with self.settings(MEDIA_ROOT=str(self.destination)):
+                    with patch.object(restore, "_unpack") as unpack:
+                        with self.assertRaisesMessage(restore.ArchiveImportError, "Unable to authenticate encrypted archive"):
+                            restore.import_archive(self.archive_path, passphrase=passphrase)
+                    unpack.assert_not_called()
+                self.assert_empty_destination()
+
+    def test_encrypted_command_requires_a_controlling_terminal(self):
+        self.archive_path.write_bytes(self.encrypted_fixture())
+        self.fresh_database()
+        with patch("ptart.management.commands.import_archive.os.open", side_effect=OSError("no tty")):
+            from ptart.management.commands.import_archive import prompt_passphrase
+
+            with self.assertRaisesMessage(CommandError, "controlling terminal"):
+                prompt_passphrase()
+        self.assert_empty_destination()
+
+    def test_terminal_prompt_uses_tty_stream_and_refuses_echo_fallback(self):
+        from ptart.management.commands import import_archive as command
+
+        master, slave = pty.openpty()
+        try:
+            tty_fd = os.dup(slave)
+            with patch.object(command.os, "open", return_value=tty_fd):
+                with patch.object(command.getpass, "getpass", return_value="secret") as getpass:
+                    self.assertEqual(command.prompt_passphrase(), "secret")
+                    self.assertTrue(getpass.call_args.kwargs["stream"].closed)
+
+            def echo_warning(*args, **kwargs):
+                warnings.warn("echo fallback", command.getpass.GetPassWarning)
+
+            tty_fd = os.dup(slave)
+            with patch.object(command.os, "open", return_value=tty_fd):
+                with patch.object(command.getpass, "getpass", side_effect=echo_warning):
+                    with self.assertRaisesMessage(CommandError, "controlling terminal"):
+                        command.prompt_passphrase()
+        finally:
+            os.close(master)
+            os.close(slave)
+
+    def test_wrong_command_passphrase_has_generic_error_and_no_mutation(self):
+        self.archive_path.write_bytes(self.encrypted_fixture())
+        self.fresh_database()
+        with patch(
+            "ptart.management.commands.import_archive.prompt_passphrase",
+            return_value="incorrect secret passphrase",
+        ):
+            with self.assertRaisesMessage(CommandError, "Unable to authenticate encrypted archive"):
+                self.run_import()
+        self.assert_empty_destination()
+
+    def test_decryption_failure_closes_private_plaintext_stream(self):
+        from ptart.tools import archive_crypto
+
+        destination = io.BytesIO()
+        with patch.object(archive_crypto.tempfile, "TemporaryFile", return_value=destination):
+            with self.assertRaises(archive_crypto.ArchiveCryptoError):
+                archive_crypto.decrypt_to_tempfile(io.BytesIO(self.encrypted_fixture()), "wrong")
+        self.assertTrue(destination.closed)
+
+    def test_programmatic_encrypted_import_accepts_short_passphrase(self):
+        self.archive_path.write_bytes(self.encrypted_fixture("short"))
+        self.fresh_database()
+        with self.settings(MEDIA_ROOT=str(self.destination)):
+            restore.import_archive(self.archive_path, passphrase="short")
+        self.assertTrue(User.objects.filter(pk=self.admin.pk).exists())
+
+    def test_import_passphrase_byte_limit_is_enforced_before_unpacking(self):
+        self.archive_path.write_bytes(self.encrypted_fixture("é" * 513))
+        self.fresh_database()
+        with self.settings(MEDIA_ROOT=str(self.destination)):
+            with patch.object(restore, "_unpack") as unpack:
+                with self.assertRaisesMessage(restore.ArchiveImportError, "Unable to authenticate encrypted archive"):
+                    restore.import_archive(self.archive_path, passphrase="é" * 513)
+            unpack.assert_not_called()
+        self.assert_empty_destination()
 
     def test_round_trip_preserves_every_column_credentials_media_and_new_ids(self):
         expected = {}

@@ -6,6 +6,9 @@ import tempfile
 import zipfile
 from pathlib import Path
 from unittest.mock import patch
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
+
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import Client, RequestFactory, TransactionTestCase
@@ -227,9 +230,11 @@ class AdminExportTests(ExportFixtureMixin, TransactionTestCase):
             with self.assertRaisesMessage(export.ExportError, "migrate"):
                 self.archive()
 
-    def request(self, user, verified=True, method="post"):
+    def request(self, user, verified=True, method="post", data=None):
         user.is_verified = lambda: verified
-        request = getattr(RequestFactory(), method)("/export/download/")
+        if data is None and method == "post":
+            data = {"passphrase": "example passphrase 123", "passphrase_confirm": "example passphrase 123"}
+        request = getattr(RequestFactory(), method)("/export/download/", data=data)
         request.user = user
         return request
 
@@ -257,12 +262,19 @@ class AdminExportTests(ExportFixtureMixin, TransactionTestCase):
         response = views.admin_export_download(self.request(self.admin))
         self.addCleanup(response.close)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/zip")
+        self.assertEqual(response["Content-Type"], "application/octet-stream")
+        self.assertIn(".ptartenc", response["Content-Disposition"])
         self.assertIn("attachment;", response["Content-Disposition"])
         self.assertIn("no-store", response["Cache-Control"])
-        with zipfile.ZipFile(
-            io.BytesIO(b"".join(response.streaming_content))
-        ) as archive:
+        self.assert_encrypted_zip(b"".join(response.streaming_content))
+
+    def assert_encrypted_zip(self, data, passphrase="example passphrase 123"):
+        self.assertEqual(data[:9], b"PTARTENC\x01")
+        key = Scrypt(salt=data[9:25], length=32, n=32768, r=8, p=1).derive(
+            passphrase.encode("utf-8")
+        )
+        plaintext = AESGCM(key).decrypt(data[25:37], data[37:], data[:37])
+        with zipfile.ZipFile(io.BytesIO(plaintext)) as archive:
             self.assertIn("legacy.sqlite3", archive.namelist())
 
     def test_post_requires_csrf_and_uses_registered_routes(self):
@@ -278,14 +290,51 @@ class AdminExportTests(ExportFixtureMixin, TransactionTestCase):
         self.assertEqual(response.status_code, 403)
         response = client.post(
             reverse("admin-export-download"),
+            {"passphrase": "example passphrase 123", "passphrase_confirm": "example passphrase 123"},
             HTTP_X_CSRFTOKEN=client.cookies["csrftoken"].value,
         )
         self.addCleanup(response.close)
         self.assertEqual(response.status_code, 200)
-        with zipfile.ZipFile(
-            io.BytesIO(b"".join(response.streaming_content))
-        ) as archive:
-            self.assertIn("legacy.sqlite3", archive.namelist())
+        self.assert_encrypted_zip(b"".join(response.streaming_content))
+
+    def test_invalid_passphrases_refuse_before_build_without_echoing_secrets(self):
+        for password, confirm in (
+            ("", ""),
+            ("too short", "too short"),
+            ("example passphrase 123", "different passphrase 123"),
+            ("é" * 513, "é" * 513),
+        ):
+            with self.subTest(length=len(password)):
+                with patch.object(export, "build_export") as build:
+                    response = views.admin_export_download(self.request(self.admin, data={
+                        "passphrase": password, "passphrase_confirm": confirm,
+                    }))
+                self.assertEqual(response.status_code, 400)
+                self.assertIn("no-store", response["Cache-Control"])
+                if password:
+                    self.assertNotContains(response, password, status_code=400)
+                build.assert_not_called()
+
+    def test_export_accepts_exact_utf8_byte_limit_without_normalization(self):
+        passphrase = "é" * 512
+        response = views.admin_export_download(self.request(self.admin, data={
+            "passphrase": passphrase, "passphrase_confirm": passphrase,
+        }))
+        self.addCleanup(response.close)
+        self.assertEqual(response.status_code, 200)
+        self.assert_encrypted_zip(b"".join(response.streaming_content), passphrase)
+
+    def test_each_export_uses_fresh_salt_and_nonce(self):
+        first = views.admin_export_download(self.request(self.admin))
+        second = views.admin_export_download(self.request(self.admin))
+        self.addCleanup(first.close)
+        self.addCleanup(second.close)
+        one = b"".join(first.streaming_content)
+        two = b"".join(second.streaming_content)
+        self.assertNotEqual(one[9:25], two[9:25])
+        self.assertNotEqual(one[25:37], two[25:37])
+        self.assert_encrypted_zip(one)
+        self.assert_encrypted_zip(two)
 
     def test_failed_build_closes_temporary_file(self):
         stream = io.BytesIO()
@@ -295,12 +344,28 @@ class AdminExportTests(ExportFixtureMixin, TransactionTestCase):
                     export.export_to_tempfile(self.admin)
         self.assertTrue(stream.closed)
 
+    def test_failed_encryption_closes_both_temporary_files(self):
+        plaintext, encrypted = io.BytesIO(b"zip"), io.BytesIO()
+        with patch.object(export, "export_to_tempfile", return_value=(plaintext, {})):
+            with patch.object(export.tempfile, "TemporaryFile", return_value=encrypted):
+                with patch.object(export, "encrypt_archive", side_effect=OSError("disk full")):
+                    with self.assertRaises(OSError):
+                        export.encrypted_export_to_tempfile(self.admin, "example passphrase 123")
+        self.assertTrue(plaintext.closed)
+        self.assertTrue(encrypted.closed)
+
     def test_page_has_csrf_download_form_and_secret_warning(self):
         response = views.admin_export(self.request(self.admin, method="get"))
         self.assertContains(response, 'name="csrfmiddlewaretoken"')
         self.assertContains(response, "This archive contains credentials")
         self.assertContains(response, reverse("admin-export-download"))
         self.assertContains(response, "Pause all other writers")
+        self.assertContains(response, 'name="passphrase"')
+        self.assertContains(response, 'name="passphrase_confirm"')
+        self.assertContains(response, 'type="password"', count=2)
+        self.assertContains(response, "passphrase is sent to the server")
+        self.assertContains(response, "use HTTPS")
+        self.assertContains(response, "encrypted temporary storage")
 
     def test_missing_media_returns_error_page_not_partial_download(self):
         self.file.unlink()
